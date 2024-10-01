@@ -1,0 +1,50 @@
+add_executable(tests
+    ir/Instruction/AddTest.cpp
+    ir/Instruction/AllocaTest.cpp
+    ir/Instruction/AndTest.cpp
+    ir/Instruction/ASHRTest.cpp
+    ir/Instruction/BrTest.cpp
+    ir/Instruction/CondBrTest.cpp
+    ir/Instruction/FAddTest.cpp
+    ir/Instruction/FCmpTest.cpp
+    ir/Instruction/FDivTest.cpp
+    ir/Instruction/FMulTest.cpp
+    ir/Instruction/FNegTest.cpp
+    ir/Instruction/FPExtTest.cpp
+    ir/Instruction/FPTruncTest.cpp
+    ir/Instruction/FRemTest.cpp
+    ir/Instruction/FSubTest.cpp
+    ir/Instruction/ICmpTest.cpp
+    ir/Instruction/LoadTest.cpp
+    ir/Instruction/LSHRTest.cpp
+    ir/Instruction/MulTest.cpp
+    ir/Instruction/OrTest.cpp
+    ir/Instruction/PhiTest.cpp
+    ir/Instruction/RetTest.cpp
+    ir/Instruction/SDivTest.cpp
+    ir/Instruction/SelectTest.cpp
+    ir/Instruction/SExtTest.cpp
+    ir/Instruction/SHLTest.cpp
+    ir/Instruction/SRemTest.cpp
+    ir/Instruction/StoreTest.cpp
+    ir/Instruction/SubTest.cpp
+    ir/Instruction/TruncTest.cpp
+    ir/Instruction/UDivTest.cpp
+    ir/Instruction/URemTest.cpp
+    ir/Instruction/XorTest.cpp
+    ir/Instruction/ZExtTest.cpp
+    ir_parser/ir_parser_test.cpp
+    ir_parser/LexerTest.cpp
+    ir_parser/ParserTest.cpp
+    opt/ir/passes/BranchSimplificationTest.cpp
+    opt/ir/passes/ConstantFoldingTest.cpp
+    opt/ir/passes/DeadCodeEliminationTest.cpp
+    opt/ir/passes/DominatorTreeAnalysisTest.cpp
+    opt/ir/passes/JumpThreadingTest.cpp
+    opt/ir/passes/UnreachableBlockEliminationTest.cpp
+)
+target_compile_features(tests PRIVATE cxx_std_23)
+target_link_libraries(tests PRIVATE mini-llvm GTest::gtest GTest::gmock GTest::gtest_main GTest::gmock_main)
+
+include(GoogleTest)
+gtest_discover_tests(tests)
