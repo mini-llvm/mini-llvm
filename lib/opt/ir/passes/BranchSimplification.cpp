@@ -1,18 +1,18 @@
-#include "opt/ir/passes/BranchSimplification.h"
+#include "mini-llvm/opt/ir/passes/BranchSimplification.h"
 
 #include <memory>
 #include <vector>
 
-#include "ir/BasicBlock.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Br.h"
-#include "ir/Instruction/CondBr.h"
-#include "ir/Instruction/Phi.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Br.h"
+#include "mini-llvm/ir/Instruction/CondBr.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 bool BranchSimplification::runOnFunction(Function &F) {
     bool changed = false;

@@ -1,11 +1,11 @@
-#include "ir/Type/Void.h"
+#include "mini-llvm/ir/Type/Void.h"
 
 #include <memory>
 
-#include "ir/Constant/VoidValue.h"
-#include "ir/Type.h"
+#include "mini-llvm/ir/Constant/VoidValue.h"
+#include "mini-llvm/ir/Type.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 std::unique_ptr<Constant> Void::zeroValue() const {
     return std::make_unique<VoidValue>();

@@ -4,10 +4,10 @@
 
 #include <gtest/gtest.h>
 
-#include "ir_parser/Lexer.h"
-#include "ir_parser/Token.h"
+#include "mini-llvm/ir_parser/Lexer.h"
+#include "mini-llvm/ir_parser/Token.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 using enum Token::Kind;
 

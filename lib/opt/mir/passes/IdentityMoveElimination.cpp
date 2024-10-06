@@ -1,12 +1,12 @@
-#include "opt/mir/passes/IdentityMoveElimination.h"
+#include "mini-llvm/opt/mir/passes/IdentityMoveElimination.h"
 
 #include <list>
 
-#include "mir/BasicBlock.h"
-#include "mir/Instruction/Mov.h"
-#include "mir/RegisterOperand.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/Instruction/Mov.h"
+#include "mini-llvm/mir/RegisterOperand.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 bool IdentityMoveElimination::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;

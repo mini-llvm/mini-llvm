@@ -1,12 +1,12 @@
-#include "targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
 #include <memory>
 #include <unordered_map>
 #include <utility>
 
-#include "mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterKind.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 RISCVRegister *RISCVRegister::get(int idx) {
     static std::unordered_map<int, std::shared_ptr<RISCVRegister>> pool;
@@ -21,7 +21,7 @@ RISCVRegister *RISCVRegister::get(int idx) {
     case idx: \
         return &*pool.insert( \
             {idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterKind::k##kind, isVolatile, isAllocatable))}).first->second;
-#include "targets/riscv/target.def"
+#include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
     default:

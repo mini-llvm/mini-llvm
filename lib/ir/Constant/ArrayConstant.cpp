@@ -1,4 +1,4 @@
-#include "ir/Constant/ArrayConstant.h"
+#include "mini-llvm/ir/Constant/ArrayConstant.h"
 
 #include <algorithm>
 #include <cassert>
@@ -10,17 +10,17 @@
 #include <utility>
 #include <vector>
 
-#include "ir/Constant.h"
-#include "ir/Constant/I8Constant.h"
-#include "ir/Type.h"
-#include "ir/Type/ArrayType.h"
-#include "ir/Type/I8.h"
-#include "ir/Use.h"
-#include "ir/Value.h"
-#include "utils/Memory.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/I8Constant.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/ArrayType.h"
+#include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::shared_ptr<Constant>> elements)
         : type_(std::move(type)) {
@@ -88,7 +88,7 @@ bool ArrayConstant::equals(const Constant &other) const {
     return true;
 }
 
-std::vector<std::shared_ptr<Constant>> ir::flatten(const Constant &C) {
+std::vector<std::shared_ptr<Constant>> mini_llvm::ir::flatten(const Constant &C) {
     std::vector<std::shared_ptr<Constant>> flattened;
     if (auto *arrayConstant = dynamic_cast<const ArrayConstant *>(&C)) {
         for (const Use<Constant> &element : elements(*arrayConstant)) {

@@ -1,9 +1,9 @@
-#include "mir/Instruction/Terminator.h"
+#include "mini-llvm/mir/Instruction/Terminator.h"
 
 #include <unordered_set>
 #include <utility>
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 std::unordered_set<BasicBlockOperand *> Terminator::successors() {
     std::unordered_set<BasicBlockOperand *> successors;

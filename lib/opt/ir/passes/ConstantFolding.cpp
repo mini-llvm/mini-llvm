@@ -1,13 +1,13 @@
-#include "opt/ir/passes/ConstantFolding.h"
+#include "mini-llvm/opt/ir/passes/ConstantFolding.h"
 
 #include <vector>
 
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Value.h"
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

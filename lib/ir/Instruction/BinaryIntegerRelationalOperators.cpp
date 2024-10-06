@@ -3,29 +3,29 @@
 #include <optional>
 #include <utility>
 
-#include "common/ops/EQ.h"
-#include "common/ops/NE.h"
-#include "common/ops/SGE.h"
-#include "common/ops/SGT.h"
-#include "common/ops/SLE.h"
-#include "common/ops/SLT.h"
-#include "common/ops/UGE.h"
-#include "common/ops/UGT.h"
-#include "common/ops/ULE.h"
-#include "common/ops/ULT.h"
-#include "ir/Constant.h"
-#include "ir/Constant/I16Constant.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Constant/I32Constant.h"
-#include "ir/Constant/I64Constant.h"
-#include "ir/Constant/I8Constant.h"
-#include "ir/Constant/NullPtrConstant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/BinaryIntegerRelationalOperator.h"
-#include "ir/Instruction/ICmp.h"
+#include "mini-llvm/common/ops/EQ.h"
+#include "mini-llvm/common/ops/NE.h"
+#include "mini-llvm/common/ops/SGE.h"
+#include "mini-llvm/common/ops/SGT.h"
+#include "mini-llvm/common/ops/SLE.h"
+#include "mini-llvm/common/ops/SLT.h"
+#include "mini-llvm/common/ops/UGE.h"
+#include "mini-llvm/common/ops/UGT.h"
+#include "mini-llvm/common/ops/ULE.h"
+#include "mini-llvm/common/ops/ULT.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/I16Constant.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
+#include "mini-llvm/ir/Constant/I8Constant.h"
+#include "mini-llvm/ir/Constant/NullPtrConstant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/BinaryIntegerRelationalOperator.h"
+#include "mini-llvm/ir/Instruction/ICmp.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

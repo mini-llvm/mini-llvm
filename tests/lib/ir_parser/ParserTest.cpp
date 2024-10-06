@@ -3,15 +3,15 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant.h"
-#include "ir/Constant/ArrayConstant.h"
-#include "ir/Constant/I32Constant.h"
-#include "ir/Type/ArrayType.h"
-#include "ir/Type/I32.h"
-#include "ir_parser/Parser.h"
-#include "ir_parser/Token.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/ArrayConstant.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Type/ArrayType.h"
+#include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/ir_parser/Parser.h"
+#include "mini-llvm/ir_parser/Token.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 using enum Token::Kind;
 

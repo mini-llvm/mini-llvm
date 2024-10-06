@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/I64Constant.h"
-#include "ir/Instruction/Trunc.h"
-#include "ir/Type/I32.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
+#include "mini-llvm/ir/Instruction/Trunc.h"
+#include "mini-llvm/ir/Type/I32.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class TruncTest : public ::testing::Test {
 protected:

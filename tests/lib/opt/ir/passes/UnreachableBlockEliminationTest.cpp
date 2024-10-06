@@ -3,16 +3,16 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "ir/Function.h"
-#include "ir_parser/ir_parser.h"
-#include "opt/ir/passes/UnreachableBlockElimination.h"
-#include "opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
+#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
 using ::testing::Not;
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 TEST(UnreachableBlockEliminationTest, test0) {
     std::shared_ptr<Function> F = parseFunction(R"(

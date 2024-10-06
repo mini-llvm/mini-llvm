@@ -1,4 +1,4 @@
-#include "ir/Function.h"
+#include "mini-llvm/ir/Function.h"
 
 #include <cassert>
 #include <iterator>
@@ -7,15 +7,15 @@
 #include <string>
 #include <utility>
 
-#include "common/Linkage.h"
-#include "ir/Argument.h"
-#include "ir/Attribute.h"
-#include "ir/BasicBlock.h"
-#include "ir/Type.h"
-#include "ir/Type/FunctionType.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/common/Linkage.h"
+#include "mini-llvm/ir/Argument.h"
+#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/FunctionType.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage) : functionType_(std::move(functionType)), linkage_(linkage) {
     for (Type &paramType : paramTypes(*functionType_)) {

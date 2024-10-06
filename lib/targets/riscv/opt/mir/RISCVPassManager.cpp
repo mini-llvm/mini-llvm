@@ -1,15 +1,15 @@
-#include "targets/riscv/opt/mir/RISCVPassManager.h"
+#include "mini-llvm/targets/riscv/opt/mir/RISCVPassManager.h"
 
-#include "mir/Module.h"
-#include "opt/mir/passes/ConstantPropagation.h"
-#include "opt/mir/passes/ConstantReuse.h"
-#include "opt/mir/passes/DeadCodeElimination.h"
-#include "opt/mir/passes/IdentityMoveElimination.h"
-#include "opt/mir/passes/ZeroRegisterReplacement.h"
-#include "targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/mir/Module.h"
+#include "mini-llvm/opt/mir/passes/ConstantPropagation.h"
+#include "mini-llvm/opt/mir/passes/ConstantReuse.h"
+#include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
+#include "mini-llvm/opt/mir/passes/IdentityMoveElimination.h"
+#include "mini-llvm/opt/mir/passes/ZeroRegisterReplacement.h"
+#include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
-using namespace mir;
-using namespace mir::riscv;
+using namespace mini_llvm::mir;
+using namespace mini_llvm::mir::riscv;
 
 void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
     bool changed;

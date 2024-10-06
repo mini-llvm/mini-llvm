@@ -1,16 +1,16 @@
-#include "targets/riscv/opt/mc/passes/RISCVFallthrough.h"
+#include "mini-llvm/targets/riscv/opt/mc/passes/RISCVFallthrough.h"
 
 #include <iterator>
 #include <vector>
 
-#include "mc/Fragment.h"
-#include "mc/Label.h"
-#include "mc/LabelOperand.h"
-#include "mc/Section.h"
-#include "targets/riscv/mc/RISCVInstruction.h"
-#include "targets/riscv/mc/RISCVOperation.h"
+#include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/mc/Label.h"
+#include "mini-llvm/mc/LabelOperand.h"
+#include "mini-llvm/mc/Section.h"
+#include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
+#include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 bool RISCVFallthrough::runOnFragment(Fragment &fragment) {
     if (fragment.section() != Section::kText) return false;

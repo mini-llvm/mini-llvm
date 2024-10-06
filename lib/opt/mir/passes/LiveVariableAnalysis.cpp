@@ -1,4 +1,4 @@
-#include "opt/mir/passes/LiveVariableAnalysis.h"
+#include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
 
 #include <cassert>
 #include <memory>
@@ -6,13 +6,13 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "mir/BasicBlock.h"
-#include "mir/Function.h"
-#include "mir/Instruction.h"
-#include "utils/SetOps.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/utils/SetOps.h"
 
-using namespace mir;
-using namespace set_ops;
+using namespace mini_llvm::mir;
+using namespace mini_llvm::set_ops;
 
 class LiveVariableAnalysis::Impl {
 public:

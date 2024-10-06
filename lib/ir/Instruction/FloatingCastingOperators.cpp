@@ -2,23 +2,24 @@
 #include <optional>
 #include <utility>
 
-#include "common/OpException.h"
-#include "common/ops/FPExt.h"
-#include "common/ops/FPTrunc.h"
-#include "ir/Constant.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/FloatingCastingOperator.h"
-#include "ir/Instruction/FPExt.h"
-#include "ir/Instruction/FPTrunc.h"
-#include "ir/Type.h"
-#include "ir/Type/Double.h"
-#include "ir/Type/Float.h"
-#include "ir/TypeVisitor.h"
+#include "mini-llvm/common/OpException.h"
+#include "mini-llvm/common/ops/FPExt.h"
+#include "mini-llvm/common/ops/FPTrunc.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/FloatingCastingOperator.h"
+#include "mini-llvm/ir/Instruction/FPExt.h"
+#include "mini-llvm/ir/Instruction/FPTrunc.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/Double.h"
+#include "mini-llvm/ir/Type/Float.h"
+#include "mini-llvm/ir/TypeVisitor.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 namespace {
 

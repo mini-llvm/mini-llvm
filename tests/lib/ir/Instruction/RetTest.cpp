@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/I32Constant.h"
-#include "ir/Instruction/Ret.h"
-#include "ir/Type/Void.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Instruction/Ret.h"
+#include "mini-llvm/ir/Type/Void.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class RetTest : public ::testing::Test {
 protected:

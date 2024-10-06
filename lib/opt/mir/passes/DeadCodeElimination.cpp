@@ -1,14 +1,14 @@
-#include "opt/mir/passes/DeadCodeElimination.h"
+#include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
 
 #include <algorithm>
 #include <vector>
 
-#include "mir/BasicBlock.h"
-#include "mir/Function.h"
-#include "mir/Register.h"
-#include "opt/mir/passes/LiveVariableAnalysis.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Register.h"
+#include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 bool DeadCodeElimination::runOnFunction(Function &F) {
     bool changed = false;

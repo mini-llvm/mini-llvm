@@ -3,12 +3,13 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/BasicBlock.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Instruction/CondBr.h"
-#include "ir/Type/Void.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Instruction/CondBr.h"
+#include "mini-llvm/ir/Type/Void.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class CondBrTest : public ::testing::Test {
 protected:

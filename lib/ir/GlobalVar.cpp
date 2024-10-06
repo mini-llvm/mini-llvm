@@ -1,4 +1,4 @@
-#include "ir/GlobalVar.h"
+#include "mini-llvm/ir/GlobalVar.h"
 
 #include <cassert>
 #include <memory>
@@ -6,13 +6,13 @@
 #include <string>
 #include <utility>
 
-#include "common/Linkage.h"
-#include "ir/Constant.h"
-#include "ir/Value.h"
-#include "utils/Memory.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/common/Linkage.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
                      Linkage linkage,

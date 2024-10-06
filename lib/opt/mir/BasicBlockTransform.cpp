@@ -1,9 +1,9 @@
-#include "opt/mir/BasicBlockTransform.h"
+#include "mini-llvm/opt/mir/BasicBlockTransform.h"
 
-#include "mir/BasicBlock.h"
-#include "mir/Function.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/Function.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 bool BasicBlockTransform::runOnFunction(Function &F) {
     bool changed = false;

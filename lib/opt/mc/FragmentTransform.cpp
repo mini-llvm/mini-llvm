@@ -1,9 +1,9 @@
-#include "opt/mc/FragmentTransform.h"
+#include "mini-llvm/opt/mc/FragmentTransform.h"
 
-#include "mc/Fragment.h"
-#include "mc/Program.h"
+#include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/mc/Program.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 bool FragmentTransform::runOnProgram(Program &program) {
     bool changed = false;

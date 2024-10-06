@@ -2,16 +2,16 @@
 #include <optional>
 #include <utility>
 
-#include "common/ops/FNeg.h"
-#include "ir/Constant.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/FNeg.h"
-#include "ir/Instruction/UnaryFloatingArithmeticOperator.h"
+#include "mini-llvm/common/ops/FNeg.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/FNeg.h"
+#include "mini-llvm/ir/Instruction/UnaryFloatingArithmeticOperator.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

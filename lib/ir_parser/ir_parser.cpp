@@ -1,17 +1,18 @@
-#include "ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/ir_parser.h"
 
 #include <memory>
 #include <vector>
 
-#include "ir/Function.h"
-#include "ir/GlobalVar.h"
-#include "ir/Module.h"
-#include "ir_parser/Lexer.h"
-#include "ir_parser/Parser.h"
-#include "ir_parser/Token.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/GlobalVar.h"
+#include "mini-llvm/ir/Module.h"
+#include "mini-llvm/ir_parser/Lexer.h"
+#include "mini-llvm/ir_parser/Parser.h"
+#include "mini-llvm/ir_parser/Token.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 Module ir::parseModule(const char *source) {
     return Parser(std::vector<Token>(Lexer(source)).begin()).parseModule();

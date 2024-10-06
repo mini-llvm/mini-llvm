@@ -1,24 +1,24 @@
-#include "ir/Constant/IntegerConstant.h"
+#include "mini-llvm/ir/Constant/IntegerConstant.h"
 
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>
 
-#include "common/ops/Trunc.h"
-#include "ir/Constant/I16Constant.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Constant/I32Constant.h"
-#include "ir/Constant/I64Constant.h"
-#include "ir/Constant/I8Constant.h"
-#include "ir/Type/I1.h"
-#include "ir/Type/I16.h"
-#include "ir/Type/I32.h"
-#include "ir/Type/I64.h"
-#include "ir/Type/I8.h"
-#include "ir/TypeVisitor.h"
+#include "mini-llvm/common/ops/Trunc.h"
+#include "mini-llvm/ir/Constant/I16Constant.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
+#include "mini-llvm/ir/Constant/I8Constant.h"
+#include "mini-llvm/ir/Type/I1.h"
+#include "mini-llvm/ir/Type/I16.h"
+#include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/ir/Type/I64.h"
+#include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/TypeVisitor.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 
@@ -56,13 +56,13 @@ private:
 
     template <typename Const, typename To>
     void visit() {
-        result_.emplace(std::make_unique<Const>(ops::Trunc<To>()(value_)));
+        result_.emplace(std::make_unique<Const>(mini_llvm::ops::Trunc<To>()(value_)));
     }
 };
 
 } // namespace
 
-std::unique_ptr<IntegerConstant> ir::createIntegerConstant(std::unique_ptr<Type> type, int64_t value) {
+std::unique_ptr<IntegerConstant> mini_llvm::ir::createIntegerConstant(std::unique_ptr<Type> type, int64_t value) {
     TypeVisitorImpl visitor(value);
     type->accept(visitor);
     return visitor.takeResult();

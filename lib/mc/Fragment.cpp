@@ -1,13 +1,13 @@
-#include "mc/Fragment.h"
+#include "mini-llvm/mc/Fragment.h"
 
 #include <string>
 
-#include "mc/Directive.h"
-#include "mc/Instruction.h"
-#include "mc/Label.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/mc/Directive.h"
+#include "mini-llvm/mc/Instruction.h"
+#include "mini-llvm/mc/Label.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 std::string Fragment::format() const {
     StringJoiner formatted("\n");

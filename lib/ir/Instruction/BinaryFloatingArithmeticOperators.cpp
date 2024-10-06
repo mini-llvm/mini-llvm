@@ -2,24 +2,24 @@
 #include <optional>
 #include <utility>
 
-#include "common/ops/FAdd.h"
-#include "common/ops/FDiv.h"
-#include "common/ops/FMul.h"
-#include "common/ops/FRem.h"
-#include "common/ops/FSub.h"
-#include "ir/Constant.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/BinaryFloatingArithmeticOperator.h"
-#include "ir/Instruction/FAdd.h"
-#include "ir/Instruction/FDiv.h"
-#include "ir/Instruction/FMul.h"
-#include "ir/Instruction/FRem.h"
-#include "ir/Instruction/FSub.h"
+#include "mini-llvm/common/ops/FAdd.h"
+#include "mini-llvm/common/ops/FDiv.h"
+#include "mini-llvm/common/ops/FMul.h"
+#include "mini-llvm/common/ops/FRem.h"
+#include "mini-llvm/common/ops/FSub.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/BinaryFloatingArithmeticOperator.h"
+#include "mini-llvm/ir/Instruction/FAdd.h"
+#include "mini-llvm/ir/Instruction/FDiv.h"
+#include "mini-llvm/ir/Instruction/FMul.h"
+#include "mini-llvm/ir/Instruction/FRem.h"
+#include "mini-llvm/ir/Instruction/FSub.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

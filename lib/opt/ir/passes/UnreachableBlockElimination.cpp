@@ -1,14 +1,14 @@
-#include "opt/ir/passes/UnreachableBlockElimination.h"
+#include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 
 #include <queue>
 #include <unordered_set>
 
-#include "ir/BasicBlock.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Phi.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 bool UnreachableBlockElimination::runOnFunction(Function &F) {
     std::unordered_set<const BasicBlock *> S;

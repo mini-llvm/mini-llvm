@@ -13,14 +13,16 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "ir/Module.h"
-#include "ir_parser/ir_parser.h"
-#include "ir_parser/Lexer.h"
-#include "ir_parser/Parser.h"
-#include "mc/Program.h"
-#include "opt/ir/passes/VerificationAnalysis.h"
-#include "opt/ir/PassManager.h"
-#include "targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/ir/Module.h"
+#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/Lexer.h"
+#include "mini-llvm/ir_parser/Parser.h"
+#include "mini-llvm/mc/Program.h"
+#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/opt/ir/PassManager.h"
+#include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
+
+using namespace mini_llvm;
 
 namespace {
 

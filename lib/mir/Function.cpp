@@ -1,14 +1,14 @@
-#include "mir/Function.h"
+#include "mini-llvm/mir/Function.h"
 
 #include <format>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "mir/BasicBlock.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 BasicBlock &Function::add(const_iterator pos, std::unique_ptr<BasicBlock> block) {
     return **blocks_.insert(pos.base(), std::move(block));

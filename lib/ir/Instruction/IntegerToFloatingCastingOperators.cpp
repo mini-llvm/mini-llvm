@@ -2,29 +2,29 @@
 #include <optional>
 #include <utility>
 
-#include "common/ops/SIToFP.h"
-#include "common/ops/UIToFP.h"
-#include "ir/Constant.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Constant/I16Constant.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Constant/I32Constant.h"
-#include "ir/Constant/I64Constant.h"
-#include "ir/Constant/I8Constant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/IntegerToFloatingCastingOperator.h"
-#include "ir/Instruction/SIToFP.h"
-#include "ir/Instruction/UIToFP.h"
-#include "ir/Type.h"
-#include "ir/Type/Double.h"
-#include "ir/Type/Float.h"
-#include "ir/TypeVisitor.h"
+#include "mini-llvm/common/ops/SIToFP.h"
+#include "mini-llvm/common/ops/UIToFP.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/I16Constant.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
+#include "mini-llvm/ir/Constant/I8Constant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/IntegerToFloatingCastingOperator.h"
+#include "mini-llvm/ir/Instruction/SIToFP.h"
+#include "mini-llvm/ir/Instruction/UIToFP.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/Double.h"
+#include "mini-llvm/ir/Type/Float.h"
+#include "mini-llvm/ir/TypeVisitor.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
-namespace ir {
+namespace mini_llvm::ir {
 
 template <typename Op, typename ResultConst>
 class ConstantVisitorImpl : public ConstantVisitor {
@@ -102,7 +102,7 @@ std::unique_ptr<Constant> foldImpl(const IntegerToFloatingCastingOperator &I) {
     return visitor.takeResult();
 }
 
-} // namespace ir
+} // namespace mini_llvm::ir
 
 std::unique_ptr<Constant> SIToFP::fold() const {
     return foldImpl<ops::SIToFP>(*this);

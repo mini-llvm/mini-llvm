@@ -1,4 +1,4 @@
-#include "ir/Instruction/Call.h"
+#include "mini-llvm/ir/Instruction/Call.h"
 
 #include <memory>
 #include <string>
@@ -6,14 +6,14 @@
 #include <utility>
 #include <vector>
 
-#include "ir/Function.h"
-#include "ir/Type/Void.h"
-#include "ir/Use.h"
-#include "ir/Value.h"
-#include "utils/Memory.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 Call::Call(std::weak_ptr<Function> callee, std::vector<std::shared_ptr<Value>> args)
         : callee_(this, std::move(callee)) {

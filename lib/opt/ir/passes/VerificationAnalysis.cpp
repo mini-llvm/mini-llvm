@@ -1,25 +1,25 @@
-#include "opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 
 #include <iterator>
 #include <memory>
 #include <queue>
 #include <unordered_set>
 
-#include "ir/BasicBlock.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/BinaryFloatingOperator.h"
-#include "ir/Instruction/BinaryIntegerOperator.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Instruction/Ret.h"
-#include "ir/Instruction/Select.h"
-#include "ir/Instruction/Terminator.h"
-#include "ir/Module.h"
-#include "ir/Type/FunctionType.h"
-#include "ir/Use.h"
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/BinaryFloatingOperator.h"
+#include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/Ret.h"
+#include "mini-llvm/ir/Instruction/Select.h"
+#include "mini-llvm/ir/Instruction/Terminator.h"
+#include "mini-llvm/ir/Module.h"
+#include "mini-llvm/ir/Type/FunctionType.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 void VerificationAnalysis::runOnFunction(const Function &F) {
     for (const BasicBlock &B : F) {

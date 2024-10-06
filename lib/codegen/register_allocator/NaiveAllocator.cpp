@@ -1,4 +1,4 @@
-#include "codegen/register_allocator/NaiveAllocator.h"
+#include "mini-llvm/codegen/register_allocator/NaiveAllocator.h"
 
 #include <cassert>
 #include <functional>
@@ -8,22 +8,23 @@
 #include <unordered_set>
 #include <vector>
 
-#include "mir/BasicBlock.h"
-#include "mir/BasicBlockBuilder.h"
-#include "mir/Function.h"
-#include "mir/Instruction.h"
-#include "mir/PhysicalRegister.h"
-#include "mir/Register.h"
-#include "mir/RegisterOperand.h"
-#include "mir/StackFrame.h"
-#include "mir/StackSlot.h"
-#include "mir/VirtualRegister.h"
-#include "opt/mir/passes/LiveVariableAnalysis.h"
-#include "utils/Memory.h"
-#include "utils/SetOps.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/BasicBlockBuilder.h"
+#include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/PhysicalRegister.h"
+#include "mini-llvm/mir/Register.h"
+#include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/mir/StackFrame.h"
+#include "mini-llvm/mir/StackSlot.h"
+#include "mini-llvm/mir/VirtualRegister.h"
+#include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
+#include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/SetOps.h"
 
-using namespace mir;
-using namespace set_ops;
+using namespace mini_llvm;
+using namespace mini_llvm::mir;
+using namespace mini_llvm::set_ops;
 
 namespace {
 

@@ -1,14 +1,14 @@
-#include "ir/Module.h"
+#include "mini-llvm/ir/Module.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "ir/Function.h"
-#include "ir/GlobalVar.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/GlobalVar.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 GlobalVar &Module::GlobalVars::add(Module::GlobalVars::const_iterator pos, std::shared_ptr<GlobalVar> G) {
     return **globalVars_.insert(pos.base(), std::move(G));

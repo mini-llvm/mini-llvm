@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/I32Constant.h"
-#include "ir/Instruction/ICmp.h"
-#include "ir/Type/I1.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/ir/Type/I1.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class ICmpTest : public ::testing::Test {
 protected:

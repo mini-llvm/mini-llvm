@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Instruction/FPExt.h"
-#include "ir/Type/Double.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Instruction/FPExt.h"
+#include "mini-llvm/ir/Type/Double.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class FPExtTest : public ::testing::Test {
 protected:

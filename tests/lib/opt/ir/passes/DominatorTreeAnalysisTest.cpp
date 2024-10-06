@@ -4,11 +4,11 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Function.h"
-#include "ir_parser/ir_parser.h"
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 TEST(DominatorTreeAnalysisTest, test0) {
     std::shared_ptr<Function> F = parseFunction(R"(

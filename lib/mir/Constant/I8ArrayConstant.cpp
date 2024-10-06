@@ -1,10 +1,10 @@
-#include "mir/Constant/I8ArrayConstant.h"
+#include "mini-llvm/mir/Constant/I8ArrayConstant.h"
 
 #include <string>
 
-#include "utils/StringJoiner.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 std::string I8ArrayConstant::format() const {
     StringJoiner formatted("\n", "i8 [\n", "\n]");

@@ -1,13 +1,13 @@
-#include "ir/Instruction/Select.h"
+#include "mini-llvm/ir/Instruction/Select.h"
 
 #include <memory>
 
-#include "ir/Constant.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 std::unique_ptr<Constant> Select::fold() const {
     if (dynamic_cast<const PoisonValue *>(&*cond())) {

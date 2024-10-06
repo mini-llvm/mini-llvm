@@ -1,14 +1,14 @@
-#include "ir/Type/FunctionType.h"
+#include "mini-llvm/ir/Type/FunctionType.h"
 
 #include <memory>
 #include <ranges>
 #include <string>
 #include <typeinfo>
 
-#include "ir/Type.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 std::string FunctionType::format() const {
     StringJoiner formatted(" ");

@@ -1,13 +1,13 @@
-#include "targets/riscv/mir/Instruction/RISCVCall.h"
+#include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
 
 #include <ranges>
 #include <unordered_set>
 
-#include "mir/PhysicalRegister.h"
-#include "targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/mir/PhysicalRegister.h"
+#include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
-using namespace mir;
-using namespace mir::riscv;
+using namespace mini_llvm::mir;
+using namespace mini_llvm::mir::riscv;
 
 std::unordered_set<PhysicalRegister *> RISCVCall::implicitDsts() const {
     std::unordered_set<PhysicalRegister *> implicitDsts;

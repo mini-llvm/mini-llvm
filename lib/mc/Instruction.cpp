@@ -1,11 +1,11 @@
-#include "mc/Instruction.h"
+#include "mini-llvm/mc/Instruction.h"
 
 #include <format>
 #include <string>
 
-#include "utils/StringJoiner.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 std::string Instruction::format() const {
     StringJoiner formatted(" ");

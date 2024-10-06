@@ -1,9 +1,9 @@
 #include <gtest/gtest.h>
 
-#include "ir_parser/ir_parser.h"
-#include "ir_parser/Parser.h"
+#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/Parser.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 TEST(ir_parser_test, test00) {
     const char *input = R"(

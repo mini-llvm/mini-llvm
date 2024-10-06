@@ -1,21 +1,21 @@
-#include "opt/ir/passes/PoisonPropagation.h"
+#include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 
 #include <algorithm>
 #include <memory>
 #include <vector>
 
-#include "ir/Constant/PoisonValue.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/GetElementPtr.h"
-#include "ir/Instruction/Load.h"
-#include "ir/Instruction/Operator.h"
-#include "ir/Instruction/Select.h"
-#include "ir/Use.h"
-#include "ir/Value.h"
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/GetElementPtr.h"
+#include "mini-llvm/ir/Instruction/Load.h"
+#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction/Select.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

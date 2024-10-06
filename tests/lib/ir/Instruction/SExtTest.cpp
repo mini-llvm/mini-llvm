@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/I32Constant.h"
-#include "ir/Instruction/SExt.h"
-#include "ir/Type/I64.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Instruction/SExt.h"
+#include "mini-llvm/ir/Type/I64.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class SExtTest : public ::testing::Test {
 protected:

@@ -1,14 +1,14 @@
-#include "mir/Module.h"
+#include "mini-llvm/mir/Module.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "mir/Function.h"
-#include "mir/GlobalVar.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/GlobalVar.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 GlobalVar &Module::GlobalVars::add(Module::GlobalVars::const_iterator pos, std::unique_ptr<GlobalVar> G) {
     return **globalVars_.insert(pos.base(), std::move(G));

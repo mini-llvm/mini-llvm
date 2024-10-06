@@ -1,18 +1,18 @@
-#include "opt/ir/passes/BasicBlockMerging.h"
+#include "mini-llvm/opt/ir/passes/BasicBlockMerging.h"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "ir/BasicBlock.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Br.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Value.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Br.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

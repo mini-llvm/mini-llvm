@@ -1,9 +1,9 @@
-#include "opt/ir/FunctionTransform.h"
+#include "mini-llvm/opt/ir/FunctionTransform.h"
 
-#include "ir/Function.h"
-#include "ir/Module.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Module.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 bool FunctionTransform::runOnModule(Module &M) {
     bool changed = false;

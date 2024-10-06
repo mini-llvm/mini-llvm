@@ -1,34 +1,35 @@
-#include "opt/ir/passes/AlgebraicSimplification.h"
+#include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 
 #include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "ir/BasicBlock.h"
-#include "ir/Constant.h"
-#include "ir/Constant/IntegerConstant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Add.h"
-#include "ir/Instruction/And.h"
-#include "ir/Instruction/BinaryIntegerArithmeticOperator.h"
-#include "ir/Instruction/Mul.h"
-#include "ir/Instruction/Or.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Instruction/SDiv.h"
-#include "ir/Instruction/Select.h"
-#include "ir/Instruction/SRem.h"
-#include "ir/Instruction/Sub.h"
-#include "ir/Instruction/UDiv.h"
-#include "ir/Instruction/URem.h"
-#include "ir/Instruction/Xor.h"
-#include "ir/Value.h"
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/IntegerConstant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Add.h"
+#include "mini-llvm/ir/Instruction/And.h"
+#include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
+#include "mini-llvm/ir/Instruction/Mul.h"
+#include "mini-llvm/ir/Instruction/Or.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/SDiv.h"
+#include "mini-llvm/ir/Instruction/Select.h"
+#include "mini-llvm/ir/Instruction/SRem.h"
+#include "mini-llvm/ir/Instruction/Sub.h"
+#include "mini-llvm/ir/Instruction/UDiv.h"
+#include "mini-llvm/ir/Instruction/URem.h"
+#include "mini-llvm/ir/Instruction/Xor.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 namespace {
 

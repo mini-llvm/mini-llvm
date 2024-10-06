@@ -1,10 +1,10 @@
-#include "targets/riscv/opt/mc/RISCVPassManager.h"
+#include "mini-llvm/targets/riscv/opt/mc/RISCVPassManager.h"
 
-#include "mc/Program.h"
-#include "opt/mc/passes/RedundantLabelElimination.h"
-#include "targets/riscv/opt/mc/passes/RISCVFallthrough.h"
+#include "mini-llvm/mc/Program.h"
+#include "mini-llvm/opt/mc/passes/RedundantLabelElimination.h"
+#include "mini-llvm/targets/riscv/opt/mc/passes/RISCVFallthrough.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 void RISCVPassManager::run(Program &program) const {
     RISCVFallthrough          pass1;

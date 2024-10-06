@@ -1,15 +1,15 @@
-#include "ir/Type/ArrayType.h"
+#include "mini-llvm/ir/Type/ArrayType.h"
 
 #include <memory>
 #include <typeinfo>
 #include <vector>
 
-#include "ir/Constant.h"
-#include "ir/Constant/ArrayConstant.h"
-#include "ir/Type.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/ArrayConstant.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 std::unique_ptr<Constant> ArrayType::zeroValue() const {
     return std::make_unique<ArrayConstant>(cast<ArrayType>(clone()), std::vector<std::shared_ptr<Constant>>{});

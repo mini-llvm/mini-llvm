@@ -1,4 +1,4 @@
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
 #include <cstddef>
 #include <memory>
@@ -8,11 +8,11 @@
 #include <unordered_set>
 #include <vector>
 
-#include "ir/BasicBlock.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

@@ -1,4 +1,4 @@
-#include "opt/ir/passes/FunctionInlining.h"
+#include "mini-llvm/opt/ir/passes/FunctionInlining.h"
 
 #include <cstddef>
 #include <iterator>
@@ -8,19 +8,20 @@
 #include <utility>
 #include <vector>
 
-#include "ir/Attribute.h"
-#include "ir/BasicBlock.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Br.h"
-#include "ir/Instruction/Call.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Instruction/Ret.h"
-#include "ir/Type/Void.h"
-#include "ir/Value.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Br.h"
+#include "mini-llvm/ir/Instruction/Call.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/Ret.h"
+#include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 namespace {
 

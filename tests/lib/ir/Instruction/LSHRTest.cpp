@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/I32Constant.h"
-#include "ir/Instruction/LSHR.h"
-#include "ir/Type/I32.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Instruction/LSHR.h"
+#include "mini-llvm/ir/Type/I32.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class LSHRTest : public ::testing::Test {
 protected:

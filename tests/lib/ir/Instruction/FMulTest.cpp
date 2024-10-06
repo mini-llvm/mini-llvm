@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Instruction/FMul.h"
-#include "ir/Type/Double.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Instruction/FMul.h"
+#include "mini-llvm/ir/Type/Double.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class FMulTest : public ::testing::Test {
 protected:

@@ -1,17 +1,17 @@
-#include "ir/Constant/FloatingConstant.h"
+#include "mini-llvm/ir/Constant/FloatingConstant.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
-#include "common/ops/FPTrunc.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Type/Double.h"
-#include "ir/Type/Float.h"
-#include "ir/TypeVisitor.h"
+#include "mini-llvm/common/ops/FPTrunc.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Type/Double.h"
+#include "mini-llvm/ir/Type/Float.h"
+#include "mini-llvm/ir/TypeVisitor.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 
@@ -37,13 +37,13 @@ private:
 
     template <typename Const, typename To>
     void visit() {
-        result_.emplace(std::make_unique<Const>(ops::FPTrunc<To>()(value_)));
+        result_.emplace(std::make_unique<Const>(mini_llvm::ops::FPTrunc<To>()(value_)));
     }
 };
 
 } // namespace
 
-std::unique_ptr<FloatingConstant> ir::createFloatingConstant(std::unique_ptr<Type> type, double value) {
+std::unique_ptr<FloatingConstant> mini_llvm::ir::createFloatingConstant(std::unique_ptr<Type> type, double value) {
     TypeVisitorImpl visitor(value);
     type->accept(visitor);
     return visitor.takeResult();

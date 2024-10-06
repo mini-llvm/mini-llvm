@@ -1,21 +1,21 @@
-#include "opt/ir/PassManager.h"
+#include "mini-llvm/opt/ir/PassManager.h"
 
-#include "ir/Module.h"
-#include "opt/ir/ModuleTransform.h"
-#include "opt/ir/passes/AlgebraicSimplification.h"
-#include "opt/ir/passes/BasicBlockMerging.h"
-#include "opt/ir/passes/BranchSimplification.h"
-#include "opt/ir/passes/ConstantFolding.h"
-#include "opt/ir/passes/DeadCodeElimination.h"
-#include "opt/ir/passes/FunctionInlining.h"
-#include "opt/ir/passes/JumpThreading.h"
-#include "opt/ir/passes/Mem2Reg.h"
-#include "opt/ir/passes/PoisonFreeze.h"
-#include "opt/ir/passes/PoisonPropagation.h"
-#include "opt/ir/passes/UnreachableBlockElimination.h"
-#include "opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/ir/Module.h"
+#include "mini-llvm/opt/ir/ModuleTransform.h"
+#include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
+#include "mini-llvm/opt/ir/passes/BasicBlockMerging.h"
+#include "mini-llvm/opt/ir/passes/BranchSimplification.h"
+#include "mini-llvm/opt/ir/passes/ConstantFolding.h"
+#include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
+#include "mini-llvm/opt/ir/passes/FunctionInlining.h"
+#include "mini-llvm/opt/ir/passes/JumpThreading.h"
+#include "mini-llvm/opt/ir/passes/Mem2Reg.h"
+#include "mini-llvm/opt/ir/passes/PoisonFreeze.h"
+#include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
+#include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
+#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 void PassManager::run(Module &M) const {
     Mem2Reg pass;

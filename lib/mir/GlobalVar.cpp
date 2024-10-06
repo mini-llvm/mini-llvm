@@ -1,11 +1,11 @@
-#include "mir/GlobalVar.h"
+#include "mini-llvm/mir/GlobalVar.h"
 
 #include <format>
 #include <string>
 
-#include "utils/StringJoiner.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 std::string GlobalVar::format() const {
     if (!hasInitializer()) {

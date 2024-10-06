@@ -1,4 +1,4 @@
-#include "ir/BasicBlock.h"
+#include "mini-llvm/ir/BasicBlock.h"
 
 #include <cassert>
 #include <cstddef>
@@ -7,12 +7,12 @@
 #include <string>
 #include <unordered_set>
 
-#include "ir/Instruction.h"
-#include "ir/Instruction/Terminator.h"
-#include "ir/Use.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Terminator.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 Instruction &BasicBlock::add(BasicBlock::const_iterator pos, std::shared_ptr<Instruction> I) {
     assert(I->parent_ == nullptr);
@@ -38,7 +38,7 @@ std::string BasicBlock::format() const {
     return formatted.toString();
 }
 
-bool ir::hasNPredecessors(const BasicBlock &B, size_t n) {
+bool mini_llvm::ir::hasNPredecessors(const BasicBlock &B, size_t n) {
     size_t count = 0;
     for (const UseBase &use : uses(B)) {
         if (dynamic_cast<const Terminator *>(use.user())) {
@@ -54,7 +54,7 @@ bool ir::hasNPredecessors(const BasicBlock &B, size_t n) {
     return true;
 }
 
-bool ir::hasNPredecessorsOrMore(const BasicBlock &B, size_t n) {
+bool mini_llvm::ir::hasNPredecessorsOrMore(const BasicBlock &B, size_t n) {
     size_t count = 0;
     for (const UseBase &use : uses(B)) {
         if (dynamic_cast<const Terminator *>(use.user())) {
@@ -67,7 +67,7 @@ bool ir::hasNPredecessorsOrMore(const BasicBlock &B, size_t n) {
     return false;
 }
 
-bool ir::hasPredecessor(const BasicBlock &B, const BasicBlock &pred) {
+bool mini_llvm::ir::hasPredecessor(const BasicBlock &B, const BasicBlock &pred) {
     for (const UseBase &use : uses(B)) {
         if (auto *terminator = dynamic_cast<const Terminator *>(use.user())) {
             if (terminator->parent() == &pred) {
@@ -78,7 +78,7 @@ bool ir::hasPredecessor(const BasicBlock &B, const BasicBlock &pred) {
     return false;
 }
 
-std::unordered_set<BasicBlock *> ir::predecessors(const BasicBlock &B) {
+std::unordered_set<BasicBlock *> mini_llvm::ir::predecessors(const BasicBlock &B) {
     std::unordered_set<BasicBlock *> predecessors;
     for (const UseBase &use : uses(B)) {
         if (auto *terminator = dynamic_cast<const Terminator *>(use.user())) {
@@ -88,10 +88,10 @@ std::unordered_set<BasicBlock *> ir::predecessors(const BasicBlock &B) {
     return predecessors;
 }
 
-std::unordered_set<BasicBlock *> ir::successors(const BasicBlock &B) {
+std::unordered_set<BasicBlock *> mini_llvm::ir::successors(const BasicBlock &B) {
     return dynamic_cast<const Terminator &>(B.back()).successors();
 }
 
-void ir::removeFromParent(const BasicBlock &B) {
+void mini_llvm::ir::removeFromParent(const BasicBlock &B) {
     B.parent()->remove(B.parentIterator());
 }

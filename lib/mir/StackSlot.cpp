@@ -1,10 +1,10 @@
-#include "mir/StackSlot.h"
+#include "mini-llvm/mir/StackSlot.h"
 
 #include <cassert>
 
-#include "mir/StackFrame.h"
+#include "mini-llvm/mir/StackFrame.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 int StackSlot::offset() const {
     assert(frame_ != nullptr);

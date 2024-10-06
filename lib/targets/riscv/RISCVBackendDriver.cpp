@@ -1,4 +1,4 @@
-#include "targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 
 #include <cassert>
 #include <functional>
@@ -9,38 +9,40 @@
 #include <unordered_set>
 #include <utility>
 
-#include "codegen/register_allocator/LinearScanAllocator.h"
-#include "codegen/register_allocator/NaiveAllocator.h"
-#include "codegen/RegisterAllocator.h"
-#include "common/ExtensionMode.h"
-#include "common/Precision.h"
-#include "ir/Module.h"
-#include "mc/Program.h"
-#include "mir/BasicBlock.h"
-#include "mir/BasicBlockBuilder.h"
-#include "mir/Function.h"
-#include "mir/Instruction.h"
-#include "mir/Instruction/FLoad.h"
-#include "mir/Instruction/FStore.h"
-#include "mir/Instruction/Load.h"
-#include "mir/Instruction/Store.h"
-#include "mir/MemoryOperand.h"
-#include "mir/Module.h"
-#include "mir/PhysicalRegister.h"
-#include "mir/Register.h"
-#include "mir/RegisterKind.h"
-#include "mir/StackRelativeOffsetImmediate.h"
-#include "mir/StackSlot.h"
-#include "mir/VirtualRegister.h"
-#include "targets/riscv/codegen/RISCVMCGen.h"
-#include "targets/riscv/codegen/RISCVMIRGen.h"
-#include "targets/riscv/mir/Instruction/RISCVRet.h"
-#include "targets/riscv/mir/RISCVRegister.h"
-#include "targets/riscv/opt/mc/RISCVPassManager.h"
-#include "targets/riscv/opt/mir/RISCVPassManager.h"
-#include "utils/Memory.h"
+#include "mini-llvm/codegen/register_allocator/LinearScanAllocator.h"
+#include "mini-llvm/codegen/register_allocator/NaiveAllocator.h"
+#include "mini-llvm/codegen/RegisterAllocator.h"
+#include "mini-llvm/common/ExtensionMode.h"
+#include "mini-llvm/common/Precision.h"
+#include "mini-llvm/ir/Module.h"
+#include "mini-llvm/mc/Program.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/BasicBlockBuilder.h"
+#include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/FLoad.h"
+#include "mini-llvm/mir/Instruction/FStore.h"
+#include "mini-llvm/mir/Instruction/Load.h"
+#include "mini-llvm/mir/Instruction/Store.h"
+#include "mini-llvm/mir/MemoryOperand.h"
+#include "mini-llvm/mir/Module.h"
+#include "mini-llvm/mir/PhysicalRegister.h"
+#include "mini-llvm/mir/Register.h"
+#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
+#include "mini-llvm/mir/StackSlot.h"
+#include "mini-llvm/mir/VirtualRegister.h"
+#include "mini-llvm/targets/riscv/codegen/RISCVMCGen.h"
+#include "mini-llvm/targets/riscv/codegen/RISCVMIRGen.h"
+#include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
+#include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/targets/riscv/opt/mc/RISCVPassManager.h"
+#include "mini-llvm/targets/riscv/opt/mir/RISCVPassManager.h"
+#include "mini-llvm/utils/Memory.h"
 
-mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
+using namespace mini_llvm;
+
+mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
     mir::Module MM;
     RISCVMIRGen(&IM, &MM).emit();
 

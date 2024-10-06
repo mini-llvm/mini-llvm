@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Instruction/FPTrunc.h"
-#include "ir/Type/Float.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Instruction/FPTrunc.h"
+#include "mini-llvm/ir/Type/Float.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class FPTruncTest : public ::testing::Test {
 protected:

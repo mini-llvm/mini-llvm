@@ -1,13 +1,13 @@
-#include "mc/Program.h"
+#include "mini-llvm/mc/Program.h"
 
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "mc/Fragment.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 std::string Program::format() const {
     std::vector<const Fragment *> data, rodata, bss, text;

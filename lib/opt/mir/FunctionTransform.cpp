@@ -1,9 +1,9 @@
-#include "opt/mir/FunctionTransform.h"
+#include "mini-llvm/opt/mir/FunctionTransform.h"
 
-#include "mir/Function.h"
-#include "mir/Module.h"
+#include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Module.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 bool FunctionTransform::runOnModule(Module &M) {
     bool changed = false;

@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Instruction/FCmp.h"
-#include "ir/Type/I1.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Instruction/FCmp.h"
+#include "mini-llvm/ir/Type/I1.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class FCmpTest : public ::testing::Test {
 protected:

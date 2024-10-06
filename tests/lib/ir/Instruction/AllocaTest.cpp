@@ -2,11 +2,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Instruction/Alloca.h"
-#include "ir/Type/I32.h"
-#include "ir/Type/Ptr.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
+#include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/ir/Type/Ptr.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class AllocaTest : public ::testing::Test {
 protected:

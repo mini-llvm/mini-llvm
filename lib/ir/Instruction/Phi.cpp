@@ -1,4 +1,4 @@
-#include "ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
 
 #include <algorithm>
 #include <cassert>
@@ -7,13 +7,13 @@
 #include <unordered_set>
 #include <utility>
 
-#include "ir/BasicBlock.h"
-#include "ir/Use.h"
-#include "ir/Value.h"
-#include "utils/Memory.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 Phi::incoming_iterator Phi::findIncoming(const BasicBlock &B) {
     return std::ranges::find_if(incomings(*this), [&B](Incoming incoming) {
@@ -71,27 +71,27 @@ std::unique_ptr<Value> Phi::clone() const {
     return cloned;
 }
 
-bool ir::hasIncomingBlock(const Phi &I, const BasicBlock &B) {
+bool mini_llvm::ir::hasIncomingBlock(const Phi &I, const BasicBlock &B) {
     return I.findIncoming(B) != I.incoming_end();
 }
 
-void ir::removeIncomingBlock(Phi &I, const BasicBlock &B) {
+void mini_llvm::ir::removeIncomingBlock(Phi &I, const BasicBlock &B) {
     if (auto i = I.findIncoming(B); i != I.incoming_end()) {
         I.removeIncoming(i);
     }
 }
 
-const Use<Value> &ir::getIncomingValue(const Phi &I, const BasicBlock &B) {
+const Use<Value> &mini_llvm::ir::getIncomingValue(const Phi &I, const BasicBlock &B) {
     assert(hasIncomingBlock(I, B));
     return I.findIncoming(B)->value;
 }
 
-Use<Value> &ir::getIncomingValue(Phi &I, const BasicBlock &B) {
+Use<Value> &mini_llvm::ir::getIncomingValue(Phi &I, const BasicBlock &B) {
     assert(hasIncomingBlock(I, B));
     return I.findIncoming(B)->value;
 }
 
-std::unordered_set<BasicBlock *> ir::incomingBlocks(const Phi &I) {
+std::unordered_set<BasicBlock *> mini_llvm::ir::incomingBlocks(const Phi &I) {
     std::unordered_set<BasicBlock *> incomingBlocks;
     for (Phi::ConstIncoming incoming : incomings(I)) {
         incomingBlocks.insert(&*incoming.block);
@@ -99,7 +99,7 @@ std::unordered_set<BasicBlock *> ir::incomingBlocks(const Phi &I) {
     return incomingBlocks;
 }
 
-std::unordered_set<Value *> ir::incomingValues(const Phi &I) {
+std::unordered_set<Value *> mini_llvm::ir::incomingValues(const Phi &I) {
     std::unordered_set<Value *> incomingValues;
     for (Phi::ConstIncoming incoming : incomings(I)) {
         incomingValues.insert(&*incoming.value);

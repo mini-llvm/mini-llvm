@@ -1,21 +1,21 @@
-#include "opt/mir/passes/ZeroRegisterReplacement.h"
+#include "mini-llvm/opt/mir/passes/ZeroRegisterReplacement.h"
 
 #include <memory>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "mir/BasicBlock.h"
-#include "mir/Immediate.h"
-#include "mir/Instruction.h"
-#include "mir/Instruction/LI.h"
-#include "mir/Instruction/Mov.h"
-#include "mir/IntegerImmediate.h"
-#include "mir/Register.h"
-#include "mir/RegisterOperand.h"
-#include "utils/Memory.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/Immediate.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/LI.h"
+#include "mini-llvm/mir/Instruction/Mov.h"
+#include "mini-llvm/mir/IntegerImmediate.h"
+#include "mini-llvm/mir/Register.h"
+#include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;

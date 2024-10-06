@@ -3,31 +3,32 @@
 #include <optional>
 #include <utility>
 
-#include "common/OpException.h"
-#include "common/ops/FPToSI.h"
-#include "common/ops/FPToUI.h"
-#include "ir/Constant.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Constant/I16Constant.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Constant/I32Constant.h"
-#include "ir/Constant/I64Constant.h"
-#include "ir/Constant/I8Constant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/FloatingToIntegerCastingOperator.h"
-#include "ir/Instruction/FPToSI.h"
-#include "ir/Instruction/FPToUI.h"
-#include "ir/Type.h"
-#include "ir/Type/I1.h"
-#include "ir/Type/I16.h"
-#include "ir/Type/I32.h"
-#include "ir/Type/I64.h"
-#include "ir/Type/I8.h"
-#include "ir/TypeVisitor.h"
+#include "mini-llvm/common/OpException.h"
+#include "mini-llvm/common/ops/FPToSI.h"
+#include "mini-llvm/common/ops/FPToUI.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/I16Constant.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
+#include "mini-llvm/ir/Constant/I8Constant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/FloatingToIntegerCastingOperator.h"
+#include "mini-llvm/ir/Instruction/FPToSI.h"
+#include "mini-llvm/ir/Instruction/FPToUI.h"
+#include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/I1.h"
+#include "mini-llvm/ir/Type/I16.h"
+#include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/ir/Type/I64.h"
+#include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/TypeVisitor.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 namespace {
 

@@ -2,12 +2,13 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/BasicBlock.h"
-#include "ir/Constant/I32Constant.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Type/I32.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Type/I32.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class PhiTest : public ::testing::Test {
 protected:

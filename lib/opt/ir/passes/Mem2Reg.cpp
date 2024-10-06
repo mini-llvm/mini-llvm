@@ -1,4 +1,4 @@
-#include "opt/ir/passes/Mem2Reg.h"
+#include "mini-llvm/opt/ir/passes/Mem2Reg.h"
 
 #include <algorithm>
 #include <cassert>
@@ -9,20 +9,21 @@
 #include <unordered_set>
 #include <vector>
 
-#include "ir/BasicBlock.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Alloca.h"
-#include "ir/Instruction/Load.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Instruction/Store.h"
-#include "ir/Use.h"
-#include "ir/Value.h"
-#include "opt/ir/passes/DominatorTreeAnalysis.h"
-#include "utils/Memory.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
+#include "mini-llvm/ir/Instruction/Load.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/Store.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 namespace {
 

@@ -1,9 +1,9 @@
-#include "mir/StackFrame.h"
+#include "mini-llvm/mir/StackFrame.h"
 
 #include <memory>
 #include <utility>
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 StackSlot &StackFrame::add(StackFrame::const_iterator pos, std::unique_ptr<StackSlot> slot) {
     offsetsUpToDate_ = false;

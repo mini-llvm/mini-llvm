@@ -1,4 +1,4 @@
-#include "opt/mir/passes/ConstantReuse.h"
+#include "mini-llvm/opt/mir/passes/ConstantReuse.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -6,18 +6,19 @@
 #include <unordered_map>
 #include <utility>
 
-#include "mir/BasicBlock.h"
-#include "mir/Immediate.h"
-#include "mir/Instruction.h"
-#include "mir/Instruction/LI.h"
-#include "mir/IntegerImmediate.h"
-#include "mir/Register.h"
-#include "mir/RegisterOperand.h"
-#include "mir/StackRelativeOffsetImmediate.h"
-#include "utils/Hash.h"
-#include "utils/Memory.h"
+#include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/Immediate.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/LI.h"
+#include "mini-llvm/mir/IntegerImmediate.h"
+#include "mini-llvm/mir/Register.h"
+#include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
+#include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/Memory.h"
 
-using namespace mir;
+using namespace mini_llvm;
+using namespace mini_llvm::mir;
 
 namespace {
 

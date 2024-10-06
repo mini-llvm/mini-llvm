@@ -1,10 +1,10 @@
-#include "mir/Constant/I64ArrayConstant.h"
+#include "mini-llvm/mir/Constant/I64ArrayConstant.h"
 
 #include <string>
 
-#include "utils/StringJoiner.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mir;
+using namespace mini_llvm::mir;
 
 std::string I64ArrayConstant::format() const {
     StringJoiner formatted("\n", "i64 [\n", "\n]");

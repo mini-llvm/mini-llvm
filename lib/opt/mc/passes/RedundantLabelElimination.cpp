@@ -1,17 +1,17 @@
-#include "opt/mc/passes/RedundantLabelElimination.h"
+#include "mini-llvm/opt/mc/passes/RedundantLabelElimination.h"
 
 #include <string>
 #include <unordered_set>
 #include <vector>
 
-#include "mc/Fragment.h"
-#include "mc/Instruction.h"
-#include "mc/Label.h"
-#include "mc/LabelOperand.h"
-#include "mc/Line.h"
-#include "mc/Section.h"
+#include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/mc/Instruction.h"
+#include "mini-llvm/mc/Label.h"
+#include "mini-llvm/mc/LabelOperand.h"
+#include "mini-llvm/mc/Line.h"
+#include "mini-llvm/mc/Section.h"
 
-using namespace mc;
+using namespace mini_llvm::mc;
 
 bool RedundantLabelElimination::runOnFragment(Fragment &fragment) {
     if (fragment.section() != Section::kText) return false;

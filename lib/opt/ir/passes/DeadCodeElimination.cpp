@@ -1,21 +1,21 @@
-#include "opt/ir/passes/DeadCodeElimination.h"
+#include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
 
 #include <queue>
 #include <unordered_set>
 #include <vector>
 
-#include "ir/BasicBlock.h"
-#include "ir/Function.h"
-#include "ir/Instruction.h"
-#include "ir/Instruction/Alloca.h"
-#include "ir/Instruction/GetElementPtr.h"
-#include "ir/Instruction/Load.h"
-#include "ir/Instruction/Operator.h"
-#include "ir/Instruction/Phi.h"
-#include "ir/Instruction/Select.h"
-#include "ir/Use.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
+#include "mini-llvm/ir/Instruction/GetElementPtr.h"
+#include "mini-llvm/ir/Instruction/Load.h"
+#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/Select.h"
+#include "mini-llvm/ir/Use.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 

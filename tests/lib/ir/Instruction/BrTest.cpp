@@ -3,11 +3,12 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/BasicBlock.h"
-#include "ir/Instruction/Br.h"
-#include "ir/Type/Void.h"
+#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Instruction/Br.h"
+#include "mini-llvm/ir/Type/Void.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class BrTest : public ::testing::Test {
 protected:

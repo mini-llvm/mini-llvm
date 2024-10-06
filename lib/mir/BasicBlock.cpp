@@ -1,4 +1,4 @@
-#include "mir/BasicBlock.h"
+#include "mini-llvm/mir/BasicBlock.h"
 
 #include <cassert>
 #include <memory>
@@ -7,14 +7,14 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mir/BasicBlockOperand.h"
-#include "mir/Instruction.h"
-#include "mir/Instruction/Terminator.h"
-#include "utils/SetOps.h"
-#include "utils/StringJoiner.h"
+#include "mini-llvm/mir/BasicBlockOperand.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/Terminator.h"
+#include "mini-llvm/utils/SetOps.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mir;
-using namespace set_ops;
+using namespace mini_llvm::mir;
+using namespace mini_llvm::set_ops;
 
 Instruction &BasicBlock::add(BasicBlock::const_iterator pos, std::unique_ptr<Instruction> I) {
     return **insts_.insert(pos.base(), std::move(I));
@@ -35,7 +35,7 @@ std::string BasicBlock::format() const {
     return formatted.toString();
 }
 
-std::unordered_set<BasicBlock *> mir::successors(const BasicBlock &B) {
+std::unordered_set<BasicBlock *> mini_llvm::mir::successors(const BasicBlock &B) {
     assert(!B.empty() && dynamic_cast<const Terminator *>(&B.back()));
     std::unordered_set<BasicBlock *> successors;
     for (const BasicBlockOperand *op : static_cast<const Terminator &>(B.back()).successors()) {
@@ -44,7 +44,7 @@ std::unordered_set<BasicBlock *> mir::successors(const BasicBlock &B) {
     return successors;
 }
 
-std::unordered_set<Register *> mir::use(const BasicBlock &B) {
+std::unordered_set<Register *> mini_llvm::mir::use(const BasicBlock &B) {
     std::unordered_set<Register *> Use;
     for (const Instruction &I : std::views::reverse(B)) {
         Use = (Use - def(I)) | use(I);
@@ -52,7 +52,7 @@ std::unordered_set<Register *> mir::use(const BasicBlock &B) {
     return Use;
 }
 
-std::unordered_set<Register *> mir::def(const BasicBlock &B) {
+std::unordered_set<Register *> mini_llvm::mir::def(const BasicBlock &B) {
     std::unordered_set<Register *> Def;
     for (const Instruction &I : B) {
         Def |= def(I);

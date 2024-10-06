@@ -2,13 +2,14 @@
 
 #include <gtest/gtest.h>
 
-#include "ir/Constant/I32Constant.h"
-#include "ir/Instruction/Alloca.h"
-#include "ir/Instruction/Store.h"
-#include "ir/Type/I32.h"
-#include "ir/Type/Void.h"
+#include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
+#include "mini-llvm/ir/Instruction/Store.h"
+#include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/ir/Type/Void.h"
 
-using namespace ir;
+using namespace mini_llvm;
+using namespace mini_llvm::ir;
 
 class StoreTest : public ::testing::Test {
 protected:

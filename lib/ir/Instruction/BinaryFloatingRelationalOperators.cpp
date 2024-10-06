@@ -2,22 +2,22 @@
 #include <optional>
 #include <utility>
 
-#include "common/ops/OEQ.h"
-#include "common/ops/OGE.h"
-#include "common/ops/OGT.h"
-#include "common/ops/OLE.h"
-#include "common/ops/OLT.h"
-#include "common/ops/ONE.h"
-#include "ir/Constant.h"
-#include "ir/Constant/DoubleConstant.h"
-#include "ir/Constant/FloatConstant.h"
-#include "ir/Constant/I1Constant.h"
-#include "ir/Constant/PoisonValue.h"
-#include "ir/ConstantVisitor.h"
-#include "ir/Instruction/BinaryFloatingRelationalOperator.h"
-#include "ir/Instruction/FCmp.h"
+#include "mini-llvm/common/ops/OEQ.h"
+#include "mini-llvm/common/ops/OGE.h"
+#include "mini-llvm/common/ops/OGT.h"
+#include "mini-llvm/common/ops/OLE.h"
+#include "mini-llvm/common/ops/OLT.h"
+#include "mini-llvm/common/ops/ONE.h"
+#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/I1Constant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction/BinaryFloatingRelationalOperator.h"
+#include "mini-llvm/ir/Instruction/FCmp.h"
 
-using namespace ir;
+using namespace mini_llvm::ir;
 
 namespace {
 
