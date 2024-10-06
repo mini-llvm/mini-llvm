@@ -1,4 +1,4 @@
-add_library(compiler
+add_library(mini-llvm
     codegen/register_allocator/LinearScanAllocator.cpp
     codegen/register_allocator/NaiveAllocator.cpp
     ir/BasicBlock.cpp
@@ -89,5 +89,5 @@ add_library(compiler
     targets/riscv/opt/mir/RISCVPassManager.cpp
     targets/riscv/RISCVBackendDriver.cpp
 )
-target_compile_features(compiler PUBLIC cxx_std_23)
-target_include_directories(compiler PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(mini-llvm PUBLIC cxx_std_23)
+target_include_directories(mini-llvm PUBLIC ${PROJECT_SOURCE_DIR}/include)
