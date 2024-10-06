@@ -177,7 +177,7 @@ sudo apt-get update
 sudo apt-get -y install g++-14 cmake ninja-build
 cd <repo-dir>
 mkdir build && cd build
-cmake -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_BUILD_TYPE=Release -G Ninja ..
+cmake -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_BUILD_TYPE=Release -DMINI_LLVM_TESTS=ON -G Ninja ..
 cmake --build .
 ./tools/mini-llc/mini-llc --help
 ```
