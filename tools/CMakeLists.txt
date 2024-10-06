@@ -1,1 +1,1 @@
-add_subdirectory(xllc)
+add_subdirectory(mini-llc)

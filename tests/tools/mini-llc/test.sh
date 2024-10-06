@@ -7,15 +7,15 @@ function run_test {
     local temp_dir="$2"
 
     local TARGET="${TARGET:-riscv64}"
-    local XLLC_COMMAND="${XLLC_COMMAND:-xllc}"
+    local MINI_LLC_COMMAND="${MINI_LLC_COMMAND:-mini-llc}"
     local GCC_COMMAND="${GCC_COMMAND:-riscv64-linux-gnu-gcc}"
     local QEMU_COMMAND="${QEMU_COMMAND:-qemu-riscv64}"
     local DIFF_COMMAND="${DIFF_COMMAND:-diff}"
-    local XLLC_TIMEOUT="${XLLC_TIMEOUT:-10}"
+    local MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-10}"
     local QEMU_TIMEOUT="${QEMU_TIMEOUT:-10}"
 
     mkdir -p "$(dirname "$temp_dir/$test_name")" &&
-    timeout -v "$XLLC_TIMEOUT" $XLLC_COMMAND --target="$TARGET" -o "$temp_dir/$test_name.s" "$test_name.ll" &&
+    timeout -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$TARGET" -o "$temp_dir/$test_name.s" "$test_name.ll" &&
     $GCC_COMMAND -o "$temp_dir/$test_name" "$temp_dir/$test_name.s" -lm &&
     timeout -v "$QEMU_TIMEOUT" $QEMU_COMMAND "$temp_dir/$test_name" > "$temp_dir/$test_name.out" &&
     $DIFF_COMMAND "${test_name%+*}.ans" "$temp_dir/$test_name.out"

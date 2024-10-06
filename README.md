@@ -151,7 +151,7 @@ define i32 @add(i32 %0, i32 %1) {
 </table>
 
 ```sh
-xllc --target=riscv64 -o example.s example.ll
+mini-llc --target=riscv64 -o example.s example.ll
 ```
 
 ## Building
@@ -179,7 +179,7 @@ cd <repo-dir>
 mkdir build && cd build
 cmake -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_BUILD_TYPE=Release -G Ninja ..
 cmake --build .
-./tools/xllc/xllc --help
+./tools/mini-llc/mini-llc --help
 ```
 ## Running Tests
 
@@ -197,13 +197,13 @@ sudo apt-get update
 sudo apt-get -y install gcc-14-riscv64-linux-gnu qemu-user
 sudo mkdir -p /usr/gnemul
 sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
-cd <repo-dir>/tests/tools/xllc
+cd <repo-dir>/tests/tools/mini-llc
 export TARGET="riscv64"
-export XLLC_COMMAND="../../../build/tools/xllc/xllc"
+export MINI_LLC_COMMAND="../../../build/tools/mini-llc/mini-llc"
 export GCC_COMMAND="riscv64-linux-gnu-gcc-14"
 export QEMU_COMMAND="qemu-riscv64"
 export DIFF_COMMAND="diff"
-export XLLC_TIMEOUT="10"
+export MINI_LLC_TIMEOUT="10"
 export QEMU_TIMEOUT="10"
 xargs ./test.sh < tests.txt
 ```
