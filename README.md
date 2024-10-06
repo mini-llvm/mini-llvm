@@ -1,4 +1,4 @@
-# The Poor Man's LLVM
+# mini-llvm
 
 ## Design
 
@@ -210,4 +210,4 @@ xargs ./test.sh < tests.txt
 
 ## License
 
-Licensed under the [MIT license](https://opensource.org/licenses/MIT).
+mini-llvm is licensed under the [MIT license](https://opensource.org/licenses/MIT).
