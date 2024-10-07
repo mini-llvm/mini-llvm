@@ -46,6 +46,7 @@ jobs:
             -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
             -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.sanitizer }}" \
             -DCMAKE_MODULE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DMINI_LLVM_TESTS=ON \
             -G Ninja
 
       - run: cmake --build ${{ github.workspace }}/build --config ${{ matrix.build-type }}
