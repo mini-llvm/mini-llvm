@@ -1,5 +1,9 @@
 # mini-llvm
 
+| main | develop |
+|:-:|:-:|
+| ![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=main) | ![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=develop) |
+
 ## Design
 
 ![Design](assets/design.svg)
