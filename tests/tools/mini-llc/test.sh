@@ -12,11 +12,12 @@ function run_test {
     local EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-riscv64}"
     local DIFF_COMMAND="${DIFF_COMMAND:-diff}"
     local MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-10}"
+    local LINKER_TIMEOUT="${LINKER_TIMEOUT:-10}"
     local EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-10}"
 
     mkdir -p "$(dirname "$temp_dir/$test_name")" &&
     timeout -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$TARGET" -o "$temp_dir/$test_name.s" "$test_name.ll" &&
-    $LINKER_COMMAND -o "$temp_dir/$test_name" "$temp_dir/$test_name.s" -lm &&
+    timeout -v "$LINKER_TIMEOUT" $LINKER_COMMAND -o "$temp_dir/$test_name" "$temp_dir/$test_name.s" -lm &&
     timeout -v "$EMULATOR_TIMEOUT" $EMULATOR_COMMAND "$temp_dir/$test_name" > "$temp_dir/$test_name.out" &&
     $DIFF_COMMAND "${test_name%+*}.ans" "$temp_dir/$test_name.out"
 }
