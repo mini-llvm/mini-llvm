@@ -8,16 +8,16 @@ function run_test {
 
     local TARGET="${TARGET:-riscv64}"
     local MINI_LLC_COMMAND="${MINI_LLC_COMMAND:-mini-llc}"
-    local GCC_COMMAND="${GCC_COMMAND:-riscv64-linux-gnu-gcc}"
-    local QEMU_COMMAND="${QEMU_COMMAND:-qemu-riscv64}"
+    local LINKER_COMMAND="${LINKER_COMMAND:-riscv64-linux-gnu-gcc}"
+    local EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-riscv64}"
     local DIFF_COMMAND="${DIFF_COMMAND:-diff}"
     local MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-10}"
-    local QEMU_TIMEOUT="${QEMU_TIMEOUT:-10}"
+    local EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-10}"
 
     mkdir -p "$(dirname "$temp_dir/$test_name")" &&
     timeout -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$TARGET" -o "$temp_dir/$test_name.s" "$test_name.ll" &&
-    $GCC_COMMAND -o "$temp_dir/$test_name" "$temp_dir/$test_name.s" -lm &&
-    timeout -v "$QEMU_TIMEOUT" $QEMU_COMMAND "$temp_dir/$test_name" > "$temp_dir/$test_name.out" &&
+    $LINKER_COMMAND -o "$temp_dir/$test_name" "$temp_dir/$test_name.s" -lm &&
+    timeout -v "$EMULATOR_TIMEOUT" $EMULATOR_COMMAND "$temp_dir/$test_name" > "$temp_dir/$test_name.out" &&
     $DIFF_COMMAND "${test_name%+*}.ans" "$temp_dir/$test_name.out"
 }
 
