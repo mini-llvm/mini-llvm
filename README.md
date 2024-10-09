@@ -207,9 +207,9 @@ export MINI_LLC_COMMAND="../../../build/tools/mini-llc/mini-llc"
 export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
 export EMULATOR_COMMAND="qemu-riscv64"
 export DIFF_COMMAND="diff"
-export MINI_LLC_TIMEOUT="10"
-export LINKER_TIMEOUT="10"
-export EMULATOR_TIMEOUT="10"
+export MINI_LLC_TIMEOUT=10
+export LINKER_TIMEOUT=10
+export EMULATOR_TIMEOUT=10
 xargs ./test.sh < tests.txt
 ```
 
