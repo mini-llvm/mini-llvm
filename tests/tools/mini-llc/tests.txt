@@ -21,7 +21,7 @@ is_prime
 gcd
 gcd_iter
 hanoi
-partition
+partition_function
 n_queens
 array_sum
 matmul
