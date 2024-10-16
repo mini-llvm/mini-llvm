@@ -95,8 +95,7 @@
 
 ## Supported Targets
 
-- RISC-V
-  - `riscv64`
+- `riscv64`
 
 ## Supported Optimizations (Work in Progress)
 
@@ -125,7 +124,7 @@
 ### MC
 
 - `RedundantLabelElimination`
-- RISC-V
+- `riscv64`
   - `RISCVFallthrough`
 
 ## Supported Register Allocators (Work in Progress)
