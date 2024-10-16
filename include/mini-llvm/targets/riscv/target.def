@@ -101,6 +101,8 @@
     X(fa7)
 #endif // FLOATING_ARG_REGS
 
+// https://github.com/riscv/riscv-isa-manual/releases/download/20240411/unpriv-isa-asciidoc.pdf
+
 #ifdef OPS
     // opcode, mnemonic, enumerator
     X(0, "add", Add)
