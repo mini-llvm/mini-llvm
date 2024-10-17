@@ -121,7 +121,7 @@ public:
     }
 
 private:
-   StackSlotList slots_;
+    StackSlotList slots_;
     bool offsetsUpToDate_ = false;
 
     void computeOffsets();
