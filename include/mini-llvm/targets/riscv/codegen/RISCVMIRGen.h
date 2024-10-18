@@ -23,8 +23,8 @@ private:
     std::unordered_map<const ir::GlobalVar *, mir::GlobalVar *> globalVarMap_;
     std::unordered_map<const ir::Function *, mir::Function *> functionMap_;
 
-    void emitGlobalVar(const ir::GlobalVar &G, mir::GlobalVar &m_G);
-    void emitFunction(const ir::Function &F, mir::Function &m_F);
+    void emitGlobalVar(const ir::GlobalVar &IG, mir::GlobalVar &MG);
+    void emitFunction(const ir::Function &IF, mir::Function &MF);
 };
 
 } // namespace mini_llvm
