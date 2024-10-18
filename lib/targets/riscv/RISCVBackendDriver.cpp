@@ -154,11 +154,11 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                 save.erase(sp());
                 save.erase(fp());
                 BasicBlock *prologueBlock = &F.entry(),
-                           *epilogueblock = nullptr;
+                           *epilogueBlock = nullptr;
                 for (BasicBlock &B : F) {
                     if (dynamic_cast<const RISCVRet *>(&B.back())) {
-                        assert(epilogueblock == nullptr);
-                        epilogueblock = &B;
+                        assert(epilogueBlock == nullptr);
+                        epilogueBlock = &B;
                     }
                 }
                 for (PhysicalRegister *physReg : save) {
@@ -169,11 +169,11 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     switch (physReg->kind()) {
                     case RegisterKind::kInteger:
                         prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<Store>(8, mem.clone(), reg));
-                        epilogueblock->add(std::prev(epilogueblock->end(), 2), std::make_unique<Load>(8, reg, mem.clone()));
+                        epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<Load>(8, reg, mem.clone()));
                         break;
                     case RegisterKind::kFloating:
                         prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<FStore>(Precision::kDouble, mem.clone(), reg));
-                        epilogueblock->add(std::prev(epilogueblock->end(), 2), std::make_unique<FLoad>(Precision::kDouble, reg, mem.clone()));
+                        epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<FLoad>(Precision::kDouble, reg, mem.clone()));
                         break;
                     default:
                         std::unreachable();
