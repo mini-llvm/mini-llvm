@@ -20,8 +20,10 @@
 #include "mini-llvm/mir/BasicBlockBuilder.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/Add.h"
 #include "mini-llvm/mir/Instruction/FLoad.h"
 #include "mini-llvm/mir/Instruction/FStore.h"
+#include "mini-llvm/mir/Instruction/LI.h"
 #include "mini-llvm/mir/Instruction/Load.h"
 #include "mini-llvm/mir/Instruction/Store.h"
 #include "mini-llvm/mir/MemoryOperand.h"
@@ -78,15 +80,27 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     physRegs.erase(sp());
                     physRegs.erase(fp());
 
-                    auto load = [endSlot = &F.stackFrame().back()](PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                    StackSlot *endSlot = &F.stackFrame().back();
+
+                    if (endSlot->offset() >= 2048) {
+                        physRegs.erase(t6());
+                    }
+
+                    auto load = [endSlot](PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder) {
                         std::shared_ptr<Register> dst = share(*physReg);
-                        MemoryOperand src(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
 
                         switch (physReg->kind()) {
                             case RegisterKind::kInteger: {
                                 int width = slot->size();
                                 ExtensionMode extensionMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
-                                builder.add(std::make_unique<Load>(width, std::move(dst), std::move(src), extensionMode));
+                                if (endSlot->offset() - slot->offset() < 2048) {
+                                    MemoryOperand src(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    builder.add(std::make_unique<Load>(width, std::move(dst), std::move(src), extensionMode));
+                                } else {
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
+                                    builder.add(std::make_unique<Load>(width, std::move(dst), MemoryOperand(share(*t6())), extensionMode));
+                                }
                                 break;
                             }
 
@@ -97,7 +111,14 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                     case 8: precision = Precision::kDouble; break;
                                     default: std::unreachable();
                                 }
-                                builder.add(std::make_unique<FLoad>(precision, std::move(dst), std::move(src)));
+                                if (endSlot->offset() - slot->offset() < 2048) {
+                                    MemoryOperand src(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    builder.add(std::make_unique<FLoad>(precision, std::move(dst), std::move(src)));
+                                } else {
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
+                                    builder.add(std::make_unique<FLoad>(precision, std::move(dst), MemoryOperand(share(*t6()))));
+                                }
                                 break;
                             }
 
@@ -105,14 +126,20 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                     };
 
-                    auto store = [endSlot = &F.stackFrame().back()](PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder) {
-                        MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                    auto store = [endSlot](PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder) {
                         std::shared_ptr<Register> src = share(*physReg);
 
                         switch (physReg->kind()) {
                             case RegisterKind::kInteger: {
                                 int width = slot->size();
-                                builder.add(std::make_unique<Store>(width, std::move(dst), std::move(src)));
+                                if (endSlot->offset() - slot->offset() < 2048) {
+                                    MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    builder.add(std::make_unique<Store>(width, std::move(dst), std::move(src)));
+                                } else {
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
+                                    builder.add(std::make_unique<Store>(width, MemoryOperand(share(*t6())), std::move(src)));
+                                }
                                 break;
                             }
 
@@ -123,7 +150,14 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                     case 8: precision = Precision::kDouble; break;
                                     default: std::unreachable();
                                 }
-                                builder.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
+                                if (endSlot->offset() - slot->offset() < 2048) {
+                                    MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    builder.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
+                                } else {
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
+                                    builder.add(std::make_unique<FStore>(precision, MemoryOperand(share(*t6())), std::move(src)));
+                                }
                                 break;
                             }
 
@@ -153,6 +187,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                 }
                 save.erase(sp());
                 save.erase(fp());
+
                 BasicBlock *prologueBlock = &F.entry(),
                            *epilogueBlock = nullptr;
                 for (BasicBlock &B : F) {
@@ -164,16 +199,59 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                 for (PhysicalRegister *physReg : save) {
                     StackSlot *startSlot = &F.stackFrame().front(),
                               *slot = &F.stackFrame().add(std::prev(F.stackFrame().end()), 8, 8);
-                    MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
                     std::shared_ptr<Register> reg = share(*physReg);
                     switch (physReg->kind()) {
                     case RegisterKind::kInteger:
-                        prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<Store>(8, mem.clone(), reg));
-                        epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<Load>(8, reg, mem.clone()));
+                        if (slot->offset() < 2048) {
+                            MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
+                            prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<Store>(8, mem.clone(), reg));
+                            epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<Load>(8, reg, mem.clone()));
+                        } else {
+                            prologueBlock->add(
+                                std::prev(prologueBlock->end(), 3),
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                            prologueBlock->add(
+                                std::prev(prologueBlock->end(), 3),
+                                std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                            prologueBlock->add(
+                                std::prev(prologueBlock->end(), 3),
+                                std::make_unique<Store>(8, MemoryOperand(share(*t6())), reg));
+                            epilogueBlock->add(
+                                std::prev(epilogueBlock->end(), 3),
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                            epilogueBlock->add(
+                                std::prev(epilogueBlock->end(), 3),
+                                std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                            epilogueBlock->add(
+                                std::prev(epilogueBlock->end(), 3),
+                                std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
+                        }
                         break;
                     case RegisterKind::kFloating:
-                        prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<FStore>(Precision::kDouble, mem.clone(), reg));
-                        epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<FLoad>(Precision::kDouble, reg, mem.clone()));
+                        if (slot->offset() < 2048) {
+                            MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
+                            prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<FStore>(Precision::kDouble, mem.clone(), reg));
+                            epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<FLoad>(Precision::kDouble, reg, mem.clone()));
+                        } else {
+                            prologueBlock->add(
+                                std::prev(prologueBlock->end(), 3),
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                            prologueBlock->add(
+                                std::prev(prologueBlock->end(), 3),
+                                std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                            prologueBlock->add(
+                                std::prev(prologueBlock->end(), 3),
+                                std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6())), reg));
+                            epilogueBlock->add(
+                                std::prev(epilogueBlock->end(), 3),
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                            epilogueBlock->add(
+                                std::prev(epilogueBlock->end(), 3),
+                                std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
+                            epilogueBlock->add(
+                                std::prev(epilogueBlock->end(), 3),
+                                std::make_unique<FLoad>(Precision::kDouble, reg, MemoryOperand(share(*t6()))));
+                        }
                         break;
                     default:
                         std::unreachable();
