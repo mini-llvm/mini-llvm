@@ -4,6 +4,7 @@ phi_lost_copy
 phi_swap
 many_args
 many_regs
+many_regs_large_stack_frame
 global_vars
 arithmetic
 arithmetic_noinline

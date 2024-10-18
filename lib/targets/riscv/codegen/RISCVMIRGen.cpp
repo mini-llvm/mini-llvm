@@ -669,17 +669,20 @@ public:
     }
 
     void visitAlloca(const ir::Alloca &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
-                                  src1 = share(*fp());
+        std::shared_ptr<Register> dst = valueMap_.at(&I);
         StackSlot *endSlot = &function_.stackFrame().back(),
                   *slot = memoryMap_.at(&I);
-        std::unique_ptr<Immediate> src2 =
-            std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot);
-        builder_.add(std::make_unique<AddI>(8, std::move(dst), std::move(src1), std::move(src2)));
+        std::unique_ptr<Immediate> offset = std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot);
+        if (endSlot->offset() - slot->offset() < 2048) {
+            builder_.add(std::make_unique<AddI>(8, std::move(dst), share(*fp()), std::move(offset)));
+        } else {
+            builder_.add(std::make_unique<LI>(8, share(*t6()), std::move(offset)));
+            builder_.add(std::make_unique<Add>(8, std::move(dst), share(*fp()), share(*t6())));
+        }
     }
 
     void visitLoad(const ir::Load &I) override {
-        MemoryOperand src(prepareRegister(*I.ptr()), std::make_unique<IntegerImmediate>(0));
+        MemoryOperand src(prepareRegister(*I.ptr()));
         std::shared_ptr<Register> dst = valueMap_.at(&I);
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
@@ -695,7 +698,7 @@ public:
     }
 
     void visitStore(const ir::Store &I) override {
-        MemoryOperand dst(prepareRegister(*I.ptr()), std::make_unique<IntegerImmediate>(0));
+        MemoryOperand dst(prepareRegister(*I.ptr()));
         std::shared_ptr<Register> src = prepareRegister(*I.value());
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
@@ -1125,6 +1128,14 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
 
     BasicBlock &epilogueBlock = MF.append();
 
+    /*
+    *  high +------------+  <-- endSlot
+    *       |            |
+    *       | stackFrame |
+    *       |            |
+    *   low +------------+  <-- startSlot
+    */
+
     StackSlot &startSlot = MF.stackFrame().append(0, 16);
     StackSlot &raSlot = MF.stackFrame().append(8, 8);
     StackSlot &fpSlot = MF.stackFrame().append(8, 8);
@@ -1142,8 +1153,16 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
 
     StackSlot &endSlot = MF.stackFrame().append(0, 16);
 
-    prologueBlock.append(std::make_unique<AddI>(8,
-        share(*sp()), share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&endSlot, &startSlot)));
+    assert(raSlot.offset() < 2048);
+    assert(fpSlot.offset() < 2048);
+
+    if (endSlot.offset() < 2048) {
+        prologueBlock.append(std::make_unique<AddI>(8,
+            share(*sp()), share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&endSlot, &startSlot)));
+    } else {
+        prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+        prologueBlock.append(std::make_unique<Sub>(8, share(*sp()), share(*sp()), share(*t6())));
+    }
 
     prologueBlock.append(std::make_unique<Store>(8,
         MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &raSlot)), share(*ra())));
@@ -1151,8 +1170,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     prologueBlock.append(std::make_unique<Store>(8,
         MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())));
 
-    prologueBlock.append(std::make_unique<AddI>(8,
-        share(*fp()), share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    if (endSlot.offset() < 2048) {
+        prologueBlock.append(std::make_unique<AddI>(8,
+            share(*fp()), share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    } else {
+        prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+        prologueBlock.append(std::make_unique<Add>(8, share(*fp()), share(*sp()), share(*t6())));
+    }
 
     prologueBlock.append(std::make_unique<Br>(blockMap[&IF.entry()]));
 
@@ -1162,8 +1186,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     epilogueBlock.append(std::make_unique<Load>(8,
         share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &fpSlot))));
 
-    epilogueBlock.append(std::make_unique<AddI>(8,
-        share(*sp()), share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    if (endSlot.offset() < 2048) {
+        epilogueBlock.append(std::make_unique<AddI>(8,
+            share(*sp()), share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    } else {
+        epilogueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+        epilogueBlock.append(std::make_unique<Add>(8, share(*sp()), share(*sp()), share(*t6())));
+    }
 
     int numIntegerResults = 0,
         numFloatingResults = 0;
