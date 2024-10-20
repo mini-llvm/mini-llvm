@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-git ls-files --cached --others --exclude-standard -z | while IFS= read -r -d '' file; do
+git ls-files --cached --others --exclude-standard | while read -r file; do
     if [[ "$(find "$file" \( -name '*.cpp' -o -name '*.h' \) -not -path 'third_party/*')" ]]; then
         echo "$file"
     fi
