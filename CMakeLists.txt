@@ -4,6 +4,10 @@ project(mini-llvm VERSION 0.1.0 LANGUAGES CXX)
 
 option(MINI_LLVM_TESTS "Build tests." ON)
 
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
 add_subdirectory(lib)
 add_subdirectory(tools)
 
