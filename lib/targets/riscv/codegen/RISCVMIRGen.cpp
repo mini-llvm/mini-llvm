@@ -1128,13 +1128,11 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
 
     BasicBlock &epilogueBlock = MF.append();
 
-    /*
-    *  high +------------+  <-- endSlot
-    *       |            |
-    *       | stackFrame |
-    *       |            |
-    *   low +------------+  <-- startSlot
-    */
+    //  high +------------+  <-- endSlot
+    //       |            |
+    //       | stackFrame |
+    //       |            |
+    //   low +------------+  <-- startSlot
 
     StackSlot &startSlot = MF.stackFrame().append(0, 16);
     StackSlot &raSlot = MF.stackFrame().append(8, 8);
