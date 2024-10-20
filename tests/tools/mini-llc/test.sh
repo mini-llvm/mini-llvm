@@ -6,15 +6,6 @@ function run_test {
     local test_name="$1"
     local temp_dir="$2"
 
-    local TARGET="${TARGET:-riscv64}"
-    local MINI_LLC_COMMAND="${MINI_LLC_COMMAND:-mini-llc}"
-    local LINKER_COMMAND="${LINKER_COMMAND:-riscv64-linux-gnu-gcc}"
-    local EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-riscv64}"
-    local DIFF_COMMAND="${DIFF_COMMAND:-diff}"
-    local MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-10}"
-    local LINKER_TIMEOUT="${LINKER_TIMEOUT:-10}"
-    local EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-10}"
-
     mkdir -p "$(dirname "$temp_dir/$test_name")" &&
     timeout -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$TARGET" -o "$temp_dir/$test_name.s" "$test_name.ll" &&
     timeout -v "$LINKER_TIMEOUT" $LINKER_COMMAND -o "$temp_dir/$test_name" "$temp_dir/$test_name.s" -lm &&
@@ -23,6 +14,15 @@ function run_test {
 }
 
 function main {
+    TARGET="${TARGET:-riscv64}"
+    MINI_LLC_COMMAND="${MINI_LLC_COMMAND:-mini-llc}"
+    LINKER_COMMAND="${LINKER_COMMAND:-riscv64-linux-gnu-gcc}"
+    EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-riscv64}"
+    DIFF_COMMAND="${DIFF_COMMAND:-diff}"
+    MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-10}"
+    LINKER_TIMEOUT="${LINKER_TIMEOUT:-10}"
+    EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-10}"
+
     local temp_dir
     temp_dir="$(mktemp -d)"
     trap 'rm -rf "$temp_dir"' RETURN
