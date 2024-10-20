@@ -209,7 +209,7 @@ export DIFF_COMMAND="diff"
 export MINI_LLC_TIMEOUT=10
 export LINKER_TIMEOUT=10
 export EMULATOR_TIMEOUT=10
-xargs ./test.sh < tests.txt
+./test-all.sh
 ```
 
 ## License
