@@ -27,7 +27,7 @@ using namespace mini_llvm::ir;
 
 // Ron Cytron, Jeanne Ferrante, Barry K. Rosen, Mark N. Wegman, and F. Kenneth Zadeck.
 // 1991. Efficiently computing static single assignment form and the control dependence
-// graph. ACM Trans. Program. Lang. Syst. 13, 4 (Oct. 1991), 451–490.
+// graph. ACM Trans. Program. Lang. Syst. 13, 4 (Oct. 1991), 451-490.
 // https://doi.org/10.1145/115372.115320
 
 namespace {
