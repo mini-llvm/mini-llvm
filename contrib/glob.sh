@@ -1,9 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
-set -eo pipefail
-
-git ls-files --cached --others --exclude-standard | while read -r file; do
-    if [[ "$(find "$file" \( -name '*.cpp' -o -name '*.h' \) -not -path 'third_party/*')" ]]; then
-        echo "$file"
-    fi
-done
+git ls-files --cached --others --exclude-standard | grep -E '\.cpp$|\.h$' | grep -v '^third_party/'
