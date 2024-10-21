@@ -1,9 +1,23 @@
-/.cache/
-/.idea/
-/.vs/
-/.vscode/
-/build/
-/cmake-build-*/
-/out/
+# CMake
 CMakeUserPresets.json
 compile_commands.json
+
+# Python
+*.pyc
+__pycache__/
+
+# Vim
+.*.sw?
+
+# Visual Studio Code
+.cache/
+.vscode/
+build/
+
+# Visual Studio
+.vs/
+out/
+
+# CLion
+.idea/
+cmake-build-*/
