@@ -17,8 +17,6 @@ public:
     using pointer = Value *;
     using reference = Value &;
 
-    virtual ~IndirectIterator() = default;
-
     IndirectIterator() = default;
     explicit IndirectIterator(Iterator base) : base_(std::move(base)) {}
 
