@@ -60,12 +60,13 @@ def main():
             source = file.read()
         reformatted_source = reformat(source)
         if reformatted_source != source:
-            print(path)
             if args.check:
+                print(f'{path}: not properly formatted', file=sys.stderr)
                 exit_code = 1
             else:
                 with open(path, mode='w', encoding='utf-8') as file:
                     file.write(reformatted_source)
+                print(f'{path}: reformatted')
 
     return exit_code
 
