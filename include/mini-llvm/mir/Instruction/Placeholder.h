@@ -43,9 +43,13 @@ public:
         return std::make_unique<Placeholder>(id());
     }
 
-    void accept(InstructionVisitor &) override {}
+    void accept(InstructionVisitor &visitor) override {
+        visitor.visitPlaceholder(*this);
+    }
 
-    void accept(InstructionVisitor &) const override {}
+    void accept(InstructionVisitor &visitor) const override {
+        visitor.visitPlaceholder(*this);
+    }
 
 private:
     int id_;

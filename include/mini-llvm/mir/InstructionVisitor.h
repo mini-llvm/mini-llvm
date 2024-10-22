@@ -41,6 +41,7 @@ class Mul;
 class Not;
 class Or;
 class OrI;
+class Placeholder;
 class SDiv;
 class CondSet;
 class SExt;
@@ -100,6 +101,7 @@ public:
     virtual void visitNot(Not &I) { visitNot(std::as_const(I)); }
     virtual void visitOr(Or &I) { visitOr(std::as_const(I)); }
     virtual void visitOrI(OrI &I) { visitOrI(std::as_const(I)); }
+    virtual void visitPlaceholder(Placeholder &I) { visitPlaceholder(std::as_const(I)); }
     virtual void visitSDiv(SDiv &I) { visitSDiv(std::as_const(I)); }
     virtual void visitSet(CondSet &I) { visitSet(std::as_const(I)); }
     virtual void visitSExt(SExt &I) { visitSExt(std::as_const(I)); }
@@ -155,6 +157,7 @@ public:
     virtual void visitNot(const Not &) { std::unreachable(); }
     virtual void visitOr(const Or &) { std::unreachable(); }
     virtual void visitOrI(const OrI &) { std::unreachable(); }
+    virtual void visitPlaceholder(const Placeholder &) { std::unreachable(); }
     virtual void visitSDiv(const SDiv &) { std::unreachable(); }
     virtual void visitSet(const CondSet &) { std::unreachable(); }
     virtual void visitSExt(const SExt &) { std::unreachable(); }
