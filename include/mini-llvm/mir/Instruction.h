@@ -25,8 +25,8 @@ public:
     virtual std::unordered_set<const RegisterOperand *> dsts() const = 0;
     virtual std::unordered_set<const RegisterOperand *> srcs() const = 0;
     std::unordered_set<RegisterOperand *> regOps();
-    std::unordered_set<RegisterOperand *> srcs();
     std::unordered_set<RegisterOperand *> dsts();
+    std::unordered_set<RegisterOperand *> srcs();
     virtual std::unordered_set<PhysicalRegister *> implicitDsts() const { return {}; }
     virtual std::unordered_set<PhysicalRegister *> implicitSrcs() const { return {}; }
     virtual bool hasSideEffects() const = 0;
