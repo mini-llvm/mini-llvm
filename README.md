@@ -214,6 +214,13 @@ export EMULATOR_TIMEOUT=10
 ./test-all.sh
 ```
 
+## Installing
+
+```sh
+cd <repo-dir>/build
+cmake --install .
+```
+
 ## License
 
 mini-llvm is licensed under the [MIT license](https://opensource.org/licenses/MIT).

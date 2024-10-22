@@ -90,4 +90,36 @@ add_library(mini-llvm
     targets/riscv/RISCVBackendDriver.cpp
 )
 target_compile_features(mini-llvm PUBLIC cxx_std_23)
-target_include_directories(mini-llvm PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(mini-llvm PUBLIC
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include>"
+)
+add_library(mini-llvm::mini-llvm ALIAS mini-llvm)
+
+install(TARGETS mini-llvm EXPORT mini-llvm-targets)
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/" DESTINATION include)
+install(EXPORT mini-llvm-targets
+        FILE mini-llvm-targets.cmake
+        NAMESPACE mini-llvm::
+        DESTINATION lib/cmake/mini-llvm)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    "${PROJECT_SOURCE_DIR}/cmake/mini-llvm-config.cmake.in"
+    "${PROJECT_BINARY_DIR}/mini-llvm-config.cmake"
+    INSTALL_DESTINATION lib/cmake/mini-llvm
+)
+write_basic_package_version_file(
+    "${PROJECT_BINARY_DIR}/mini-llvm-config-version.cmake"
+    VERSION "${PROJECT_VERSION}"
+    COMPATIBILITY AnyNewerVersion
+)
+install(FILES
+    "${PROJECT_BINARY_DIR}/mini-llvm-config.cmake"
+    "${PROJECT_BINARY_DIR}/mini-llvm-config-version.cmake"
+    DESTINATION lib/cmake/mini-llvm
+)
+
+export(EXPORT mini-llvm-targets
+       FILE "${PROJECT_BINARY_DIR}/mini-llvm-targets.cmake"
+       NAMESPACE mini-llvm::)
