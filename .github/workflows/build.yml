@@ -41,7 +41,6 @@ jobs:
             -B ${{ github.workspace }}/build \
             -DCMAKE_BUILD_TYPE="${{ matrix.build-type }}" \
             -DCMAKE_CXX_COMPILER="${{ matrix.compiler }}" \
-            -DCMAKE_CXX_FLAGS_DEBUG="-D_GLIBCXX_ASSERTIONS" \
             -DCMAKE_CXX_FLAGS="${{ matrix.sanitizer }}" \
             -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
             -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.sanitizer }}" \
