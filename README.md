@@ -68,7 +68,9 @@
     - Relational
       - `fcmp`
 - Unary operators
-  - `fneg`
+  - Floating-point
+    - Arithmetic
+      - `fneg`
 - Casting operators
   - Integer
     - `trunc`
