@@ -25,6 +25,7 @@
 #include "mini-llvm/mir/Instruction/FStore.h"
 #include "mini-llvm/mir/Instruction/LI.h"
 #include "mini-llvm/mir/Instruction/Load.h"
+#include "mini-llvm/mir/Instruction/Placeholder.h"
 #include "mini-llvm/mir/Instruction/Store.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Module.h"
@@ -196,6 +197,20 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         epilogueBlock = &B;
                     }
                 }
+
+                BasicBlock::const_iterator savePos,
+                                           restorePos;
+                for (BasicBlock::const_iterator i = prologueBlock->begin(); i != prologueBlock->end(); ++i) {
+                    if (auto *placeholder = dynamic_cast<const Placeholder *>(&*i); placeholder && placeholder->id() == RISCVMIRGen::kSave) {
+                        savePos = i;
+                    }
+                }
+                for (BasicBlock::const_iterator i = epilogueBlock->begin(); i != epilogueBlock->end(); ++i) {
+                    if (auto *placeholder = dynamic_cast<const Placeholder *>(&*i); placeholder && placeholder->id() == RISCVMIRGen::kRestore) {
+                        restorePos = i;
+                    }
+                }
+
                 for (PhysicalRegister *physReg : save) {
                     StackSlot *startSlot = &F.stackFrame().front(),
                               *slot = &F.stackFrame().add(std::prev(F.stackFrame().end()), 8, 8);
@@ -204,26 +219,26 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     case RegisterKind::kInteger:
                         if (slot->offset() < 2048) {
                             MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
-                            prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<Store>(8, mem.clone(), reg));
-                            epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<Load>(8, reg, mem.clone()));
+                            prologueBlock->add(savePos, std::make_unique<Store>(8, mem.clone(), reg));
+                            epilogueBlock->add(restorePos, std::make_unique<Load>(8, reg, mem.clone()));
                         } else {
                             prologueBlock->add(
-                                std::prev(prologueBlock->end(), 3),
+                                savePos,
                                 std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
                             prologueBlock->add(
-                                std::prev(prologueBlock->end(), 3),
+                                savePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
                             prologueBlock->add(
-                                std::prev(prologueBlock->end(), 3),
+                                savePos,
                                 std::make_unique<Store>(8, MemoryOperand(share(*t6())), reg));
                             epilogueBlock->add(
-                                std::prev(epilogueBlock->end(), 3),
+                                restorePos,
                                 std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
                             epilogueBlock->add(
-                                std::prev(epilogueBlock->end(), 3),
+                                restorePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
                             epilogueBlock->add(
-                                std::prev(epilogueBlock->end(), 3),
+                                restorePos,
                                 std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
                         }
                         break;
@@ -234,22 +249,22 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                             epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<FLoad>(Precision::kDouble, reg, mem.clone()));
                         } else {
                             prologueBlock->add(
-                                std::prev(prologueBlock->end(), 3),
+                                savePos,
                                 std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
                             prologueBlock->add(
-                                std::prev(prologueBlock->end(), 3),
+                                savePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
                             prologueBlock->add(
-                                std::prev(prologueBlock->end(), 3),
+                                savePos,
                                 std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6())), reg));
                             epilogueBlock->add(
-                                std::prev(epilogueBlock->end(), 3),
+                                restorePos,
                                 std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
                             epilogueBlock->add(
-                                std::prev(epilogueBlock->end(), 3),
+                                restorePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
                             epilogueBlock->add(
-                                std::prev(epilogueBlock->end(), 3),
+                                restorePos,
                                 std::make_unique<FLoad>(Precision::kDouble, reg, MemoryOperand(share(*t6()))));
                         }
                         break;
@@ -257,6 +272,9 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         std::unreachable();
                     }
                 }
+
+                prologueBlock->remove(savePos);
+                epilogueBlock->remove(restorePos);
             }
         }
     }
