@@ -1,14 +1,31 @@
 #include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
 
-#include <algorithm>
+#include <unordered_set>
 #include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/Placeholder.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
 
 using namespace mini_llvm::mir;
+
+namespace {
+
+bool canRemove(const Instruction &I, const std::unordered_set<Register *> &liveOut) {
+    if (dynamic_cast<const Placeholder *>(&I)) return false;
+    if (I.hasSideEffects()) return false;
+    for (Register *reg : def(I)) {
+        if (liveOut.contains(reg)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+} // namespace
 
 bool DeadCodeElimination::runOnFunction(Function &F) {
     bool changed = false;
@@ -24,8 +41,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
             std::vector<BasicBlock::const_iterator> remove;
 
             for (BasicBlock::const_iterator i = B.begin(); i != B.end(); ++i) {
-                if (!i->hasSideEffects()
-                        && std::ranges::none_of(def(*i), [&](Register *reg) { return liveVars.liveOut(*i).contains(reg); })) {
+                if (canRemove(*i, liveVars.liveOut(*i))) {
                     remove.push_back(i);
                 }
             }

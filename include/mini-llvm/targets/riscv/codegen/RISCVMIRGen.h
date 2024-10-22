@@ -13,6 +13,9 @@ namespace mini_llvm {
 
 class RISCVMIRGen {
 public:
+    static constexpr int kSave = 0,
+                         kRestore = 1;
+
     RISCVMIRGen(const ir::Module *IM, mir::Module *MM) : IM_(IM), MM_(MM) {}
 
     void emit();
