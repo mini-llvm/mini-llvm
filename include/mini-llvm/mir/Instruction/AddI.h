@@ -38,6 +38,7 @@ public:
     void accept(InstructionVisitor &visitor) const override {
         visitor.visitAddI(*this);
     }
+
 protected:
     const char *mnemonic() const override {
         return "ADDI";
