@@ -13,17 +13,21 @@ class XorTest : public ::testing::Test {
 protected:
     std::shared_ptr<Xor> xor_;
 
-    XorTest() : xor_(std::make_shared<Xor>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(43))) {
+    XorTest() : xor_(std::make_shared<Xor>(std::make_shared<I32Constant>(171), std::make_shared<I32Constant>(205))) {
         xor_->setName("result");
     }
 };
+
+TEST_F(XorTest, fold) {
+    EXPECT_EQ(*xor_->fold(), I32Constant(102));
+}
 
 TEST_F(XorTest, type) {
     EXPECT_EQ(*xor_->type(), I32());
 }
 
 TEST_F(XorTest, format) {
-    EXPECT_EQ(xor_->format(), "%result = xor i32 42, 43");
+    EXPECT_EQ(xor_->format(), "%result = xor i32 171, 205");
 }
 
 TEST_F(XorTest, clone) {

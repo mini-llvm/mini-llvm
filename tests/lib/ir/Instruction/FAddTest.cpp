@@ -20,6 +20,10 @@ protected:
     }
 };
 
+TEST_F(FAddTest, fold) {
+    EXPECT_EQ(*fadd_->fold(), DoubleConstant(3.14 + 2.72));
+}
+
 TEST_F(FAddTest, type) {
     EXPECT_EQ(*fadd_->type(), Double());
 }

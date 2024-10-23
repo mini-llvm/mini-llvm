@@ -13,17 +13,21 @@ class LSHRTest : public ::testing::Test {
 protected:
     std::shared_ptr<LSHR> lshr_;
 
-    LSHRTest() : lshr_(std::make_shared<LSHR>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(2))) {
+    LSHRTest() : lshr_(std::make_shared<LSHR>(std::make_shared<I32Constant>(-42), std::make_shared<I32Constant>(2))) {
         lshr_->setName("result");
     }
 };
+
+TEST_F(LSHRTest, fold) {
+    EXPECT_EQ(*lshr_->fold(), I32Constant(1073741813));
+}
 
 TEST_F(LSHRTest, type) {
     EXPECT_EQ(*lshr_->type(), I32());
 }
 
 TEST_F(LSHRTest, format) {
-    EXPECT_EQ(lshr_->format(), "%result = lshr i32 42, 2");
+    EXPECT_EQ(lshr_->format(), "%result = lshr i32 -42, 2");
 }
 
 TEST_F(LSHRTest, clone) {

@@ -18,6 +18,10 @@ protected:
     }
 };
 
+TEST_F(MulTest, fold) {
+    EXPECT_EQ(*mul_->fold(), I32Constant(1806));
+}
+
 TEST_F(MulTest, type) {
     EXPECT_EQ(*mul_->type(), I32());
 }

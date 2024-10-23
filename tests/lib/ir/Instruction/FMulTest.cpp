@@ -19,6 +19,10 @@ protected:
     }
 };
 
+TEST_F(FMulTest, fold) {
+    EXPECT_EQ(*fmul_->fold(), DoubleConstant(3.14 * 2.72));
+}
+
 TEST_F(FMulTest, type) {
     EXPECT_EQ(*fmul_->type(), Double());
 }

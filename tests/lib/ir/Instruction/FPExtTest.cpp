@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include "mini-llvm/ir/Constant/DoubleConstant.h"
 #include "mini-llvm/ir/Constant/FloatConstant.h"
 #include "mini-llvm/ir/Instruction/FPExt.h"
 #include "mini-llvm/ir/Type/Double.h"
@@ -18,6 +19,10 @@ protected:
         fpext_->setName("result");
     }
 };
+
+TEST_F(FPExtTest, fold) {
+    EXPECT_EQ(*fpext_->fold(), DoubleConstant(static_cast<double>(3.14f)));
+}
 
 TEST_F(FPExtTest, type) {
     EXPECT_EQ(*fpext_->type(), Double());

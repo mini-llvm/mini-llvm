@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include "mini-llvm/ir/Constant/I1Constant.h"
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/ir/Type/I1.h"
@@ -19,6 +20,10 @@ protected:
         icmp_->setName("result");
     }
 };
+
+TEST_F(ICmpTest, fold) {
+    EXPECT_EQ(*icmp_->fold(), I1Constant(false));
+}
 
 TEST_F(ICmpTest, type) {
     EXPECT_EQ(*icmp_->type(), I1());

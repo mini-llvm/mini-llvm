@@ -19,6 +19,10 @@ protected:
     }
 };
 
+TEST_F(FSubTest, fold) {
+    EXPECT_EQ(*fsub_->fold(), DoubleConstant(3.14 - 2.72));
+}
+
 TEST_F(FSubTest, type) {
     EXPECT_EQ(*fsub_->type(), Double());
 }

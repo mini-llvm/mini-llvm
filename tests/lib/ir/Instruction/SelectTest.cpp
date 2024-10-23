@@ -23,6 +23,10 @@ protected:
     }
 };
 
+TEST_F(SelectTest, fold) {
+    EXPECT_EQ(*select_->fold(), I32Constant(42));
+}
+
 TEST_F(SelectTest, type) {
     EXPECT_EQ(*select_->type(), I32());
 }

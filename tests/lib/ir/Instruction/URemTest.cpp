@@ -13,17 +13,21 @@ class URemTest : public ::testing::Test {
 protected:
     std::shared_ptr<URem> urem_;
 
-    URemTest() : urem_(std::make_shared<URem>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(43))) {
+    URemTest() : urem_(std::make_shared<URem>(std::make_shared<I32Constant>(-100), std::make_shared<I32Constant>(30))) {
         urem_->setName("result");
     }
 };
+
+TEST_F(URemTest, fold) {
+    EXPECT_EQ(*urem_->fold(), I32Constant(6));
+}
 
 TEST_F(URemTest, type) {
     EXPECT_EQ(*urem_->type(), I32());
 }
 
 TEST_F(URemTest, format) {
-    EXPECT_EQ(urem_->format(), "%result = urem i32 42, 43");
+    EXPECT_EQ(urem_->format(), "%result = urem i32 -100, 30");
 }
 
 TEST_F(URemTest, clone) {

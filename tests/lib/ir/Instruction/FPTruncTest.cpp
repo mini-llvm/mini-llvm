@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Constant/DoubleConstant.h"
+#include "mini-llvm/ir/Constant/FloatConstant.h"
 #include "mini-llvm/ir/Instruction/FPTrunc.h"
 #include "mini-llvm/ir/Type/Float.h"
 
@@ -18,6 +19,10 @@ protected:
         fptrunc_->setName("result");
     }
 };
+
+TEST_F(FPTruncTest, fold) {
+    EXPECT_EQ(*fptrunc_->fold(), FloatConstant(static_cast<float>(3.14)));
+}
 
 TEST_F(FPTruncTest, type) {
     EXPECT_EQ(*fptrunc_->type(), Float());

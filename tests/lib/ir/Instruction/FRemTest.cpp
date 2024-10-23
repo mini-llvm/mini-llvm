@@ -1,3 +1,4 @@
+#include <cmath>
 #include <memory>
 
 #include <gtest/gtest.h>
@@ -18,6 +19,10 @@ protected:
         frem_->setName("result");
     }
 };
+
+TEST_F(FRemTest, fold) {
+    EXPECT_EQ(*frem_->fold(), DoubleConstant(fmod(3.14, 2.72)));
+}
 
 TEST_F(FRemTest, type) {
     EXPECT_EQ(*frem_->type(), Double());

@@ -18,6 +18,10 @@ protected:
     }
 };
 
+TEST_F(AddTest, fold) {
+    EXPECT_EQ(*add_->fold(), I32Constant(85));
+}
+
 TEST_F(AddTest, type) {
     EXPECT_EQ(*add_->type(), I32());
 }
