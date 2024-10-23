@@ -13,17 +13,21 @@ class ASHRTest : public ::testing::Test {
 protected:
     std::shared_ptr<ASHR> ashr_;
 
-    ASHRTest() : ashr_(std::make_shared<ASHR>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(2))) {
+    ASHRTest() : ashr_(std::make_shared<ASHR>(std::make_shared<I32Constant>(-42), std::make_shared<I32Constant>(2))) {
         ashr_->setName("result");
     }
 };
+
+TEST_F(ASHRTest, fold) {
+    EXPECT_EQ(*ashr_->fold(), I32Constant(-11));
+}
 
 TEST_F(ASHRTest, type) {
     EXPECT_EQ(*ashr_->type(), I32());
 }
 
 TEST_F(ASHRTest, format) {
-    EXPECT_EQ(ashr_->format(), "%result = ashr i32 42, 2");
+    EXPECT_EQ(ashr_->format(), "%result = ashr i32 -42, 2");
 }
 
 TEST_F(ASHRTest, clone) {

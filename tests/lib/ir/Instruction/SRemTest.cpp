@@ -13,17 +13,21 @@ class SRemTest : public ::testing::Test {
 protected:
     std::shared_ptr<SRem> srem_;
 
-    SRemTest() : srem_(std::make_shared<SRem>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(43))) {
+    SRemTest() : srem_(std::make_shared<SRem>(std::make_shared<I32Constant>(-100), std::make_shared<I32Constant>(30))) {
         srem_->setName("result");
     }
 };
+
+TEST_F(SRemTest, fold) {
+    EXPECT_EQ(*srem_->fold(), I32Constant(-10));
+}
 
 TEST_F(SRemTest, type) {
     EXPECT_EQ(*srem_->type(), I32());
 }
 
 TEST_F(SRemTest, format) {
-    EXPECT_EQ(srem_->format(), "%result = srem i32 42, 43");
+    EXPECT_EQ(srem_->format(), "%result = srem i32 -100, 30");
 }
 
 TEST_F(SRemTest, clone) {

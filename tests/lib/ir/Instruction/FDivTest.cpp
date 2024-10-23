@@ -19,6 +19,10 @@ protected:
     }
 };
 
+TEST_F(FDivTest, fold) {
+    EXPECT_EQ(*fdiv_->fold(), DoubleConstant(3.14 / 2.72));
+}
+
 TEST_F(FDivTest, type) {
     EXPECT_EQ(*fdiv_->type(), Double());
 }

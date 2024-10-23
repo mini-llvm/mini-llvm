@@ -13,17 +13,21 @@ class AndTest : public ::testing::Test {
 protected:
     std::shared_ptr<And> and_;
 
-    AndTest() : and_(std::make_shared<And>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(43))) {
+    AndTest() : and_(std::make_shared<And>(std::make_shared<I32Constant>(171), std::make_shared<I32Constant>(205))) {
         and_->setName("result");
     }
 };
+
+TEST_F(AndTest, fold) {
+    EXPECT_EQ(*and_->fold(), I32Constant(137));
+}
 
 TEST_F(AndTest, type) {
     EXPECT_EQ(*and_->type(), I32());
 }
 
 TEST_F(AndTest, format) {
-    EXPECT_EQ(and_->format(), "%result = and i32 42, 43");
+    EXPECT_EQ(and_->format(), "%result = and i32 171, 205");
 }
 
 TEST_F(AndTest, clone) {

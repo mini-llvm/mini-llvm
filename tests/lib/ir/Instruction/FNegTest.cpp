@@ -18,6 +18,10 @@ protected:
     }
 };
 
+TEST_F(FNegTest, fold) {
+    EXPECT_EQ(*fneg_->fold(), DoubleConstant(-3.14));
+}
+
 TEST_F(FNegTest, type) {
     EXPECT_EQ(*fneg_->type(), Double());
 }

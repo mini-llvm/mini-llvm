@@ -13,17 +13,21 @@ class UDivTest : public ::testing::Test {
 protected:
     std::shared_ptr<UDiv> udiv_;
 
-    UDivTest() : udiv_(std::make_shared<UDiv>(std::make_shared<I32Constant>(42), std::make_shared<I32Constant>(43))) {
+    UDivTest() : udiv_(std::make_shared<UDiv>(std::make_shared<I32Constant>(-100), std::make_shared<I32Constant>(30))) {
         udiv_->setName("result");
     }
 };
+
+TEST_F(UDivTest, fold) {
+    EXPECT_EQ(*udiv_->fold(), I32Constant(143165573));
+}
 
 TEST_F(UDivTest, type) {
     EXPECT_EQ(*udiv_->type(), I32());
 }
 
 TEST_F(UDivTest, format) {
-    EXPECT_EQ(udiv_->format(), "%result = udiv i32 42, 43");
+    EXPECT_EQ(udiv_->format(), "%result = udiv i32 -100, 30");
 }
 
 TEST_F(UDivTest, clone) {
