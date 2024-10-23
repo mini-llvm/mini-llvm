@@ -25,20 +25,20 @@ Token Lexer::nextToken() {
 }
 
 Token Lexer::nextTokenImpl() {
-    while (*cursor_ != 0) {
+    while (*cursor_ != '\0') {
         if (*cursor_ == ' ' || *cursor_ == '\t' || *cursor_ == '\n') {
             ++cursor_;
             continue;
         }
         if (*cursor_ == ';') {
             ++cursor_;
-            while (*cursor_ != 0 && *cursor_ != '\n') ++cursor_;
+            while (*cursor_ != '\0' && *cursor_ != '\n') ++cursor_;
             continue;
         }
         break;
     }
 
-    if (*cursor_ == 0) {
+    if (*cursor_ == '\0') {
         return {kEOF, {}, cursor_};
     }
 
@@ -157,7 +157,7 @@ Token Lexer::nextTokenImpl() {
         const char *start = cursor_;
         cursor_ += 2;
         std::vector<int8_t> elements;
-        while (*cursor_ != 0 && *cursor_ != '"') {
+        while (*cursor_ != '\0' && *cursor_ != '"') {
             if (*cursor_ == '\\') {
                 ++cursor_;
                 if (*cursor_ == '\\') {
@@ -192,7 +192,7 @@ Token Lexer::nextTokenImpl() {
                 ++cursor_;
             }
         }
-        if (*cursor_ == 0) {
+        if (*cursor_ == '\0') {
             throw LexException(cursor_, "unterminated string");
         }
         ++cursor_;
