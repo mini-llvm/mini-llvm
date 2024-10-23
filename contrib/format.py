@@ -5,13 +5,15 @@ import sys
 
 
 def convert_line_endings(source):
-    source = source.replace('\r\n', '\n')
-    source = source.replace('\r', '\n')
-    return source
+    return source.replace('\r\n', '\n').replace('\r', '\n')
+
+
+def expand_tabs(source):
+    return source.replace('\t', '    ')
 
 
 def trim_trailing_whitespaces(source):
-    return '\n'.join([line.rstrip(' \t') for line in source.split('\n')])
+    return '\n'.join([line.rstrip(' ') for line in source.split('\n')])
 
 
 def trim_final_newlines(source):
@@ -38,6 +40,7 @@ def sort_includes(source):
 
 def reformat(source):
     source = convert_line_endings(source)
+    source = expand_tabs(source)
     source = trim_trailing_whitespaces(source)
     source = trim_final_newlines(source)
     source = sort_includes(source)
