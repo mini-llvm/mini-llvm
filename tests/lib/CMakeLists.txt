@@ -14,6 +14,7 @@ add_executable(tests
     ir/Instruction/FPTruncTest.cpp
     ir/Instruction/FRemTest.cpp
     ir/Instruction/FSubTest.cpp
+    ir/Instruction/GetElementPtrTest.cpp
     ir/Instruction/ICmpTest.cpp
     ir/Instruction/LoadTest.cpp
     ir/Instruction/LSHRTest.cpp
