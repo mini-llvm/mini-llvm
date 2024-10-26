@@ -58,7 +58,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
 
         for (Function &F : MM.functions) {
             if (!F.empty()) {
-                for (RegisterClass Class : {RegisterClass::kInteger, RegisterClass::kFloating}) {
+                for (RegisterClass Class : {RegisterClass::kGPR, RegisterClass::kFPR}) {
                     std::unordered_set<VirtualRegister *> virtRegs;
                     for (const BasicBlock &B : F) {
                         for (const Instruction &I : B) {
@@ -91,7 +91,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         std::shared_ptr<Register> dst = share(*physReg);
 
                         switch (physReg->Class()) {
-                            case RegisterClass::kInteger: {
+                            case RegisterClass::kGPR: {
                                 int width = slot->size();
                                 ExtensionMode extensionMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
                                 if (endSlot->offset() - slot->offset() < 2048) {
@@ -105,7 +105,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 break;
                             }
 
-                            case RegisterClass::kFloating: {
+                            case RegisterClass::kFPR: {
                                 Precision precision;
                                 switch (slot->size()) {
                                     case 4: precision = Precision::kSingle; break;
@@ -131,7 +131,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         std::shared_ptr<Register> src = share(*physReg);
 
                         switch (physReg->Class()) {
-                            case RegisterClass::kInteger: {
+                            case RegisterClass::kGPR: {
                                 int width = slot->size();
                                 if (endSlot->offset() - slot->offset() < 2048) {
                                     MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
@@ -144,7 +144,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 break;
                             }
 
-                            case RegisterClass::kFloating: {
+                            case RegisterClass::kFPR: {
                                 Precision precision;
                                 switch (slot->size()) {
                                     case 4: precision = Precision::kSingle; break;
@@ -216,7 +216,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                               *slot = &F.stackFrame().add(std::prev(F.stackFrame().end()), 8, 8);
                     std::shared_ptr<Register> reg = share(*physReg);
                     switch (physReg->Class()) {
-                    case RegisterClass::kInteger:
+                    case RegisterClass::kGPR:
                         if (slot->offset() < 2048) {
                             MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
                             prologueBlock->add(savePos, std::make_unique<Store>(8, mem.clone(), reg));
@@ -242,7 +242,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
                         }
                         break;
-                    case RegisterClass::kFloating:
+                    case RegisterClass::kFPR:
                         if (slot->offset() < 2048) {
                             MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
                             prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<FStore>(Precision::kDouble, mem.clone(), reg));

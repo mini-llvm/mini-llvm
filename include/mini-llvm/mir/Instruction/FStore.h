@@ -20,7 +20,7 @@ namespace mini_llvm::mir {
 class FStore : public Instruction {
 public:
     FStore(Precision precision, MemoryOperand dst, std::shared_ptr<Register> src)
-        : precision_(precision), dst_(std::move(dst)), src_(RegisterClass::kFloating, std::move(src)) {}
+        : precision_(precision), dst_(std::move(dst)), src_(RegisterClass::kFPR, std::move(src)) {}
 
     Precision precision() const {
         return precision_;

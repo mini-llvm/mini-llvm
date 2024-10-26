@@ -19,8 +19,8 @@ class FMovIF : public Instruction {
 public:
     FMovIF(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : precision_(precision),
-          dst_(RegisterClass::kInteger, std::move(dst)),
-          src_(RegisterClass::kFloating, std::move(src)) {}
+          dst_(RegisterClass::kGPR, std::move(dst)),
+          src_(RegisterClass::kFPR, std::move(src)) {}
 
     Precision precision() const {
         return precision_;

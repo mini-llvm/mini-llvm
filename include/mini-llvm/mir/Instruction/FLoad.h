@@ -22,7 +22,7 @@ class FLoad : public Instruction {
 public:
     FLoad(Precision precision, std::shared_ptr<Register> dst, MemoryOperand src)
         : precision_(precision),
-          dst_(RegisterClass::kFloating, std::move(dst)),
+          dst_(RegisterClass::kFPR, std::move(dst)),
           src_(std::move(src)) {}
 
     Precision precision() const {

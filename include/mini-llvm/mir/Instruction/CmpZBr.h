@@ -26,7 +26,7 @@ public:
            BasicBlock *falseDest)
         : width_(width),
           cond_(cond),
-          src_(RegisterClass::kInteger, std::move(src)),
+          src_(RegisterClass::kGPR, std::move(src)),
           trueDest_(trueDest),
           falseDest_(falseDest) {}
 

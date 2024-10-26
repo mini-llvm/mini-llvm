@@ -3,8 +3,8 @@
 namespace mini_llvm::mir {
 
 enum class RegisterClass {
-    kInteger,
-    kFloating,
+    kGPR,
+    kFPR,
 };
 
 } // namespace mini_llvm::mir

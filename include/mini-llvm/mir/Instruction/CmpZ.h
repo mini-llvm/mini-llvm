@@ -18,7 +18,7 @@ namespace mini_llvm::mir {
 class CmpZ : public Instruction {
 public:
     CmpZ(int width, std::shared_ptr<Register> src)
-        : width_(width), src_(RegisterClass::kInteger, std::move(src)) {}
+        : width_(width), src_(RegisterClass::kGPR, std::move(src)) {}
 
     int width() const {
         return width_;

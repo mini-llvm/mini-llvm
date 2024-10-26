@@ -25,7 +25,7 @@ public:
          MemoryOperand src,
          ExtensionMode extensionMode = ExtensionMode::kNo)
         : width_(width),
-          dst_(RegisterClass::kInteger, std::move(dst)),
+          dst_(RegisterClass::kGPR, std::move(dst)),
           src_(std::move(src)),
           extensionMode_(extensionMode) {}
 

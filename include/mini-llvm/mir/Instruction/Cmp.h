@@ -19,8 +19,8 @@ class Cmp : public Instruction {
 public:
     Cmp(int width, std::shared_ptr<Register> src1, std::shared_ptr<Register> src2)
         : width_(width),
-          src1_(RegisterClass::kInteger, std::move(src1)),
-          src2_(RegisterClass::kInteger, std::move(src2)) {}
+          src1_(RegisterClass::kGPR, std::move(src1)),
+          src2_(RegisterClass::kGPR, std::move(src2)) {}
 
     int width() const {
         return width_;

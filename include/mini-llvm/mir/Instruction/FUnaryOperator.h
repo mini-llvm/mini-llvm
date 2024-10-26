@@ -49,8 +49,8 @@ public:
 protected:
     FUnaryOperator(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : precision_(precision),
-          dst_(RegisterClass::kFloating, std::move(dst)),
-          src_(RegisterClass::kFloating, std::move(src)) {}
+          dst_(RegisterClass::kFPR, std::move(dst)),
+          src_(RegisterClass::kFPR, std::move(src)) {}
 
     virtual const char *mnemonic() const = 0;
 

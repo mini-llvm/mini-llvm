@@ -20,8 +20,8 @@ public:
     FCvtSF(int dstWidth, Precision srcPrecision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : dstWidth_(dstWidth),
           srcPrecision_(srcPrecision),
-          dst_(RegisterClass::kInteger, std::move(dst)),
-          src_(RegisterClass::kFloating, std::move(src)) {}
+          dst_(RegisterClass::kGPR, std::move(dst)),
+          src_(RegisterClass::kFPR, std::move(src)) {}
 
     int dstWidth() const {
         return dstWidth_;

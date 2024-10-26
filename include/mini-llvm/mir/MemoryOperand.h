@@ -19,7 +19,7 @@ class MemoryOperand {
 public:
     explicit MemoryOperand(std::shared_ptr<Register> baseReg,
                            std::unique_ptr<Immediate> offset = std::make_unique<IntegerImmediate>(0))
-        : baseReg_(RegisterClass::kInteger, std::move(baseReg)), offset_(std::move(offset)) {}
+        : baseReg_(RegisterClass::kGPR, std::move(baseReg)), offset_(std::move(offset)) {}
 
     template <typename Self>
     auto &baseReg(this Self &&self) {

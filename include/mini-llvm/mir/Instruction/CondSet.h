@@ -17,7 +17,7 @@ namespace mini_llvm::mir {
 class CondSet : public Instruction {
 public:
     CondSet(int width, Condition cond, std::shared_ptr<Register> dst)
-        : width_(width), cond_(cond), dst_(RegisterClass::kInteger, std::move(dst)) {}
+        : width_(width), cond_(cond), dst_(RegisterClass::kGPR, std::move(dst)) {}
 
     int width() const {
         return width_;

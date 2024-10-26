@@ -21,8 +21,8 @@ class FCmp : public Instruction {
 public:
     FCmp(Precision precision, std::shared_ptr<Register> src1, std::shared_ptr<Register> src2)
         : precision_(precision),
-          src1_(RegisterClass::kFloating, std::move(src1)),
-          src2_(RegisterClass::kFloating, std::move(src2)) {}
+          src1_(RegisterClass::kFPR, std::move(src1)),
+          src2_(RegisterClass::kFPR, std::move(src2)) {}
 
     Precision precision() const {
         return precision_;

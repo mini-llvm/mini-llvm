@@ -20,8 +20,8 @@ public:
     SExt(int dstWidth, int srcWidth, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : dstWidth_(dstWidth),
           srcWidth_(srcWidth),
-          dst_(RegisterClass::kInteger, std::move(dst)),
-          src_(RegisterClass::kInteger, std::move(src)) {}
+          dst_(RegisterClass::kGPR, std::move(dst)),
+          src_(RegisterClass::kGPR, std::move(src)) {}
 
     int dstWidth() const {
         return dstWidth_;

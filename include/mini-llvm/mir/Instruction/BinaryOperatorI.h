@@ -67,8 +67,8 @@ protected:
                     std::unique_ptr<Immediate> src2,
                     ExtensionMode extensionMode)
         : width_(width),
-          dst_(RegisterClass::kInteger, std::move(dst)),
-          src1_(RegisterClass::kInteger, std::move(src1)),
+          dst_(RegisterClass::kGPR, std::move(dst)),
+          src1_(RegisterClass::kGPR, std::move(src1)),
           src2_(std::move(src2)),
           extensionMode_(extensionMode) {}
 

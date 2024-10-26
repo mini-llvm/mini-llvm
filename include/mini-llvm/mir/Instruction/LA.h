@@ -19,7 +19,7 @@ namespace mini_llvm::mir {
 class LA : public Instruction {
 public:
     LA(int width, std::shared_ptr<Register> dst, GlobalVar *src)
-        : width_(width), dst_(RegisterClass::kInteger, std::move(dst)), src_(src) {}
+        : width_(width), dst_(RegisterClass::kGPR, std::move(dst)), src_(src) {}
 
     int width() const {
         return width_;

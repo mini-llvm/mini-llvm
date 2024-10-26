@@ -29,9 +29,9 @@ public:
         : dstWidth_(dstWidth),
           srcPrecision_(srcPrecision),
           cond_(cond),
-          dst_(RegisterClass::kInteger, std::move(dst)),
-          src1_(RegisterClass::kFloating, std::move(src1)),
-          src2_(RegisterClass::kFloating, std::move(src2)) {}
+          dst_(RegisterClass::kGPR, std::move(dst)),
+          src1_(RegisterClass::kFPR, std::move(src1)),
+          src2_(RegisterClass::kFPR, std::move(src2)) {}
 
     int dstWidth() const {
         return dstWidth_;

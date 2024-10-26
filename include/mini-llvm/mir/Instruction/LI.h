@@ -20,7 +20,7 @@ namespace mini_llvm::mir {
 class LI : public Instruction {
 public:
     LI(int width, std::shared_ptr<Register> dst, std::unique_ptr<Immediate> src)
-        : width_(width), dst_(RegisterClass::kInteger, std::move(dst)), src_(std::move(src)) {}
+        : width_(width), dst_(RegisterClass::kGPR, std::move(dst)), src_(std::move(src)) {}
 
     int width() const {
         return width_;

@@ -58,9 +58,9 @@ protected:
                     std::shared_ptr<Register> src1,
                     std::shared_ptr<Register> src2)
         : precision_(precision),
-          dst_(RegisterClass::kFloating, std::move(dst)),
-          src1_(RegisterClass::kFloating, std::move(src1)),
-          src2_(RegisterClass::kFloating, std::move(src2)) {}
+          dst_(RegisterClass::kFPR, std::move(dst)),
+          src1_(RegisterClass::kFPR, std::move(src1)),
+          src2_(RegisterClass::kFPR, std::move(src2)) {}
 
     virtual const char *mnemonic() const = 0;
 

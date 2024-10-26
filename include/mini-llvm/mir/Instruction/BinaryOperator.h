@@ -65,9 +65,9 @@ protected:
                    std::shared_ptr<Register> src2,
                    ExtensionMode extensionMode)
         : width_(width),
-          dst_(RegisterClass::kInteger, std::move(dst)),
-          src1_(RegisterClass::kInteger, std::move(src1)),
-          src2_(RegisterClass::kInteger, std::move(src2)),
+          dst_(RegisterClass::kGPR, std::move(dst)),
+          src1_(RegisterClass::kGPR, std::move(src1)),
+          src2_(RegisterClass::kGPR, std::move(src2)),
           extensionMode_(extensionMode) {}
 
     virtual const char *mnemonic() const = 0;

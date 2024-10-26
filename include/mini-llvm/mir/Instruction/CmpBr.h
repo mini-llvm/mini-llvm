@@ -28,8 +28,8 @@ public:
           BasicBlock *falseDest)
         : width_(width),
           cond_(cond),
-          src1_(RegisterClass::kInteger, std::move(src1)),
-          src2_(RegisterClass::kInteger, std::move(src2)),
+          src1_(RegisterClass::kGPR, std::move(src1)),
+          src2_(RegisterClass::kGPR, std::move(src2)),
           trueDest_(trueDest),
           falseDest_(falseDest) {}
 
