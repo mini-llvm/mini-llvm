@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/IntegerImmediate.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -19,7 +19,7 @@ class MemoryOperand {
 public:
     explicit MemoryOperand(std::shared_ptr<Register> baseReg,
                            std::unique_ptr<Immediate> offset = std::make_unique<IntegerImmediate>(0))
-        : baseReg_(RegisterKind::kInteger, std::move(baseReg)), offset_(std::move(offset)) {}
+        : baseReg_(RegisterClass::kInteger, std::move(baseReg)), offset_(std::move(offset)) {}
 
     template <typename Self>
     auto &baseReg(this Self &&self) {

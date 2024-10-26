@@ -4,17 +4,17 @@
 #include <utility>
 
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 
 namespace mini_llvm::mir {
 
 class RegisterOperand {
 public:
-    RegisterOperand(RegisterKind kind, std::shared_ptr<Register> reg)
-        : kind_(kind), reg_(std::move(reg)) {}
+    RegisterOperand(RegisterClass Class, std::shared_ptr<Register> reg)
+        : class_(Class), reg_(std::move(reg)) {}
 
-    RegisterKind kind() const {
-        return kind_;
+    RegisterClass Class() const {
+        return class_;
     }
 
     Register &operator*() const {
@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    RegisterKind kind_;
+    RegisterClass class_;
     std::shared_ptr<Register> reg_;
 };
 

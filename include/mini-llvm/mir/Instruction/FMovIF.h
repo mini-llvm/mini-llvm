@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -19,8 +19,8 @@ class FMovIF : public Instruction {
 public:
     FMovIF(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : precision_(precision),
-          dst_(RegisterKind::kInteger, std::move(dst)),
-          src_(RegisterKind::kFloating, std::move(src)) {}
+          dst_(RegisterClass::kInteger, std::move(dst)),
+          src_(RegisterClass::kFloating, std::move(src)) {}
 
     Precision precision() const {
         return precision_;

@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/Formatting.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -20,8 +20,8 @@ public:
     FCvtUF(int dstWidth, Precision srcPrecision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : dstWidth_(dstWidth),
           srcPrecision_(srcPrecision),
-          dst_(RegisterKind::kInteger, std::move(dst)),
-          src_(RegisterKind::kFloating, std::move(src)) {}
+          dst_(RegisterClass::kInteger, std::move(dst)),
+          src_(RegisterClass::kFloating, std::move(src)) {}
 
     int dstWidth() const {
         return dstWidth_;

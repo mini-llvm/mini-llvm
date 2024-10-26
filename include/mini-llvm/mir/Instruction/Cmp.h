@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -19,8 +19,8 @@ class Cmp : public Instruction {
 public:
     Cmp(int width, std::shared_ptr<Register> src1, std::shared_ptr<Register> src2)
         : width_(width),
-          src1_(RegisterKind::kInteger, std::move(src1)),
-          src2_(RegisterKind::kInteger, std::move(src2)) {}
+          src1_(RegisterClass::kInteger, std::move(src1)),
+          src2_(RegisterClass::kInteger, std::move(src2)) {}
 
     int width() const {
         return width_;

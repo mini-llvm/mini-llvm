@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "mini-llvm/mir/PhysicalRegister.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 
 namespace mini_llvm::mir {
 
@@ -19,8 +19,8 @@ public:
         return name_;
     }
 
-    RegisterKind kind() const override {
-        return kind_;
+    RegisterClass Class() const override {
+        return class_;
     }
 
     bool isVolatile() const override {
@@ -36,18 +36,18 @@ public:
 private:
     int idx_;
     const char *name_;
-    RegisterKind kind_;
+    RegisterClass class_;
     bool isVolatile_;
     bool isAllocatable_;
 
-    RISCVRegister(int idx, const char *name, RegisterKind kind, bool isVolatile, bool isAllocatable)
-        : idx_(idx), name_(name), kind_(kind), isVolatile_(isVolatile), isAllocatable_(isAllocatable) {}
+    RISCVRegister(int idx, const char *name, RegisterClass Class, bool isVolatile, bool isAllocatable)
+        : idx_(idx), name_(name), class_(Class), isVolatile_(isVolatile), isAllocatable_(isAllocatable) {}
 };
 
 namespace riscv {
 
 #define REGS
-#define X(idx, name, kind, isVolatile, isAllocatable) inline RISCVRegister *name() { return RISCVRegister::get(idx); }
+#define X(idx, name, class, isVolatile, isAllocatable) inline RISCVRegister *name() { return RISCVRegister::get(idx); }
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
@@ -59,7 +59,7 @@ inline std::unordered_set<RISCVRegister *> riscvRegs() {
 
     return {
 #define REGS
-#define X(idx, name, kind, isVolatile, isAllocatable) name(),
+#define X(idx, name, class, isVolatile, isAllocatable) name(),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS

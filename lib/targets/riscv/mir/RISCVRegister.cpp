@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 
 using namespace mini_llvm::mir;
 
@@ -17,10 +17,10 @@ RISCVRegister *RISCVRegister::get(int idx) {
 
     switch (idx) {
 #define REGS
-#define X(idx, name, kind, isVolatile, isAllocatable) \
+#define X(idx, name, class, isVolatile, isAllocatable) \
     case idx: \
         return &*pool.insert( \
-            {idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterKind::k##kind, isVolatile, isAllocatable))}).first->second;
+            {idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, isVolatile, isAllocatable))}).first->second;
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS

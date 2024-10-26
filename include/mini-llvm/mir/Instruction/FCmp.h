@@ -11,7 +11,7 @@
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -21,8 +21,8 @@ class FCmp : public Instruction {
 public:
     FCmp(Precision precision, std::shared_ptr<Register> src1, std::shared_ptr<Register> src2)
         : precision_(precision),
-          src1_(RegisterKind::kFloating, std::move(src1)),
-          src2_(RegisterKind::kFloating, std::move(src2)) {}
+          src1_(RegisterClass::kFloating, std::move(src1)),
+          src2_(RegisterClass::kFloating, std::move(src2)) {}
 
     Precision precision() const {
         return precision_;

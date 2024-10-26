@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -20,8 +20,8 @@ public:
     SExt(int dstWidth, int srcWidth, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : dstWidth_(dstWidth),
           srcWidth_(srcWidth),
-          dst_(RegisterKind::kInteger, std::move(dst)),
-          src_(RegisterKind::kInteger, std::move(src)) {}
+          dst_(RegisterClass::kInteger, std::move(dst)),
+          src_(RegisterClass::kInteger, std::move(src)) {}
 
     int dstWidth() const {
         return dstWidth_;

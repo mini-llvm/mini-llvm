@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/Formatting.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
 namespace mini_llvm::mir {
@@ -49,8 +49,8 @@ public:
 protected:
     FUnaryOperator(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : precision_(precision),
-          dst_(RegisterKind::kFloating, std::move(dst)),
-          src_(RegisterKind::kFloating, std::move(src)) {}
+          dst_(RegisterClass::kFloating, std::move(dst)),
+          src_(RegisterClass::kFloating, std::move(src)) {}
 
     virtual const char *mnemonic() const = 0;
 

@@ -12,7 +12,7 @@
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -25,7 +25,7 @@ public:
          MemoryOperand src,
          ExtensionMode extensionMode = ExtensionMode::kNo)
         : width_(width),
-          dst_(RegisterKind::kInteger, std::move(dst)),
+          dst_(RegisterClass::kInteger, std::move(dst)),
           src_(std::move(src)),
           extensionMode_(extensionMode) {}
 

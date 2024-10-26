@@ -1,7 +1,7 @@
 // https://github.com/riscv-non-isa/riscv-elf-psabi-doc/releases/download/v1.0/riscv-abi.pdf
 
 #ifdef REGS
-    // idx, name, kind, isVolatile, isAllocatable
+    // idx, name, class, isVolatile, isAllocatable
     X(0, x0, Integer, false, false)
     X(1, ra, Integer, true, false)
     X(2, sp, Integer, false, false)

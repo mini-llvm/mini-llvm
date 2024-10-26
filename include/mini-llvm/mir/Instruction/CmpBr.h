@@ -13,7 +13,7 @@
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
 namespace mini_llvm::mir {
@@ -28,8 +28,8 @@ public:
           BasicBlock *falseDest)
         : width_(width),
           cond_(cond),
-          src1_(RegisterKind::kInteger, std::move(src1)),
-          src2_(RegisterKind::kInteger, std::move(src2)),
+          src1_(RegisterClass::kInteger, std::move(src1)),
+          src2_(RegisterClass::kInteger, std::move(src2)),
           trueDest_(trueDest),
           falseDest_(falseDest) {}
 

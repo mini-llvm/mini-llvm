@@ -12,7 +12,7 @@
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
 namespace mini_llvm::mir {
@@ -67,8 +67,8 @@ protected:
                     std::unique_ptr<Immediate> src2,
                     ExtensionMode extensionMode)
         : width_(width),
-          dst_(RegisterKind::kInteger, std::move(dst)),
-          src1_(RegisterKind::kInteger, std::move(src1)),
+          dst_(RegisterClass::kInteger, std::move(dst)),
+          src1_(RegisterClass::kInteger, std::move(src1)),
           src2_(std::move(src2)),
           extensionMode_(extensionMode) {}
 

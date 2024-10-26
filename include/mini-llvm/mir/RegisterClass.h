@@ -2,7 +2,7 @@
 
 namespace mini_llvm::mir {
 
-enum class RegisterKind {
+enum class RegisterClass {
     kInteger,
     kFloating,
 };

@@ -9,7 +9,7 @@
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -18,7 +18,7 @@ namespace mini_llvm::mir {
 class Store : public Instruction {
 public:
     Store(int width, MemoryOperand dst, std::shared_ptr<Register> src)
-        : width_(width), dst_(std::move(dst)), src_(RegisterKind::kInteger, std::move(src)) {}
+        : width_(width), dst_(std::move(dst)), src_(RegisterClass::kInteger, std::move(src)) {}
 
     int width() const {
         return width_;

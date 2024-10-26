@@ -31,7 +31,7 @@
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
@@ -58,12 +58,12 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
 
         for (Function &F : MM.functions) {
             if (!F.empty()) {
-                for (RegisterKind kind : {RegisterKind::kInteger, RegisterKind::kFloating}) {
+                for (RegisterClass Class : {RegisterClass::kInteger, RegisterClass::kFloating}) {
                     std::unordered_set<VirtualRegister *> virtRegs;
                     for (const BasicBlock &B : F) {
                         for (const Instruction &I : B) {
                             for (const RegisterOperand *op : I.regOps()) {
-                                if (op->kind() == kind) {
+                                if (op->Class() == Class) {
                                     if (auto *virtReg = dynamic_cast<VirtualRegister *>(&**op)) {
                                         virtRegs.insert(virtReg);
                                     }
@@ -74,7 +74,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
 
                     std::unordered_set<PhysicalRegister *> physRegs;
                     for (PhysicalRegister *physReg : riscvRegs()) {
-                        if (physReg->kind() == kind && physReg->isAllocatable()) {
+                        if (physReg->Class() == Class && physReg->isAllocatable()) {
                             physRegs.insert(physReg);
                         }
                     }
@@ -90,8 +90,8 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     auto load = [endSlot](PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder) {
                         std::shared_ptr<Register> dst = share(*physReg);
 
-                        switch (physReg->kind()) {
-                            case RegisterKind::kInteger: {
+                        switch (physReg->Class()) {
+                            case RegisterClass::kInteger: {
                                 int width = slot->size();
                                 ExtensionMode extensionMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
                                 if (endSlot->offset() - slot->offset() < 2048) {
@@ -105,7 +105,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 break;
                             }
 
-                            case RegisterKind::kFloating: {
+                            case RegisterClass::kFloating: {
                                 Precision precision;
                                 switch (slot->size()) {
                                     case 4: precision = Precision::kSingle; break;
@@ -130,8 +130,8 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     auto store = [endSlot](PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder) {
                         std::shared_ptr<Register> src = share(*physReg);
 
-                        switch (physReg->kind()) {
-                            case RegisterKind::kInteger: {
+                        switch (physReg->Class()) {
+                            case RegisterClass::kInteger: {
                                 int width = slot->size();
                                 if (endSlot->offset() - slot->offset() < 2048) {
                                     MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
@@ -144,7 +144,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 break;
                             }
 
-                            case RegisterKind::kFloating: {
+                            case RegisterClass::kFloating: {
                                 Precision precision;
                                 switch (slot->size()) {
                                     case 4: precision = Precision::kSingle; break;
@@ -215,8 +215,8 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     StackSlot *startSlot = &F.stackFrame().front(),
                               *slot = &F.stackFrame().add(std::prev(F.stackFrame().end()), 8, 8);
                     std::shared_ptr<Register> reg = share(*physReg);
-                    switch (physReg->kind()) {
-                    case RegisterKind::kInteger:
+                    switch (physReg->Class()) {
+                    case RegisterClass::kInteger:
                         if (slot->offset() < 2048) {
                             MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
                             prologueBlock->add(savePos, std::make_unique<Store>(8, mem.clone(), reg));
@@ -242,7 +242,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
                         }
                         break;
-                    case RegisterKind::kFloating:
+                    case RegisterClass::kFloating:
                         if (slot->offset() < 2048) {
                             MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
                             prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<FStore>(Precision::kDouble, mem.clone(), reg));

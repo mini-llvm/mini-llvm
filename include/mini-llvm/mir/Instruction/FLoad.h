@@ -12,7 +12,7 @@
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/RegisterKind.h"
+#include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -22,7 +22,7 @@ class FLoad : public Instruction {
 public:
     FLoad(Precision precision, std::shared_ptr<Register> dst, MemoryOperand src)
         : precision_(precision),
-          dst_(RegisterKind::kFloating, std::move(dst)),
+          dst_(RegisterClass::kFloating, std::move(dst)),
           src_(std::move(src)) {}
 
     Precision precision() const {
