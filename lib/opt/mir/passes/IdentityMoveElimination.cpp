@@ -14,7 +14,7 @@ bool IdentityMoveElimination::runOnBasicBlock(BasicBlock &B) {
     std::list<BasicBlock::const_iterator> remove;
 
     for (auto i = B.begin(), e = B.end(); i != e; ++i) {
-        if (auto *mov = dynamic_cast<Mov *>(&*i)) {
+        if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
             if (&*mov->dst() == &*mov->src()) {
                 remove.emplace_back(i);
             }
