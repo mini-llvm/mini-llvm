@@ -33,7 +33,7 @@ public:
             for (const BasicBlock &B : F) {
                 std::unordered_set<Register *> liveOut;
                 for (const BasicBlock *successor : successors(B)) {
-                    liveOut = liveOut | liveIn_[successor];
+                    liveOut |= liveIn_[successor];
                 }
                 if (liveOut != liveOut_[&B]) {
                     liveOut_[&B] = liveOut;
