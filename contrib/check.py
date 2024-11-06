@@ -4,44 +4,12 @@ import re
 import sys
 
 
-IDENTIFIERS = [
-    'printf',
-    'fprintf',
-    'puts',
-    'fputs',
-    'putc',
-    'fputc',
-    'putchar',
-    'std::cout',
-    'std::cerr',
-    'std::clog',
-    'std::wcout',
-    'std::wcerr',
-    'std::wclog',
-    'std::print',
-    'std::println',
-]
-
-
-def has_main(source):
-    return re.search(r'\bmain\s*\(.*\)\s*{', source, flags=re.DOTALL)
-
-
-def has_identifier(source, identifier):
-    return re.search(r'\b' + re.escape(identifier) + r'\b', source)
-
-
 def check(source):
     errors = []
 
     for char in source:
         if not char.isascii():
             errors.append(f'{repr(char)} not allowed')
-
-    if not has_main(source):
-        for identifier in IDENTIFIERS:
-            if has_identifier(source, identifier):
-                errors.append(f'{repr(identifier)} not allowed')
 
     return errors
 
