@@ -4,7 +4,7 @@
 #include <concepts>
 #include <type_traits>
 
-#include "mini-llvm/common/PoisonValueException.h"
+#include "mini-llvm/common/IllegalOperationException.h"
 
 namespace mini_llvm::ops {
 
@@ -14,7 +14,7 @@ struct SExt {
     template <typename From>
         requires std::integral<From>
     To operator()(From) const {
-        throw PoisonValueException();
+        throw IllegalOperationException();
     }
 
     template <typename From>
@@ -33,7 +33,7 @@ struct SExt<bool> {
     template <typename From>
         requires std::integral<From>
     bool operator()(From) const {
-        throw PoisonValueException();
+        throw IllegalOperationException();
     }
 
     bool operator()(bool x) const {

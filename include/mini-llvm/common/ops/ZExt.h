@@ -4,6 +4,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include "mini-llvm/common/IllegalOperationException.h"
 #include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
@@ -14,7 +15,7 @@ struct ZExt {
     template <typename From>
         requires std::integral<From>
     To operator()(From) const {
-        throw PoisonValueException();
+        throw IllegalOperationException();
     }
 
     template <typename From>

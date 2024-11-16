@@ -3,6 +3,7 @@
 #include <bit>
 #include <concepts>
 
+#include "mini-llvm/common/IllegalOperationException.h"
 #include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
@@ -11,7 +12,7 @@ template <typename To>
 struct BitCast {
     template <typename From>
     To operator()(From) const {
-        throw PoisonValueException();
+        throw IllegalOperationException();
     }
 
     template <typename From>

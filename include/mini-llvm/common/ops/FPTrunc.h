@@ -2,7 +2,7 @@
 
 #include <concepts>
 
-#include "mini-llvm/common/PoisonValueException.h"
+#include "mini-llvm/common/IllegalOperationException.h"
 
 namespace mini_llvm::ops {
 
@@ -12,7 +12,7 @@ struct FPTrunc {
     template <typename From>
         requires std::floating_point<From>
     To operator()(From) const {
-        throw PoisonValueException();
+        throw IllegalOperationException();
     }
 
     template <typename From>
