@@ -4,7 +4,7 @@
 #include <concepts>
 #include <type_traits>
 
-#include "mini-llvm/common/OpException.h"
+#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
@@ -13,7 +13,7 @@ struct URem {
         requires std::integral<T>
     T operator()(T x, T y) const {
         if (y == 0)
-            throw OpException();
+            throw PoisonValueException();
         return
             std::bit_cast<T>(
                 static_cast<std::make_unsigned_t<T>>(
@@ -22,7 +22,7 @@ struct URem {
 
     bool operator()(bool, bool y) const {
         if (y == false)
-            throw OpException();
+            throw PoisonValueException();
         return false;
     }
 };

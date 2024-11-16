@@ -4,10 +4,10 @@
 
 namespace mini_llvm {
 
-class OpException : public std::exception {
+class PoisonValueException : public std::exception {
 public:
     constexpr const char *what() const noexcept override {
-        return "OpException";
+        return "PoisonValueException";
     }
 };
 

@@ -6,7 +6,7 @@
 #include <limits>
 #include <type_traits>
 
-#include "mini-llvm/common/OpException.h"
+#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
@@ -18,9 +18,9 @@ struct FPToUI {
     To operator()(From x) const {
         From t = std::trunc(x);
         if (t > static_cast<From>(std::numeric_limits<std::make_unsigned_t<To>>::max()))
-            throw OpException();
+            throw PoisonValueException();
         if (t < 0.0)
-            throw OpException();
+            throw PoisonValueException();
         return std::bit_cast<To>(static_cast<std::make_unsigned_t<To>>(x));
     }
 };
@@ -33,7 +33,7 @@ struct FPToUI<bool> {
         From t = std::trunc(x);
         if (t == 0.0) return false;
         if (t == 1.0) return true;
-        throw OpException();
+        throw PoisonValueException();
     }
 };
 

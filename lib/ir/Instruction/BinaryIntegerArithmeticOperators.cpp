@@ -2,7 +2,6 @@
 #include <optional>
 #include <utility>
 
-#include "mini-llvm/common/OpException.h"
 #include "mini-llvm/common/ops/Add.h"
 #include "mini-llvm/common/ops/And.h"
 #include "mini-llvm/common/ops/ASHR.h"
@@ -16,6 +15,7 @@
 #include "mini-llvm/common/ops/UDiv.h"
 #include "mini-llvm/common/ops/URem.h"
 #include "mini-llvm/common/ops/Xor.h"
+#include "mini-llvm/common/PoisonValueException.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/I16Constant.h"
 #include "mini-llvm/ir/Constant/I1Constant.h"
@@ -86,7 +86,7 @@ private:
     void visit(const Const &rhs) {
         try {
             result_.emplace(std::make_unique<Const>(Op()(static_cast<const Const &>(lhs_).value(), rhs.value())));
-        } catch (const OpException &) {
+        } catch (const PoisonValueException &) {
             result_.emplace(std::make_unique<PoisonValue>(std::make_unique<Ty>()));
         }
     }

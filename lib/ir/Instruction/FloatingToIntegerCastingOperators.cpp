@@ -3,9 +3,9 @@
 #include <optional>
 #include <utility>
 
-#include "mini-llvm/common/OpException.h"
 #include "mini-llvm/common/ops/FPToSI.h"
 #include "mini-llvm/common/ops/FPToUI.h"
+#include "mini-llvm/common/PoisonValueException.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/DoubleConstant.h"
 #include "mini-llvm/ir/Constant/FloatConstant.h"
@@ -54,7 +54,7 @@ private:
     void visit(const Const &value) {
         try {
             result_.emplace(std::make_unique<ResultConst>(Op()(value.value())));
-        } catch (const OpException &) {
+        } catch (const PoisonValueException &) {
             result_.emplace(std::make_unique<PoisonValue>(std::make_unique<ResultTy>()));
         }
     }

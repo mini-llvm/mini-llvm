@@ -3,7 +3,7 @@
 #include <bit>
 #include <concepts>
 
-#include "mini-llvm/common/OpException.h"
+#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
@@ -11,7 +11,7 @@ template <typename To>
 struct BitCast {
     template <typename From>
     To operator()(From) const {
-        throw OpException();
+        throw PoisonValueException();
     }
 
     template <typename From>
@@ -25,7 +25,7 @@ template <>
 struct BitCast<bool> {
     template <typename From>
     bool operator()(From) const {
-        throw OpException();
+        throw PoisonValueException();
     }
 
     bool operator()(bool x) const {

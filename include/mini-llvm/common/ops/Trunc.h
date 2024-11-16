@@ -4,7 +4,7 @@
 #include <concepts>
 #include <type_traits>
 
-#include "mini-llvm/common/OpException.h"
+#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
@@ -14,7 +14,7 @@ struct Trunc {
     template <typename From>
         requires std::integral<From>
     To operator()(From) const {
-        throw OpException();
+        throw PoisonValueException();
     }
 
     template <typename From>
