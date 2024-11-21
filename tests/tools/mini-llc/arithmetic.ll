@@ -111,6 +111,114 @@ define double @fneg(double %0) {
   ret double %2
 }
 
+define i32 @add_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = add i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @sub_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = sub i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @mul_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = mul i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @sdiv_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = sdiv i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @srem_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = srem i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @udiv_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = udiv i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @urem_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = urem i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @and_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = and i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @or_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = or i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @xor_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = xor i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @shl_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = shl i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @lshr_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = lshr i32 %0, %1
+  ret i32 %3
+}
+
+define i32 @ashr_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = ashr i32 %0, %1
+  ret i32 %3
+}
+
+define double @fadd_ni(double %0, double %1) noinline {
+2:
+  %3 = fadd double %0, %1
+  ret double %3
+}
+
+define double @fsub_ni(double %0, double %1) noinline {
+2:
+  %3 = fsub double %0, %1
+  ret double %3
+}
+
+define double @fmul_ni(double %0, double %1) noinline {
+2:
+  %3 = fmul double %0, %1
+  ret double %3
+}
+
+define double @fdiv_ni(double %0, double %1) noinline {
+2:
+  %3 = fdiv double %0, %1
+  ret double %3
+}
+
+define double @fneg_ni(double %0) noinline {
+1:
+  %2 = fneg double %0
+  ret double %2
+}
+
 define i32 @main() {
 0:
   %1 = call i32 @add(i32 42, i32 43)
@@ -154,5 +262,46 @@ define i32 @main() {
   %39 = call double @fneg(double 0x40091eb851eb851f)
   %40 = bitcast double %39 to i64
   %41 = call i32 @printf(ptr @__format2, i64 %40)
+  %42 = call i32 @add_ni(i32 42, i32 43)
+  %43 = call i32 @printf(ptr @__format1, i32 %42)
+  %44 = call i32 @sub_ni(i32 42, i32 43)
+  %45 = call i32 @printf(ptr @__format1, i32 %44)
+  %46 = call i32 @mul_ni(i32 42, i32 43)
+  %47 = call i32 @printf(ptr @__format1, i32 %46)
+  %48 = call i32 @sdiv_ni(i32 -42, i32 5)
+  %49 = call i32 @printf(ptr @__format1, i32 %48)
+  %50 = call i32 @srem_ni(i32 -42, i32 5)
+  %51 = call i32 @printf(ptr @__format1, i32 %50)
+  %52 = call i32 @udiv_ni(i32 -42, i32 5)
+  %53 = call i32 @printf(ptr @__format1, i32 %52)
+  %54 = call i32 @urem_ni(i32 -42, i32 5)
+  %55 = call i32 @printf(ptr @__format1, i32 %54)
+  %56 = call i32 @and_ni(i32 305419896, i32 2271560481)
+  %57 = call i32 @printf(ptr @__format1, i32 %56)
+  %58 = call i32 @or_ni(i32 305419896, i32 2271560481)
+  %59 = call i32 @printf(ptr @__format1, i32 %58)
+  %60 = call i32 @xor_ni(i32 305419896, i32 2271560481)
+  %61 = call i32 @printf(ptr @__format1, i32 %60)
+  %62 = call i32 @shl_ni(i32 -42, i32 2)
+  %63 = call i32 @printf(ptr @__format1, i32 %62)
+  %64 = call i32 @lshr_ni(i32 -42, i32 2)
+  %65 = call i32 @printf(ptr @__format1, i32 %64)
+  %66 = call i32 @ashr_ni(i32 -42, i32 2)
+  %67 = call i32 @printf(ptr @__format1, i32 %66)
+  %68 = call double @fadd_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %69 = bitcast double %27 to i64
+  %70 = call i32 @printf(ptr @__format2, i64 %69)
+  %71 = call double @fsub_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %72 = bitcast double %30 to i64
+  %73 = call i32 @printf(ptr @__format2, i64 %72)
+  %74 = call double @fmul_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %75 = bitcast double %33 to i64
+  %76 = call i32 @printf(ptr @__format2, i64 %75)
+  %77 = call double @fdiv_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %78 = bitcast double %36 to i64
+  %79 = call i32 @printf(ptr @__format2, i64 %78)
+  %80 = call double @fneg_ni(double 0x40091eb851eb851f)
+  %81 = bitcast double %39 to i64
+  %82 = call i32 @printf(ptr @__format2, i64 %81)
   ret i32 0
 }

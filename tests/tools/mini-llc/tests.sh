@@ -12,25 +12,21 @@ tests=(
     many_regs_large_stack_frame
     global_vars
     arithmetic
-    arithmetic_noinline
     relational
-    relational_noinline
     casting
-    casting_noinline
     select
-    select_noinline
     max
     sum
     fibonacci
     power
     is_prime
     gcd
-    gcd_iter
+    gcd_iterative
     hanoi
     partition_function
 )
 
-tests_64=(
+tests64=(
     n_queens
     array_sum
     matmul
@@ -57,7 +53,7 @@ for test_name in "${tests[@]}"; do
 done
 
 if [[ "$TARGET" == "riscv64" ]]; then
-    for test_name in "${tests_64[@]}"; do
+    for test_name in "${tests64[@]}"; do
         echo "$test_name"
     done
 fi

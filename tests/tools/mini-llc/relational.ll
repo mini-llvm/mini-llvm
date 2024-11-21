@@ -98,6 +98,102 @@ define i1 @fcmp_oge(double %0, double %1) {
   ret i1 %3
 }
 
+define i1 @icmp_eq_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp eq i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_ne_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp ne i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_slt_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp slt i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_sgt_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp sgt i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_sle_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp sle i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_sge_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp sge i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_ult_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp ult i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_ugt_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp ugt i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_ule_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp ule i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @icmp_uge_ni(i32 %0, i32 %1) noinline {
+2:
+  %3 = icmp uge i32 %0, %1
+  ret i1 %3
+}
+
+define i1 @fcmp_oeq_ni(double %0, double %1) noinline {
+2:
+  %3 = fcmp oeq double %0, %1
+  ret i1 %3
+}
+
+define i1 @fcmp_one_ni(double %0, double %1) noinline {
+2:
+  %3 = fcmp one double %0, %1
+  ret i1 %3
+}
+
+define i1 @fcmp_olt_ni(double %0, double %1) noinline {
+2:
+  %3 = fcmp olt double %0, %1
+  ret i1 %3
+}
+
+define i1 @fcmp_ogt_ni(double %0, double %1) noinline {
+2:
+  %3 = fcmp ogt double %0, %1
+  ret i1 %3
+}
+
+define i1 @fcmp_ole_ni(double %0, double %1) noinline {
+2:
+  %3 = fcmp ole double %0, %1
+  ret i1 %3
+}
+
+define i1 @fcmp_oge_ni(double %0, double %1) noinline {
+2:
+  %3 = fcmp oge double %0, %1
+  ret i1 %3
+}
+
 define i32 @main() {
 0:
   %1 = call i1 @icmp_eq(i32 42, i32 -43)
@@ -244,5 +340,149 @@ define i32 @main() {
   %142 = call i1 @fcmp_oge(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
   %143 = zext i1 %142 to i32
   %144 = call i32 @printf(ptr @__format, i32 %143)
+  %145 = call i1 @icmp_eq_ni(i32 42, i32 -43)
+  %146 = zext i1 %145 to i32
+  %147 = call i32 @printf(ptr @__format, i32 %146)
+  %148 = call i1 @icmp_eq_ni(i32 -43, i32 42)
+  %149 = zext i1 %148 to i32
+  %150 = call i32 @printf(ptr @__format, i32 %149)
+  %151 = call i1 @icmp_eq_ni(i32 42, i32 42)
+  %152 = zext i1 %151 to i32
+  %153 = call i32 @printf(ptr @__format, i32 %152)
+  %154 = call i1 @icmp_ne_ni(i32 42, i32 -43)
+  %155 = zext i1 %154 to i32
+  %156 = call i32 @printf(ptr @__format, i32 %155)
+  %157 = call i1 @icmp_ne_ni(i32 -43, i32 42)
+  %158 = zext i1 %157 to i32
+  %159 = call i32 @printf(ptr @__format, i32 %158)
+  %160 = call i1 @icmp_ne_ni(i32 42, i32 42)
+  %161 = zext i1 %160 to i32
+  %162 = call i32 @printf(ptr @__format, i32 %161)
+  %163 = call i1 @icmp_slt_ni(i32 42, i32 -43)
+  %164 = zext i1 %19 to i32
+  %165 = call i32 @printf(ptr @__format, i32 %164)
+  %166 = call i1 @icmp_slt_ni(i32 -43, i32 42)
+  %167 = zext i1 %22 to i32
+  %168 = call i32 @printf(ptr @__format, i32 %167)
+  %169 = call i1 @icmp_slt_ni(i32 42, i32 42)
+  %170 = zext i1 %25 to i32
+  %171 = call i32 @printf(ptr @__format, i32 %170)
+  %172 = call i1 @icmp_sgt_ni(i32 42, i32 -43)
+  %173 = zext i1 %28 to i32
+  %174 = call i32 @printf(ptr @__format, i32 %173)
+  %175 = call i1 @icmp_sgt_ni(i32 -43, i32 42)
+  %176 = zext i1 %31 to i32
+  %177 = call i32 @printf(ptr @__format, i32 %176)
+  %178 = call i1 @icmp_sgt_ni(i32 42, i32 42)
+  %179 = zext i1 %34 to i32
+  %180 = call i32 @printf(ptr @__format, i32 %179)
+  %181 = call i1 @icmp_sle_ni(i32 42, i32 -43)
+  %182 = zext i1 %37 to i32
+  %183 = call i32 @printf(ptr @__format, i32 %182)
+  %184 = call i1 @icmp_sle_ni(i32 -43, i32 42)
+  %185 = zext i1 %40 to i32
+  %186 = call i32 @printf(ptr @__format, i32 %185)
+  %187 = call i1 @icmp_sle_ni(i32 42, i32 42)
+  %188 = zext i1 %43 to i32
+  %189 = call i32 @printf(ptr @__format, i32 %188)
+  %190 = call i1 @icmp_sge_ni(i32 42, i32 -43)
+  %191 = zext i1 %46 to i32
+  %192 = call i32 @printf(ptr @__format, i32 %191)
+  %193 = call i1 @icmp_sge_ni(i32 -43, i32 42)
+  %194 = zext i1 %49 to i32
+  %195 = call i32 @printf(ptr @__format, i32 %194)
+  %196 = call i1 @icmp_sge_ni(i32 42, i32 42)
+  %197 = zext i1 %52 to i32
+  %198 = call i32 @printf(ptr @__format, i32 %197)
+  %199 = call i1 @icmp_ult_ni(i32 42, i32 -43)
+  %200 = zext i1 %55 to i32
+  %201 = call i32 @printf(ptr @__format, i32 %200)
+  %202 = call i1 @icmp_ult_ni(i32 -43, i32 42)
+  %203 = zext i1 %58 to i32
+  %204 = call i32 @printf(ptr @__format, i32 %203)
+  %205 = call i1 @icmp_ult_ni(i32 42, i32 42)
+  %206 = zext i1 %61 to i32
+  %207 = call i32 @printf(ptr @__format, i32 %206)
+  %208 = call i1 @icmp_ugt_ni(i32 42, i32 -43)
+  %209 = zext i1 %64 to i32
+  %210 = call i32 @printf(ptr @__format, i32 %209)
+  %211 = call i1 @icmp_ugt_ni(i32 -43, i32 42)
+  %212 = zext i1 %67 to i32
+  %213 = call i32 @printf(ptr @__format, i32 %212)
+  %214 = call i1 @icmp_ugt_ni(i32 42, i32 42)
+  %215 = zext i1 %70 to i32
+  %216 = call i32 @printf(ptr @__format, i32 %215)
+  %217 = call i1 @icmp_ule_ni(i32 42, i32 -43)
+  %218 = zext i1 %73 to i32
+  %219 = call i32 @printf(ptr @__format, i32 %218)
+  %220 = call i1 @icmp_ule_ni(i32 -43, i32 42)
+  %221 = zext i1 %76 to i32
+  %222 = call i32 @printf(ptr @__format, i32 %221)
+  %223 = call i1 @icmp_ule_ni(i32 42, i32 42)
+  %224 = zext i1 %79 to i32
+  %225 = call i32 @printf(ptr @__format, i32 %224)
+  %226 = call i1 @icmp_uge_ni(i32 42, i32 -43)
+  %227 = zext i1 %82 to i32
+  %228 = call i32 @printf(ptr @__format, i32 %227)
+  %229 = call i1 @icmp_uge_ni(i32 -43, i32 42)
+  %230 = zext i1 %85 to i32
+  %231 = call i32 @printf(ptr @__format, i32 %230)
+  %232 = call i1 @icmp_uge_ni(i32 42, i32 42)
+  %233 = zext i1 %88 to i32
+  %234 = call i32 @printf(ptr @__format, i32 %233)
+  %235 = call i1 @fcmp_oeq_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %236 = zext i1 %91 to i32
+  %237 = call i32 @printf(ptr @__format, i32 %236)
+  %238 = call i1 @fcmp_oeq_ni(double 0x4005c28f5c28f5c3, double 0x40091eb851eb851f)
+  %239 = zext i1 %94 to i32
+  %240 = call i32 @printf(ptr @__format, i32 %239)
+  %241 = call i1 @fcmp_oeq_ni(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
+  %242 = zext i1 %97 to i32
+  %243 = call i32 @printf(ptr @__format, i32 %242)
+  %244 = call i1 @fcmp_one_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %245 = zext i1 %100 to i32
+  %246 = call i32 @printf(ptr @__format, i32 %245)
+  %247 = call i1 @fcmp_one_ni(double 0x4005c28f5c28f5c3, double 0x40091eb851eb851f)
+  %248 = zext i1 %103 to i32
+  %249 = call i32 @printf(ptr @__format, i32 %248)
+  %250 = call i1 @fcmp_one_ni(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
+  %251 = zext i1 %106 to i32
+  %252 = call i32 @printf(ptr @__format, i32 %251)
+  %253 = call i1 @fcmp_olt_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %254 = zext i1 %109 to i32
+  %255 = call i32 @printf(ptr @__format, i32 %254)
+  %256 = call i1 @fcmp_olt_ni(double 0x4005c28f5c28f5c3, double 0x40091eb851eb851f)
+  %257 = zext i1 %112 to i32
+  %258 = call i32 @printf(ptr @__format, i32 %257)
+  %259 = call i1 @fcmp_olt_ni(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
+  %260 = zext i1 %115 to i32
+  %261 = call i32 @printf(ptr @__format, i32 %260)
+  %262 = call i1 @fcmp_ogt_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %263 = zext i1 %118 to i32
+  %264 = call i32 @printf(ptr @__format, i32 %263)
+  %265 = call i1 @fcmp_ogt_ni(double 0x4005c28f5c28f5c3, double 0x40091eb851eb851f)
+  %266 = zext i1 %121 to i32
+  %267 = call i32 @printf(ptr @__format, i32 %266)
+  %268 = call i1 @fcmp_ogt_ni(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
+  %269 = zext i1 %124 to i32
+  %270 = call i32 @printf(ptr @__format, i32 %269)
+  %271 = call i1 @fcmp_ole_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %272 = zext i1 %127 to i32
+  %273 = call i32 @printf(ptr @__format, i32 %272)
+  %274 = call i1 @fcmp_ole_ni(double 0x4005c28f5c28f5c3, double 0x40091eb851eb851f)
+  %275 = zext i1 %130 to i32
+  %276 = call i32 @printf(ptr @__format, i32 %275)
+  %277 = call i1 @fcmp_ole_ni(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
+  %278 = zext i1 %133 to i32
+  %279 = call i32 @printf(ptr @__format, i32 %278)
+  %280 = call i1 @fcmp_oge_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
+  %281 = zext i1 %136 to i32
+  %282 = call i32 @printf(ptr @__format, i32 %281)
+  %283 = call i1 @fcmp_oge_ni(double 0x4005c28f5c28f5c3, double 0x40091eb851eb851f)
+  %284 = zext i1 %139 to i32
+  %285 = call i32 @printf(ptr @__format, i32 %284)
+  %286 = call i1 @fcmp_oge_ni(double 0x40091eb851eb851f, double 0x40091eb851eb851f)
+  %287 = zext i1 %142 to i32
+  %288 = call i32 @printf(ptr @__format, i32 %287)
   ret i32 0
 }
