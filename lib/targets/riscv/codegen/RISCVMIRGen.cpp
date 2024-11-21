@@ -976,6 +976,7 @@ public:
                 case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; break;
                 case ir::ICmp::Condition::kULE: cond = Condition::kULE; break;
                 case ir::ICmp::Condition::kUGE: cond = Condition::kUGE; break;
+                default: std::unreachable();
             }
             builder_.add(std::make_unique<CmpBr>(width, cond, std::move(src1), std::move(src2), trueDest, falseDest));
         } else {
