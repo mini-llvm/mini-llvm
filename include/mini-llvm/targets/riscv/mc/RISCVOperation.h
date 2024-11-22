@@ -6,7 +6,7 @@ namespace mini_llvm::mc {
 
 enum RISCVOperation {
 #define OPS
-#define X(opcode, mnemonic, enumerator) RISCV_##enumerator = opcode,
+#define X(opcode, mnemonic, name) RISCV_##name = opcode,
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef OPS
@@ -15,7 +15,7 @@ enum RISCVOperation {
 constexpr const char *mnemonic(RISCVOperation op) {
     switch (op) {
 #define OPS
-#define X(opcode, mnemonic, enumerator) case RISCV_##enumerator: return mnemonic;
+#define X(opcode, mnemonic, name) case RISCV_##name: return mnemonic;
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef OPS

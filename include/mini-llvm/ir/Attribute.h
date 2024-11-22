@@ -5,7 +5,7 @@
 namespace mini_llvm::ir {
 
 enum class Attribute {
-#define X(enumerator, specifier) k##enumerator,
+#define X(name, specifier) k##name,
 #include "mini-llvm/ir/Attribute.def"
 #undef X
 };
@@ -13,7 +13,7 @@ enum class Attribute {
 inline constexpr const char *specifier(Attribute attr) {
     using enum Attribute;
     switch (attr) {
-#define X(enumerator, specifier) case k##enumerator: return specifier;
+#define X(name, specifier) case k##name: return specifier;
 #include "mini-llvm/ir/Attribute.def"
 #undef X
     default:

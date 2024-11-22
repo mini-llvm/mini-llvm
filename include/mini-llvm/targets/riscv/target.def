@@ -104,7 +104,7 @@
 // https://github.com/riscv/riscv-isa-manual/releases/download/20240411/unpriv-isa-asciidoc.pdf
 
 #ifdef OPS
-    // opcode, mnemonic, enumerator
+    // opcode, mnemonic, name
     X(0, "add", Add)
     X(1, "addi", AddI)
     X(2, "addiw", AddIW)

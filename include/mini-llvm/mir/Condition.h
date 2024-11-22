@@ -5,14 +5,14 @@
 namespace mini_llvm::mir {
 
 enum class Condition {
-#define X(enumerator, specifier) k##enumerator,
+#define X(name, specifier) k##name,
 #include "mini-llvm/mir/Condition.def"
 #undef X
 };
 
 inline constexpr const char *specifier(Condition cond) {
     switch (cond) {
-#define X(enumerator, specifier) case Condition::k##enumerator: return specifier;
+#define X(name, specifier) case Condition::k##name: return specifier;
 #include "mini-llvm/mir/Condition.def"
 #undef X
     default:
