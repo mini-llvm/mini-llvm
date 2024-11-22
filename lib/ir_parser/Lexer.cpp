@@ -151,7 +151,7 @@ Token Lexer::nextTokenImpl() {
             } else {
                 char ch = *cursor_;
                 if (!(0x20 <= ch && ch <= 0x7e)) {
-                    throw LexException(cursor_, "only printable ASCII characters are permitted");
+                    throw LexException(cursor_, "only characters between \\x20 and \\x7e are permitted");
                 }
                 int8_t element = static_cast<int8_t>(ch);
                 elements.push_back(element);
