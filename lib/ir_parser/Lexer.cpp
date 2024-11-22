@@ -254,11 +254,13 @@ Token Lexer::nextTokenImpl() {
         if (name == "fsub") return {kFSub, {}, start};
         if (name == "getelementptr") return {kGetElementPtr, {}, start};
         if (name == "icmp") return {kICmp, {}, start};
+        if (name == "inttoptr") return {kIntToPtr, {}, start};
         if (name == "load") return {kLoad, {}, start};
         if (name == "lshr") return {kLSHR, {}, start};
         if (name == "mul") return {kMul, {}, start};
         if (name == "or") return {kOr, {}, start};
         if (name == "phi") return {kPhi, {}, start};
+        if (name == "ptrtoint") return {kPtrToInt, {}, start};
         if (name == "ret") return {kRet, {}, start};
         if (name == "sdiv") return {kSDiv, {}, start};
         if (name == "select") return {kSelect, {}, start};

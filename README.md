@@ -85,6 +85,8 @@
   - Floating-point to integer
     - `fptosi`
     - `fptoui`
+  - `ptrtoint`
+  - `inttoptr`
   - `bitcast`
 - Memory management
   - `alloca`

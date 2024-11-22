@@ -53,11 +53,13 @@
 #include "mini-llvm/ir/Instruction/FSub.h"
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/ir/Instruction/IntToPtr.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/LSHR.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
 #include "mini-llvm/ir/Instruction/Or.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/PtrToInt.h"
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Instruction/SDiv.h"
 #include "mini-llvm/ir/Instruction/Select.h"
@@ -597,6 +599,8 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             case kUIToFP:
             case kFPToSI:
             case kFPToUI:
+            case kPtrToInt:
+            case kIntToPtr:
             case kBitCast: {
                 Token::Kind mnemonic = cursor_->kind;
                 ++cursor_;
@@ -640,6 +644,22 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         case kUIToFP: I = std::make_shared<UIToFP>(std::move(value), std::move(castType2)); break;
                         default: std::unreachable();
                     }
+                } else if (mnemonic == kPtrToInt) {
+                    if (*type1 != Ptr()) {
+                        throw ParseException(cursor_, "type must be ptr");
+                    }
+                    if (!dynamic_cast<const IntegerType *>(&*type2)) {
+                        throw ParseException(cursor_, "type must be integer type");
+                    }
+                    I = std::make_shared<PtrToInt>(std::move(value), cast<IntegerType>(std::move(type2)));
+                } else if (mnemonic == kIntToPtr) {
+                    if (!dynamic_cast<const IntegerType *>(&*type1)) {
+                        throw ParseException(cursor_, "type must be integer type");
+                    }
+                    if (*type2 != Ptr()) {
+                        throw ParseException(cursor_, "type must be ptr");
+                    }
+                    I = std::make_unique<IntToPtr>(std::move(value));
                 } else if (mnemonic == kBitCast) {
                     I = std::make_shared<BitCast>(std::move(value), std::move(type2));
                 } else {

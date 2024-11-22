@@ -47,11 +47,13 @@
 #include "mini-llvm/ir/Instruction/FSub.h"
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/ir/Instruction/IntToPtr.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/LSHR.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
 #include "mini-llvm/ir/Instruction/Or.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/PtrToInt.h"
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Instruction/SDiv.h"
 #include "mini-llvm/ir/Instruction/Select.h"
@@ -613,6 +615,28 @@ public:
         builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(63)));
         if (negate) {
             builder_.add(std::make_unique<XorI>(8, dst, dst, std::make_unique<IntegerImmediate>(-1)));
+        }
+    }
+
+    void visitPtrToInt(const ir::PtrToInt &I) override {
+        std::shared_ptr<Register> dst = valueMap_.at(&I),
+                                  src = prepareRegister(*I.value());
+        builder_.add(std::make_unique<Mov>(8, dst, src));
+        int dstWidth = I.type()->size(8);
+        if (dstWidth < 8) {
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstWidth * 8)));
+            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - dstWidth * 8)));
+        }
+    }
+
+    void visitIntToPtr(const ir::IntToPtr &I) override {
+        std::shared_ptr<Register> dst = valueMap_.at(&I),
+                                  src = prepareRegister(*I.value());
+        builder_.add(std::make_unique<Mov>(8, dst, src));
+        int srcWidth = I.value()->type()->size(8);
+        if (srcWidth < 8) {
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidth * 8)));
+            builder_.add(std::make_unique<SHRLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - srcWidth * 8)));
         }
     }
 

@@ -25,11 +25,13 @@ class FRem;
 class FSub;
 class GetElementPtr;
 class ICmp;
+class IntToPtr;
 class Load;
 class LSHR;
 class Mul;
 class Or;
 class Phi;
+class PtrToInt;
 class Ret;
 class SDiv;
 class Select;
@@ -72,11 +74,13 @@ public:
     virtual void visitFSub(FSub &I) { visitFSub(std::as_const(I)); }
     virtual void visitGetElementPtr(GetElementPtr &I) { visitGetElementPtr(std::as_const(I)); }
     virtual void visitICmp(ICmp &I) { visitICmp(std::as_const(I)); }
+    virtual void visitIntToPtr(IntToPtr &I) {visitIntToPtr(std::as_const(I)); }
     virtual void visitLoad(Load &I) { visitLoad(std::as_const(I)); }
     virtual void visitLSHR(LSHR &I) { visitLSHR(std::as_const(I)); }
     virtual void visitMul(Mul &I) { visitMul(std::as_const(I)); }
     virtual void visitOr(Or &I) { visitOr(std::as_const(I)); }
     virtual void visitPhi(Phi &I) { visitPhi(std::as_const(I)); }
+    virtual void visitPtrToInt(PtrToInt &I) { visitPtrToInt(std::as_const(I)); }
     virtual void visitRet(Ret &I) { visitRet(std::as_const(I)); }
     virtual void visitSDiv(SDiv &I) { visitSDiv(std::as_const(I)); }
     virtual void visitSelect(Select &I) { visitSelect(std::as_const(I)); }
@@ -115,11 +119,13 @@ public:
     virtual void visitFSub(const FSub &) { std::unreachable(); }
     virtual void visitGetElementPtr(const GetElementPtr &) { std::unreachable(); }
     virtual void visitICmp(const ICmp &) { std::unreachable(); }
+    virtual void visitIntToPtr(const IntToPtr &) { std::unreachable(); }
     virtual void visitLoad(const Load &) { std::unreachable(); }
     virtual void visitLSHR(const LSHR &) { std::unreachable(); }
     virtual void visitMul(const Mul &) { std::unreachable(); }
     virtual void visitOr(const Or &) { std::unreachable(); }
     virtual void visitPhi(const Phi &) { std::unreachable(); }
+    virtual void visitPtrToInt(const PtrToInt &) { std::unreachable(); }
     virtual void visitRet(const Ret &) { std::unreachable(); }
     virtual void visitSDiv(const SDiv &) { std::unreachable(); }
     virtual void visitSelect(const Select &) { std::unreachable(); }
