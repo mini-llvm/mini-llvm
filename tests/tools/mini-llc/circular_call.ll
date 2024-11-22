@@ -8,7 +8,7 @@ define i32 @foo(i32 %0) {
   br i1 %2, label %3, label %4
 
 3:
-  ret i32 42
+  ret i32 1
 
 4:
   %5 = sub i32 %0, 1
@@ -22,7 +22,7 @@ define i32 @bar(i32 %0) {
   br i1 %2, label %3, label %4
 
 3:
-  ret i32 43
+  ret i32 2
 
 4:
   %5 = sub i32 %0, 1
@@ -36,7 +36,7 @@ define i32 @baz(i32 %0) {
   br i1 %2, label %3, label %4
 
 3:
-  ret i32 44
+  ret i32 3
 
 4:
   %5 = sub i32 %0, 1

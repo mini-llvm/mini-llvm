@@ -13,10 +13,10 @@ define i32 @example(i1 %0, i1 %1, i1 %2) {
   br i1 %2, label %4, label %7
 
 6:
-  ret i32 42
+  ret i32 1
 
 7:
-  ret i32 43
+  ret i32 2
 }
 
 define i32 @main() {

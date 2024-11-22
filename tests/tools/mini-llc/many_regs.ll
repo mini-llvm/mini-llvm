@@ -115,6 +115,6 @@ define void @example(i32 %0) noinline {
 
 define i32 @main() {
 0:
-  call void @example(i32 42)
+  call void @example(i32 0)
   ret i32 0
 }
