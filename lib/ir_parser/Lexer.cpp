@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -55,60 +57,24 @@ Token Lexer::nextTokenImpl() {
         }
     }
 
-    if (*cursor_ == ',') {
+    const std::unordered_map<char, Token::Kind> kLUT{
+        {',', kComma},
+        {':', kColon},
+        {'=', kEqual},
+        {'@', kAt},
+        {'%', kPercent},
+        {'(', kLeftParen},
+        {')', kRightParen},
+        {'[', kLeftBracket},
+        {']', kRightBracket},
+        {'{', kLeftBrace},
+        {'}', kRightBrace},
+    };
+
+    if (auto i = kLUT.find(*cursor_); i != kLUT.end()) {
         const char *start = cursor_;
         ++cursor_;
-        return {kComma, {}, start};
-    }
-    if (*cursor_ == ':') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kColon, {}, start};
-    }
-    if (*cursor_ == '=') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kEqual, {}, start};
-    }
-    if (*cursor_ == '@') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kAt, {}, start};
-    }
-    if (*cursor_ == '%') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kPercent, {}, start};
-    }
-    if (*cursor_ == '(') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kLeftParen, {}, start};
-    }
-    if (*cursor_ == ')') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kRightParen, {}, start};
-    }
-    if (*cursor_ == '[') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kLeftBracket, {}, start};
-    }
-    if (*cursor_ == ']') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kRightBracket, {}, start};
-    }
-    if (*cursor_ == '{') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kLeftBrace, {}, start};
-    }
-    if (*cursor_ == '}') {
-        const char *start = cursor_;
-        ++cursor_;
-        return {kRightBrace, {}, start};
+        return {i->second, {}, start};
     }
 
     if (*cursor_ == '0' && (*(cursor_ + 1) == 'X' || *(cursor_ + 1) == 'x')) {
@@ -208,98 +174,104 @@ Token Lexer::nextTokenImpl() {
 
         if (*cursor_ == ':') return {kName, std::move(name), start};
 
-        if (name == "define") return {kDefine, {}, start};
-        if (name == "declare") return {kDeclare, {}, start};
-        if (name == "global") return {kGlobal, {}, start};
-        if (name == "internal") return {kInternal, {}, start};
-        if (name == "external") return {kExternal, {}, start};
+        const std::unordered_map<std::string_view, Token::Kind> kLUT{
+            {"define", kDefine},
+            {"declare", kDeclare},
+            {"global", kGlobal},
+            {"internal", kInternal},
+            {"external", kExternal},
 
-        if (name == "noinline") return {kNoInline, {}, start};
-        if (name == "alwaysinline") return {kAlwaysInline, {}, start};
+            {"noinline", kNoInline},
+            {"alwaysinline", kAlwaysInline},
 
-        if (name == "i1") return {kI1, {}, start};
-        if (name == "i8") return {kI8, {}, start};
-        if (name == "i16") return {kI16, {}, start};
-        if (name == "i32") return {kI32, {}, start};
-        if (name == "i64") return {kI64, {}, start};
-        if (name == "float") return {kFloat, {}, start};
-        if (name == "double") return {kDouble, {}, start};
-        if (name == "ptr") return {kPtr, {}, start};
-        if (name == "label") return {kLabel, {}, start};
-        if (name == "void") return {kVoid, {}, start};
+            {"i1", kI1},
+            {"i8", kI8},
+            {"i16", kI16},
+            {"i32", kI32},
+            {"i64", kI64},
+            {"float", kFloat},
+            {"double", kDouble},
+            {"ptr", kPtr},
+            {"label", kLabel},
+            {"void", kVoid},
 
-        if (name == "true") return {kTrue, {}, start};
-        if (name == "false") return {kFalse, {}, start};
-        if (name == "null") return {kNull, {}, start};
-        if (name == "zeroinitializer") return {kZeroInitializer, {}, start};
-        if (name == "poison") return {kPoison, {}, start};
+            {"true", kTrue},
+            {"false", kFalse},
+            {"null", kNull},
+            {"zeroinitializer", kZeroInitializer},
+            {"poison", kPoison},
 
-        if (name == "add") return {kAdd, {}, start};
-        if (name == "alloca") return {kAlloca, {}, start};
-        if (name == "and") return {kAnd, {}, start};
-        if (name == "ashr") return {kASHR, {}, start};
-        if (name == "bitcast") return {kBitCast, {}, start};
-        if (name == "br") return {kBr, {}, start};
-        if (name == "call") return {kCall, {}, start};
-        if (name == "fadd") return {kFAdd, {}, start};
-        if (name == "fcmp") return {kFCmp, {}, start};
-        if (name == "fdiv") return {kFDiv, {}, start};
-        if (name == "fmul") return {kFMul, {}, start};
-        if (name == "fneg") return {kFNeg, {}, start};
-        if (name == "fpext") return {kFPExt, {}, start};
-        if (name == "fptosi") return {kFPToSI, {}, start};
-        if (name == "fptoui") return {kFPToUI, {}, start};
-        if (name == "fptrunc") return {kFPTrunc, {}, start};
-        if (name == "frem") return {kFRem, {}, start};
-        if (name == "fsub") return {kFSub, {}, start};
-        if (name == "getelementptr") return {kGetElementPtr, {}, start};
-        if (name == "icmp") return {kICmp, {}, start};
-        if (name == "inttoptr") return {kIntToPtr, {}, start};
-        if (name == "load") return {kLoad, {}, start};
-        if (name == "lshr") return {kLSHR, {}, start};
-        if (name == "mul") return {kMul, {}, start};
-        if (name == "or") return {kOr, {}, start};
-        if (name == "phi") return {kPhi, {}, start};
-        if (name == "ptrtoint") return {kPtrToInt, {}, start};
-        if (name == "ret") return {kRet, {}, start};
-        if (name == "sdiv") return {kSDiv, {}, start};
-        if (name == "select") return {kSelect, {}, start};
-        if (name == "sext") return {kSExt, {}, start};
-        if (name == "shl") return {kSHL, {}, start};
-        if (name == "sitofp") return {kSIToFP, {}, start};
-        if (name == "srem") return {kSRem, {}, start};
-        if (name == "store") return {kStore, {}, start};
-        if (name == "sub") return {kSub, {}, start};
-        if (name == "trunc") return {kTrunc, {}, start};
-        if (name == "udiv") return {kUDiv, {}, start};
-        if (name == "uitofp") return {kUIToFP, {}, start};
-        if (name == "urem") return {kURem, {}, start};
-        if (name == "xor") return {kXor, {}, start};
-        if (name == "zext") return {kZExt, {}, start};
+            {"add", kAdd},
+            {"alloca", kAlloca},
+            {"and", kAnd},
+            {"ashr", kASHR},
+            {"bitcast", kBitCast},
+            {"br", kBr},
+            {"call", kCall},
+            {"fadd", kFAdd},
+            {"fcmp", kFCmp},
+            {"fdiv", kFDiv},
+            {"fmul", kFMul},
+            {"fneg", kFNeg},
+            {"fpext", kFPExt},
+            {"fptosi", kFPToSI},
+            {"fptoui", kFPToUI},
+            {"fptrunc", kFPTrunc},
+            {"frem", kFRem},
+            {"fsub", kFSub},
+            {"getelementptr", kGetElementPtr},
+            {"icmp", kICmp},
+            {"inttoptr", kIntToPtr},
+            {"load", kLoad},
+            {"lshr", kLSHR},
+            {"mul", kMul},
+            {"or", kOr},
+            {"phi", kPhi},
+            {"ptrtoint", kPtrToInt},
+            {"ret", kRet},
+            {"sdiv", kSDiv},
+            {"select", kSelect},
+            {"sext", kSExt},
+            {"shl", kSHL},
+            {"sitofp", kSIToFP},
+            {"srem", kSRem},
+            {"store", kStore},
+            {"sub", kSub},
+            {"trunc", kTrunc},
+            {"udiv", kUDiv},
+            {"uitofp", kUIToFP},
+            {"urem", kURem},
+            {"xor", kXor},
+            {"zext", kZExt},
 
-        if (name == "to") return {kTo, {}, start};
+            {"to", kTo},
 
-        if (name == "eq") return {kEQ, {}, start};
-        if (name == "ne") return {kNE, {}, start};
-        if (name == "slt") return {kSLT, {}, start};
-        if (name == "sgt") return {kSGT, {}, start};
-        if (name == "sle") return {kSLE, {}, start};
-        if (name == "sge") return {kSGE, {}, start};
-        if (name == "ult") return {kULT, {}, start};
-        if (name == "ugt") return {kUGT, {}, start};
-        if (name == "ule") return {kULE, {}, start};
-        if (name == "uge") return {kUGE, {}, start};
+            {"eq", kEQ},
+            {"ne", kNE},
+            {"slt", kSLT},
+            {"sgt", kSGT},
+            {"sle", kSLE},
+            {"sge", kSGE},
+            {"ult", kULT},
+            {"ugt", kUGT},
+            {"ule", kULE},
+            {"uge", kUGE},
 
-        if (name == "oeq") return {kOEQ, {}, start};
-        if (name == "one") return {kONE, {}, start};
-        if (name == "olt") return {kOLT, {}, start};
-        if (name == "ogt") return {kOGT, {}, start};
-        if (name == "ole") return {kOLE, {}, start};
-        if (name == "oge") return {kOGE, {}, start};
+            {"oeq", kOEQ},
+            {"one", kONE},
+            {"olt", kOLT},
+            {"ogt", kOGT},
+            {"ole", kOLE},
+            {"oge", kOGE},
 
-        if (name == "x") return {kX, {}, start};
+            {"x", kX},
 
-        if (name == "...") return {kEllipsis, {}, start};
+            {"...", kEllipsis},
+        };
+
+        if (auto i = kLUT.find(name); i != kLUT.end()) {
+            return {i->second, {}, start};
+        }
 
         return {kName, std::move(name), start};
     }
