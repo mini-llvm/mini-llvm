@@ -489,7 +489,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kLSHR:
                     case kASHR:
                         if (!dynamic_cast<const IntegerType *>(&*type)) {
-                            throw ParseException(cursor_, "type must be integer type");
+                            throw ParseException(cursor_, "must be integer type");
                         }
                         break;
 
@@ -499,7 +499,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kFDiv:
                     case kFRem:
                         if (!dynamic_cast<const FloatingType *>(&*type)) {
-                            throw ParseException(cursor_, "type must be floating point type");
+                            throw ParseException(cursor_, "must be floating point type");
                         }
                         break;
 
@@ -547,7 +547,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kUGT: cond = ICmp::Condition::kUGT; break;
                     case kULE: cond = ICmp::Condition::kULE; break;
                     case kUGE: cond = ICmp::Condition::kUGE; break;
-                    default: throw ParseException(cursor_, "expected icmp predicate");
+                    default: throw ParseException(cursor_, "expected icmp condition");
                 }
                 ++cursor_;
 
@@ -574,7 +574,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kOGT: cond = FCmp::Condition::kOGT; break;
                     case kOLE: cond = FCmp::Condition::kOLE; break;
                     case kOGE: cond = FCmp::Condition::kOGE; break;
-                    default: throw ParseException(cursor_, "expected fcmp predicate");
+                    default: throw ParseException(cursor_, "expected fcmp condition");
                 }
                 ++cursor_;
 
@@ -617,7 +617,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
                 if (mnemonic == kTrunc || mnemonic == kSExt || mnemonic == kZExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                        throw ParseException(cursor_, "type must be integer type");
+                        throw ParseException(cursor_, "must be integer type");
                     }
 
                     std::unique_ptr<IntegerType> castType2 = cast<IntegerType>(std::move(type2));
@@ -632,7 +632,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                 } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kSIToFP || mnemonic == kUIToFP) {
                     if (!dynamic_cast<const FloatingType *>(&*type2)) {
-                        throw ParseException(cursor_, "type must be floating point type");
+                        throw ParseException(cursor_, "must be floating point type");
                     }
 
                     std::unique_ptr<FloatingType> castType2 = cast<FloatingType>(std::move(type2));
@@ -646,18 +646,18 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                 } else if (mnemonic == kPtrToInt) {
                     if (*type1 != Ptr()) {
-                        throw ParseException(cursor_, "type must be ptr");
+                        throw ParseException(cursor_, "must be ptr");
                     }
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                        throw ParseException(cursor_, "type must be integer type");
+                        throw ParseException(cursor_, "must be integer type");
                     }
                     I = std::make_shared<PtrToInt>(std::move(value), cast<IntegerType>(std::move(type2)));
                 } else if (mnemonic == kIntToPtr) {
                     if (!dynamic_cast<const IntegerType *>(&*type1)) {
-                        throw ParseException(cursor_, "type must be integer type");
+                        throw ParseException(cursor_, "must be integer type");
                     }
                     if (*type2 != Ptr()) {
-                        throw ParseException(cursor_, "type must be ptr");
+                        throw ParseException(cursor_, "must be ptr");
                     }
                     I = std::make_unique<IntToPtr>(std::move(value));
                 } else if (mnemonic == kBitCast) {
@@ -688,7 +688,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 ++cursor_;
 
                 if (*parseType() != Ptr()) {
-                    throw ParseException(cursor_, "type must be ptr");
+                    throw ParseException(cursor_, "must be ptr");
                 }
 
                 std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -701,7 +701,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 ++cursor_;
 
                 if (*parseType() != I1()) {
-                    throw ParseException(cursor_, "type must be i1");
+                    throw ParseException(cursor_, "must be i1");
                 }
 
                 std::shared_ptr<Value> cond = parseValue(I1());
@@ -740,7 +740,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 ++cursor_;
 
                 if (*parseType() != Ptr()) {
-                    throw ParseException(cursor_, "type must be ptr");
+                    throw ParseException(cursor_, "must be ptr");
                 }
 
                 std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -754,14 +754,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::unique_ptr<Type> idxType;
                 idxType = parseType();
                 if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                    throw ParseException(cursor_, "type must be integer type");
+                    throw ParseException(cursor_, "must be integer type");
                 }
                 indices.push_back(parseValue(*idxType));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
                     idxType = parseType();
                     if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                        throw ParseException(cursor_, "type must be integer type");
+                        throw ParseException(cursor_, "must be integer type");
                     }
                     indices.push_back(parseValue(*idxType));
                 }
@@ -776,7 +776,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
                 std::unique_ptr<Type> returnType = parseType();
                 if (*returnType == Void()) {
-                    throw ParseException(cursor_, "type must not be void");
+                    throw ParseException(cursor_, "must not be void");
                 }
 
                 Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
@@ -790,7 +790,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::shared_ptr<Function> callee = cast<Function>(value);
 
                 if (*callee->functionType()->returnType() != *returnType) {
-                    throw ParseException(cursor_, "callee has wrong return type");
+                    throw ParseException(cursor_, "inconsistent return type");
                 }
 
                 if (cursor_->kind != kLeftParen) {
@@ -888,7 +888,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         ++cursor_;
 
         if (*parseType() != Ptr()) {
-            throw ParseException(cursor_, "type must be ptr");
+            throw ParseException(cursor_, "must be ptr");
         }
 
         std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -899,7 +899,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
         std::unique_ptr<Type> returnType = parseType();
         if (*returnType != Void()) {
-            throw ParseException(cursor_, "type must be void");
+            throw ParseException(cursor_, "must be void");
         }
 
         Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
@@ -913,7 +913,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         std::shared_ptr<Function> callee = cast<Function>(value);
 
         if (*callee->functionType()->returnType() != *returnType) {
-            throw ParseException(cursor_, "callee has wrong return type");
+            throw ParseException(cursor_, "inconsistent return type");
         }
 
         if (cursor_->kind != kLeftParen) {
@@ -953,7 +953,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             ++cursor_;
 
             if (*parseType() != BasicBlockType()) {
-                throw ParseException(cursor_, "type must be label");
+                throw ParseException(cursor_, "must be label");
             }
 
             std::shared_ptr<BasicBlock> trueDest = cast<BasicBlock>(parseValue(BasicBlockType()));
@@ -964,14 +964,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             ++cursor_;
 
             if (*parseType() != BasicBlockType()) {
-                throw ParseException(cursor_, "type must be label");
+                throw ParseException(cursor_, "must be label");
             }
 
             std::shared_ptr<BasicBlock> falseDest = cast<BasicBlock>(parseValue(BasicBlockType()));
 
             return std::make_shared<CondBr>(std::move(cond), std::move(trueDest), std::move(falseDest));
         } else {
-            throw ParseException(cursor_, "type must be label or i1");
+            throw ParseException(cursor_, "must be label or i1");
         }
     } else if (cursor_->kind == kRet) {
         ++cursor_;
@@ -1016,7 +1016,7 @@ std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
     if (symbolTable_.contains(symbol)) {
         std::shared_ptr<Value> value = symbolTable_[symbol];
         if (*value->type() != type) {
-            throw ParseException(cursor_, "identifier has wrong type");
+            throw ParseException(cursor_, "inconsistent type");
         }
         return value;
     }
@@ -1148,13 +1148,13 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             ++cursor_;
             if (cursor_->kind != kRightBracket) {
                 if (*parseType() != *arrayType->elementType()) {
-                    throw ParseException(cursor_, "wrong type");
+                    throw ParseException(cursor_, "inconsistent element type");
                 }
                 elements.push_back(parseConstant(*arrayType->elementType()));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
                     if (*parseType() != *arrayType->elementType()) {
-                        throw ParseException(cursor_, "wrong type");
+                        throw ParseException(cursor_, "inconsistent element type");
                     }
                     elements.push_back(parseConstant(*arrayType->elementType()));
                 }
@@ -1164,14 +1164,14 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             }
             ++cursor_;
             if (elements.size() != arrayType->numElements()) {
-                throw ParseException(cursor_, "wrong number of elements");
+                throw ParseException(cursor_, "inconsistent number of elements");
             }
         } else if (cursor_->kind == kString) {
             if (ir::I8() != *arrayType->elementType()) {
-                throw ParseException(cursor_, "wrong type");
+                throw ParseException(cursor_, "inconsistent element type");
             }
             if (std::get<std::vector<int8_t>>(cursor_->value).size() != arrayType->numElements()) {
-                throw ParseException(cursor_, "wrong number of elements");
+                throw ParseException(cursor_, "inconsistent number of elements");
             }
             for (int8_t element : std::get<std::vector<int8_t>>(cursor_->value)) {
                 elements.push_back(std::make_shared<I8Constant>(element));
