@@ -10,7 +10,6 @@
 #include "mini-llvm/opt/ir/passes/FunctionInlining.h"
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
 #include "mini-llvm/opt/ir/passes/Mem2Reg.h"
-#include "mini-llvm/opt/ir/passes/PoisonFreeze.h"
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
@@ -25,36 +24,25 @@ void PassManager::run(Module &M) const {
     do {
         changed = false;
 
-        bool changed2;
-        do {
-            changed2 = false;
+        DeadCodeElimination         pass1;
+        JumpThreading               pass2;
+        UnreachableBlockElimination pass3;
+        AlgebraicSimplification     pass4;
+        ConstantFolding             pass5;
+        PoisonPropagation           pass6;
+        BranchSimplification        pass7;
+        BasicBlockMerging           pass8;
+        FunctionInlining            pass9;
 
-            DeadCodeElimination         pass1;
-            JumpThreading               pass2;
-            UnreachableBlockElimination pass3;
-            AlgebraicSimplification     pass4;
-            ConstantFolding             pass5;
-            PoisonPropagation           pass6;
-            BranchSimplification        pass7;
-            BasicBlockMerging           pass8;
-            FunctionInlining            pass9;
-
-            changed2 |= run(pass1, M);
-            changed2 |= run(pass2, M);
-            changed2 |= run(pass3, M);
-            changed2 |= run(pass4, M);
-            changed2 |= run(pass5, M);
-            changed2 |= run(pass6, M);
-            changed2 |= run(pass7, M);
-            changed2 |= run(pass8, M);
-            changed2 |= run(pass9, M);
-
-            changed |= changed2;
-        } while (changed2);
-
-        PoisonFreeze pass;
-
-        changed |= run(pass, M);
+        changed |= run(pass1, M);
+        changed |= run(pass2, M);
+        changed |= run(pass3, M);
+        changed |= run(pass4, M);
+        changed |= run(pass5, M);
+        changed |= run(pass6, M);
+        changed |= run(pass7, M);
+        changed |= run(pass8, M);
+        changed |= run(pass9, M);
     } while (changed);
 }
 

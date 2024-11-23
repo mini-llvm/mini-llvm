@@ -23,6 +23,7 @@
 #include "mini-llvm/ir/Constant/I8Constant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Constant/NullPtrConstant.h"
+#include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/GlobalVar.h"
@@ -1110,6 +1111,10 @@ private:
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(0);
             builder_.add(std::make_unique<LI>(8, reg, std::move(imm)));
+            return reg;
+        }
+        if (dynamic_cast<const ir::PoisonValue *>(&value)) {
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
             return reg;
         }
         std::unreachable();

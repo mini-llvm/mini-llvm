@@ -113,7 +113,6 @@
 - `FunctionInlining`
 - `JumpThreading`
 - `Mem2Reg`
-- `PoisonFreeze`
 - `PoisonPropagation`
 - `UnreachableBlockElimination`
 
