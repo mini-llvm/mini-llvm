@@ -1,5 +1,6 @@
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <utility>
 
 #include "mini-llvm/common/ops/Add.h"
@@ -48,7 +49,16 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-template <typename Op, bool MayBePoison>
+template <typename T>
+struct is_optional : std::false_type {};
+
+template <typename T>
+struct is_optional<std::optional<T>> : std::true_type {};
+
+template <typename T>
+inline constexpr bool is_optional_v = is_optional<T>::value;
+
+template <typename Op>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
@@ -82,31 +92,28 @@ private:
     std::optional<std::unique_ptr<Constant>> result_;
 
     template <typename Const, typename Ty>
-        requires (!MayBePoison)
     void visit(const Const &rhs) {
-        result_.emplace(std::make_unique<Const>(Op()(static_cast<const Const &>(lhs_).value(), rhs.value())));
-    }
-
-    template <typename Const, typename Ty>
-        requires MayBePoison
-    void visit(const Const &rhs) {
-        auto result = Op()(static_cast<const Const &>(lhs_).value(), rhs.value());
-        if (result.has_value()) {
-            result_.emplace(std::make_unique<Const>(result.value()));
+        auto opResult = Op()(static_cast<const Const &>(lhs_).value(), rhs.value());
+        if constexpr (is_optional_v<decltype(opResult)>) {
+            if (opResult.has_value()) {
+                result_.emplace(std::make_unique<Const>(opResult.value()));
+            } else {
+                result_.emplace(std::make_unique<PoisonValue>(std::make_unique<Ty>()));
+            }
         } else {
-            result_.emplace(std::make_unique<PoisonValue>(std::make_unique<Ty>()));
+            result_.emplace(std::make_unique<Const>(opResult));
         }
     }
 };
 
-template <typename Op, bool MayBePoison>
+template <typename Op>
 std::unique_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
     const Constant &lhs = static_cast<const Constant &>(*I.lhs()),
                    &rhs = static_cast<const Constant &>(*I.rhs());
     if (dynamic_cast<const PoisonValue *>(&lhs) || dynamic_cast<const PoisonValue *>(&rhs)) {
         return std::make_unique<PoisonValue>(I.type());
     }
-    ConstantVisitorImpl<Op, MayBePoison> visitor(lhs);
+    ConstantVisitorImpl<Op> visitor(lhs);
     rhs.accept(visitor);
     return visitor.takeResult();
 }
@@ -114,53 +121,53 @@ std::unique_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
 } // namespace
 
 std::unique_ptr<Constant> Add::fold() const {
-    return foldImpl<ops::Add, false>(*this);
+    return foldImpl<ops::Add>(*this);
 }
 
 std::unique_ptr<Constant> Sub::fold() const {
-    return foldImpl<ops::Sub, false>(*this);
+    return foldImpl<ops::Sub>(*this);
 }
 
 std::unique_ptr<Constant> Mul::fold() const {
-    return foldImpl<ops::Mul, false>(*this);
+    return foldImpl<ops::Mul>(*this);
 }
 
 std::unique_ptr<Constant> SDiv::fold() const {
-    return foldImpl<ops::SDiv, true>(*this);
+    return foldImpl<ops::SDiv>(*this);
 }
 
 std::unique_ptr<Constant> UDiv::fold() const {
-    return foldImpl<ops::UDiv, true>(*this);
+    return foldImpl<ops::UDiv>(*this);
 }
 
 std::unique_ptr<Constant> SRem::fold() const {
-    return foldImpl<ops::SRem, true>(*this);
+    return foldImpl<ops::SRem>(*this);
 }
 
 std::unique_ptr<Constant> URem::fold() const {
-    return foldImpl<ops::URem, true>(*this);
+    return foldImpl<ops::URem>(*this);
 }
 
 std::unique_ptr<Constant> And::fold() const {
-    return foldImpl<ops::And, false>(*this);
+    return foldImpl<ops::And>(*this);
 }
 
 std::unique_ptr<Constant> Or::fold() const {
-    return foldImpl<ops::Or, false>(*this);
+    return foldImpl<ops::Or>(*this);
 }
 
 std::unique_ptr<Constant> Xor::fold() const {
-    return foldImpl<ops::Xor, false>(*this);
+    return foldImpl<ops::Xor>(*this);
 }
 
 std::unique_ptr<Constant> SHL::fold() const {
-    return foldImpl<ops::SHL, true>(*this);
+    return foldImpl<ops::SHL>(*this);
 }
 
 std::unique_ptr<Constant> LSHR::fold() const {
-    return foldImpl<ops::LSHR, true>(*this);
+    return foldImpl<ops::LSHR>(*this);
 }
 
 std::unique_ptr<Constant> ASHR::fold() const {
-    return foldImpl<ops::ASHR, true>(*this);
+    return foldImpl<ops::ASHR>(*this);
 }

@@ -51,9 +51,9 @@ private:
 
     template <typename Const>
     void visit(const Const &value) {
-        auto result = Op()(value.value());
-        if (result.has_value()) {
-            result_.emplace(std::make_unique<ResultConst>(result.value()));
+        auto opResult = Op()(value.value());
+        if (opResult.has_value()) {
+            result_.emplace(std::make_unique<ResultConst>(opResult.value()));
         } else {
             result_.emplace(std::make_unique<PoisonValue>(std::make_unique<ResultTy>()));
         }
