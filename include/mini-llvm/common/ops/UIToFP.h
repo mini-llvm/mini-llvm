@@ -11,11 +11,11 @@ template <typename To>
 struct UIToFP {
     template <typename From>
         requires std::integral<From>
-    To operator()(From x) const {
+    To operator()(From x) const noexcept {
         return static_cast<To>(std::bit_cast<std::make_unsigned_t<From>>(x));
     }
 
-    To operator()(bool x) const {
+    To operator()(bool x) const noexcept {
         return static_cast<To>(x);
     }
 };

@@ -2,22 +2,20 @@
 
 #include <bit>
 #include <concepts>
-
-#include "mini-llvm/common/IllegalOperationException.h"
-#include "mini-llvm/common/PoisonValueException.h"
+#include <utility>
 
 namespace mini_llvm::ops {
 
 template <typename To>
 struct BitCast {
     template <typename From>
-    To operator()(From) const {
-        throw IllegalOperationException();
+    To operator()(From) const noexcept {
+        std::unreachable();
     }
 
     template <typename From>
         requires (!std::same_as<From, bool>) && (sizeof(To) == sizeof(From))
-    To operator()(From x) const {
+    To operator()(From x) const noexcept {
         return std::bit_cast<To>(x);
     }
 };
@@ -25,11 +23,11 @@ struct BitCast {
 template <>
 struct BitCast<bool> {
     template <typename From>
-    bool operator()(From) const {
-        throw PoisonValueException();
+    bool operator()(From) const noexcept {
+        std::unreachable();
     }
 
-    bool operator()(bool x) const {
+    bool operator()(bool x) const noexcept {
         return x;
     }
 };

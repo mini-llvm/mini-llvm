@@ -2,27 +2,26 @@
 
 #include <bit>
 #include <concepts>
+#include <optional>
 #include <type_traits>
-
-#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
 struct SRem {
     template <typename T>
         requires std::integral<T>
-    T operator()(T x, T y) const {
+    std::optional<T> operator()(T x, T y) const noexcept {
         if (y == 0)
-            throw PoisonValueException();
+            return std::nullopt;
         return
             std::bit_cast<T>(
                 static_cast<std::make_signed_t<T>>(
                     std::bit_cast<std::make_signed_t<T>>(x) % std::bit_cast<std::make_signed_t<T>>(y)));
     }
 
-    bool operator()(bool, bool y) const {
+    std::optional<bool> operator()(bool, bool y) const noexcept {
         if (y == false)
-            throw PoisonValueException();
+            return std::nullopt;
         return false;
     }
 };

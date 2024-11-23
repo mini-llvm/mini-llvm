@@ -5,7 +5,6 @@
 
 #include "mini-llvm/common/ops/FPToSI.h"
 #include "mini-llvm/common/ops/FPToUI.h"
-#include "mini-llvm/common/PoisonValueException.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/DoubleConstant.h"
 #include "mini-llvm/ir/Constant/FloatConstant.h"
@@ -52,9 +51,10 @@ private:
 
     template <typename Const>
     void visit(const Const &value) {
-        try {
-            result_.emplace(std::make_unique<ResultConst>(Op()(value.value())));
-        } catch (const PoisonValueException &) {
+        auto result = Op()(value.value());
+        if (result.has_value()) {
+            result_.emplace(std::make_unique<ResultConst>(result.value()));
+        } else {
             result_.emplace(std::make_unique<PoisonValue>(std::make_unique<ResultTy>()));
         }
     }

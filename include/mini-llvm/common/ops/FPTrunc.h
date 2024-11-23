@@ -1,8 +1,7 @@
 #pragma once
 
 #include <concepts>
-
-#include "mini-llvm/common/IllegalOperationException.h"
+#include <utility>
 
 namespace mini_llvm::ops {
 
@@ -11,13 +10,13 @@ template <typename To>
 struct FPTrunc {
     template <typename From>
         requires std::floating_point<From>
-    To operator()(From) const {
-        throw IllegalOperationException();
+    To operator()(From) const noexcept {
+        std::unreachable();
     }
 
     template <typename From>
         requires std::floating_point<From> && (sizeof(To) <= sizeof(From))
-    To operator()(From x) const {
+    To operator()(From x) const noexcept {
         return static_cast<To>(x);
     }
 };

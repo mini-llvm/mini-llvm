@@ -15,7 +15,6 @@
 #include "mini-llvm/common/ops/UDiv.h"
 #include "mini-llvm/common/ops/URem.h"
 #include "mini-llvm/common/ops/Xor.h"
-#include "mini-llvm/common/PoisonValueException.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/I16Constant.h"
 #include "mini-llvm/ir/Constant/I1Constant.h"
@@ -49,7 +48,7 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-template <typename Op>
+template <typename Op, bool MayBePoison>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
@@ -83,23 +82,31 @@ private:
     std::optional<std::unique_ptr<Constant>> result_;
 
     template <typename Const, typename Ty>
+        requires (!MayBePoison)
     void visit(const Const &rhs) {
-        try {
-            result_.emplace(std::make_unique<Const>(Op()(static_cast<const Const &>(lhs_).value(), rhs.value())));
-        } catch (const PoisonValueException &) {
+        result_.emplace(std::make_unique<Const>(Op()(static_cast<const Const &>(lhs_).value(), rhs.value())));
+    }
+
+    template <typename Const, typename Ty>
+        requires MayBePoison
+    void visit(const Const &rhs) {
+        auto result = Op()(static_cast<const Const &>(lhs_).value(), rhs.value());
+        if (result.has_value()) {
+            result_.emplace(std::make_unique<Const>(result.value()));
+        } else {
             result_.emplace(std::make_unique<PoisonValue>(std::make_unique<Ty>()));
         }
     }
 };
 
-template <typename Op>
+template <typename Op, bool MayBePoison>
 std::unique_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
     const Constant &lhs = static_cast<const Constant &>(*I.lhs()),
                    &rhs = static_cast<const Constant &>(*I.rhs());
     if (dynamic_cast<const PoisonValue *>(&lhs) || dynamic_cast<const PoisonValue *>(&rhs)) {
         return std::make_unique<PoisonValue>(I.type());
     }
-    ConstantVisitorImpl<Op> visitor(lhs);
+    ConstantVisitorImpl<Op, MayBePoison> visitor(lhs);
     rhs.accept(visitor);
     return visitor.takeResult();
 }
@@ -107,53 +114,53 @@ std::unique_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
 } // namespace
 
 std::unique_ptr<Constant> Add::fold() const {
-    return foldImpl<ops::Add>(*this);
+    return foldImpl<ops::Add, false>(*this);
 }
 
 std::unique_ptr<Constant> Sub::fold() const {
-    return foldImpl<ops::Sub>(*this);
+    return foldImpl<ops::Sub, false>(*this);
 }
 
 std::unique_ptr<Constant> Mul::fold() const {
-    return foldImpl<ops::Mul>(*this);
+    return foldImpl<ops::Mul, false>(*this);
 }
 
 std::unique_ptr<Constant> SDiv::fold() const {
-    return foldImpl<ops::SDiv>(*this);
+    return foldImpl<ops::SDiv, true>(*this);
 }
 
 std::unique_ptr<Constant> UDiv::fold() const {
-    return foldImpl<ops::UDiv>(*this);
+    return foldImpl<ops::UDiv, true>(*this);
 }
 
 std::unique_ptr<Constant> SRem::fold() const {
-    return foldImpl<ops::SRem>(*this);
+    return foldImpl<ops::SRem, true>(*this);
 }
 
 std::unique_ptr<Constant> URem::fold() const {
-    return foldImpl<ops::URem>(*this);
+    return foldImpl<ops::URem, true>(*this);
 }
 
 std::unique_ptr<Constant> And::fold() const {
-    return foldImpl<ops::And>(*this);
+    return foldImpl<ops::And, false>(*this);
 }
 
 std::unique_ptr<Constant> Or::fold() const {
-    return foldImpl<ops::Or>(*this);
+    return foldImpl<ops::Or, false>(*this);
 }
 
 std::unique_ptr<Constant> Xor::fold() const {
-    return foldImpl<ops::Xor>(*this);
+    return foldImpl<ops::Xor, false>(*this);
 }
 
 std::unique_ptr<Constant> SHL::fold() const {
-    return foldImpl<ops::SHL>(*this);
+    return foldImpl<ops::SHL, true>(*this);
 }
 
 std::unique_ptr<Constant> LSHR::fold() const {
-    return foldImpl<ops::LSHR>(*this);
+    return foldImpl<ops::LSHR, true>(*this);
 }
 
 std::unique_ptr<Constant> ASHR::fold() const {
-    return foldImpl<ops::ASHR>(*this);
+    return foldImpl<ops::ASHR, true>(*this);
 }

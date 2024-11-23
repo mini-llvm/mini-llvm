@@ -11,11 +11,11 @@ template <typename To>
 struct SIToFP {
     template <typename From>
         requires std::integral<From>
-    To operator()(From x) const {
+    To operator()(From x) const noexcept {
         return static_cast<To>(std::bit_cast<std::make_signed_t<From>>(x));
     }
 
-    To operator()(bool x) const {
+    To operator()(bool x) const noexcept {
         return static_cast<To>(x);
     }
 };

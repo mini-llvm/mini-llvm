@@ -9,7 +9,7 @@ namespace mini_llvm::ops {
 struct ULE {
     template <typename T>
         requires std::integral<T>
-    bool operator()(T x, T y) const {
+    bool operator()(T x, T y) const noexcept {
         return !UGT()(x, y);
     }
 };

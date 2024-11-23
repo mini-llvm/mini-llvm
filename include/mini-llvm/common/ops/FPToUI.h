@@ -4,9 +4,8 @@
 #include <cmath>
 #include <concepts>
 #include <limits>
+#include <optional>
 #include <type_traits>
-
-#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
@@ -15,12 +14,12 @@ template <typename To>
 struct FPToUI {
     template <typename From>
         requires std::floating_point<From>
-    To operator()(From x) const {
+    std::optional<To> operator()(From x) const noexcept {
         From t = std::trunc(x);
         if (t > static_cast<From>(std::numeric_limits<std::make_unsigned_t<To>>::max()))
-            throw PoisonValueException();
+            return std::nullopt;
         if (t < 0.0)
-            throw PoisonValueException();
+            return std::nullopt;
         return std::bit_cast<To>(static_cast<std::make_unsigned_t<To>>(x));
     }
 };
@@ -29,11 +28,11 @@ template <>
 struct FPToUI<bool> {
     template <typename From>
         requires std::floating_point<From>
-    bool operator()(From x) const {
+    std::optional<bool> operator()(From x) const noexcept {
         From t = std::trunc(x);
         if (t == 0.0) return false;
         if (t == 1.0) return true;
-        throw PoisonValueException();
+        return std::nullopt;
     }
 };
 

@@ -3,28 +3,27 @@
 #include <bit>
 #include <concepts>
 #include <limits>
+#include <optional>
 #include <type_traits>
-
-#include "mini-llvm/common/PoisonValueException.h"
 
 namespace mini_llvm::ops {
 
 struct SDiv {
     template <typename T>
         requires std::integral<T>
-    T operator()(T x, T y) const {
+    std::optional<T> operator()(T x, T y) const noexcept {
         std::make_signed_t<T> sx = std::bit_cast<std::make_signed_t<T>>(x),
                               sy = std::bit_cast<std::make_signed_t<T>>(y);
         if (sy == 0)
-            throw PoisonValueException();
+            return std::nullopt;
         if (sx == std::numeric_limits<std::make_signed_t<T>>::min() && sy == -1)
-            throw PoisonValueException();
+            return std::nullopt;
         return std::bit_cast<T>(static_cast<T>(sx / sy));
     }
 
-    bool operator()(bool x, bool y) const {
+    std::optional<bool> operator()(bool x, bool y) const noexcept {
         if (y == false)
-            throw PoisonValueException();
+            return std::nullopt;
         return x;
     }
 };

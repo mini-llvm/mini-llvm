@@ -9,11 +9,11 @@ namespace mini_llvm::ops {
 struct SGT {
     template <typename T>
         requires std::integral<T>
-    bool operator()(T x, T y) const {
+    bool operator()(T x, T y) const noexcept {
         return std::bit_cast<std::make_signed_t<T>>(x) > std::bit_cast<std::make_signed_t<T>>(y);
     }
 
-    bool operator()(bool x, bool y) const {
+    bool operator()(bool x, bool y) const noexcept {
         return !x && y;
     }
 };
