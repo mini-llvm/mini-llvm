@@ -30,7 +30,7 @@ bool RedundantLabelElimination::runOnFragment(Fragment &fragment) {
 
     std::vector<Fragment::const_iterator> remove;
 
-    for (Fragment::const_iterator i = fragment.begin(); i != fragment.end(); ++i) {
+    for (Fragment::const_iterator i = fragment.begin(), e = fragment.end(); i != e; ++i) {
         if (auto *label = dynamic_cast<const Label *>(&*i)) {
             if (!referenced.contains(label->labelName())) {
                 remove.push_back(i);

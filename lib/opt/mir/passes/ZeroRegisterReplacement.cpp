@@ -50,7 +50,7 @@ bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {
 
         std::vector<std::pair<BasicBlock::const_iterator, std::unique_ptr<Instruction>>> replace;
 
-        for (BasicBlock::const_iterator i = B.begin(); i != B.end(); ++i) {
+        for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
             if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
                 if (&*mov->src() == zeroReg_) {
                     int width = mov->width();

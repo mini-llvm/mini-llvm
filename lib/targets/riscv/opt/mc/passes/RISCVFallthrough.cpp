@@ -17,7 +17,7 @@ bool RISCVFallthrough::runOnFragment(Fragment &fragment) {
 
     std::vector<Fragment::const_iterator> remove;
 
-    for (Fragment::const_iterator i = fragment.begin(), j = std::next(i); j != fragment.end(); ++i, ++j) {
+    for (Fragment::const_iterator i = fragment.begin(), j = std::next(fragment.begin()), e = fragment.end(); j != e; ++i, ++j) {
         if (auto *I = dynamic_cast<const RISCVInstruction *>(&*i)) {
             if (I->opcode() == RISCV_J) {
                 if (auto *labelOp = dynamic_cast<const LabelOperand *>(&*I->operand_begin())) {

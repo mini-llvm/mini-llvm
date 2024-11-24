@@ -40,7 +40,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         for (BasicBlock &B : F) {
             std::vector<BasicBlock::const_iterator> remove;
 
-            for (BasicBlock::const_iterator i = B.begin(); i != B.end(); ++i) {
+            for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
                 if (canRemove(*i, liveVars.liveOut(*i))) {
                     remove.push_back(i);
                 }

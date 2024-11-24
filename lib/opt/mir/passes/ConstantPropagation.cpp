@@ -19,7 +19,7 @@ bool ConstantPropagation::runOnBasicBlock(BasicBlock &B) {
     std::unordered_map<Register *, std::unique_ptr<Immediate>> values;
     std::vector<std::pair<BasicBlock::const_iterator, std::unique_ptr<Instruction>>> replace;
 
-    for (BasicBlock::const_iterator i = B.begin(); i != B.end(); ++i) {
+    for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
         for (Register *reg : def(*i)) {
             values.erase(reg);
         }

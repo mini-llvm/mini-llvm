@@ -98,7 +98,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
     bool changed = false;
 
     for (BasicBlock &B : F) {
-        for (BasicBlock::const_iterator i = B.begin(); i != B.end(); ++i) {
+        for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
             if (auto *call = dynamic_cast<const Call *>(&*i)) {
                 const Function *callee = &*call->callee();
                 if (shouldInline(*callee)) {
