@@ -18,10 +18,6 @@ public:
         return &value_;
     }
 
-    T *operator->() const {
-        return &value_;
-    }
-
     template <typename... Args>
     static ArrowProxy<T> make(Args &&...args) {
         return ArrowProxy<T>(std::in_place, std::forward<Args>(args)...);
