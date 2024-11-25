@@ -9,6 +9,8 @@
 
 namespace mini_llvm {
 
+// https://www.boost.org/doc/libs/1_86_0/libs/container_hash/doc/html/hash.html
+
 template <typename T>
 constexpr void hash_combine(size_t &seed, const T &v) noexcept;
 

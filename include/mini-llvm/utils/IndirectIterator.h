@@ -7,6 +7,8 @@
 
 namespace mini_llvm {
 
+// https://www.boost.org/doc/libs/1_86_0/libs/iterator/doc/indirect_iterator.html
+
 template <typename Iterator,
           typename Value = typename std::pointer_traits<typename std::iterator_traits<Iterator>::value_type>::element_type>
 class IndirectIterator {
