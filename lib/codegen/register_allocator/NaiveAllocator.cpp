@@ -29,8 +29,8 @@ using namespace mini_llvm::set_ops;
 namespace {
 
 bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
-    if (lhs->isVolatile() != rhs->isVolatile()) {
-        return lhs->isVolatile() > rhs->isVolatile();
+    if (lhs->isPreserved() != rhs->isPreserved()) {
+        return lhs->isPreserved() < rhs->isPreserved();
     }
     if (lhs->idx() != rhs->idx()) {
         return lhs->idx() < rhs->idx();

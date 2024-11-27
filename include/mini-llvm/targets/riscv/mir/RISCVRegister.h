@@ -23,8 +23,8 @@ public:
         return class_;
     }
 
-    bool isVolatile() const override {
-        return isVolatile_;
+    bool isPreserved() const override {
+        return isPreserved_;
     }
 
     bool isAllocatable() const override {
@@ -37,17 +37,17 @@ private:
     int idx_;
     const char *name_;
     RegisterClass class_;
-    bool isVolatile_;
+    bool isPreserved_;
     bool isAllocatable_;
 
-    RISCVRegister(int idx, const char *name, RegisterClass Class, bool isVolatile, bool isAllocatable)
-        : idx_(idx), name_(name), class_(Class), isVolatile_(isVolatile), isAllocatable_(isAllocatable) {}
+    RISCVRegister(int idx, const char *name, RegisterClass Class, bool isPreserved, bool isAllocatable)
+        : idx_(idx), name_(name), class_(Class), isPreserved_(isPreserved), isAllocatable_(isAllocatable) {}
 };
 
 namespace riscv {
 
 #define REGS
-#define X(idx, name, class, isVolatile, isAllocatable) inline RISCVRegister *name() { return RISCVRegister::get(idx); }
+#define X(idx, name, class, isPreserved, isAllocatable) inline RISCVRegister *name() { return RISCVRegister::get(idx); }
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
@@ -59,7 +59,7 @@ inline std::unordered_set<RISCVRegister *> riscvRegs() {
 
     return {
 #define REGS
-#define X(idx, name, class, isVolatile, isAllocatable) name(),
+#define X(idx, name, class, isPreserved, isAllocatable) name(),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS

@@ -12,7 +12,7 @@ using namespace mini_llvm::mir::riscv;
 std::unordered_set<PhysicalRegister *> RISCVCall::implicitDsts() const {
     std::unordered_set<PhysicalRegister *> implicitDsts;
     for (PhysicalRegister *physReg : riscvRegs()) {
-        if (physReg->isVolatile()) {
+        if (!physReg->isPreserved()) {
             implicitDsts.insert(physReg);
         }
     }

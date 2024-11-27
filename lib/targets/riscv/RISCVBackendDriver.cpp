@@ -180,7 +180,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     for (const Instruction &I : B) {
                         for (Register *reg : def(I)) {
                             if (auto *physReg = dynamic_cast<PhysicalRegister *>(reg);
-                                    physReg && !physReg->isVolatile() && physReg->isAllocatable()) {
+                                    physReg && physReg->isPreserved() && physReg->isAllocatable()) {
                                 save.insert(physReg);
                             }
                         }

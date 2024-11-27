@@ -17,10 +17,10 @@ RISCVRegister *RISCVRegister::get(int idx) {
 
     switch (idx) {
 #define REGS
-#define X(idx, name, class, isVolatile, isAllocatable) \
+#define X(idx, name, class, isPreserved, isAllocatable) \
     case idx: \
         return &*pool.insert( \
-            {idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, isVolatile, isAllocatable))}).first->second;
+            {idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, isPreserved, isAllocatable))}).first->second;
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
