@@ -2,64 +2,69 @@
 
 declare i32 @printf(ptr, ...)
 
+define i32 @source(i32 %0) noinline {
+1:
+  ret i32 %0
+}
+
 define void @sink(i32 %0) noinline {
 1:
   %2 = call i32 @printf(ptr @__format, i32 %0)
   ret void
 }
 
-define void @example(i32 %0) noinline {
+define void @example() noinline {
 1:
-  %2 = add i32 %0, 0
-  %3 = add i32 %0, 1
-  %4 = add i32 %0, 2
-  %5 = add i32 %0, 3
-  %6 = add i32 %0, 4
-  %7 = add i32 %0, 5
-  %8 = add i32 %0, 6
-  %9 = add i32 %0, 7
-  %10 = add i32 %0, 8
-  %11 = add i32 %0, 9
-  %12 = add i32 %0, 10
-  %13 = add i32 %0, 11
-  %14 = add i32 %0, 12
-  %15 = add i32 %0, 13
-  %16 = add i32 %0, 14
-  %17 = add i32 %0, 15
-  %18 = add i32 %0, 16
-  %19 = add i32 %0, 17
-  %20 = add i32 %0, 18
-  %21 = add i32 %0, 19
-  %22 = add i32 %0, 20
-  %23 = add i32 %0, 21
-  %24 = add i32 %0, 22
-  %25 = add i32 %0, 23
-  %26 = add i32 %0, 24
-  %27 = add i32 %0, 25
-  %28 = add i32 %0, 26
-  %29 = add i32 %0, 27
-  %30 = add i32 %0, 28
-  %31 = add i32 %0, 29
-  %32 = add i32 %0, 30
-  %33 = add i32 %0, 31
-  %34 = add i32 %0, 32
-  %35 = add i32 %0, 33
-  %36 = add i32 %0, 34
-  %37 = add i32 %0, 35
-  %38 = add i32 %0, 36
-  %39 = add i32 %0, 37
-  %40 = add i32 %0, 38
-  %41 = add i32 %0, 39
-  %42 = add i32 %0, 40
-  %43 = add i32 %0, 41
-  %44 = add i32 %0, 42
-  %45 = add i32 %0, 43
-  %46 = add i32 %0, 44
-  %47 = add i32 %0, 45
-  %48 = add i32 %0, 46
-  %49 = add i32 %0, 47
-  %50 = add i32 %0, 48
-  %51 = add i32 %0, 49
+  %2 = call i32 @source(i32 0)
+  %3 = call i32 @source(i32 1)
+  %4 = call i32 @source(i32 2)
+  %5 = call i32 @source(i32 3)
+  %6 = call i32 @source(i32 4)
+  %7 = call i32 @source(i32 5)
+  %8 = call i32 @source(i32 6)
+  %9 = call i32 @source(i32 7)
+  %10 = call i32 @source(i32 8)
+  %11 = call i32 @source(i32 9)
+  %12 = call i32 @source(i32 10)
+  %13 = call i32 @source(i32 11)
+  %14 = call i32 @source(i32 12)
+  %15 = call i32 @source(i32 13)
+  %16 = call i32 @source(i32 14)
+  %17 = call i32 @source(i32 15)
+  %18 = call i32 @source(i32 16)
+  %19 = call i32 @source(i32 17)
+  %20 = call i32 @source(i32 18)
+  %21 = call i32 @source(i32 19)
+  %22 = call i32 @source(i32 20)
+  %23 = call i32 @source(i32 21)
+  %24 = call i32 @source(i32 22)
+  %25 = call i32 @source(i32 23)
+  %26 = call i32 @source(i32 24)
+  %27 = call i32 @source(i32 25)
+  %28 = call i32 @source(i32 26)
+  %29 = call i32 @source(i32 27)
+  %30 = call i32 @source(i32 28)
+  %31 = call i32 @source(i32 29)
+  %32 = call i32 @source(i32 30)
+  %33 = call i32 @source(i32 31)
+  %34 = call i32 @source(i32 32)
+  %35 = call i32 @source(i32 33)
+  %36 = call i32 @source(i32 34)
+  %37 = call i32 @source(i32 35)
+  %38 = call i32 @source(i32 36)
+  %39 = call i32 @source(i32 37)
+  %40 = call i32 @source(i32 38)
+  %41 = call i32 @source(i32 39)
+  %42 = call i32 @source(i32 40)
+  %43 = call i32 @source(i32 41)
+  %44 = call i32 @source(i32 42)
+  %45 = call i32 @source(i32 43)
+  %46 = call i32 @source(i32 44)
+  %47 = call i32 @source(i32 45)
+  %48 = call i32 @source(i32 46)
+  %49 = call i32 @source(i32 47)
+  %50 = call i32 @source(i32 48)
+  %51 = call i32 @source(i32 49)
   call void @sink(i32 %2)
   call void @sink(i32 %3)
   call void @sink(i32 %4)
@@ -115,6 +120,6 @@ define void @example(i32 %0) noinline {
 
 define i32 @main() {
 0:
-  call void @example(i32 0)
+  call void @example()
   ret i32 0
 }
