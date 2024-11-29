@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 #include <string>
 
 #include <errno.h>
@@ -33,8 +34,8 @@ enum class Target {
 
 struct Options {
     Target target;
-    const char *inputFile;
-    const char *outputFile;
+    std::filesystem::path inputFile;
+    std::filesystem::path outputFile;
 };
 
 void computeLineColumn(const char *start, const char *location, size_t &line, size_t &column) {
@@ -66,7 +67,7 @@ int main(int argc, char *argv[]) {
     while ((opt = getopt_long(argc, argv, shortOpts, longOpts, nullptr)) != -1) {
         switch (opt) {
         case CHAR_MAX + 1:
-            fprintf(stdout, "Usage: %s --target=<target> -o <output-file> <input-file>\n", argv[0]);
+            fprintf(stdout, "Usage: %s --target=<target> [-o <output-file>] <input-file>\n", argv[0]);
             exit(0);
 
         case CHAR_MAX + 2:
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]) {
             exit(1);
 
         case 'o':
-            if (options.outputFile == nullptr) {
+            if (options.outputFile.empty()) {
                 if (*optarg != '\0') {
                     options.outputFile = optarg;
                     break;
@@ -99,7 +100,7 @@ int main(int argc, char *argv[]) {
     }
 
     for (; optind < argc; ++optind) {
-        if (options.inputFile == nullptr) {
+        if (options.inputFile.empty()) {
             if (*argv[optind] != '\0') {
                 options.inputFile = argv[optind];
                 continue;
@@ -116,18 +117,17 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    if (options.inputFile == nullptr) {
+    if (options.inputFile.empty()) {
         fprintf(stderr, "%s: error: no input file\n", argv[0]);
         exit(1);
     }
 
-    if (options.outputFile == nullptr) {
-        fprintf(stderr, "%s: error: no output file\n", argv[0]);
-        exit(1);
+    if (options.outputFile.empty()) {
+        options.outputFile = std::filesystem::path(options.inputFile).replace_extension(".s");
     }
 
     int inputFd;
-    if ((inputFd = open(options.inputFile, O_RDONLY)) == -1) {
+    if ((inputFd = open(options.inputFile.c_str(), O_RDONLY)) == -1) {
         error(1, errno, "open");
     }
 
@@ -159,14 +159,14 @@ int main(int argc, char *argv[]) {
     if (hasError) {
         size_t line, column;
         computeLineColumn(reinterpret_cast<const char *>(addr), location, line, column);
-        fprintf(stderr, "%s:%zu:%zu: error: %s\n", options.inputFile, line, column, message.c_str());
+        fprintf(stderr, "%s:%zu:%zu: error: %s\n", options.inputFile.c_str(), line, column, message.c_str());
         exit(1);
     }
 
     try {
         ir::VerificationAnalysis().runOnModule(M);
     } catch (const ir::VerificationException &) {
-        fprintf(stderr, "%s: error: input module cannot be verified\n", options.inputFile);
+        fprintf(stderr, "%s: error: input module cannot be verified\n", options.inputFile.c_str());
         exit(1);
     }
 
@@ -186,7 +186,7 @@ int main(int argc, char *argv[]) {
     std::string output = program.format() + '\n';
 
     int outputFd;
-    if ((outputFd = open(options.outputFile, O_WRONLY | O_CREAT | O_TRUNC, 0666)) == -1) {
+    if ((outputFd = open(options.outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666)) == -1) {
         error(1, errno, "open");
     }
 
