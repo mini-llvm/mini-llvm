@@ -22,6 +22,8 @@ Call::Call(std::weak_ptr<Function> callee, std::vector<std::shared_ptr<Value>> a
     }
 }
 
+Call::~Call() = default;
+
 std::unordered_set<const UseBase *> Call::operands() const {
     std::unordered_set<const UseBase *> operands;
     operands.insert(&callee());
