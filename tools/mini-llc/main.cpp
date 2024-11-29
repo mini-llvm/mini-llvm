@@ -32,9 +32,9 @@ enum class Target {
 };
 
 struct Options {
+    Target target;
     const char *inputFile;
     const char *outputFile;
-    Target target;
 };
 
 void computeLineColumn(const char *start, const char *location, size_t &line, size_t &column) {
@@ -73,28 +73,25 @@ int main(int argc, char *argv[]) {
             if (options.target == Target::kNone) {
                 if (strcmp(optarg, "riscv64") == 0) {
                     options.target = Target::kRISCV64;
-                } else {
-                    fprintf(stderr, "%s: error: invalid target '%s'\n", argv[0], optarg);
-                    exit(1);
+                    break;
                 }
-            } else {
-                fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
+                fprintf(stderr, "%s: error: invalid target '%s'\n", argv[0], optarg);
                 exit(1);
             }
-            break;
+            fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
+            exit(1);
 
         case 'o':
             if (options.outputFile == nullptr) {
-                if (*optarg == 0) {
-                    fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
-                    exit(1);
+                if (*optarg != '\0') {
+                    options.outputFile = optarg;
+                    break;
                 }
-                options.outputFile = optarg;
-            } else {
-                fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
+                fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
                 exit(1);
             }
-            break;
+            fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
+            exit(1);
 
         default:
             exit(1);
@@ -103,15 +100,20 @@ int main(int argc, char *argv[]) {
 
     for (; optind < argc; ++optind) {
         if (options.inputFile == nullptr) {
-            if (*argv[optind] == 0) {
-                fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
-                exit(1);
+            if (*argv[optind] != '\0') {
+                options.inputFile = argv[optind];
+                continue;
             }
-            options.inputFile = argv[optind];
-        } else {
-            fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
+            fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
             exit(1);
         }
+        fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
+        exit(1);
+    }
+
+    if (options.target == Target::kNone) {
+        fprintf(stderr, "%s: error: no target\n", argv[0]);
+        exit(1);
     }
 
     if (options.inputFile == nullptr) {
@@ -121,11 +123,6 @@ int main(int argc, char *argv[]) {
 
     if (options.outputFile == nullptr) {
         fprintf(stderr, "%s: error: no output file\n", argv[0]);
-        exit(1);
-    }
-
-    if (options.target == Target::kNone) {
-        fprintf(stderr, "%s: error: no target\n", argv[0]);
         exit(1);
     }
 
