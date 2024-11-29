@@ -49,7 +49,7 @@ def reformat(source):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('input', nargs='+')
+    parser.add_argument('input', nargs='*')
     parser.add_argument('--check', action='store_true')
 
     args = parser.parse_args()
