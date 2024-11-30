@@ -17,6 +17,7 @@ add_library(mini-llvm
     ir/Instruction/FloatingCastingOperators.cpp
     ir/Instruction/FloatingToIntegerCastingOperators.cpp
     ir/Instruction/GetElementPtr.cpp
+    ir/Instruction/IndirectCall.cpp
     ir/Instruction/IntegerCastingOperators.cpp
     ir/Instruction/IntegerToFloatingCastingOperators.cpp
     ir/Instruction/Phi.cpp

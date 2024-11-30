@@ -53,6 +53,7 @@
 #include "mini-llvm/ir/Instruction/FSub.h"
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/ir/Instruction/IndirectCall.h"
 #include "mini-llvm/ir/Instruction/IntToPtr.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/LSHR.h"
@@ -781,19 +782,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     throw ParseException(cursor_, "must not be void");
                 }
 
-                Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
-                if (!symbolTable_.contains(symbol)) {
-                    throw ParseException(cursor_, "undefined global identifier");
-                }
-                std::shared_ptr<Value> value = symbolTable_[symbol];
-                if (!dynamic_cast<const Function *>(&*value)) {
-                    throw ParseException(cursor_, "identifier must be function");
-                }
-                std::shared_ptr<Function> callee = cast<Function>(value);
-
-                if (*callee->functionType()->returnType() != *returnType) {
-                    throw ParseException(cursor_, "inconsistent return type");
-                }
+                std::shared_ptr<Value> callee = parseValue(Ptr());
 
                 if (cursor_->kind != kLeftParen) {
                     throw ParseException(cursor_, "expected '('");
@@ -814,7 +803,25 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
-                I =  std::make_shared<Call>(std::move(callee), std::move(args));
+                if (dynamic_cast<const Function *>(&*callee)) {
+                    std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
+
+                    if (*calleeFunction->functionType()->returnType() != *returnType) {
+                        throw ParseException(cursor_, "inconsistent return type");
+                    }
+
+                    I =  std::make_shared<Call>(std::move(calleeFunction), std::move(args));
+                } else {
+                    std::vector<std::unique_ptr<Type>> paramTypes;
+                    for (const auto &arg : args) {
+                        paramTypes.push_back(arg->type());
+                    }
+
+                    std::unique_ptr<FunctionType> functionType =
+                        std::make_unique<FunctionType>(std::move(returnType), std::move(paramTypes), false);
+
+                    I = std::make_shared<IndirectCall>(std::move(functionType), std::move(callee), std::move(args));
+                }
 
                 break;
             }

@@ -27,6 +27,7 @@ class FRem;
 class FSub;
 class GetElementPtr;
 class ICmp;
+class IndirectCall;
 class IntToPtr;
 class Load;
 class LSHR;
@@ -76,6 +77,7 @@ public:
     virtual void visitFSub(FSub &I) { visitFSub(std::as_const(I)); }
     virtual void visitGetElementPtr(GetElementPtr &I) { visitGetElementPtr(std::as_const(I)); }
     virtual void visitICmp(ICmp &I) { visitICmp(std::as_const(I)); }
+    virtual void visitIndirectCall(IndirectCall &I) { visitIndirectCall(std::as_const(I)); }
     virtual void visitIntToPtr(IntToPtr &I) {visitIntToPtr(std::as_const(I)); }
     virtual void visitLoad(Load &I) { visitLoad(std::as_const(I)); }
     virtual void visitLSHR(LSHR &I) { visitLSHR(std::as_const(I)); }
@@ -121,6 +123,7 @@ public:
     virtual void visitFSub(const FSub &) { panic(); }
     virtual void visitGetElementPtr(const GetElementPtr &) { panic(); }
     virtual void visitICmp(const ICmp &) { panic(); }
+    virtual void visitIndirectCall(const IndirectCall &) { panic(); }
     virtual void visitIntToPtr(const IntToPtr &) { panic(); }
     virtual void visitLoad(const Load &) { panic(); }
     virtual void visitLSHR(const LSHR &) { panic(); }
