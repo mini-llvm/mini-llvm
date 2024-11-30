@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "mini-llvm/mir/InstructionVisitor.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::mir {
 
@@ -14,8 +15,8 @@ public:
     virtual void visitRISCVCall(RISCVCall &I) { visitRISCVCall(std::as_const(I)); }
     virtual void visitRISCVRet(RISCVRet &I) { visitRISCVRet(std::as_const(I)); }
 
-    virtual void visitRISCVCall(const RISCVCall &) { std::unreachable(); }
-    virtual void visitRISCVRet(const RISCVRet &) { std::unreachable(); }
+    virtual void visitRISCVCall(const RISCVCall &) { panic(); }
+    virtual void visitRISCVRet(const RISCVRet &) { panic(); }
 };
 
 } // namespace mini_llvm::mir

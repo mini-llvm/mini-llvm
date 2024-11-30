@@ -1,10 +1,10 @@
 #include "mini-llvm/mc/Program.h"
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/utils/Panic.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mc;
@@ -17,7 +17,7 @@ std::string Program::format() const {
             case Section::kROData: rodata.push_back(&fragment); break;
             case Section::kBSS: bss.push_back(&fragment); break;
             case Section::kText: text.push_back(&fragment); break;
-            default: std::unreachable();
+            default: panic();
         }
     }
     StringJoiner formatted("\n");

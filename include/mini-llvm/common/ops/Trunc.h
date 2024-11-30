@@ -3,7 +3,8 @@
 #include <bit>
 #include <concepts>
 #include <type_traits>
-#include <utility>
+
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ops {
 
@@ -13,7 +14,7 @@ struct Trunc {
     template <typename From>
         requires std::integral<From>
     To operator()(From) const noexcept {
-        std::unreachable();
+        panic();
     }
 
     template <typename From>

@@ -3,26 +3,26 @@
 #include <memory>
 #include <string>
 #include <typeinfo>
-#include <utility>
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
 class BasicBlockType final : public Type {
 public:
     int size() const override {
-        std::unreachable();
+        panic();
     }
 
     int alignment() const override {
-        std::unreachable();
+        panic();
     }
 
     std::unique_ptr<Constant> zeroValue() const override {
-        std::unreachable();
+        panic();
     }
 
     std::string format() const override {

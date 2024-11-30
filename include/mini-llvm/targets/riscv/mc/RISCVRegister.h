@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility>
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::mc {
 
@@ -20,7 +20,7 @@ constexpr const char *name(RISCVRegister reg) {
 #undef X
 #undef REGS
     default:
-        std::unreachable();
+        panic();
     }
 }
 

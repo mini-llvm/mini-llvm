@@ -4,7 +4,6 @@
 #include <cstddef>
 #include <list>
 #include <unordered_map>
-#include <utility>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Immediate.h"
@@ -16,6 +15,7 @@
 #include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
 #include "mini-llvm/utils/Hash.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
@@ -36,7 +36,7 @@ struct ImmediateHash {
 
             return seed;
         }
-        std::unreachable();
+        panic();
     }
 };
 

@@ -14,6 +14,7 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -35,7 +36,7 @@ public:
     }
 
     virtual std::unique_ptr<Constant> fold() const {
-        std::unreachable();
+        panic();
     }
 
     virtual void accept(InstructionVisitor &visitor) = 0;

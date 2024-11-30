@@ -3,11 +3,11 @@
 #include <memory>
 #include <string>
 #include <typeinfo>
-#include <utility>
 
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -16,11 +16,11 @@ class Constant;
 class Ptr final : public IntegerType {
 public:
     int size() const override {
-        std::unreachable();
+        panic();
     }
 
     int alignment() const override {
-        std::unreachable();
+        panic();
     }
 
     int size(int pointerSizeAndAlignment) const override {

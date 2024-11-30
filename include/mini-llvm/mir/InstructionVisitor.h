@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "mini-llvm/utils/Panic.h"
+
 namespace mini_llvm::mir {
 
 class Add;
@@ -120,61 +122,61 @@ public:
     virtual void visitXor(Xor &I) { visitXor(std::as_const(I)); }
     virtual void visitXorI(XorI &I) { visitXorI(std::as_const(I)); }
 
-    virtual void visitAdd(const Add &) { std::unreachable(); }
-    virtual void visitAddI(const AddI &) { std::unreachable(); }
-    virtual void visitAnd(const And &) { std::unreachable(); }
-    virtual void visitAndI(const AndI &) { std::unreachable(); }
-    virtual void visitBr(const Br &) { std::unreachable(); }
-    virtual void visitCmpBr(const CmpBr &) { std::unreachable(); }
-    virtual void visitCmp(const Cmp &) { std::unreachable(); }
-    virtual void visitCmpSet(const CmpSet &) { std::unreachable(); }
-    virtual void visitCmpZBr(const CmpZBr &) { std::unreachable(); }
-    virtual void visitCmpZ(const CmpZ &) { std::unreachable(); }
-    virtual void visitCmpZSet(const CmpZSet &) { std::unreachable(); }
-    virtual void visitCondBr(const CondBr &) { std::unreachable(); }
-    virtual void visitFAdd(const FAdd &) { std::unreachable(); }
-    virtual void visitFCmp(const FCmp &) { std::unreachable(); }
-    virtual void visitFCmpSet(const FCmpSet &) { std::unreachable(); }
-    virtual void visitFCvt(const FCvt &) { std::unreachable(); }
-    virtual void visitFCvtFS(const FCvtFS &) { std::unreachable(); }
-    virtual void visitFCvtFU(const FCvtFU &) { std::unreachable(); }
-    virtual void visitFCvtSF(const FCvtSF &) { std::unreachable(); }
-    virtual void visitFCvtUF(const FCvtUF &) { std::unreachable(); }
-    virtual void visitFDiv(const FDiv &) { std::unreachable(); }
-    virtual void visitFLoad(const FLoad &) { std::unreachable(); }
-    virtual void visitFMov(const FMov &) { std::unreachable(); }
-    virtual void visitFMovFI(const FMovFI &) { std::unreachable(); }
-    virtual void visitFMovIF(const FMovIF &) { std::unreachable(); }
-    virtual void visitFMul(const FMul &) { std::unreachable(); }
-    virtual void visitFNeg(const FNeg &) { std::unreachable(); }
-    virtual void visitFStore(const FStore &) { std::unreachable(); }
-    virtual void visitFSub(const FSub &) { std::unreachable(); }
-    virtual void visitLA(const LA &) { std::unreachable(); }
-    virtual void visitLI(const LI &) { std::unreachable(); }
-    virtual void visitLoad(const Load &) { std::unreachable(); }
-    virtual void visitMov(const Mov &) { std::unreachable(); }
-    virtual void visitMul(const Mul &) { std::unreachable(); }
-    virtual void visitNot(const Not &) { std::unreachable(); }
-    virtual void visitOr(const Or &) { std::unreachable(); }
-    virtual void visitOrI(const OrI &) { std::unreachable(); }
-    virtual void visitPlaceholder(const Placeholder &) { std::unreachable(); }
-    virtual void visitSDiv(const SDiv &) { std::unreachable(); }
-    virtual void visitSet(const CondSet &) { std::unreachable(); }
-    virtual void visitSExt(const SExt &) { std::unreachable(); }
-    virtual void visitSHL(const SHL &) { std::unreachable(); }
-    virtual void visitSHLI(const SHLI &) { std::unreachable(); }
-    virtual void visitSHRA(const SHRA &) { std::unreachable(); }
-    virtual void visitSHRAI(const SHRAI &) { std::unreachable(); }
-    virtual void visitSHRL(const SHRL &) { std::unreachable(); }
-    virtual void visitSHRLI(const SHRLI &) { std::unreachable(); }
-    virtual void visitSRem(const SRem &) { std::unreachable(); }
-    virtual void visitStore(const Store &) { std::unreachable(); }
-    virtual void visitSub(const Sub &) { std::unreachable(); }
-    virtual void visitSubI(const SubI &) { std::unreachable(); }
-    virtual void visitUDiv(const UDiv &) { std::unreachable(); }
-    virtual void visitURem(const URem &) { std::unreachable(); }
-    virtual void visitXor(const Xor &) { std::unreachable(); }
-    virtual void visitXorI(const XorI &) { std::unreachable(); }
+    virtual void visitAdd(const Add &) { panic(); }
+    virtual void visitAddI(const AddI &) { panic(); }
+    virtual void visitAnd(const And &) { panic(); }
+    virtual void visitAndI(const AndI &) { panic(); }
+    virtual void visitBr(const Br &) { panic(); }
+    virtual void visitCmpBr(const CmpBr &) { panic(); }
+    virtual void visitCmp(const Cmp &) { panic(); }
+    virtual void visitCmpSet(const CmpSet &) { panic(); }
+    virtual void visitCmpZBr(const CmpZBr &) { panic(); }
+    virtual void visitCmpZ(const CmpZ &) { panic(); }
+    virtual void visitCmpZSet(const CmpZSet &) { panic(); }
+    virtual void visitCondBr(const CondBr &) { panic(); }
+    virtual void visitFAdd(const FAdd &) { panic(); }
+    virtual void visitFCmp(const FCmp &) { panic(); }
+    virtual void visitFCmpSet(const FCmpSet &) { panic(); }
+    virtual void visitFCvt(const FCvt &) { panic(); }
+    virtual void visitFCvtFS(const FCvtFS &) { panic(); }
+    virtual void visitFCvtFU(const FCvtFU &) { panic(); }
+    virtual void visitFCvtSF(const FCvtSF &) { panic(); }
+    virtual void visitFCvtUF(const FCvtUF &) { panic(); }
+    virtual void visitFDiv(const FDiv &) { panic(); }
+    virtual void visitFLoad(const FLoad &) { panic(); }
+    virtual void visitFMov(const FMov &) { panic(); }
+    virtual void visitFMovFI(const FMovFI &) { panic(); }
+    virtual void visitFMovIF(const FMovIF &) { panic(); }
+    virtual void visitFMul(const FMul &) { panic(); }
+    virtual void visitFNeg(const FNeg &) { panic(); }
+    virtual void visitFStore(const FStore &) { panic(); }
+    virtual void visitFSub(const FSub &) { panic(); }
+    virtual void visitLA(const LA &) { panic(); }
+    virtual void visitLI(const LI &) { panic(); }
+    virtual void visitLoad(const Load &) { panic(); }
+    virtual void visitMov(const Mov &) { panic(); }
+    virtual void visitMul(const Mul &) { panic(); }
+    virtual void visitNot(const Not &) { panic(); }
+    virtual void visitOr(const Or &) { panic(); }
+    virtual void visitOrI(const OrI &) { panic(); }
+    virtual void visitPlaceholder(const Placeholder &) { panic(); }
+    virtual void visitSDiv(const SDiv &) { panic(); }
+    virtual void visitSet(const CondSet &) { panic(); }
+    virtual void visitSExt(const SExt &) { panic(); }
+    virtual void visitSHL(const SHL &) { panic(); }
+    virtual void visitSHLI(const SHLI &) { panic(); }
+    virtual void visitSHRA(const SHRA &) { panic(); }
+    virtual void visitSHRAI(const SHRAI &) { panic(); }
+    virtual void visitSHRL(const SHRL &) { panic(); }
+    virtual void visitSHRLI(const SHRLI &) { panic(); }
+    virtual void visitSRem(const SRem &) { panic(); }
+    virtual void visitStore(const Store &) { panic(); }
+    virtual void visitSub(const Sub &) { panic(); }
+    virtual void visitSubI(const SubI &) { panic(); }
+    virtual void visitUDiv(const UDiv &) { panic(); }
+    virtual void visitURem(const URem &) { panic(); }
+    virtual void visitXor(const Xor &) { panic(); }
+    virtual void visitXorI(const XorI &) { panic(); }
 };
 
 } // namespace mini_llvm::mir

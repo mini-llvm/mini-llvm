@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility>
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::mir {
 
@@ -16,7 +16,7 @@ inline constexpr const char *specifier(Condition cond) {
 #include "mini-llvm/mir/Condition.def"
 #undef X
     default:
-        std::unreachable();
+        panic();
     }
 }
 

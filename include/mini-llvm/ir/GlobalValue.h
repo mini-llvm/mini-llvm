@@ -3,12 +3,12 @@
 #include <cstdint>
 #include <format>
 #include <memory>
-#include <utility>
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -23,12 +23,12 @@ public:
     }
 
     std::unique_ptr<Value> clone() const override {
-        std::unreachable();
+        panic();
     }
 
 protected:
     bool equals(const Constant &) const override {
-        std::unreachable();
+        panic();
     }
 };
 

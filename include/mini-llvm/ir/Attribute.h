@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility>
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -17,7 +17,7 @@ inline constexpr const char *specifier(Attribute attr) {
 #include "mini-llvm/ir/Attribute.def"
 #undef X
     default:
-        std::unreachable();
+        panic();
     }
 }
 

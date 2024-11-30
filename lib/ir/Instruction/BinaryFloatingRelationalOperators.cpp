@@ -16,6 +16,7 @@
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Instruction/BinaryFloatingRelationalOperator.h"
 #include "mini-llvm/ir/Instruction/FCmp.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm::ir;
 
@@ -71,6 +72,6 @@ std::unique_ptr<Constant> FCmp::fold() const {
         case kOGT: return foldImpl<ops::OGT>(*this);
         case kOLE: return foldImpl<ops::OLE>(*this);
         case kOGE: return foldImpl<ops::OGE>(*this);
-        default: std::unreachable();
+        default: panic();
     }
 }

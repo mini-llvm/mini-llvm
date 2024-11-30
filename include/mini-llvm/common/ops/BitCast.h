@@ -2,7 +2,8 @@
 
 #include <bit>
 #include <concepts>
-#include <utility>
+
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ops {
 
@@ -10,7 +11,7 @@ template <typename To>
 struct BitCast {
     template <typename From>
     To operator()(From) const noexcept {
-        std::unreachable();
+        panic();
     }
 
     template <typename From>
@@ -24,7 +25,7 @@ template <>
 struct BitCast<bool> {
     template <typename From>
     bool operator()(From) const noexcept {
-        std::unreachable();
+        panic();
     }
 
     bool operator()(bool x) const noexcept {

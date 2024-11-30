@@ -169,6 +169,7 @@
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
@@ -490,7 +491,7 @@ public:
                     case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; zeroExtend = true; negate = false; break;
                     case ir::ICmp::Condition::kULE: cond = Condition::kUGT; zeroExtend = true; negate = true; break;
                     case ir::ICmp::Condition::kUGE: cond = Condition::kULT; zeroExtend = true; negate = true; break;
-                    default: std::unreachable();
+                    default: panic();
                 }
 
                 if (zeroExtend) {
@@ -523,7 +524,7 @@ public:
                 break;
             }
 
-            default: std::unreachable();
+            default: panic();
         }
     }
 
@@ -606,7 +607,7 @@ public:
             case ir::FCmp::Condition::kOGT: cond = Condition::kOGT; negate = false; break;
             case ir::FCmp::Condition::kOLE: cond = Condition::kOLE; negate = false; break;
             case ir::FCmp::Condition::kOGE: cond = Condition::kOGE; negate = false; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
@@ -653,7 +654,7 @@ public:
         } else if (dynamic_cast<const ir::IntegerType *>(&*I.type()) && dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<FMovIF>(Precision::kDouble, std::move(dst), std::move(src)));
         } else {
-            std::unreachable();
+            panic();
         }
     }
 
@@ -676,7 +677,7 @@ public:
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
             builder_.add(std::make_unique<FMov>(precision, dst, src1));
         } else {
-            std::unreachable();
+            panic();
         }
         builder_.add(std::make_unique<Br>(&endBlock));
 
@@ -687,7 +688,7 @@ public:
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
             builder_.add(std::make_unique<FMov>(precision, dst, src2));
         } else {
-            std::unreachable();
+            panic();
         }
         builder_.add(std::make_unique<Br>(&endBlock));
 
@@ -719,7 +720,7 @@ public:
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
             builder_.add(std::make_unique<FLoad>(precision, std::move(dst), std::move(src)));
         } else {
-            std::unreachable();
+            panic();
         }
     }
 
@@ -734,7 +735,7 @@ public:
             Precision precision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
             builder_.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
         } else {
-            std::unreachable();
+            panic();
         }
     }
 
@@ -804,7 +805,7 @@ public:
                         stackArgs.push_back(&*arg);
                     }
                 } else {
-                    std::unreachable();
+                    panic();
                 }
             }
         }
@@ -821,7 +822,7 @@ public:
                     Precision precision = static_cast<const ir::FloatingType *>(&*stackArgs[i]->type())->precision();
                     builder_.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
                 } else {
-                    std::unreachable();
+                    panic();
                 }
             }
         }
@@ -872,7 +873,7 @@ public:
                     Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
                     builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                 } else {
-                    std::unreachable();
+                    panic();
                 }
             }
             for (const ir::Phi *phi : phis) {
@@ -884,7 +885,7 @@ public:
                     Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
                     builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                 } else {
-                    std::unreachable();
+                    panic();
                 }
             }
             builder_.add(std::make_unique<Br>(dest));
@@ -921,7 +922,7 @@ public:
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
                         builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                     } else {
-                        std::unreachable();
+                        panic();
                     }
                 }
                 for (const ir::Phi *phi : phis) {
@@ -933,7 +934,7 @@ public:
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
                         builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                     } else {
-                        std::unreachable();
+                        panic();
                     }
                 }
                 builder_.add(std::make_unique<Br>(trueDest));
@@ -965,7 +966,7 @@ public:
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
                         builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                     } else {
-                        std::unreachable();
+                        panic();
                     }
                 }
                 for (const ir::Phi *phi : phis) {
@@ -977,7 +978,7 @@ public:
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
                         builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                     } else {
-                        std::unreachable();
+                        panic();
                     }
                 }
                 builder_.add(std::make_unique<Br>(falseDest));
@@ -1001,7 +1002,7 @@ public:
                 case ir::ICmp::Condition::kUGT: cond = Condition::kUGT; break;
                 case ir::ICmp::Condition::kULE: cond = Condition::kULE; break;
                 case ir::ICmp::Condition::kUGE: cond = Condition::kUGE; break;
-                default: std::unreachable();
+                default: panic();
             }
             builder_.add(std::make_unique<CmpBr>(width, cond, std::move(src1), std::move(src2), trueDest, falseDest));
         } else {
@@ -1117,7 +1118,7 @@ private:
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
             return reg;
         }
-        std::unreachable();
+        panic();
     }
 };
 
@@ -1274,7 +1275,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
                 ++numStackArgs;
             }
         } else {
-            std::unreachable();
+            panic();
         }
     }
     for (const ir::BasicBlock &IB : IF) {

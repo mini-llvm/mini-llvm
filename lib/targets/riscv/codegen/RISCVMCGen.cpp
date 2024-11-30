@@ -104,6 +104,7 @@
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mc;
@@ -314,7 +315,7 @@ public:
         } else if (I.dstPrecision() == Precision::kDouble && I.srcPrecision() == Precision::kSingle) {
             opcode = RISCV_FCvtDS;
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -333,7 +334,7 @@ public:
         } else if (I.dstPrecision() == Precision::kDouble && I.srcWidth() == 8) {
             opcode = RISCV_FCvtDL;
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -352,7 +353,7 @@ public:
         } else if (I.dstPrecision() == Precision::kDouble && I.srcWidth() == 8) {
             opcode = RISCV_FCvtDLU;
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -371,7 +372,7 @@ public:
         } else if (I.dstWidth() == 8 && I.srcPrecision() == Precision::kDouble) {
             opcode = RISCV_FCvtLD;
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -390,7 +391,7 @@ public:
         } else if (I.dstWidth() == 8 && I.srcPrecision() == Precision::kDouble) {
             opcode = RISCV_FCvtLUD;
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -403,7 +404,7 @@ public:
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FMvWX; break;
             case Precision::kDouble: opcode = RISCV_FMvDX; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -416,7 +417,7 @@ public:
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FMvXW; break;
             case Precision::kDouble: opcode = RISCV_FMvXD; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -430,24 +431,24 @@ public:
             if (I.width() == 8) {
                 opcode = RISCV_LD;
             } else {
-                std::unreachable();
+                panic();
             }
         } else if (I.extensionMode() == ExtensionMode::kSign) {
             switch (I.width()) {
                 case 1: opcode = RISCV_LB; break;
                 case 2: opcode = RISCV_LH; break;
                 case 4: opcode = RISCV_LW; break;
-                default: std::unreachable();
+                default: panic();
             }
         } else if (I.extensionMode() == ExtensionMode::kZero) {
             switch (I.width()) {
                 case 1: opcode = RISCV_LBU; break;
                 case 2: opcode = RISCV_LHU; break;
                 case 4: opcode = RISCV_LWU; break;
-                default: std::unreachable();
+                default: panic();
             }
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -462,7 +463,7 @@ public:
             case 2: opcode = RISCV_SH; break;
             case 4: opcode = RISCV_SW; break;
             case 8: opcode = RISCV_SD; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.src()));
@@ -475,7 +476,7 @@ public:
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FLW; break;
             case Precision::kDouble: opcode = RISCV_FLD; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -488,7 +489,7 @@ public:
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FSW; break;
             case Precision::kDouble: opcode = RISCV_FSD; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.src()));
@@ -522,7 +523,7 @@ public:
             case mir::Condition::kSGT: opcode = RISCV_SGT; break;
             case mir::Condition::kULT: opcode = RISCV_SLTU; break;
             case mir::Condition::kUGT: opcode = RISCV_SGTU; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -539,7 +540,7 @@ public:
             case mir::Condition::kNEZ: opcode = RISCV_SNEZ; break;
             case mir::Condition::kSLTZ: opcode = RISCV_SLTZ; break;
             case mir::Condition::kSGTZ: opcode = RISCV_SGTZ; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -557,7 +558,7 @@ public:
                 case mir::Condition::kOGT: opcode = RISCV_FGTS; break;
                 case mir::Condition::kOLE: opcode = RISCV_FLES; break;
                 case mir::Condition::kOGE: opcode = RISCV_FGES; break;
-                default: std::unreachable();
+                default: panic();
             }
         } else if (I.srcPrecision() == Precision::kDouble) {
             switch (I.cond()) {
@@ -566,10 +567,10 @@ public:
                 case mir::Condition::kOGT: opcode = RISCV_FGTD; break;
                 case mir::Condition::kOLE: opcode = RISCV_FLED; break;
                 case mir::Condition::kOGE: opcode = RISCV_FGED; break;
-                default: std::unreachable();
+                default: panic();
             }
         } else {
-            std::unreachable();
+            panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -598,7 +599,7 @@ public:
             case mir::Condition::kUGT: opcode1 = RISCV_BLEU; break;
             case mir::Condition::kULE: opcode1 = RISCV_BGTU; break;
             case mir::Condition::kUGE: opcode1 = RISCV_BLTU; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands1;
         operands1.push_back(makeOperand(I.src1()));
@@ -621,7 +622,7 @@ public:
             case mir::Condition::kSGTZ: opcode1 = RISCV_BLEZ; break;
             case mir::Condition::kSLEZ: opcode1 = RISCV_BGTZ; break;
             case mir::Condition::kSGEZ: opcode1 = RISCV_BLTZ; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands1;
         operands1.push_back(makeOperand(I.src()));
@@ -665,7 +666,7 @@ private:
         switch (I.width()) {
             case 4: opcode = Opcode4; break;
             case 8: opcode = Opcode8; break;
-            default: std::unreachable();
+            default: panic();
         }
 #ifndef NDEBUG
         if (I.width() == 8) {
@@ -699,7 +700,7 @@ private:
         switch (I.width()) {
             case 4: opcode = Opcode4; break;
             case 8: opcode = Opcode8; break;
-            default: std::unreachable();
+            default: panic();
         }
 #ifndef NDEBUG
         if (I.width() == 8) {
@@ -733,7 +734,7 @@ private:
         switch (I.precision()) {
             case Precision::kSingle: opcode = OpcodeS; break;
             case Precision::kDouble: opcode = OpcodeD; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));
@@ -747,7 +748,7 @@ private:
         switch (I.precision()) {
             case Precision::kSingle: opcode = OpcodeS; break;
             case Precision::kDouble: opcode = OpcodeD; break;
-            default: std::unreachable();
+            default: panic();
         }
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.dst()));

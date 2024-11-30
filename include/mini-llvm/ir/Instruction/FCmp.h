@@ -10,6 +10,7 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -64,7 +65,7 @@ inline constexpr const char *specifier(FCmp::Condition cond) {
         case kOGT: return "ogt";
         case kOLE: return "olt";
         case kOGE: return "oge";
-        default: std::unreachable();
+        default: panic();
     }
 }
 

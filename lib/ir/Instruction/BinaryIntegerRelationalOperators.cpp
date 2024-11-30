@@ -24,6 +24,7 @@
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerRelationalOperator.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm::ir;
 
@@ -100,6 +101,6 @@ std::unique_ptr<Constant> ICmp::fold() const {
         case kUGT: return foldImpl<ops::UGT>(*this);
         case kULE: return foldImpl<ops::ULE>(*this);
         case kUGE: return foldImpl<ops::UGE>(*this);
-        default: std::unreachable();
+        default: panic();
     }
 }

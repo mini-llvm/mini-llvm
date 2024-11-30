@@ -1,6 +1,6 @@
 #pragma once
 
-#include <utility>
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::mc {
 
@@ -20,7 +20,7 @@ constexpr const char *mnemonic(RISCVOperation op) {
 #undef X
 #undef OPS
     default:
-        std::unreachable();
+        panic();
     }
 }
 

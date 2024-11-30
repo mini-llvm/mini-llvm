@@ -8,6 +8,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -26,7 +27,7 @@ public:
     }
 
     std::string format() const override {
-        std::unreachable();
+        panic();
     }
 
     std::unique_ptr<Value> clone() const override {

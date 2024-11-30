@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "mini-llvm/mir/RegisterClass.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm::mir;
 
@@ -25,6 +26,6 @@ RISCVRegister *RISCVRegister::get(int idx) {
 #undef X
 #undef REGS
     default:
-        std::unreachable();
+        panic();
     }
 }

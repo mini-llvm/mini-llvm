@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "mini-llvm/utils/Panic.h"
+
 namespace mini_llvm::ir {
 
 class ArrayConstant;
@@ -36,19 +38,19 @@ public:
     virtual void visitPoisonValue(PoisonValue &C) { visitPoisonValue(std::as_const(C)); }
     virtual void visitVoidValue(VoidValue &C) { visitVoidValue(std::as_const(C)); }
 
-    virtual void visitArrayConstant(const ArrayConstant &) { std::unreachable(); }
-    virtual void visitDoubleConstant(const DoubleConstant &) { std::unreachable(); }
-    virtual void visitFloatConstant(const FloatConstant &) { std::unreachable(); }
-    virtual void visitFunction(const Function &) { std::unreachable(); }
-    virtual void visitGlobalVar(const GlobalVar &) { std::unreachable(); }
-    virtual void visitI16Constant(const I16Constant &) { std::unreachable(); }
-    virtual void visitI1Constant(const I1Constant &) { std::unreachable(); }
-    virtual void visitI32Constant(const I32Constant &) { std::unreachable(); }
-    virtual void visitI64Constant(const I64Constant &) { std::unreachable(); }
-    virtual void visitI8Constant(const I8Constant &) { std::unreachable(); }
-    virtual void visitNullPtrConstant(const NullPtrConstant &) { std::unreachable(); }
-    virtual void visitPoisonValue(const PoisonValue &) { std::unreachable(); }
-    virtual void visitVoidValue(const VoidValue &) { std::unreachable(); }
+    virtual void visitArrayConstant(const ArrayConstant &) { panic(); }
+    virtual void visitDoubleConstant(const DoubleConstant &) { panic(); }
+    virtual void visitFloatConstant(const FloatConstant &) { panic(); }
+    virtual void visitFunction(const Function &) { panic(); }
+    virtual void visitGlobalVar(const GlobalVar &) { panic(); }
+    virtual void visitI16Constant(const I16Constant &) { panic(); }
+    virtual void visitI1Constant(const I1Constant &) { panic(); }
+    virtual void visitI32Constant(const I32Constant &) { panic(); }
+    virtual void visitI64Constant(const I64Constant &) { panic(); }
+    virtual void visitI8Constant(const I8Constant &) { panic(); }
+    virtual void visitNullPtrConstant(const NullPtrConstant &) { panic(); }
+    virtual void visitPoisonValue(const PoisonValue &) { panic(); }
+    virtual void visitVoidValue(const VoidValue &) { panic(); }
 };
 
 } // namespace mini_llvm::ir

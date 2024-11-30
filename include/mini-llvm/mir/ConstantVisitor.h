@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "mini-llvm/utils/Panic.h"
+
 namespace mini_llvm::mir {
 
 class I16ArrayConstant;
@@ -30,16 +32,16 @@ public:
     virtual void visitPtrConstant(PtrConstant &C) { visitPtrConstant(std::as_const(C)); }
     virtual void visitZeroConstant(ZeroConstant &C) { visitZeroConstant(std::as_const(C)); }
 
-    virtual void visitI16ArrayConstant(const I16ArrayConstant &) { std::unreachable(); }
-    virtual void visitI16Constant(const I16Constant &) { std::unreachable(); }
-    virtual void visitI32ArrayConstant(const I32ArrayConstant &) { std::unreachable(); }
-    virtual void visitI32Constant(const I32Constant &) { std::unreachable(); }
-    virtual void visitI64ArrayConstant(const I64ArrayConstant &) { std::unreachable(); }
-    virtual void visitI64Constant(const I64Constant &) { std::unreachable(); }
-    virtual void visitI8ArrayConstant(const I8ArrayConstant &) { std::unreachable(); }
-    virtual void visitI8Constant(const I8Constant &) { std::unreachable(); }
-    virtual void visitPtrConstant(const PtrConstant &) { std::unreachable(); }
-    virtual void visitZeroConstant(const ZeroConstant &) { std::unreachable(); }
+    virtual void visitI16ArrayConstant(const I16ArrayConstant &) { panic(); }
+    virtual void visitI16Constant(const I16Constant &) { panic(); }
+    virtual void visitI32ArrayConstant(const I32ArrayConstant &) { panic(); }
+    virtual void visitI32Constant(const I32Constant &) { panic(); }
+    virtual void visitI64ArrayConstant(const I64ArrayConstant &) { panic(); }
+    virtual void visitI64Constant(const I64Constant &) { panic(); }
+    virtual void visitI8ArrayConstant(const I8ArrayConstant &) { panic(); }
+    virtual void visitI8Constant(const I8Constant &) { panic(); }
+    virtual void visitPtrConstant(const PtrConstant &) { panic(); }
+    virtual void visitZeroConstant(const ZeroConstant &) { panic(); }
 };
 
 } // namespace mini_llvm::mir

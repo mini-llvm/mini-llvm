@@ -8,17 +8,18 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
 class I1 final : public IntegerType {
 public:
     int size() const override {
-        std::unreachable();
+        panic();
     }
 
     int alignment() const override {
-        std::unreachable();
+        panic();
     }
 
     std::unique_ptr<Constant> zeroValue() const override;

@@ -2,9 +2,10 @@
 
 #include <cstdint>
 #include <string>
-#include <utility>
 #include <variant>
 #include <vector>
+
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -30,7 +31,7 @@ inline constexpr const char *name(Token::Kind kind) {
 #include "mini-llvm/ir_parser/TokenKind.def"
 #undef X
     default:
-        std::unreachable();
+        panic();
     }
 }
 

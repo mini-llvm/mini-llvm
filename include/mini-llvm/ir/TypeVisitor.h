@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "mini-llvm/utils/Panic.h"
+
 namespace mini_llvm::ir {
 
 class ArrayType;
@@ -34,18 +36,18 @@ public:
     virtual void visitPtr(Ptr &type) { visitPtr(std::as_const(type)); }
     virtual void visitVoid(Void &type) { visitVoid(std::as_const(type)); }
 
-    virtual void visitArrayType(const ArrayType &) { std::unreachable(); }
-    virtual void visitBasicBlockType(const BasicBlockType &) { std::unreachable(); }
-    virtual void visitDouble(const Double &) { std::unreachable(); }
-    virtual void visitFloat(const Float &) { std::unreachable(); }
-    virtual void visitFunctionType(const FunctionType &) { std::unreachable(); }
-    virtual void visitI1(const I1 &) { std::unreachable(); }
-    virtual void visitI16(const I16 &) { std::unreachable(); }
-    virtual void visitI32(const I32 &) { std::unreachable(); }
-    virtual void visitI64(const I64 &) { std::unreachable(); }
-    virtual void visitI8(const I8 &) { std::unreachable(); }
-    virtual void visitPtr(const Ptr &) { std::unreachable(); }
-    virtual void visitVoid(const Void &) { std::unreachable(); }
+    virtual void visitArrayType(const ArrayType &) { panic(); }
+    virtual void visitBasicBlockType(const BasicBlockType &) { panic(); }
+    virtual void visitDouble(const Double &) { panic(); }
+    virtual void visitFloat(const Float &) { panic(); }
+    virtual void visitFunctionType(const FunctionType &) { panic(); }
+    virtual void visitI1(const I1 &) { panic(); }
+    virtual void visitI16(const I16 &) { panic(); }
+    virtual void visitI32(const I32 &) { panic(); }
+    virtual void visitI64(const I64 &) { panic(); }
+    virtual void visitI8(const I8 &) { panic(); }
+    virtual void visitPtr(const Ptr &) { panic(); }
+    virtual void visitVoid(const Void &) { panic(); }
 };
 
 } // namespace mini_llvm::ir

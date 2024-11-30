@@ -96,7 +96,9 @@
 #include "mini-llvm/ir_parser/Symbol.h"
 #include "mini-llvm/ir_parser/Token.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 using enum Token::Kind;
@@ -112,23 +114,23 @@ public:
     }
 
     std::unordered_set<const UseBase *> operands() const override {
-        std::unreachable();
+        panic();
     }
 
     void accept(InstructionVisitor &) override {
-        std::unreachable();
+        panic();
     }
 
     void accept(InstructionVisitor &) const override {
-        std::unreachable();
+        panic();
     }
 
     std::string format() const override {
-        std::unreachable();
+        panic();
     }
 
     std::unique_ptr<Value> clone() const override {
-        std::unreachable();
+        panic();
     }
 
 private:
@@ -504,7 +506,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         break;
 
                     default:
-                        std::unreachable();
+                        panic();
                 }
 
                 switch (mnemonic) {
@@ -526,7 +528,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kFMul: I = std::make_shared<FMul>(std::move(lhs), std::move(rhs)); break;
                     case kFDiv: I = std::make_shared<FDiv>(std::move(lhs), std::move(rhs)); break;
                     case kFRem: I = std::make_shared<FRem>(std::move(lhs), std::move(rhs)); break;
-                    default: std::unreachable();
+                    default: panic();
                 }
 
                 break;
@@ -628,7 +630,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         case kZExt: I = std::make_shared<ZExt>(std::move(value), std::move(castType2)); break;
                         case kFPToSI: I = std::make_shared<FPToSI>(std::move(value), std::move(castType2)); break;
                         case kFPToUI: I = std::make_shared<FPToUI>(std::move(value), std::move(castType2)); break;
-                        default: std::unreachable();
+                        default: panic();
                     }
                 } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kSIToFP || mnemonic == kUIToFP) {
                     if (!dynamic_cast<const FloatingType *>(&*type2)) {
@@ -642,7 +644,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         case kFPExt: I = std::make_shared<FPExt>(std::move(value), std::move(castType2)); break;
                         case kSIToFP: I = std::make_shared<SIToFP>(std::move(value), std::move(castType2)); break;
                         case kUIToFP: I = std::make_shared<UIToFP>(std::move(value), std::move(castType2)); break;
-                        default: std::unreachable();
+                        default: panic();
                     }
                 } else if (mnemonic == kPtrToInt) {
                     if (*type1 != Ptr()) {
@@ -663,7 +665,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 } else if (mnemonic == kBitCast) {
                     I = std::make_shared<BitCast>(std::move(value), std::move(type2));
                 } else {
-                    std::unreachable();
+                    panic();
                 }
 
                 break;

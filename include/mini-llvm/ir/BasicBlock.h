@@ -18,6 +18,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ir {
 
@@ -151,7 +152,7 @@ public:
     }
 
     std::unique_ptr<Value> clone() const override {
-        std::unreachable();
+        panic();
     }
 
 private:

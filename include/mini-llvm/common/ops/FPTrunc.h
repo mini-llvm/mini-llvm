@@ -1,7 +1,8 @@
 #pragma once
 
 #include <concepts>
-#include <utility>
+
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::ops {
 
@@ -11,7 +12,7 @@ struct FPTrunc {
     template <typename From>
         requires std::floating_point<From>
     To operator()(From) const noexcept {
-        std::unreachable();
+        panic();
     }
 
     template <typename From>

@@ -2,9 +2,9 @@
 
 #include <cstdint>
 #include <string>
-#include <utility>
 
 #include "mini-llvm/mc/DataDirective.h"
+#include "mini-llvm/utils/Panic.h"
 
 namespace mini_llvm::mc {
 
@@ -20,7 +20,7 @@ protected:
             case 2: return "half";
             case 4: return "word";
             case 8: return "dword";
-            default: std::unreachable();
+            default: panic();
         }
     }
 };

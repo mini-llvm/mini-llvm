@@ -42,6 +42,7 @@
 #include "mini-llvm/targets/riscv/opt/mc/RISCVPassManager.h"
 #include "mini-llvm/targets/riscv/opt/mir/RISCVPassManager.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm;
 
@@ -110,7 +111,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 switch (slot->size()) {
                                     case 4: precision = Precision::kSingle; break;
                                     case 8: precision = Precision::kDouble; break;
-                                    default: std::unreachable();
+                                    default: panic();
                                 }
                                 if (endSlot->offset() - slot->offset() < 2048) {
                                     MemoryOperand src(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
@@ -123,7 +124,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 break;
                             }
 
-                            default: std::unreachable();
+                            default: panic();
                         }
                     };
 
@@ -149,7 +150,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 switch (slot->size()) {
                                     case 4: precision = Precision::kSingle; break;
                                     case 8: precision = Precision::kDouble; break;
-                                    default: std::unreachable();
+                                    default: panic();
                                 }
                                 if (endSlot->offset() - slot->offset() < 2048) {
                                     MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
@@ -162,7 +163,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 break;
                             }
 
-                            default: std::unreachable();
+                            default: panic();
                         }
                     };
 
@@ -269,7 +270,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                         break;
                     default:
-                        std::unreachable();
+                        panic();
                     }
                 }
 
