@@ -30,6 +30,10 @@ using namespace mini_llvm;
 using namespace mini_llvm::mir;
 using namespace mini_llvm::set_ops;
 
+// Massimiliano Poletto and Vivek Sarkar. 1999. Linear scan register allocation.
+// ACM Trans. Program. Lang. Syst. 21, 5 (Sept. 1999), 895-913.
+// https://doi.org/10.1145/330249.330250
+
 namespace {
 
 struct Interval {
