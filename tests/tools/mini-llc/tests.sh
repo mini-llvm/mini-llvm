@@ -24,9 +24,6 @@ tests=(
     gcd_iterative
     hanoi
     partition_function
-)
-
-tests64=(
     n_queens
     array_sum
     matmul
@@ -46,14 +43,6 @@ tests64=(
     gaussian_elimination
 )
 
-TARGET="${TARGET:-riscv64}"
-
 for test_name in "${tests[@]}"; do
     echo "$test_name"
 done
-
-if [[ "$TARGET" == "riscv64" ]]; then
-    for test_name in "${tests64[@]}"; do
-        echo "$test_name"
-    done
-fi
