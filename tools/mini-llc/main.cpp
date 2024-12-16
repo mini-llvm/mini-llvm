@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include <errno.h>
 #include <error.h>
 #include <fcntl.h>
 #include <getopt.h>
@@ -162,17 +161,20 @@ int main(int argc, char *argv[]) {
 
     int inputFd;
     if ((inputFd = open(options.inputFile.c_str(), O_RDONLY)) == -1) {
-        error(1, errno, "open");
+        fprintf(stderr, "%s: error: open: %s\n", argv[0], strerror(errno));
+        exit(1);
     }
 
     struct stat sb;
     if (fstat(inputFd, &sb) == -1) {
-        error(1, errno, "fstat");
+        fprintf(stderr, "%s: error: fstat: %s\n", argv[0], strerror(errno));
+        exit(1);
     }
 
     void *addr;
     if ((addr = mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, inputFd, 0)) == MAP_FAILED) {
-        error(1, errno, "mmap");
+        fprintf(stderr, "%s: error: mmap: %s\n", argv[0], strerror(errno));
+        exit(1);
     }
 
     ir::Module M;
@@ -221,11 +223,13 @@ int main(int argc, char *argv[]) {
 
     int outputFd;
     if ((outputFd = open(options.outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666)) == -1) {
-        error(1, errno, "open");
+        fprintf(stderr, "%s: error: open: %s\n", argv[0], strerror(errno));
+        exit(1);
     }
 
     if (write(outputFd, output.data(), output.size()) == -1) {
-        error(1, errno, "write");
+        fprintf(stderr, "%s: error: write: %s\n", argv[0], strerror(errno));
+        exit(1);
     }
 
     close(outputFd);
