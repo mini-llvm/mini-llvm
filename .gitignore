@@ -10,17 +10,17 @@ __pycache__/
 .*.sw?
 
 # Visual Studio Code
-.cache/
-.vscode/
-build/
+/.cache/
+/.vscode/
+/build/
 
 # Visual Studio
-.vs/
-out/
+/.vs/
+/out/
 
 # CLion
-.idea/
-cmake-build-*/
+/.idea/
+/cmake-build-*/
 
 # macOS
 .DS_Store
