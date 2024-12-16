@@ -204,7 +204,6 @@ sudo apt-get -y install gcc-14-riscv64-linux-gnu qemu-user
 sudo mkdir -p /usr/gnemul
 sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 cd <repo-dir>/tests/tools/mini-llc
-export TARGET="riscv64"
 export MINI_LLC_COMMAND="../../../build/tools/mini-llc/mini-llc"
 export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
 export EMULATOR_COMMAND="qemu-riscv64"
@@ -212,7 +211,7 @@ export DIFF_COMMAND="diff"
 export MINI_LLC_TIMEOUT=10
 export LINKER_TIMEOUT=10
 export EMULATOR_TIMEOUT=10
-./test-all.sh
+./test-all.sh --target=riscv64
 ```
 
 ## Installing

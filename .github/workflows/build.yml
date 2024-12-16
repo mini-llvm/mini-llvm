@@ -54,7 +54,6 @@ jobs:
 
       - working-directory: ${{ github.workspace }}/tests/tools/mini-llc
         run: |
-          export TARGET="riscv64"
           export MINI_LLC_COMMAND="${{ github.workspace }}/build/tools/mini-llc/mini-llc"
           export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
           export EMULATOR_COMMAND="qemu-riscv64"
@@ -62,4 +61,4 @@ jobs:
           export MINI_LLC_TIMEOUT=10
           export LINKER_TIMEOUT=10
           export EMULATOR_TIMEOUT=10
-          ./test-all.sh
+          ./test-all.sh --target=riscv64
