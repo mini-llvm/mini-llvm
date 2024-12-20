@@ -21,7 +21,7 @@ define void @foo() {
 0:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_FALSE(JumpThreading().runOnFunction(*F));
 }
@@ -38,7 +38,7 @@ define void @foo() {
 2:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
 
@@ -67,7 +67,7 @@ define void @foo(i1 %0) {
 5:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
 
@@ -94,7 +94,7 @@ define i32 @foo() {
     %4 = phi i32 [ 42, %2 ]
     ret i32 %4
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
 
@@ -123,7 +123,7 @@ define i32 @foo(i1 %0) {
     %4 = phi i32 [ 42, %1 ], [ 43, %2 ]
     ret i32 %4
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_FALSE(JumpThreading().runOnFunction(*F));
 }

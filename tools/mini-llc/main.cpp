@@ -1,26 +1,24 @@
 #include <climits>
-#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <filesystem>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include <getopt.h>
 
+#include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir_parser/IRParser.h"
-#include "mini-llvm/ir_parser/Lexer.h"
-#include "mini-llvm/ir_parser/Parser.h"
 #include "mini-llvm/mc/Program.h"
-#include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 #include "mini-llvm/utils/Status.h"
-#include "mini-llvm/utils/Strings.h"
 #include "mini-llvm/utils/SystemError.h"
 
 using namespace mini_llvm;
@@ -151,30 +149,15 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    ir::Module M;
-    bool hasError = false;
-    const char *location;
-    std::string message;
-    try {
-        M = ir::parseModule(input.value().c_str());
-    } catch (const ir::LexException &e) {
-        hasError = true;
-        location = e.location();
-        message = e.message();
-    } catch (const ir::ParseException &e) {
-        hasError = true;
-        location = e.location()->location;
-        message = e.message();
-    }
-    if (hasError) {
-        size_t line, column;
-        computeLineColumn(input.value().c_str(), location, line, column);
-        fprintf(stderr, "%s:%zu:%zu: error: %s\n", options.inputFile.c_str(), line, column, message.c_str());
-        exit(1);
-    }
-
-    if (ir::VerificationAnalysis verify; verify.runOnModule(M), !verify.ok()) {
-        fprintf(stderr, "%s: error: input module cannot be verified\n", options.inputFile.c_str());
+    std::vector<Diagnostic> diags;
+    std::optional<ir::Module> M = ir::parseModule(input.value().c_str(), diags);
+    if (!M.has_value()) {
+        for (Diagnostic &diag : diags) {
+            diag.file = options.inputFile;
+        }
+        for (const Diagnostic &diag : diags) {
+            fprintf(stderr, "%s\n", diag.format().c_str());
+        }
         exit(1);
     }
 
@@ -182,13 +165,13 @@ int main(int argc, char *argv[]) {
 #ifndef NDEBUG
     passManager.setVerifyAfterEach(true);
 #endif
-    passManager.run(M);
+    passManager.run(M.value());
 
     mc::Program program;
 
     if (options.target == Target::kRISCV64) {
         RISCVBackendDriver backendDriver;
-        program = backendDriver.run(M);
+        program = backendDriver.run(M.value());
     }
 
     std::string output = program.format() + '\n';

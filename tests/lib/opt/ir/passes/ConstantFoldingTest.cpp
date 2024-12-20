@@ -20,7 +20,7 @@ define void @foo() {
 0:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_FALSE(ConstantFolding().runOnFunction(*F));
 }
@@ -32,7 +32,7 @@ define i32 @foo() {
     %1 = add i32 42, 43
     ret i32 %1
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
 
@@ -52,7 +52,7 @@ define i32 @foo() {
     %3 = add i32 %2, 45
     ret i32 %3
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
 
@@ -80,7 +80,7 @@ define i32 @foo() {
     %6 = add i32 42, 43
     br label %3
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
 

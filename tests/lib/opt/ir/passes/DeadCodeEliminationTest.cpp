@@ -22,7 +22,7 @@ define void @foo() {
 0:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_FALSE(DeadCodeElimination().runOnFunction(*F));
 }
@@ -34,7 +34,7 @@ define void @foo() {
     %1 = add i32 42, 43
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -54,7 +54,7 @@ define void @foo() {
     %3 = add i32 %2, %2
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -84,7 +84,7 @@ define void @foo() {
     %5 = add i32 %3, %3
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -106,7 +106,7 @@ define void @foo() {
     %1 = alloca i32
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -126,7 +126,7 @@ define void @foo() {
     %2 = load i32, ptr %1
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -153,7 +153,7 @@ define void @foo(i1 %0) {
     %5 = phi i32 [ 42, %2 ], [ 43, %3 ]
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -178,7 +178,7 @@ define void @foo(i1 %0) {
     %5 = phi i32 [ 42, %1 ], [ 43, %2 ]
     br label %2
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 

@@ -20,7 +20,7 @@ define void @foo() {
 0:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_FALSE(BranchSimplification().runOnFunction(*F));
 }
@@ -37,7 +37,7 @@ define void @foo() {
 2:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
 
@@ -60,7 +60,7 @@ define void @foo() {
 2:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
 
@@ -80,7 +80,7 @@ define void @foo(i1 %0) {
 2:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
 

@@ -1,7 +1,6 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir_parser/IRParser.h"
-#include "mini-llvm/ir_parser/Parser.h"
 
 using namespace mini_llvm::ir;
 
@@ -13,7 +12,7 @@ define void @foo() {
 }
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test01) {
@@ -24,31 +23,31 @@ define internal void @foo() {
 }
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test02) {
     const char *input = "declare void @foo()";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test03) {
     const char *input = "@foo = global i32 42";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test04) {
     const char *input = "@foo = internal global i32 42";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test05) {
     const char *input = "@foo = external global i32";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test06) {
@@ -67,7 +66,7 @@ TEST(IRParserTest, test06) {
 ]
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test07) {
@@ -88,7 +87,7 @@ define i32 @foo() {
 @baz = global i32 42
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test08) {
@@ -105,7 +104,7 @@ define void @foo() {
 }
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test09) {
@@ -116,7 +115,7 @@ define ptr @foo() {
 }
 )";
 
-    EXPECT_THROW(parseModule(input), ParseException);
+    EXPECT_FALSE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test10) {
@@ -127,7 +126,7 @@ define ptr @foo() {
 }
 )";
 
-    EXPECT_THROW(parseModule(input), ParseException);
+    EXPECT_FALSE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test11) {
@@ -138,7 +137,7 @@ define void @foo() {
 }
 )";
 
-    EXPECT_THROW(parseModule(input), ParseException);
+    EXPECT_FALSE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test12) {
@@ -151,7 +150,7 @@ define void @foo() {
 }
 )";
 
-    EXPECT_THROW(parseModule(input), ParseException);
+    EXPECT_FALSE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test13) {
@@ -164,7 +163,7 @@ define void @foo(i32 %0) {
 }
 )";
 
-    EXPECT_THROW(parseModule(input), ParseException);
+    EXPECT_FALSE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test14) {
@@ -181,7 +180,7 @@ define void @foo() {
 }
 )";
 
-    EXPECT_THROW(parseModule(input), ParseException);
+    EXPECT_FALSE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test15) {
@@ -195,7 +194,7 @@ define void @foo() {
 declare void @bar(i32, i32, i32)
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test16) {
@@ -209,7 +208,7 @@ define void @foo() {
 declare i32 @bar(i32, i32, i32)
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test17) {
@@ -227,7 +226,7 @@ define void @foo() {
 ]
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }
 
 TEST(IRParserTest, test18) {
@@ -245,5 +244,5 @@ define void @foo(i1 %0) {
 }
 )";
 
-    EXPECT_NO_THROW(parseModule(input));
+    EXPECT_TRUE(parseModule(input).has_value());
 }

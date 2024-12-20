@@ -36,7 +36,7 @@ define void @foo(i1 %0) {
 7:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     auto i = F->begin();
     const BasicBlock *B1 = &*i++, *B2 = &*i++, *B3 = &*i++, *B4 = &*i++, *B5 = &*i++, *B6 = &*i++, *B7 = &*i++;

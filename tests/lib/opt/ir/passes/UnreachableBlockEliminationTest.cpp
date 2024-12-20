@@ -22,7 +22,7 @@ define void @foo() {
 0:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_FALSE(UnreachableBlockElimination().runOnFunction(*F));
 }
@@ -36,7 +36,7 @@ define void @foo() {
 1:
     ret void
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
 
@@ -56,7 +56,7 @@ define void @foo() {
 1:
     br label %1
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
 
@@ -79,7 +79,7 @@ define void @foo() {
 2:
     br label %1
 }
-)").functions.front());
+)").value().functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
 
