@@ -26,7 +26,8 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             for (const UseBase *op : I.operands()) {
                 if (op->expired()) {
-                    throw VerificationException();
+                    ok_ = false;
+                    return;
                 }
             }
         }
@@ -34,14 +35,17 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
 
     for (const BasicBlock &B : F) {
         if (B.empty()) {
-            throw VerificationException();
+            ok_ = false;
+            return;
         }
         if (!dynamic_cast<const Terminator *>(&B.back())) {
-            throw VerificationException();
+            ok_ = false;
+            return;
         }
         for (auto i = B.begin(), e = std::prev(B.end()); i != e; ++i) {
             if (dynamic_cast<const Terminator *>(&*i)) {
-                throw VerificationException();
+                ok_ = false;
+                return;
             }
         }
     }
@@ -49,13 +53,15 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
     for (const BasicBlock &B : F) {
         if (auto *ret = dynamic_cast<const Ret *>(&B.back())) {
             if (*ret->value()->type() != *F.functionType()->returnType()) {
-                throw VerificationException();
+                ok_ = false;
+                return;
             }
         }
     }
 
     if (!hasNPredecessors(F.entry(), 0)) {
-        throw VerificationException();
+        ok_ = false;
+        return;
     }
 
     for (const BasicBlock &B : F) {
@@ -66,7 +72,8 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (incomingBlocks(*phi) != predecessors(B)) {
-                    throw VerificationException();
+                    ok_ = false;
+                    return;
                 }
             }
         }
@@ -76,17 +83,20 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
-                    throw VerificationException();
+                    ok_ = false;
+                    return;
                 }
             }
             if (auto *op = dynamic_cast<const BinaryFloatingOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
-                    throw VerificationException();
+                    ok_ = false;
+                    return;
                 }
             }
             if (auto *select = dynamic_cast<const Select *>(&I)) {
                 if (*select->trueValue()->type() != *select->falseValue()->type()) {
-                    throw VerificationException();
+                    ok_ = false;
+                    return;
                 }
             }
         }
@@ -115,7 +125,8 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
                     if (!S.contains(II->parent()) || (!dynamic_cast<const Phi *>(II) && !domTree.dominates(I, *II))) {
-                        throw VerificationException();
+                        ok_ = false;
+                        return;
                     }
                 }
             }
@@ -127,12 +138,15 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
             if (!dynamic_cast<const Phi *>(&I)) {
                 for (const UseBase *op : I.operands()) {
                     if (&**op == &I) {
-                        throw VerificationException();
+                        ok_ = false;
+                        return;
                     }
                 }
             }
         }
     }
+
+    ok_ = true;
 }
 
 void VerificationAnalysis::runOnModule(const Module &M) {

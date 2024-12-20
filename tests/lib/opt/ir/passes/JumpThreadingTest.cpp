@@ -39,7 +39,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), Not(HasSubstr("br label %1")));
 }
 
@@ -64,7 +68,11 @@ define void @foo(i1 %0) {
 )");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), Not(HasSubstr("br i1 %0, label %2, label %4")));
 }
 
@@ -87,7 +95,11 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("br label %1")),
         Not(HasSubstr("br label %2")),

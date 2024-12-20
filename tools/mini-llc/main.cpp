@@ -185,9 +185,7 @@ int main(int argc, char *argv[]) {
         exit(1);
     }
 
-    try {
-        ir::VerificationAnalysis().runOnModule(M);
-    } catch (const ir::VerificationException &) {
+    if (ir::VerificationAnalysis verify; verify.runOnModule(M), !verify.ok()) {
         fprintf(stderr, "%s: error: input module cannot be verified\n", options.inputFile.c_str());
         exit(1);
     }

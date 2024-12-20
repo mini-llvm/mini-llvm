@@ -38,7 +38,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), HasSubstr("br label %1"));
 }
 
@@ -57,7 +61,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), HasSubstr("br label %2"));
 }
 
@@ -73,6 +81,10 @@ define void @foo(i1 %0) {
 )");
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), HasSubstr("br label %2"));
 }

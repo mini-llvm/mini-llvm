@@ -35,7 +35,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), Not(HasSubstr("%1 = add i32 42, 43")));
 }
 
@@ -51,7 +55,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("%1 = add i32 42, 43")),
         Not(HasSubstr("%2 = add i32 %1, %1")),
@@ -77,7 +85,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("%1 = add i32 42, 43")),
         Not(HasSubstr("%3 = add i32 %1, %1")),
@@ -95,7 +107,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), Not(HasSubstr("%1 = alloca i32")));
 }
 
@@ -111,7 +127,11 @@ define void @foo() {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), Not(HasSubstr("%2 = load i32, ptr %1")));
 }
 
@@ -134,7 +154,11 @@ define void @foo(i1 %0) {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), Not(HasSubstr("%5 = phi i32 [ 42, %2 ], [ 43, %3 ]")));
 }
 
@@ -155,7 +179,11 @@ define void @foo(i1 %0) {
 )");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
-    EXPECT_NO_THROW(VerificationAnalysis().runOnFunction(*F));
+
+    VerificationAnalysis verify;
+    verify.runOnFunction(*F);
+    EXPECT_TRUE(verify.ok());
+
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("%3 = phi i32 [ 42, %1 ], [ 43, %4 ]")),
         Not(HasSubstr("%5 = phi i32 [ 42, %1 ], [ 43, %2 ]"))

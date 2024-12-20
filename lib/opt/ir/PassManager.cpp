@@ -13,6 +13,7 @@
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm::ir;
 
@@ -49,8 +50,9 @@ void PassManager::run(Module &M) const {
 bool PassManager::run(ModuleTransform &pass, Module &M) const {
     bool changed = pass.runOnModule(M);
     if (verifyAfterEach_) {
-        VerificationAnalysis pass2;
-        pass2.runOnModule(M);
+        if (VerificationAnalysis verify; verify.runOnModule(M), !verify.ok()) {
+            panic();
+        }
     }
     return changed;
 }
