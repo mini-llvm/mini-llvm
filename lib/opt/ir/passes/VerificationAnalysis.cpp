@@ -150,9 +150,13 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
 }
 
 void VerificationAnalysis::runOnModule(const Module &M) {
+    ok_ = true;
     for (const Function &F : M.functions) {
         if (!F.empty()) {
             runOnFunction(F);
+            if (!ok_) {
+                return;
+            }
         }
     }
 }
