@@ -49,7 +49,7 @@ inline Expected<std::string, SystemError> readAll(const std::filesystem::path &p
     }
 }
 
-Status<SystemError> writeAll(const std::filesystem::path &path, std::string_view content) {
+inline Status<SystemError> writeAll(const std::filesystem::path &path, std::string_view content) {
     FILE *fp = fopen(path.c_str(), "w");
     if (!fp) {
         return SystemError("fopen", errno);
