@@ -7,12 +7,7 @@
 #include <string>
 #include <string_view>
 
-#include <error.h>
-#include <fcntl.h>
 #include <getopt.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir_parser/ir_parser.h"
@@ -22,7 +17,10 @@
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
+#include "mini-llvm/utils/Status.h"
+#include "mini-llvm/utils/SystemError.h"
 
 using namespace mini_llvm;
 
@@ -159,21 +157,9 @@ int main(int argc, char *argv[]) {
         options.target = target;
     }
 
-    int inputFd;
-    if ((inputFd = open(options.inputFile.c_str(), O_RDONLY)) == -1) {
-        fprintf(stderr, "%s: error: open: %s\n", argv[0], strerror(errno));
-        exit(1);
-    }
-
-    struct stat sb;
-    if (fstat(inputFd, &sb) == -1) {
-        fprintf(stderr, "%s: error: fstat: %s\n", argv[0], strerror(errno));
-        exit(1);
-    }
-
-    void *addr;
-    if ((addr = mmap(nullptr, sb.st_size, PROT_READ, MAP_PRIVATE, inputFd, 0)) == MAP_FAILED) {
-        fprintf(stderr, "%s: error: mmap: %s\n", argv[0], strerror(errno));
+    Expected<std::string, SystemError> input = readAll(options.inputFile);
+    if (!input.ok()) {
+        fprintf(stderr, "%s: error: %s: %s\n", argv[0], input.error().call, strerror(input.error().error));
         exit(1);
     }
 
@@ -182,7 +168,7 @@ int main(int argc, char *argv[]) {
     const char *location;
     std::string message;
     try {
-        M = ir::parseModule(reinterpret_cast<const char *>(addr));
+        M = ir::parseModule(input.value().c_str());
     } catch (const ir::LexException &e) {
         hasError = true;
         location = e.location();
@@ -194,7 +180,7 @@ int main(int argc, char *argv[]) {
     }
     if (hasError) {
         size_t line, column;
-        computeLineColumn(reinterpret_cast<const char *>(addr), location, line, column);
+        computeLineColumn(input.value().c_str(), location, line, column);
         fprintf(stderr, "%s:%zu:%zu: error: %s\n", options.inputFile.c_str(), line, column, message.c_str());
         exit(1);
     }
@@ -221,21 +207,10 @@ int main(int argc, char *argv[]) {
 
     std::string output = program.format() + '\n';
 
-    int outputFd;
-    if ((outputFd = open(options.outputFile.c_str(), O_WRONLY | O_CREAT | O_TRUNC, 0666)) == -1) {
-        fprintf(stderr, "%s: error: open: %s\n", argv[0], strerror(errno));
+    if (Status status = writeAll(options.outputFile, output); !status.ok()) {
+        fprintf(stderr, "%s: error: %s: %s\n", argv[0], status.error().call, strerror(status.error().error));
         exit(1);
     }
-
-    if (write(outputFd, output.data(), output.size()) == -1) {
-        fprintf(stderr, "%s: error: write: %s\n", argv[0], strerror(errno));
-        exit(1);
-    }
-
-    close(outputFd);
-
-    munmap(addr, sb.st_size);
-    close(inputFd);
 
     exit(0);
 }
