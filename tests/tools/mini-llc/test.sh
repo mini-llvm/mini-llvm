@@ -11,7 +11,7 @@ function run_test {
     timeout -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$target" -o "$result_dir/$test_name.s" "$test_name.ll" &&
     timeout -v "$LINKER_TIMEOUT" $LINKER_COMMAND -o "$result_dir/$test_name" "$result_dir/$test_name.s" -lm &&
     timeout -v "$EMULATOR_TIMEOUT" $EMULATOR_COMMAND "$result_dir/$test_name" > "$result_dir/$test_name.out" &&
-    $DIFF_COMMAND "${test_name%+*}.ans" "$result_dir/$test_name.out"
+    $DIFF_COMMAND "${test_name}.ans" "$result_dir/$test_name.out"
 }
 
 function main {
