@@ -1,6 +1,5 @@
 #pragma once
 
-#include <exception>
 #include <functional>
 #include <unordered_set>
 
@@ -12,18 +11,11 @@
 
 namespace mini_llvm {
 
-class RegisterAllocationException : public std::exception {
-public:
-    const char *what() const noexcept override {
-        return "RegisterAllocationException";
-    }
-};
-
 class RegisterAllocator {
 public:
     virtual ~RegisterAllocator() = default;
 
-    virtual void allocate(mir::Function &F,
+    virtual bool allocate(mir::Function &F,
                           int regWidth,
                           const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                           const std::unordered_set<mir::PhysicalRegister *> &physRegs,

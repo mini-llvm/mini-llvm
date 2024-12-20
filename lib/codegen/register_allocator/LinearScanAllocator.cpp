@@ -106,7 +106,7 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
 
 } // namespace
 
-void LinearScanAllocator::allocate(Function &F,
+bool LinearScanAllocator::allocate(Function &F,
                                    int regWidth,
                                    const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                                    const std::unordered_set<mir::PhysicalRegister *> &physRegs,
@@ -163,7 +163,7 @@ void LinearScanAllocator::allocate(Function &F,
         reserved.erase(bestPhysReg);
     }
     if (reserved.size() < numReserved) {
-        throw RegisterAllocationException();
+        return false;
     }
 
     std::vector<const Instruction *> seq = Linearize(&F)();
@@ -316,4 +316,6 @@ void LinearScanAllocator::allocate(Function &F,
             }
         }
     }
+
+    return true;
 }

@@ -11,7 +11,6 @@
 
 #include "mini-llvm/codegen/register_allocator/LinearScanAllocator.h"
 #include "mini-llvm/codegen/register_allocator/NaiveAllocator.h"
-#include "mini-llvm/codegen/RegisterAllocator.h"
 #include "mini-llvm/common/ExtensionMode.h"
 #include "mini-llvm/common/Precision.h"
 #include "mini-llvm/ir/Module.h"
@@ -167,12 +166,12 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                     };
 
-                    try {
-                        LinearScanAllocator allocator;
-                        allocator.allocate(F, 8, virtRegs, physRegs, load, store);
-                    } catch (const RegisterAllocationException &) {
+                    LinearScanAllocator allocator;
+                    if (!allocator.allocate(F, 8, virtRegs, physRegs, load, store)) {
                         NaiveAllocator allocator;
-                        allocator.allocate(F, 8, virtRegs, physRegs, load, store);
+                        if (!allocator.allocate(F, 8, virtRegs, physRegs, load, store)) {
+                            panic();
+                        }
                     }
                 }
 

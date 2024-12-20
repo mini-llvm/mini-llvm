@@ -40,7 +40,7 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
 
 } // namespace
 
-void NaiveAllocator::allocate(Function &F,
+bool NaiveAllocator::allocate(Function &F,
                               int regWidth,
                               const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                               const std::unordered_set<mir::PhysicalRegister *> &physRegs,
@@ -101,7 +101,7 @@ void NaiveAllocator::allocate(Function &F,
                     }
                 }
                 if (bestPhysReg == nullptr) {
-                    throw RegisterAllocationException();
+                    return false;
                 }
                 allocation[virtReg] = bestPhysReg;
                 srcAllocated.insert(bestPhysReg);
@@ -116,7 +116,7 @@ void NaiveAllocator::allocate(Function &F,
                     }
                 }
                 if (bestPhysReg == nullptr) {
-                    throw RegisterAllocationException();
+                    return false;
                 }
                 allocation[virtReg] = bestPhysReg;
                 srcAllocated.insert(bestPhysReg);
@@ -130,7 +130,7 @@ void NaiveAllocator::allocate(Function &F,
                     }
                 }
                 if (bestPhysReg == nullptr) {
-                    throw RegisterAllocationException();
+                    return false;
                 }
                 allocation[virtReg] = bestPhysReg;
                 dstAllocated.insert(bestPhysReg);
@@ -150,4 +150,6 @@ void NaiveAllocator::allocate(Function &F,
             }
         }
     }
+
+    return true;
 }

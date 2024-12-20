@@ -14,7 +14,7 @@ namespace mini_llvm {
 
 class NaiveAllocator : public RegisterAllocator {
 public:
-    void allocate(mir::Function &F,
+    bool allocate(mir::Function &F,
                   int regWidth,
                   const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                   const std::unordered_set<mir::PhysicalRegister *> &physRegs,
