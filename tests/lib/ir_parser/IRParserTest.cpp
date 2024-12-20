@@ -1,11 +1,11 @@
 #include <gtest/gtest.h>
 
-#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/ir_parser/Parser.h"
 
 using namespace mini_llvm::ir;
 
-TEST(ir_parser_test, test00) {
+TEST(IRParserTest, test00) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -16,7 +16,7 @@ define void @foo() {
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test01) {
+TEST(IRParserTest, test01) {
     const char *input = R"(
 define internal void @foo() {
 0:
@@ -27,31 +27,31 @@ define internal void @foo() {
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test02) {
+TEST(IRParserTest, test02) {
     const char *input = "declare void @foo()";
 
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test03) {
+TEST(IRParserTest, test03) {
     const char *input = "@foo = global i32 42";
 
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test04) {
+TEST(IRParserTest, test04) {
     const char *input = "@foo = internal global i32 42";
 
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test05) {
+TEST(IRParserTest, test05) {
     const char *input = "@foo = external global i32";
 
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test06) {
+TEST(IRParserTest, test06) {
     const char *input = R"(
 @foo = global [2 x [3 x [4 x i32]]] [
     [3 x [4 x i32]] [
@@ -70,7 +70,7 @@ TEST(ir_parser_test, test06) {
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test07) {
+TEST(IRParserTest, test07) {
     const char *input = R"(
 define i32 @foo() {
 0:
@@ -91,7 +91,7 @@ define i32 @foo() {
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test08) {
+TEST(IRParserTest, test08) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -108,7 +108,7 @@ define void @foo() {
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test09) {
+TEST(IRParserTest, test09) {
     const char *input = R"(
 define ptr @foo() {
 0:
@@ -119,7 +119,7 @@ define ptr @foo() {
     EXPECT_THROW(parseModule(input), ParseException);
 }
 
-TEST(ir_parser_test, test10) {
+TEST(IRParserTest, test10) {
     const char *input = R"(
 define ptr @foo() {
 0:
@@ -130,7 +130,7 @@ define ptr @foo() {
     EXPECT_THROW(parseModule(input), ParseException);
 }
 
-TEST(ir_parser_test, test11) {
+TEST(IRParserTest, test11) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -141,7 +141,7 @@ define void @foo() {
     EXPECT_THROW(parseModule(input), ParseException);
 }
 
-TEST(ir_parser_test, test12) {
+TEST(IRParserTest, test12) {
     const char *input = R"(
 @foo = global i32 42
 
@@ -154,7 +154,7 @@ define void @foo() {
     EXPECT_THROW(parseModule(input), ParseException);
 }
 
-TEST(ir_parser_test, test13) {
+TEST(IRParserTest, test13) {
     const char *input = R"(
 define void @foo(i32 %0) {
 1:
@@ -167,7 +167,7 @@ define void @foo(i32 %0) {
     EXPECT_THROW(parseModule(input), ParseException);
 }
 
-TEST(ir_parser_test, test14) {
+TEST(IRParserTest, test14) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -184,7 +184,7 @@ define void @foo() {
     EXPECT_THROW(parseModule(input), ParseException);
 }
 
-TEST(ir_parser_test, test15) {
+TEST(IRParserTest, test15) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -198,7 +198,7 @@ declare void @bar(i32, i32, i32)
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test16) {
+TEST(IRParserTest, test16) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -212,7 +212,7 @@ declare i32 @bar(i32, i32, i32)
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test17) {
+TEST(IRParserTest, test17) {
     const char *input = R"(
 define void @foo() {
 0:
@@ -230,7 +230,7 @@ define void @foo() {
     EXPECT_NO_THROW(parseModule(input));
 }
 
-TEST(ir_parser_test, test18) {
+TEST(IRParserTest, test18) {
     const char *input = R"(
 define void @foo(i1 %0) {
 1:

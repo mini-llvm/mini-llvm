@@ -18,7 +18,7 @@ TEST(LexerTest, test00) {
         {kEOF, {}, input},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test01) {
@@ -41,7 +41,7 @@ global i32 42 ; Comment
         {kEOF,    {},    input + 82},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test02) {
@@ -52,7 +52,7 @@ TEST(LexerTest, test02) {
         {kEOF, {}, input + 19},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test03) {
@@ -63,7 +63,7 @@ TEST(LexerTest, test03) {
         {kEOF, {}, input + 20},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test04) {
@@ -74,7 +74,7 @@ TEST(LexerTest, test04) {
         {kEOF, {}, input + 20},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test05) {
@@ -85,7 +85,7 @@ TEST(LexerTest, test05) {
         {kEOF, {}, input + 18},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test06) {
@@ -96,7 +96,7 @@ TEST(LexerTest, test06) {
         {kEOF, {}, input + 18},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test07) {
@@ -107,7 +107,7 @@ TEST(LexerTest, test07) {
         {kEOF, {}, input + 18},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test08) {
@@ -119,7 +119,7 @@ TEST(LexerTest, test08) {
         {kEOF,   {},        input + 8},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test09) {
@@ -131,7 +131,7 @@ TEST(LexerTest, test09) {
         {kEOF,   {},      input + 7},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test10) {
@@ -143,7 +143,7 @@ TEST(LexerTest, test10) {
         {kEOF,   {},  input + 3},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test11) {
@@ -155,7 +155,7 @@ TEST(LexerTest, test11) {
         {kEOF,     {},        input + 8},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test12) {
@@ -167,7 +167,7 @@ TEST(LexerTest, test12) {
         {kEOF,  {},       input + 7},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test13) {
@@ -179,7 +179,7 @@ TEST(LexerTest, test13) {
         {kEOF,     {},   input + 3},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }
 
 TEST(LexerTest, test14) {
@@ -190,5 +190,5 @@ TEST(LexerTest, test14) {
         {kEOF, {}, input + 16},
     };
 
-    EXPECT_EQ(std::vector<Token>(Lexer(input)), expectedOutput);
+    EXPECT_EQ(lex(input), expectedOutput);
 }

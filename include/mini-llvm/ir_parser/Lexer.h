@@ -37,7 +37,6 @@ public:
     explicit Lexer(const char *cursor) : cursor_(cursor) {}
     std::optional<Token> lastToken();
     Token nextToken();
-    explicit operator std::vector<Token>();
 
 private:
     const char *cursor_;
@@ -45,5 +44,7 @@ private:
 
     Token nextTokenImpl();
 };
+
+std::vector<Token> lex(const char *source);
 
 } // namespace mini_llvm::ir

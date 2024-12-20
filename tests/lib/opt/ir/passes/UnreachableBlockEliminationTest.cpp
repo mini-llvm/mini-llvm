@@ -4,29 +4,31 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/utils/Memory.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
 using ::testing::Not;
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 TEST(UnreachableBlockEliminationTest, test0) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     ret void
 }
-)");
+)").functions.front());
 
     EXPECT_FALSE(UnreachableBlockElimination().runOnFunction(*F));
 }
 
 TEST(UnreachableBlockEliminationTest, test1) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     ret void
@@ -34,7 +36,7 @@ define void @foo() {
 1:
     ret void
 }
-)");
+)").functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
 
@@ -46,7 +48,7 @@ define void @foo() {
 }
 
 TEST(UnreachableBlockEliminationTest, test2) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     ret void
@@ -54,7 +56,7 @@ define void @foo() {
 1:
     br label %1
 }
-)");
+)").functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
 
@@ -66,7 +68,7 @@ define void @foo() {
 }
 
 TEST(UnreachableBlockEliminationTest, test3) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     ret void
@@ -77,7 +79,7 @@ define void @foo() {
 2:
     br label %1
 }
-)");
+)").functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
 

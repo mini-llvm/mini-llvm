@@ -4,27 +4,29 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/opt/ir/passes/BranchSimplification.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
+#include "mini-llvm/utils/Memory.h"
 
 using ::testing::HasSubstr;
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 TEST(BranchSimplificationTest, test0) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     ret void
 }
-)");
+)").functions.front());
 
     EXPECT_FALSE(BranchSimplification().runOnFunction(*F));
 }
 
 TEST(BranchSimplificationTest, test1) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     br i1 true, label %1, label %2
@@ -35,7 +37,7 @@ define void @foo() {
 2:
     ret void
 }
-)");
+)").functions.front());
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
 
@@ -47,7 +49,7 @@ define void @foo() {
 }
 
 TEST(BranchSimplificationTest, test2) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo() {
 0:
     br i1 false, label %1, label %2
@@ -58,7 +60,7 @@ define void @foo() {
 2:
     ret void
 }
-)");
+)").functions.front());
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
 
@@ -70,7 +72,7 @@ define void @foo() {
 }
 
 TEST(BranchSimplificationTest, test3) {
-    std::shared_ptr<Function> F = parseFunction(R"(
+    std::shared_ptr<Function> F = share(parseModule(R"(
 define void @foo(i1 %0) {
 1:
     br i1 %0, label %2, label %2
@@ -78,7 +80,7 @@ define void @foo(i1 %0) {
 2:
     ret void
 }
-)");
+)").functions.front());
 
     EXPECT_TRUE(BranchSimplification().runOnFunction(*F));
 

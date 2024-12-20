@@ -10,7 +10,7 @@
 #include <getopt.h>
 
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir_parser/ir_parser.h"
+#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/ir_parser/Lexer.h"
 #include "mini-llvm/ir_parser/Parser.h"
 #include "mini-llvm/mc/Program.h"

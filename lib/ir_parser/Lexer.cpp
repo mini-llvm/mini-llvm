@@ -12,6 +12,7 @@
 
 #include "mini-llvm/ir_parser/Token.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 using enum Token::Kind;
@@ -279,10 +280,11 @@ Token Lexer::nextTokenImpl() {
     throw LexException(cursor_, "unexpected character");
 }
 
-Lexer::operator std::vector<Token>() {
+std::vector<Token> ir::lex(const char *source) {
+    Lexer lexer(source);
     std::vector<Token> output;
     do {
-        output.push_back(nextToken());
+        output.push_back(lexer.nextToken());
     } while (output.back().kind != kEOF);
     return output;
 }

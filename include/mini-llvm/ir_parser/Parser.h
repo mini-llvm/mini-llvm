@@ -65,4 +65,6 @@ private:
     std::unordered_map<Symbol, std::shared_ptr<Value>> symbolTable_;
 };
 
+Module parseModule(const std::vector<Token> &tokens);
+
 } // namespace mini_llvm::ir
