@@ -20,6 +20,7 @@
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 #include "mini-llvm/utils/Status.h"
+#include "mini-llvm/utils/Strings.h"
 #include "mini-llvm/utils/SystemError.h"
 
 using namespace mini_llvm;
@@ -43,19 +44,6 @@ struct Options {
     std::filesystem::path outputFile;
     Target target;
 };
-
-void computeLineColumn(const char *start, const char *location, size_t &line, size_t &column) {
-    line = column = 1;
-    while (start != location) {
-        if (*start == '\n') {
-            ++line;
-            column = 1;
-        } else {
-            ++column;
-        }
-        ++start;
-    }
-}
 
 } // namespace
 

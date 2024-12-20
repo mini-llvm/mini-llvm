@@ -89,6 +89,7 @@ add_library(mini-llvm
     targets/riscv/opt/mir/RISCVPassManager.cpp
     targets/riscv/RISCVBackendDriver.cpp
     utils/FileSystem.cpp
+    utils/Strings.cpp
 )
 target_compile_features(mini-llvm PUBLIC cxx_std_23)
 target_include_directories(mini-llvm PUBLIC
