@@ -64,10 +64,17 @@ function main {
     LINKER_TIMEOUT="${LINKER_TIMEOUT:-10}"
     EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-10}"
 
+    local width=0
+    for test_name in "${tests[@]}"; do
+        if (( ${#test_name} > width )); then
+            width=${#test_name}
+        fi
+    done
+
     local failed_tests=()
 
     for test_name in "${tests[@]}"; do
-        printf "%-40s" "$test_name"
+        printf "%-*s " "$width" "$test_name"
 
         if run_test "$test_name" "$target" "$result_dir"; then
             echo "Passed"
