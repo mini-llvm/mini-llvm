@@ -78,30 +78,31 @@ int main(int argc, char *argv[]) {
             fprintf(stdout, "Usage: %s [--target=<target>] [-o <output-file>] <input-file>\n", argv[0]);
             exit(0);
 
-        case CHAR_MAX + 2:
-            if (options.target == Target::kNone) {
-                Target target = toTarget(optarg);
-                if (target != Target::kNone) {
-                    options.target = target;
-                    break;
-                }
+        case CHAR_MAX + 2: {
+            if (options.target != Target::kNone) {
+                fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
+                exit(1);
+            }
+            Target target = toTarget(optarg);
+            if (target == Target::kNone) {
                 fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], optarg);
                 exit(1);
             }
-            fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
-            exit(1);
+            options.target = target;
+            break;
+        }
 
         case 'o':
-            if (options.outputFile.empty()) {
-                if (*optarg != '\0') {
-                    options.outputFile = optarg;
-                    break;
-                }
+            if (!options.outputFile.empty()) {
+                fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
+                exit(1);
+            }
+            if (*optarg == '\0') {
                 fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
                 exit(1);
             }
-            fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
-            exit(1);
+            options.outputFile = optarg;
+            break;
 
         default:
             exit(1);
@@ -109,16 +110,15 @@ int main(int argc, char *argv[]) {
     }
 
     for (; optind < argc; ++optind) {
-        if (options.inputFile.empty()) {
-            if (*argv[optind] != '\0') {
-                options.inputFile = argv[optind];
-                continue;
-            }
+        if (!options.inputFile.empty()) {
+            fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
+            exit(1);
+        }
+        if (*argv[optind] == '\0') {
             fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
             exit(1);
         }
-        fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
-        exit(1);
+        options.inputFile = argv[optind];
     }
 
     if (options.inputFile.empty()) {
@@ -152,11 +152,11 @@ int main(int argc, char *argv[]) {
         targetName = "unknown";
 #endif
         Target target = toTarget(targetName);
-        if (target != Target::kNone) {
-            options.target = target;
+        if (target == Target::kNone) {
+            fprintf(stderr, "%s: error: native target '%s' not supported\n", argv[0], targetName);
+            exit(1);
         }
-        fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], targetName);
-        exit(1);
+        options.target = target;
     }
 
     int inputFd;
