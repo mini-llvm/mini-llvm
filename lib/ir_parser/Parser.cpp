@@ -159,9 +159,9 @@ Module Parser::parseModule() {
                     switch (cursor_->kind) {
                     case kEOF:
                         if (count == 0) {
-                            throw ParseException(cursor_, "expected initializer");
+                            throw ParseException("expected initializer", cursor_);
                         } else {
-                            throw ParseException(cursor_, "unclosed '['");
+                            throw ParseException("unclosed '['", cursor_);
                         }
 
                     case kLeftBracket:
@@ -177,7 +177,7 @@ Module Parser::parseModule() {
                     case kAt:
                         ++cursor_;
                         if (cursor_->kind == kEOF) {
-                            throw ParseException(cursor_, "expected identifier name");
+                            throw ParseException("expected identifier name", cursor_);
                         }
                         ++cursor_;
                         break;
@@ -194,17 +194,17 @@ Module Parser::parseModule() {
             if (hasBody) {
                 functions.emplace_back(&*F, cursor_);
                 if (cursor_->kind != kLeftBrace) {
-                    throw ParseException(cursor_, "expected '{'");
+                    throw ParseException("expected '{'", cursor_);
                 }
                 ++cursor_;
                 while (cursor_->kind != kEOF && cursor_->kind != kRightBrace) ++cursor_;
                 if (cursor_->kind != kRightBrace) {
-                    throw ParseException(cursor_, "expected '}'");
+                    throw ParseException("expected '}'", cursor_);
                 }
                 ++cursor_;
             }
         } else {
-            throw ParseException(cursor_, "expected '@', 'define' or 'declare'");
+            throw ParseException("expected '@', 'define' or 'declare'", cursor_);
         }
     }
 
@@ -224,11 +224,11 @@ Module Parser::parseModule() {
 std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
     Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
     if (symbolTable_.contains(symbol)) {
-        throw ParseException(cursor_, "redefinition of global identifier");
+        throw ParseException("redefinition of global identifier", cursor_);
     }
 
     if (cursor_->kind != kEqual) {
-        throw ParseException(cursor_, "expected '='");
+        throw ParseException("expected '='", cursor_);
     }
     ++cursor_;
 
@@ -245,7 +245,7 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
     }
 
     if (cursor_->kind != kGlobal) {
-        throw ParseException(cursor_, "expected 'global'");
+        throw ParseException("expected 'global'", cursor_);
     }
     ++cursor_;
 
@@ -265,7 +265,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     switch (cursor_->kind) {
         case kDefine: hasBody = true; break;
         case kDeclare: hasBody = false; break;
-        default: throw ParseException(cursor_, "expected 'define' or 'declare'");
+        default: throw ParseException("expected 'define' or 'declare'", cursor_);
     }
     ++cursor_;
 
@@ -279,7 +279,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
 
     Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
     if (symbolTable_.contains(symbol)) {
-        throw ParseException(cursor_, "redefinition of global identifier");
+        throw ParseException("redefinition of global identifier", cursor_);
     }
 
     std::vector<std::unique_ptr<Type>> paramTypes;
@@ -287,7 +287,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     bool isVarArgs = false;
 
     if (cursor_->kind != kLeftParen) {
-        throw ParseException(cursor_, "expected '('");
+        throw ParseException("expected '('", cursor_);
     }
     ++cursor_;
     if (cursor_->kind != kRightParen) {
@@ -319,7 +319,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
         }
     }
     if (cursor_->kind != kRightParen) {
-        throw ParseException(cursor_, "expected ')'");
+        throw ParseException("expected ')'", cursor_);
     }
     ++cursor_;
 
@@ -362,13 +362,13 @@ void Parser::parseFunctionBody(Function &F) {
     for (Argument &arg : args(F)) {
         Symbol symbol{Symbol::Scope::kLocal, arg.name()};
         if (symbolTable_.contains(symbol)) {
-            throw ParseException(cursor_, "redefinition of argument");
+            throw ParseException("redefinition of argument", cursor_);
         }
         symbolTable_[symbol] = share(arg);
     }
 
     if (cursor_->kind != kLeftBrace) {
-        throw ParseException(cursor_, "expected '{'");
+        throw ParseException("expected '{'", cursor_);
     }
     ++cursor_;
 
@@ -377,7 +377,7 @@ void Parser::parseFunctionBody(Function &F) {
         if (lookAhead->kind == kName && std::next(lookAhead)->kind == kColon) {
             Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(lookAhead->value)};
             if (symbolTable_.contains(symbol)) {
-                throw ParseException(lookAhead, "redefinition of label");
+                throw ParseException("redefinition of label", lookAhead);
             }
             symbolTable_[symbol] = std::make_shared<BasicBlock>();
         }
@@ -386,7 +386,7 @@ void Parser::parseFunctionBody(Function &F) {
 
     while (cursor_->kind != kRightBrace) {
         if (cursor_->kind != kName) {
-            throw ParseException(cursor_, "expected label name");
+            throw ParseException("expected label name", cursor_);
         }
         Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(cursor_->value)};
         std::shared_ptr<BasicBlock> block = cast<BasicBlock>(symbolTable_[symbol]);
@@ -397,7 +397,7 @@ void Parser::parseFunctionBody(Function &F) {
 
     for (const auto &[symbol, value] : symbolTable_) {
         if (typeid(*value) == typeid(Dummy)) {
-            throw ParseException(cursor_, "undefined local identifier");
+            throw ParseException("undefined local identifier", cursor_);
         }
     }
 
@@ -409,13 +409,13 @@ void Parser::parseFunctionBody(Function &F) {
 
 void Parser::parseBasicBlock(BasicBlock &B) {
     if (cursor_->kind != kName) {
-        throw ParseException(cursor_, "expected label name");
+        throw ParseException("expected label name", cursor_);
     }
     Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(cursor_->value)};
     ++cursor_;
 
     if (cursor_->kind != kColon) {
-        throw ParseException(cursor_, "expected ':'");
+        throw ParseException("expected ':'", cursor_);
     }
     ++cursor_;
 
@@ -434,7 +434,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
 
         if (cursor_->kind != kEqual) {
-            throw ParseException(cursor_, "expected '='");
+            throw ParseException("expected '='", cursor_);
         }
         ++cursor_;
 
@@ -472,7 +472,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::shared_ptr<Value> lhs = parseValue(*type);
 
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
@@ -493,7 +493,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kLSHR:
                     case kASHR:
                         if (!dynamic_cast<const IntegerType *>(&*type)) {
-                            throw ParseException(cursor_, "must be integer type");
+                            throw ParseException("must be integer type", cursor_);
                         }
                         break;
 
@@ -503,7 +503,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kFDiv:
                     case kFRem:
                         if (!dynamic_cast<const FloatingType *>(&*type)) {
-                            throw ParseException(cursor_, "must be floating point type");
+                            throw ParseException("must be floating point type", cursor_);
                         }
                         break;
 
@@ -551,14 +551,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kUGT: cond = ICmp::Condition::kUGT; break;
                     case kULE: cond = ICmp::Condition::kULE; break;
                     case kUGE: cond = ICmp::Condition::kUGE; break;
-                    default: throw ParseException(cursor_, "expected icmp condition");
+                    default: throw ParseException("expected icmp condition", cursor_);
                 }
                 ++cursor_;
 
                 std::unique_ptr<Type> type = parseType();
                 std::shared_ptr<Value> lhs = parseValue(*type);
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
                 std::shared_ptr<Value> rhs = parseValue(*type);
@@ -578,14 +578,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kOGT: cond = FCmp::Condition::kOGT; break;
                     case kOLE: cond = FCmp::Condition::kOLE; break;
                     case kOGE: cond = FCmp::Condition::kOGE; break;
-                    default: throw ParseException(cursor_, "expected fcmp condition");
+                    default: throw ParseException("expected fcmp condition", cursor_);
                 }
                 ++cursor_;
 
                 std::unique_ptr<Type> type = parseType();
                 std::shared_ptr<Value> lhs = parseValue(*type);
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
                 std::shared_ptr<Value> rhs = parseValue(*type);
@@ -613,7 +613,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::shared_ptr<Value> value = parseValue(*type1);
 
                 if (cursor_->kind != kTo) {
-                    throw ParseException(cursor_, "expected 'to'");
+                    throw ParseException("expected 'to'", cursor_);
                 }
                 ++cursor_;
 
@@ -621,7 +621,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
                 if (mnemonic == kTrunc || mnemonic == kSExt || mnemonic == kZExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                        throw ParseException(cursor_, "must be integer type");
+                        throw ParseException("must be integer type", cursor_);
                     }
 
                     std::unique_ptr<IntegerType> castType2 = cast<IntegerType>(std::move(type2));
@@ -636,7 +636,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                 } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kSIToFP || mnemonic == kUIToFP) {
                     if (!dynamic_cast<const FloatingType *>(&*type2)) {
-                        throw ParseException(cursor_, "must be floating point type");
+                        throw ParseException("must be floating point type", cursor_);
                     }
 
                     std::unique_ptr<FloatingType> castType2 = cast<FloatingType>(std::move(type2));
@@ -650,18 +650,18 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                 } else if (mnemonic == kPtrToInt) {
                     if (*type1 != Ptr()) {
-                        throw ParseException(cursor_, "must be ptr");
+                        throw ParseException("must be ptr", cursor_);
                     }
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                        throw ParseException(cursor_, "must be integer type");
+                        throw ParseException("must be integer type", cursor_);
                     }
                     I = std::make_shared<PtrToInt>(std::move(value), cast<IntegerType>(std::move(type2)));
                 } else if (mnemonic == kIntToPtr) {
                     if (!dynamic_cast<const IntegerType *>(&*type1)) {
-                        throw ParseException(cursor_, "must be integer type");
+                        throw ParseException("must be integer type", cursor_);
                     }
                     if (*type2 != Ptr()) {
-                        throw ParseException(cursor_, "must be ptr");
+                        throw ParseException("must be ptr", cursor_);
                     }
                     I = std::make_unique<IntToPtr>(std::move(value));
                 } else if (mnemonic == kBitCast) {
@@ -687,12 +687,12 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::unique_ptr<Type> type = parseType();
 
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
                 if (*parseType() != Ptr()) {
-                    throw ParseException(cursor_, "must be ptr");
+                    throw ParseException("must be ptr", cursor_);
                 }
 
                 std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -705,13 +705,13 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 ++cursor_;
 
                 if (*parseType() != I1()) {
-                    throw ParseException(cursor_, "must be i1");
+                    throw ParseException("must be i1", cursor_);
                 }
 
                 std::shared_ptr<Value> cond = parseValue(I1());
 
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
@@ -719,12 +719,12 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::shared_ptr<Value> trueValue = parseValue(*type);
 
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
                 if (*parseType() != *type) {
-                    throw ParseException(cursor_, "both values to select must have same type");
+                    throw ParseException("both values to select must have same type", cursor_);
                 }
 
                 std::shared_ptr<Value> falseValue = parseValue(*type);
@@ -739,18 +739,18 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::unique_ptr<Type> sourceType = parseType();
 
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
                 if (*parseType() != Ptr()) {
-                    throw ParseException(cursor_, "must be ptr");
+                    throw ParseException("must be ptr", cursor_);
                 }
 
                 std::shared_ptr<Value> ptr = parseValue(Ptr());
 
                 if (cursor_->kind != kComma) {
-                    throw ParseException(cursor_, "expected ','");
+                    throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
@@ -758,14 +758,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 std::unique_ptr<Type> idxType;
                 idxType = parseType();
                 if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                    throw ParseException(cursor_, "must be integer type");
+                    throw ParseException("must be integer type", cursor_);
                 }
                 indices.push_back(parseValue(*idxType));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
                     idxType = parseType();
                     if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                        throw ParseException(cursor_, "must be integer type");
+                        throw ParseException("must be integer type", cursor_);
                     }
                     indices.push_back(parseValue(*idxType));
                 }
@@ -780,13 +780,13 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
                 std::unique_ptr<Type> returnType = parseType();
                 if (*returnType == Void()) {
-                    throw ParseException(cursor_, "must not be void");
+                    throw ParseException("must not be void", cursor_);
                 }
 
                 std::shared_ptr<Value> callee = parseValue(Ptr());
 
                 if (cursor_->kind != kLeftParen) {
-                    throw ParseException(cursor_, "expected '('");
+                    throw ParseException("expected '('", cursor_);
                 }
                 ++cursor_;
 
@@ -800,7 +800,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
 
                 if (cursor_->kind != kRightParen) {
-                    throw ParseException(cursor_, "expected ')'");
+                    throw ParseException("expected ')'", cursor_);
                 }
                 ++cursor_;
 
@@ -808,7 +808,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
 
                     if (*calleeFunction->functionType()->returnType() != *returnType) {
-                        throw ParseException(cursor_, "inconsistent return type");
+                        throw ParseException("inconsistent return type", cursor_);
                     }
 
                     I =  std::make_shared<Call>(std::move(calleeFunction), std::move(args));
@@ -834,26 +834,26 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
                 auto parseIncoming = [this](Phi &phi) {
                     if (cursor_->kind != kLeftBracket) {
-                        throw ParseException(cursor_, "expected '['");
+                        throw ParseException("expected '['", cursor_);
                     }
                     ++cursor_;
 
                     std::shared_ptr<Value> value = parseValue(*phi.type());
 
                     if (cursor_->kind != kComma) {
-                        throw ParseException(cursor_, "expected ','");
+                        throw ParseException("expected ','", cursor_);
                     }
                     ++cursor_;
 
                     std::shared_ptr<BasicBlock> B = cast<BasicBlock>(parseValue(BasicBlockType()));
 
                     if (cursor_->kind != kRightBracket) {
-                        throw ParseException(cursor_, "expected ']'");
+                        throw ParseException("expected ']'", cursor_);
                     }
                     ++cursor_;
 
                     if (hasIncomingBlock(phi, *B)) {
-                        throw ParseException(cursor_, "duplicate incoming block");
+                        throw ParseException("duplicate incoming block", cursor_);
                     }
 
                     phi.putIncoming(*B, value);
@@ -870,7 +870,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             }
 
             default:
-                throw ParseException(cursor_, "expected instruction mnemonic");
+                throw ParseException("expected instruction mnemonic", cursor_);
         }
 
         I->setName(symbol.name);
@@ -878,7 +878,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         if (symbolTable_.contains(symbol)) {
             std::shared_ptr<Value> II = symbolTable_[symbol];
             if (typeid(*II) != typeid(Dummy)) {
-                throw ParseException(cursor_, "redefinition of local identifier");
+                throw ParseException("redefinition of local identifier", cursor_);
             } else {
                 replaceAllUsesWith(*II, I);
                 symbolTable_[symbol] = I;
@@ -893,12 +893,12 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         std::shared_ptr<Value> value = parseValue(*type);
 
         if (cursor_->kind != kComma) {
-            throw ParseException(cursor_, "expected ','");
+            throw ParseException("expected ','", cursor_);
         }
         ++cursor_;
 
         if (*parseType() != Ptr()) {
-            throw ParseException(cursor_, "must be ptr");
+            throw ParseException("must be ptr", cursor_);
         }
 
         std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -909,25 +909,25 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
         std::unique_ptr<Type> returnType = parseType();
         if (*returnType != Void()) {
-            throw ParseException(cursor_, "must be void");
+            throw ParseException("must be void", cursor_);
         }
 
         Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
         if (!symbolTable_.contains(symbol)) {
-            throw ParseException(cursor_, "undefined global identifier");
+            throw ParseException("undefined global identifier", cursor_);
         }
         std::shared_ptr<Value> value = symbolTable_[symbol];
         if (!dynamic_cast<const Function *>(&*value)) {
-            throw ParseException(cursor_, "identifier must be function");
+            throw ParseException("identifier must be function", cursor_);
         }
         std::shared_ptr<Function> callee = cast<Function>(value);
 
         if (*callee->functionType()->returnType() != *returnType) {
-            throw ParseException(cursor_, "inconsistent return type");
+            throw ParseException("inconsistent return type", cursor_);
         }
 
         if (cursor_->kind != kLeftParen) {
-            throw ParseException(cursor_, "expected '('");
+            throw ParseException("expected '('", cursor_);
         }
         ++cursor_;
 
@@ -941,7 +941,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         }
 
         if (cursor_->kind != kRightParen) {
-            throw ParseException(cursor_, "expected ')'");
+            throw ParseException("expected ')'", cursor_);
         }
         ++cursor_;
 
@@ -958,30 +958,30 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             std::shared_ptr<Value> cond = parseValue(I1());
 
             if (cursor_->kind != kComma) {
-                throw ParseException(cursor_, "expected ','");
+                throw ParseException("expected ','", cursor_);
             }
             ++cursor_;
 
             if (*parseType() != BasicBlockType()) {
-                throw ParseException(cursor_, "must be label");
+                throw ParseException("must be label", cursor_);
             }
 
             std::shared_ptr<BasicBlock> trueDest = cast<BasicBlock>(parseValue(BasicBlockType()));
 
             if (cursor_->kind != kComma) {
-                throw ParseException(cursor_, "expected ','");
+                throw ParseException("expected ','", cursor_);
             }
             ++cursor_;
 
             if (*parseType() != BasicBlockType()) {
-                throw ParseException(cursor_, "must be label");
+                throw ParseException("must be label", cursor_);
             }
 
             std::shared_ptr<BasicBlock> falseDest = cast<BasicBlock>(parseValue(BasicBlockType()));
 
             return std::make_shared<CondBr>(std::move(cond), std::move(trueDest), std::move(falseDest));
         } else {
-            throw ParseException(cursor_, "must be label or i1");
+            throw ParseException("must be label or i1", cursor_);
         }
     } else if (cursor_->kind == kRet) {
         ++cursor_;
@@ -994,7 +994,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         std::shared_ptr<Value> value = parseValue(*type);
         return std::make_shared<Ret>(std::move(value));
     } else {
-        throw ParseException(cursor_, "expected local identifier or instruction mnemonic");
+        throw ParseException("expected local identifier or instruction mnemonic", cursor_);
     }
 
     return I;
@@ -1017,7 +1017,7 @@ std::shared_ptr<Value> Parser::parseValue(const Type &type) {
             return parseConstant(type);
 
         default:
-            throw ParseException(cursor_, "expected identifier or constant");
+            throw ParseException("expected identifier or constant", cursor_);
     }
 }
 
@@ -1026,15 +1026,15 @@ std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
     if (symbolTable_.contains(symbol)) {
         std::shared_ptr<Value> value = symbolTable_[symbol];
         if (*value->type() != type) {
-            throw ParseException(cursor_, "inconsistent type");
+            throw ParseException("inconsistent type", cursor_);
         }
         return value;
     }
     if (symbol.scope == Symbol::Scope::kGlobal) {
-        throw ParseException(cursor_, "undefined global identifier");
+        throw ParseException("undefined global identifier", cursor_);
     }
     if (type == BasicBlockType()) {
-        throw ParseException(cursor_, "undefined label");
+        throw ParseException("undefined label", cursor_);
     }
     return symbolTable_[symbol] = std::make_shared<Dummy>(type.clone());
 }
@@ -1045,7 +1045,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             case kTrue: ++cursor_; return std::make_unique<I1Constant>(true);
             case kFalse: ++cursor_; return std::make_unique<I1Constant>(false);
             case kPoison: ++cursor_; return std::make_unique<PoisonValue>(std::make_unique<I1>());
-            default: throw ParseException(cursor_, "expected 'true', 'false' or 'poison'");
+            default: throw ParseException("expected 'true', 'false' or 'poison'", cursor_);
         }
     }
     if (type == I8()) {
@@ -1059,7 +1059,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I8>());
             default:
-                throw ParseException(cursor_, "expected number or 'poison'");
+                throw ParseException("expected number or 'poison'", cursor_);
         }
     }
     if (type == I16()) {
@@ -1073,7 +1073,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I16>());
             default:
-                throw ParseException(cursor_, "expected number or 'poison'");
+                throw ParseException("expected number or 'poison'", cursor_);
         }
     }
     if (type == I32()) {
@@ -1087,7 +1087,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I32>());
             default:
-                throw ParseException(cursor_, "expected number or 'poison'");
+                throw ParseException("expected number or 'poison'", cursor_);
         }
     }
     if (type == I64()) {
@@ -1101,7 +1101,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I64>());
             default:
-                throw ParseException(cursor_, "expected number or 'poison'");
+                throw ParseException("expected number or 'poison'", cursor_);
         }
     }
     if (type == Float()) {
@@ -1115,7 +1115,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<Float>());
             default:
-                throw ParseException(cursor_, "expected number or 'poison'");
+                throw ParseException("expected number or 'poison'", cursor_);
         }
     }
     if (type == Double()) {
@@ -1129,7 +1129,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<Double>());
             default:
-                throw ParseException(cursor_, "expected number or 'poison'");
+                throw ParseException("expected number or 'poison'", cursor_);
         }
     }
     if (type == Ptr()) {
@@ -1141,7 +1141,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<Ptr>());
             default:
-                throw ParseException(cursor_, "expected 'null' or 'poison'");
+                throw ParseException("expected 'null' or 'poison'", cursor_);
         }
     }
     if (auto *arrayType = dynamic_cast<const ArrayType *>(&type)) {
@@ -1158,41 +1158,41 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             ++cursor_;
             if (cursor_->kind != kRightBracket) {
                 if (*parseType() != *arrayType->elementType()) {
-                    throw ParseException(cursor_, "inconsistent element type");
+                    throw ParseException("inconsistent element type", cursor_);
                 }
                 elements.push_back(parseConstant(*arrayType->elementType()));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
                     if (*parseType() != *arrayType->elementType()) {
-                        throw ParseException(cursor_, "inconsistent element type");
+                        throw ParseException("inconsistent element type", cursor_);
                     }
                     elements.push_back(parseConstant(*arrayType->elementType()));
                 }
             }
             if (cursor_->kind != kRightBracket) {
-                throw ParseException(cursor_, "expected ']'");
+                throw ParseException("expected ']'", cursor_);
             }
             ++cursor_;
             if (elements.size() != arrayType->numElements()) {
-                throw ParseException(cursor_, "inconsistent number of elements");
+                throw ParseException("inconsistent number of elements", cursor_);
             }
         } else if (cursor_->kind == kString) {
             if (ir::I8() != *arrayType->elementType()) {
-                throw ParseException(cursor_, "inconsistent element type");
+                throw ParseException("inconsistent element type", cursor_);
             }
             if (std::get<std::vector<int8_t>>(cursor_->value).size() != arrayType->numElements()) {
-                throw ParseException(cursor_, "inconsistent number of elements");
+                throw ParseException("inconsistent number of elements", cursor_);
             }
             for (int8_t element : std::get<std::vector<int8_t>>(cursor_->value)) {
                 elements.push_back(std::make_shared<I8Constant>(element));
             }
             ++cursor_;
         } else {
-            throw ParseException(cursor_, "expected '[', 'zeroinitializer', 'poison' or string");
+            throw ParseException("expected '[', 'zeroinitializer', 'poison' or string", cursor_);
         }
         return std::make_unique<ArrayConstant>(cast<ArrayType>(arrayType->clone()), std::move(elements));
     }
-    throw ParseException(cursor_, "expected constant");
+    throw ParseException("expected constant", cursor_);
 }
 
 std::unique_ptr<Type> Parser::parseType() {
@@ -1211,23 +1211,23 @@ std::unique_ptr<Type> Parser::parseType() {
         case kLeftBracket: {
             ++cursor_;
             if (cursor_->kind != kNumber) {
-                throw ParseException(cursor_, "expected number");
+                throw ParseException("expected number", cursor_);
             }
             size_t numElements = static_cast<size_t>(std::get<int64_t>(cursor_->value));
             ++cursor_;
             if (cursor_->kind != kX) {
-                throw ParseException(cursor_, "expected 'x'");
+                throw ParseException("expected 'x'", cursor_);
             }
             ++cursor_;
             std::unique_ptr<Type> elementType = parseType();
             if (cursor_->kind != kRightBracket) {
-                throw ParseException(cursor_, "expected ']'");
+                throw ParseException("expected ']'", cursor_);
             }
             ++cursor_;
             return std::make_unique<ArrayType>(std::move(elementType), numElements);
         }
 
-        default: throw ParseException(cursor_, "expected type");
+        default: throw ParseException("expected type", cursor_);
     }
 }
 
@@ -1237,7 +1237,7 @@ Symbol Parser::parseSymbol(std::optional<Symbol::Scope> scope) {
     switch (cursor_->kind) {
         case kAt: symbol.scope = Symbol::Scope::kGlobal; break;
         case kPercent: symbol.scope = Symbol::Scope::kLocal; break;
-        default: throw ParseException(cursor_, "expected '@' or '%'");
+        default: throw ParseException("expected '@' or '%'", cursor_);
     }
     ++cursor_;
 
@@ -1245,13 +1245,13 @@ Symbol Parser::parseSymbol(std::optional<Symbol::Scope> scope) {
         symbol.name = std::get<std::string>(cursor_->value);
         ++cursor_;
     } else {
-        throw ParseException(cursor_, "expected identifier name");
+        throw ParseException("expected identifier name", cursor_);
     }
 
     if (scope.has_value() && symbol.scope != scope.value()) {
         switch (scope.value()) {
-            case Symbol::Scope::kGlobal: throw ParseException(cursor_, "expected global identifier");
-            case Symbol::Scope::kLocal: throw ParseException(cursor_, "expected local identifier");
+            case Symbol::Scope::kGlobal: throw ParseException("expected global identifier", cursor_);
+            case Symbol::Scope::kLocal: throw ParseException("expected local identifier", cursor_);
         }
     }
 

@@ -12,15 +12,15 @@ namespace mini_llvm::ir {
 
 class LexException : public std::exception {
 public:
-    LexException(const char *location, std::string message)
-        : location_(location), message_(std::move(message)) {}
-
-    const char *location() const {
-        return location_;
-    }
+    LexException(std::string message, const char *location)
+        : message_(std::move(message)), location_(location) {}
 
     const std::string &message() const {
         return message_;
+    }
+
+    const char *location() const {
+        return location_;
     }
 
     const char *what() const noexcept override {
@@ -28,8 +28,8 @@ public:
     }
 
 private:
-    const char *location_;
     std::string message_;
+    const char *location_;
 };
 
 class Lexer {

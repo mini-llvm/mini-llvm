@@ -23,15 +23,15 @@ namespace mini_llvm::ir {
 
 class ParseException : public std::exception {
 public:
-    ParseException(std::vector<Token>::const_iterator location, std::string message)
-        : location_(location), message_(std::move(message)) {}
-
-    std::vector<Token>::const_iterator location() const {
-        return location_;
-    }
+    ParseException(std::string message, std::vector<Token>::const_iterator location)
+        : message_(std::move(message)), location_(location) {}
 
     const std::string &message() const {
         return message_;
+    }
+
+    std::vector<Token>::const_iterator location() const {
+        return location_;
     }
 
     const char *what() const noexcept override {
@@ -39,8 +39,8 @@ public:
     }
 
 private:
-    std::vector<Token>::const_iterator location_;
     std::string message_;
+    std::vector<Token>::const_iterator location_;
 };
 
 class Parser {

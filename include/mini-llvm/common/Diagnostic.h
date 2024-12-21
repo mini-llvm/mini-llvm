@@ -28,6 +28,18 @@ struct Diagnostic {
         }
         return std::format("{}:{}:{}: {}: {}", file.c_str(), line, column, severityName, message);
     }
+
+    static Diagnostic note(std::string message, std::filesystem::path file, size_t line, size_t column) {
+        return {Severity::kNote, std::move(message), std::move(file), line, column};
+    }
+
+    static Diagnostic warning(std::string message, std::filesystem::path file, size_t line, size_t column) {
+        return {Severity::kWarning, std::move(message), std::move(file), line, column};
+    }
+
+    static Diagnostic error(std::string message, std::filesystem::path file, size_t line, size_t column) {
+        return {Severity::kError, std::move(message), std::move(file), line, column};
+    }
 };
 
 } // namespace mini_llvm

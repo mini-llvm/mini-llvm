@@ -23,12 +23,12 @@ std::optional<Module> ir::parseModule(const char *source, std::vector<Diagnostic
     } catch (const LexException &e) {
         size_t line, column;
         computeLineColumn(source, e.location(), line, column);
-        diags.push_back(Diagnostic(Diagnostic::Severity::kError, e.message(), "<source>", line, column));
+        diags.push_back(Diagnostic::error(e.message(), "<source>", line, column));
         return std::nullopt;
     } catch (const ParseException &e) {
         size_t line, column;
         computeLineColumn(source, e.location()->location, line, column);
-        diags.push_back(Diagnostic(Diagnostic::Severity::kError, e.message(), "<source>", line, column));
+        diags.push_back(Diagnostic::error(e.message(), "<source>", line, column));
         return std::nullopt;
     }
 }

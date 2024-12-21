@@ -135,13 +135,13 @@ Token Lexer::nextTokenImpl() {
                     for (int i = 0; i < 2; ++i) {
                         char ch = *cursor_;
                         if (ch == 0) {
-                            throw LexException(cursor_, "unterminated string");
+                            throw LexException("unterminated string", cursor_);
                         }
                         if (!isxdigit(ch)) {
                             if (ch == '"') {
-                                throw LexException(cursor_, "incomplete escape sequence");
+                                throw LexException("incomplete escape sequence", cursor_);
                             } else {
-                                throw LexException(cursor_, "invalid character in escape sequence");
+                                throw LexException("invalid character in escape sequence", cursor_);
                             }
                         }
                         element = element * 0xa + static_cast<int8_t>(isdigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
@@ -152,7 +152,7 @@ Token Lexer::nextTokenImpl() {
             } else {
                 char ch = *cursor_;
                 if (!(0x20 <= ch && ch <= 0x7e)) {
-                    throw LexException(cursor_, "only characters between \\x20 and \\x7e are permitted");
+                    throw LexException("only characters between \\x20 and \\x7e are permitted", cursor_);
                 }
                 int8_t element = static_cast<int8_t>(ch);
                 elements.push_back(element);
@@ -160,7 +160,7 @@ Token Lexer::nextTokenImpl() {
             }
         }
         if (*cursor_ == '\0') {
-            throw LexException(cursor_, "unterminated string");
+            throw LexException("unterminated string", cursor_);
         }
         ++cursor_;
         return {kString, std::move(elements), start};
@@ -277,7 +277,7 @@ Token Lexer::nextTokenImpl() {
         return {kName, std::move(name), start};
     }
 
-    throw LexException(cursor_, "unexpected character");
+    throw LexException("unexpected character", cursor_);
 }
 
 std::vector<Token> ir::lex(const char *source) {
