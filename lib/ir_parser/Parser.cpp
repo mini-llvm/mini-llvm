@@ -94,7 +94,6 @@
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/ir_parser/Symbol.h"
 #include "mini-llvm/ir_parser/Token.h"
 #include "mini-llvm/utils/Memory.h"
