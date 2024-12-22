@@ -372,17 +372,18 @@ void Parser::parseFunctionBody(Function &F) {
     }
     ++cursor_;
 
-    auto lookAhead = cursor_;
-    while (lookAhead->kind != kRightBrace) {
-        if (lookAhead->kind == kName && std::next(lookAhead)->kind == kColon) {
-            Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(lookAhead->value)};
+    auto start = cursor_;
+    while (cursor_->kind != kRightBrace) {
+        if (cursor_->kind == kName && std::next(cursor_)->kind == kColon) {
+            Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(cursor_->value)};
             if (symbolTable_.contains(symbol)) {
-                throw ParseException("redefinition of label", lookAhead);
+                throw ParseException("redefinition of label", cursor_);
             }
             symbolTable_[symbol] = std::make_shared<BasicBlock>();
         }
-        ++lookAhead;
+        ++cursor_;
     }
+    cursor_ = start;
 
     while (cursor_->kind != kRightBrace) {
         if (cursor_->kind != kName) {
