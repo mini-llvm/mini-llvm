@@ -15,7 +15,6 @@
 #include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
 #include "mini-llvm/utils/Hash.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
@@ -36,7 +35,7 @@ struct ImmediateHash {
 
             return seed;
         }
-        panic();
+        return 0;
     }
 };
 

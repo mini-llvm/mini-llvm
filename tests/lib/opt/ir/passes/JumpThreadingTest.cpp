@@ -4,10 +4,9 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
-#include "mini-llvm/utils/Memory.h"
+#include "TestUtils.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
@@ -16,18 +15,18 @@ using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 TEST(JumpThreadingTest, test0) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_FALSE(JumpThreading().runOnFunction(*F));
 }
 
 TEST(JumpThreadingTest, test1) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     br label %1
@@ -38,7 +37,7 @@ define void @foo() {
 2:
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
 
@@ -50,7 +49,7 @@ define void @foo() {
 }
 
 TEST(JumpThreadingTest, test2) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo(i1 %0) {
 1:
     br i1 %0, label %2, label %4
@@ -67,7 +66,7 @@ define void @foo(i1 %0) {
 5:
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
 
@@ -79,7 +78,7 @@ define void @foo(i1 %0) {
 }
 
 TEST(JumpThreadingTest, test3) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define i32 @foo() {
 0:
     br label %1
@@ -94,7 +93,7 @@ define i32 @foo() {
     %4 = phi i32 [ 42, %2 ]
     ret i32 %4
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(JumpThreading().runOnFunction(*F));
 
@@ -111,7 +110,7 @@ define i32 @foo() {
 }
 
 TEST(JumpThreadingTest, test4) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define i32 @foo(i1 %0) {
 1:
     br i1 %0, label %2, label %3
@@ -123,7 +122,7 @@ define i32 @foo(i1 %0) {
     %4 = phi i32 [ 42, %1 ], [ 43, %2 ]
     ret i32 %4
 }
-)").value().functions.front());
+)");
 
     EXPECT_FALSE(JumpThreading().runOnFunction(*F));
 }

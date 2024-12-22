@@ -1,6 +1,6 @@
 #include "mini-llvm/opt/mir/passes/IdentityMoveElimination.h"
 
-#include <list>
+#include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Instruction/FMov.h"
@@ -12,7 +12,7 @@ using namespace mini_llvm::mir;
 bool IdentityMoveElimination::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
-    std::list<BasicBlock::const_iterator> remove;
+    std::vector<BasicBlock::const_iterator> remove;
 
     for (auto i = B.begin(), e = B.end(); i != e; ++i) {
         if (auto *mov = dynamic_cast<const Mov *>(&*i)) {

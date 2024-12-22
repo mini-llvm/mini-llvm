@@ -5,15 +5,14 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
-#include "mini-llvm/utils/Memory.h"
+#include "TestUtils.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 TEST(DominatorTreeAnalysisTest, test0) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo(i1 %0) {
 1:
     br i1 %0, label %2, label %5
@@ -36,7 +35,7 @@ define void @foo(i1 %0) {
 7:
     ret void
 }
-)").value().functions.front());
+)");
 
     auto i = F->begin();
     const BasicBlock *B1 = &*i++, *B2 = &*i++, *B3 = &*i++, *B4 = &*i++, *B5 = &*i++, *B6 = &*i++, *B7 = &*i++;

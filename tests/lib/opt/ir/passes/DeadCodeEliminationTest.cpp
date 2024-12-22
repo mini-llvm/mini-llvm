@@ -4,10 +4,9 @@
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir/Function.h"
-#include "mini-llvm/ir_parser/IRParser.h"
 #include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
-#include "mini-llvm/utils/Memory.h"
+#include "TestUtils.h"
 
 using ::testing::AllOf;
 using ::testing::HasSubstr;
@@ -17,24 +16,24 @@ using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 TEST(DeadCodeEliminationTest, test0) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_FALSE(DeadCodeElimination().runOnFunction(*F));
 }
 
 TEST(DeadCodeEliminationTest, test1) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     %1 = add i32 42, 43
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -46,7 +45,7 @@ define void @foo() {
 }
 
 TEST(DeadCodeEliminationTest, test2) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     %1 = add i32 42, 43
@@ -54,7 +53,7 @@ define void @foo() {
     %3 = add i32 %2, %2
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -70,7 +69,7 @@ define void @foo() {
 }
 
 TEST(DeadCodeEliminationTest, test3) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     %1 = add i32 42, 43
@@ -84,7 +83,7 @@ define void @foo() {
     %5 = add i32 %3, %3
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -100,13 +99,13 @@ define void @foo() {
 }
 
 TEST(DeadCodeEliminationTest, test4) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     %1 = alloca i32
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -118,7 +117,7 @@ define void @foo() {
 }
 
 TEST(DeadCodeEliminationTest, test5) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo() {
 0:
     %1 = alloca i32
@@ -126,7 +125,7 @@ define void @foo() {
     %2 = load i32, ptr %1
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -138,7 +137,7 @@ define void @foo() {
 }
 
 TEST(DeadCodeEliminationTest, test6) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo(i1 %0) {
 1:
     br i1 %0, label %2, label %3
@@ -153,7 +152,7 @@ define void @foo(i1 %0) {
     %5 = phi i32 [ 42, %2 ], [ 43, %3 ]
     ret void
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
@@ -165,7 +164,7 @@ define void @foo(i1 %0) {
 }
 
 TEST(DeadCodeEliminationTest, test7) {
-    std::shared_ptr<Function> F = share(parseModule(R"(
+    std::shared_ptr<Function> F = parseFunction(R"(
 define void @foo(i1 %0) {
 1:
     br i1 %0, label %2, label %4
@@ -178,7 +177,7 @@ define void @foo(i1 %0) {
     %5 = phi i32 [ 42, %1 ], [ 43, %2 ]
     br label %2
 }
-)").value().functions.front());
+)");
 
     EXPECT_TRUE(DeadCodeElimination().runOnFunction(*F));
 
