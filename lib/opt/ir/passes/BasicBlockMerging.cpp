@@ -24,7 +24,7 @@ bool canMergeWithSuccessor(const BasicBlock &B) {
         return false;
     }
     const BasicBlock &succ = *static_cast<const Br *>(&B.back())->dest();
-    if (!hasNPredecessors(succ, 1)) {
+    if (hasNPredecessorsOrMore(succ, 2)) {
         return false;
     }
     for (const Instruction &I : succ) {
@@ -40,10 +40,10 @@ bool canMergeWithSuccessor(const BasicBlock &B) {
 bool BasicBlockMerging::runOnFunction(Function &F) {
     bool changed = false;
 
-    std::vector<BasicBlock *> merge;
+    std::vector<BasicBlock *> merge{&F.entry()};
 
     for (BasicBlock &B : F) {
-        if (!hasNPredecessors(B, 1)) {
+        if (hasNPredecessorsOrMore(B, 2)) {
             merge.push_back(&B);
         }
     }
