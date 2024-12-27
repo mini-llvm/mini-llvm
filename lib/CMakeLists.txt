@@ -75,6 +75,7 @@ add_library(mini-llvm
     opt/mir/FunctionTransform.cpp
     opt/mir/passes/ConstantPropagation.cpp
     opt/mir/passes/ConstantReuse.cpp
+    opt/mir/passes/CopyPropagation.cpp
     opt/mir/passes/DeadCodeElimination.cpp
     opt/mir/passes/IdentityMoveElimination.cpp
     opt/mir/passes/LiveVariableAnalysis.cpp

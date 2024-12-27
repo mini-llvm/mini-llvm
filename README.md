@@ -120,6 +120,7 @@
 
 - `ConstantPropagation`
 - `ConstantReuse`
+- `CopyPropagation`
 - `DeadCodeElimination`
 - `IdentityMoveElimination`
 - `ZeroRegisterReplacement`
