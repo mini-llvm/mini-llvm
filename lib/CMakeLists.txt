@@ -77,8 +77,8 @@ add_library(mini-llvm
     opt/mir/passes/ConstantReuse.cpp
     opt/mir/passes/CopyPropagation.cpp
     opt/mir/passes/DeadCodeElimination.cpp
-    opt/mir/passes/IdentityMoveElimination.cpp
     opt/mir/passes/LiveVariableAnalysis.cpp
+    opt/mir/passes/NullOperationElimination.cpp
     opt/mir/passes/ZeroRegisterReplacement.cpp
     targets/riscv/codegen/RISCVMCGen.cpp
     targets/riscv/codegen/RISCVMIRGen.cpp

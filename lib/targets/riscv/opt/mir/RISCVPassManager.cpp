@@ -5,7 +5,7 @@
 #include "mini-llvm/opt/mir/passes/ConstantReuse.h"
 #include "mini-llvm/opt/mir/passes/CopyPropagation.h"
 #include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
-#include "mini-llvm/opt/mir/passes/IdentityMoveElimination.h"
+#include "mini-llvm/opt/mir/passes/NullOperationElimination.h"
 #include "mini-llvm/opt/mir/passes/ZeroRegisterReplacement.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
@@ -17,12 +17,12 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
     do {
         changed = false;
 
-        IdentityMoveElimination pass1;
-        ConstantPropagation     pass2;
-        ConstantReuse           pass3;
-        CopyPropagation         pass4;
-        ZeroRegisterReplacement pass5(x0());
-        DeadCodeElimination     pass6;
+        NullOperationElimination pass1;
+        ConstantPropagation      pass2;
+        ConstantReuse            pass3;
+        CopyPropagation          pass4;
+        ZeroRegisterReplacement  pass5(x0());
+        DeadCodeElimination      pass6;
 
         changed |= pass1.runOnModule(M);
         changed |= pass2.runOnModule(M);
@@ -38,12 +38,12 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
     do {
         changed = false;
 
-        IdentityMoveElimination pass1;
-        ConstantPropagation     pass2;
-        ConstantReuse           pass3;
-        CopyPropagation         pass4;
-        ZeroRegisterReplacement pass5(x0());
-        DeadCodeElimination     pass6;
+        NullOperationElimination pass1;
+        ConstantPropagation      pass2;
+        ConstantReuse            pass3;
+        CopyPropagation          pass4;
+        ZeroRegisterReplacement  pass5(x0());
+        DeadCodeElimination      pass6;
 
         changed |= pass1.runOnModule(M);
         changed |= pass2.runOnModule(M);

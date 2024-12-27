@@ -122,7 +122,7 @@
 - `ConstantReuse`
 - `CopyPropagation`
 - `DeadCodeElimination`
-- `IdentityMoveElimination`
+- `NullOperationElimination`
 - `ZeroRegisterReplacement`
 
 ### MC

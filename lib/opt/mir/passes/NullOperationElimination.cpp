@@ -1,4 +1,4 @@
-#include "mini-llvm/opt/mir/passes/IdentityMoveElimination.h"
+#include "mini-llvm/opt/mir/passes/NullOperationElimination.h"
 
 #include <vector>
 
@@ -9,7 +9,7 @@
 
 using namespace mini_llvm::mir;
 
-bool IdentityMoveElimination::runOnBasicBlock(BasicBlock &B) {
+bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
     std::vector<BasicBlock::const_iterator> remove;

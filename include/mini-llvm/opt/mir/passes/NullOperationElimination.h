@@ -5,7 +5,7 @@
 
 namespace mini_llvm::mir {
 
-class IdentityMoveElimination final : public BasicBlockTransform {
+class NullOperationElimination final : public BasicBlockTransform {
 public:
     bool runOnBasicBlock(BasicBlock &B) override;
 };
