@@ -15,6 +15,7 @@
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Memory.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::mir;
 
 bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {

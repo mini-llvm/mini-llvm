@@ -13,6 +13,7 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/utils/Memory.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::mir;
 
 bool ConstantPropagation::runOnBasicBlock(BasicBlock &B) {
