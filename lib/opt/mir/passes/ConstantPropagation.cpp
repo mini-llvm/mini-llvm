@@ -20,9 +20,6 @@ bool ConstantPropagation::runOnBasicBlock(BasicBlock &B) {
     std::vector<std::pair<BasicBlock::const_iterator, std::unique_ptr<Instruction>>> replace;
 
     for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
-        for (Register *reg : def(*i)) {
-            values.erase(reg);
-        }
         if (auto *li = dynamic_cast<const LI *>(&*i)) {
             values[&*li->dst()] = li->src()->clone();
         }
@@ -30,6 +27,9 @@ bool ConstantPropagation::runOnBasicBlock(BasicBlock &B) {
             if (values.contains(&*mov->src())) {
                 replace.emplace_back(i, std::make_unique<LI>(mov->width(), share(*mov->dst()), values[&*mov->src()]->clone()));
             }
+        }
+        for (Register *reg : def(*i)) {
+            values.erase(reg);
         }
     }
 
