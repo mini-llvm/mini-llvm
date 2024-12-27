@@ -119,10 +119,10 @@
 ### MIR
 
 - `ConstantPropagation`
-- `ConstantReuse`
 - `CopyPropagation`
 - `DeadCodeElimination`
 - `NullOperationElimination`
+- `RegisterReuse`
 - `ZeroRegisterReplacement`
 
 ### MC

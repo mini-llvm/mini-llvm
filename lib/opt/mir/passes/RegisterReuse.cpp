@@ -1,4 +1,4 @@
-#include "mini-llvm/opt/mir/passes/ConstantReuse.h"
+#include "mini-llvm/opt/mir/passes/RegisterReuse.h"
 
 #include <algorithm>
 #include <cstddef>
@@ -59,7 +59,7 @@ struct ImmediateEqual {
 
 } // namespace
 
-bool ConstantReuse::runOnBasicBlock(BasicBlock &B) {
+bool RegisterReuse::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
     std::unordered_map<Register *, const Immediate *> imms;

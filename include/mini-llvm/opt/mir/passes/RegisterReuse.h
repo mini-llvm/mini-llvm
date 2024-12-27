@@ -5,7 +5,7 @@
 
 namespace mini_llvm::mir {
 
-class ConstantReuse final : public BasicBlockTransform {
+class RegisterReuse final : public BasicBlockTransform {
 public:
     bool runOnBasicBlock(BasicBlock &B) override;
 };

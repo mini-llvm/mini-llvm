@@ -2,10 +2,10 @@
 
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/mir/passes/ConstantPropagation.h"
-#include "mini-llvm/opt/mir/passes/ConstantReuse.h"
 #include "mini-llvm/opt/mir/passes/CopyPropagation.h"
 #include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
 #include "mini-llvm/opt/mir/passes/NullOperationElimination.h"
+#include "mini-llvm/opt/mir/passes/RegisterReuse.h"
 #include "mini-llvm/opt/mir/passes/ZeroRegisterReplacement.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
@@ -19,7 +19,7 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
 
         NullOperationElimination pass1;
         ConstantPropagation      pass2;
-        ConstantReuse            pass3;
+        RegisterReuse            pass3;
         CopyPropagation          pass4;
         ZeroRegisterReplacement  pass5(x0());
         DeadCodeElimination      pass6;
@@ -40,7 +40,7 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
 
         NullOperationElimination pass1;
         ConstantPropagation      pass2;
-        ConstantReuse            pass3;
+        RegisterReuse            pass3;
         CopyPropagation          pass4;
         ZeroRegisterReplacement  pass5(x0());
         DeadCodeElimination      pass6;
