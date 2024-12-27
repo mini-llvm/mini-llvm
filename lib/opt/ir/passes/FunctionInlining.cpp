@@ -48,15 +48,17 @@ bool isRecursive(const Function &F) {
     return false;
 }
 
-bool shouldInlineHeuristic(const Function &F) {
-    return isShort(F) && !isRecursive(F);
+bool shouldInlineHeuristic(const Call &call) {
+    const Function &callee = *call.callee();
+    return isShort(callee) && !isRecursive(callee);
 }
 
-bool shouldInline(const Function &F) {
-    if (F.empty()) return false;
-    if (F.hasAttr(Attribute::kNoInline)) return false;
-    if (F.hasAttr(Attribute::kAlwaysInline)) return true;
-    return shouldInlineHeuristic(F);
+bool shouldInline(const Call &call) {
+    const Function &callee = *call.callee();
+    if (callee.empty()) return false;
+    if (callee.hasAttr(Attribute::kNoInline)) return false;
+    if (callee.hasAttr(Attribute::kAlwaysInline)) return true;
+    return shouldInlineHeuristic(call);
 }
 
 BasicBlock *splitBefore(BasicBlock::const_iterator i) {
@@ -101,7 +103,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
         for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
             if (auto *call = dynamic_cast<const Call *>(&*i)) {
                 const Function *callee = &*call->callee();
-                if (shouldInline(*callee)) {
+                if (shouldInline(*call)) {
                     BasicBlock *B2 = splitBefore(std::next(i));
 
                     if (*callee->functionType()->returnType() != Void()) {
