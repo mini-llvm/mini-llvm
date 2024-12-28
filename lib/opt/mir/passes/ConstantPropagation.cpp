@@ -25,8 +25,8 @@ bool ConstantPropagation::runOnBasicBlock(BasicBlock &B) {
             values[&*li->dst()] = li->src()->clone();
         }
         if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
-            if (values.contains(&*mov->src())) {
-                replace.emplace_back(i, std::make_unique<LI>(mov->width(), share(*mov->dst()), values[&*mov->src()]->clone()));
+            if (auto j = values.find(&*mov->src()); j != values.end()) {
+                replace.emplace_back(i, std::make_unique<LI>(mov->width(), share(*mov->dst()), j->second->clone()));
             }
         }
         for (Register *reg : def(*i)) {
