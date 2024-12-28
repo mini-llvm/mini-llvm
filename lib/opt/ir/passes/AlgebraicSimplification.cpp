@@ -12,12 +12,15 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Add.h"
 #include "mini-llvm/ir/Instruction/And.h"
+#include "mini-llvm/ir/Instruction/ASHR.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
+#include "mini-llvm/ir/Instruction/LSHR.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
 #include "mini-llvm/ir/Instruction/Or.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
 #include "mini-llvm/ir/Instruction/SDiv.h"
 #include "mini-llvm/ir/Instruction/Select.h"
+#include "mini-llvm/ir/Instruction/SHL.h"
 #include "mini-llvm/ir/Instruction/SRem.h"
 #include "mini-llvm/ir/Instruction/Sub.h"
 #include "mini-llvm/ir/Instruction/UDiv.h"
@@ -39,7 +42,10 @@ bool isIdentity(const BinaryIntegerArithmeticOperator &op) {
         return dynamic_cast<const Add *>(&op)
             || dynamic_cast<const Sub *>(&op)
             || dynamic_cast<const Or *>(&op)
-            || dynamic_cast<const Xor *>(&op);
+            || dynamic_cast<const Xor *>(&op)
+            || dynamic_cast<const SHL *>(&op)
+            || dynamic_cast<const LSHR *>(&op)
+            || dynamic_cast<const ASHR *>(&op);
     }
 
     if (rhs == 1) {
