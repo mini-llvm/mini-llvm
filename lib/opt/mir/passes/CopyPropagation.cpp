@@ -14,20 +14,20 @@ using namespace mini_llvm::mir;
 
 bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
-    std::unordered_map<Register *, Register *> replace;
+    std::unordered_map<Register *, Register *> copies;
 
     for (Instruction &I : B) {
         for (RegisterOperand *op : I.srcs()) {
-            if (auto i = replace.find(&**op); i != replace.end()) {
+            if (auto i = copies.find(&**op); i != copies.end()) {
                 op->set(share(*i->second));
                 changed = true;
             }
         }
         for (Register *reg : def(I)) {
-            replace.erase(reg);
-            for (auto j = replace.begin(); j != replace.end();) {
+            copies.erase(reg);
+            for (auto j = copies.begin(); j != copies.end();) {
                 if (j->second == reg) {
-                    j = replace.erase(j);
+                    j = copies.erase(j);
                 } else {
                     ++j;
                 }
@@ -37,7 +37,7 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
             Register *dst = &*mov->dst(),
                      *src = &*mov->src();
             if (dst != src) {
-                replace[dst] = src;
+                copies[dst] = src;
             }
         }
     }
