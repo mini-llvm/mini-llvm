@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
-#include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/Function.h"
@@ -83,13 +82,16 @@ bool isPoison(const BinaryIntegerArithmeticOperator &op) {
     return false;
 }
 
-void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruction *> &remove) {
+void dfs(const DominatorTreeNode *node, bool &changed) {
+    std::vector<const Instruction *> remove;
+
     for (const Instruction &I : *node->block) {
+
         if (auto *op = dynamic_cast<const BinaryIntegerArithmeticOperator *>(&I)) {
             const Value *lhs = &*op->lhs(),
                         *rhs = &*op->rhs();
 
-            if (!dynamic_cast<const Constant *>(lhs) && dynamic_cast<const IntegerConstant *>(rhs)) {
+            if (!dynamic_cast<const IntegerConstant *>(lhs) && dynamic_cast<const IntegerConstant *>(rhs)) {
                 if (isIdentity(*op)) {
                     changed |= replaceAllUsesWith(*op, share(*const_cast<Value *>(lhs)));
                     remove.push_back(op);
@@ -111,7 +113,7 @@ void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruc
                 continue;
             }
 
-            if (!dynamic_cast<const Constant *>(lhs) && lhs == rhs) {
+            if (!dynamic_cast<const IntegerConstant *>(lhs) && lhs == rhs) {
                 if (dynamic_cast<const Add *>(op)) {
                     Mul &mul = addToParent(*op, std::make_shared<Mul>(share(*const_cast<Value *>(lhs)),
                                                                       createIntegerConstant(op->opType(), 2)));
@@ -152,7 +154,7 @@ void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruc
             const Value *trueValue = &*select->trueValue(),
                         *falseValue = &*select->falseValue();
 
-            if (!dynamic_cast<const Constant *>(trueValue) && trueValue == falseValue) {
+            if (!dynamic_cast<const IntegerConstant *>(trueValue) && trueValue == falseValue) {
                 changed |= replaceAllUsesWith(*select, share(*const_cast<Value *>(trueValue)));
                 remove.push_back(select);
                 continue;
@@ -172,8 +174,13 @@ void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruc
         }
     }
 
+    for (const Instruction *II : remove) {
+        removeFromParent(*II);
+        changed = true;
+    }
+
     for (const DominatorTreeNode *child : node->children) {
-        dfs(child, changed, remove);
+        dfs(child, changed);
     }
 }
 
@@ -185,10 +192,10 @@ bool AlgebraicSimplification::runOnFunction(Function &F) {
     for (BasicBlock &B : F) {
         for (Instruction &I : B) {
             if (auto *op = dynamic_cast<BinaryIntegerArithmeticOperator *>(&I)) {
-                std::shared_ptr<Value> lhs = share(*op->lhs()),
-                                       rhs = share(*op->rhs());
                 if (op->isCommutative()
-                        && dynamic_cast<const Constant *>(&*lhs) && !dynamic_cast<const Constant *>(&*rhs)) {
+                        && dynamic_cast<const IntegerConstant *>(&*op->lhs()) && !dynamic_cast<const IntegerConstant *>(&*op->rhs())) {
+                    std::shared_ptr<Value> lhs = share(*op->lhs()),
+                                           rhs = share(*op->rhs());
                     op->lhs().set(std::move(rhs));
                     op->rhs().set(std::move(lhs));
                     changed = true;
@@ -200,14 +207,7 @@ bool AlgebraicSimplification::runOnFunction(Function &F) {
     DominatorTreeAnalysis domTree;
     domTree.runOnFunction(F);
 
-    std::vector<const Instruction *> remove;
-
-    dfs(domTree.node(F.entry()), changed, remove);
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
-    }
+    dfs(domTree.node(F.entry()), changed);
 
     return changed;
 }
