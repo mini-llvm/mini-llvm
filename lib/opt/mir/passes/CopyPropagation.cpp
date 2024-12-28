@@ -4,6 +4,7 @@
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Instruction/FMov.h"
 #include "mini-llvm/mir/Instruction/Mov.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterOperand.h"
@@ -26,6 +27,9 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
         if (auto *mov = dynamic_cast<const Mov *>(&I); mov && &*mov->dst() == &*mov->src()) {
             continue;
         }
+        if (auto *fmov = dynamic_cast<const FMov *>(&I); fmov && &*fmov->dst() == &*fmov->src()) {
+            continue;
+        }
         for (Register *reg : def(I)) {
             copies.erase(reg);
             for (auto j = copies.begin(); j != copies.end();) {
@@ -38,6 +42,9 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
         }
         if (auto *mov = dynamic_cast<const Mov *>(&I)) {
             copies[&*mov->dst()] = &*mov->src();
+        }
+        if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
+            copies[&*fmov->dst()] = &*fmov->src();
         }
     }
 
