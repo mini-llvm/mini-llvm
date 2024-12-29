@@ -33,7 +33,9 @@ bool isPoison(const Instruction &I) {
     return false;
 }
 
-void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruction *> &remove) {
+void dfs(const DominatorTreeNode *node, bool &changed) {
+    std::vector<const Instruction *> remove;
+
     for (const Instruction &I : *node->block) {
         if (isPoison(I)) {
             changed |= replaceAllUsesWith(I, std::make_shared<PoisonValue>(I.type()));
@@ -41,8 +43,13 @@ void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruc
         }
     }
 
+    for (const Instruction *I : remove) {
+        removeFromParent(*I);
+        changed = true;
+    }
+
     for (const DominatorTreeNode *child : node->children) {
-        dfs(child, changed, remove);
+        dfs(child, changed);
     }
 }
 
@@ -54,14 +61,7 @@ bool PoisonPropagation::runOnFunction(Function &F) {
     DominatorTreeAnalysis domTree;
     domTree.runOnFunction(F);
 
-    std::vector<const Instruction *> remove;
-
-    dfs(domTree.node(F.entry()), changed, remove);
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
-    }
+    dfs(domTree.node(F.entry()), changed);
 
     return changed;
 }

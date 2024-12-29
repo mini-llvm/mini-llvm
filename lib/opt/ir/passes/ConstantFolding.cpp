@@ -11,15 +11,23 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-void dfs(const DominatorTreeNode *node, bool &changed, std::vector<const Instruction *> &remove) {
+void dfs(const DominatorTreeNode *node, bool &changed) {
+    std::vector<const Instruction *> remove;
+
     for (const Instruction &I : *node->block) {
         if (I.isFoldable()) {
             changed |= replaceAllUsesWith(I, I.fold());
             remove.push_back(&I);
         }
     }
+
+    for (const Instruction *I : remove) {
+        removeFromParent(*I);
+        changed = true;
+    }
+
     for (const DominatorTreeNode *child : node->children) {
-        dfs(child, changed, remove);
+        dfs(child, changed);
     }
 }
 
@@ -30,14 +38,8 @@ bool ConstantFolding::runOnFunction(Function &F) {
     domTree.runOnFunction(F);
 
     bool changed = false;
-    std::vector<const Instruction *> remove;
 
-    dfs(domTree.node(F.entry()), changed, remove);
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
-    }
+    dfs(domTree.node(F.entry()), changed);
 
     return changed;
 }
