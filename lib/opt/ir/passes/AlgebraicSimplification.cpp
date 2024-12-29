@@ -180,8 +180,8 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
         }
     }
 
-    for (const Instruction *II : remove) {
-        removeFromParent(*II);
+    for (const Instruction *I : remove) {
+        removeFromParent(*I);
         changed = true;
     }
 
