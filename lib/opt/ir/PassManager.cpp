@@ -11,6 +11,7 @@
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
 #include "mini-llvm/opt/ir/passes/Mem2Reg.h"
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
+#include "mini-llvm/opt/ir/passes/StrengthReduction.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
 #include "mini-llvm/utils/Panic.h"
@@ -33,7 +34,8 @@ void PassManager::run(Module &M) const {
         PoisonPropagation           pass6;
         BranchSimplification        pass7;
         BasicBlockMerging           pass8;
-        FunctionInlining            pass9;
+        StrengthReduction           pass9(3);
+        FunctionInlining            pass10;
 
         changed |= run(pass1, M);
         changed |= run(pass2, M);
@@ -44,6 +46,7 @@ void PassManager::run(Module &M) const {
         changed |= run(pass7, M);
         changed |= run(pass8, M);
         changed |= run(pass9, M);
+        changed |= run(pass10, M);
     } while (changed);
 }
 

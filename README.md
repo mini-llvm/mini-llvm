@@ -114,6 +114,7 @@
 - `JumpThreading`
 - `Mem2Reg`
 - `PoisonPropagation`
+- `StrengthReduction`
 - `UnreachableBlockElimination`
 
 ### MIR
