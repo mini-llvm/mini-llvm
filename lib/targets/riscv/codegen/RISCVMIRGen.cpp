@@ -1046,14 +1046,12 @@ private:
         std::shared_ptr<Register> dst = valueMap_.at(&I),
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
-        if (width == 4) {
-            builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, extensionMode));
+        if (width == 4 || width == 8) {
+            builder_.add(std::make_unique<MInstr>(width, dst, src1, src2, extensionMode));
         } else {
             builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, extensionMode));
-            if (width < 8) {
-                builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - width * 8)));
-                builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - width * 8)));
-            }
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - width * 8)));
+            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - width * 8)));
         }
     }
 
@@ -1100,13 +1098,13 @@ private:
             return reg;
         }
         if (auto *C = dynamic_cast<const ir::FloatingConstant *>(&value)) {
-            std::shared_ptr<Register> reg1 = std::make_shared<VirtualRegister>(),
-                                      reg2 = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> gpr = std::make_shared<VirtualRegister>(),
+                                      fpr = std::make_shared<VirtualRegister>();
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(C->bitPattern());
-            builder_.add(std::make_unique<LI>(8, reg1, std::move(imm)));
+            builder_.add(std::make_unique<LI>(8, gpr, std::move(imm)));
             Precision precision = static_cast<const ir::FloatingType *>(&*C->type())->precision();
-            builder_.add(std::make_unique<FMovFI>(precision, reg2, reg1));
-            return reg2;
+            builder_.add(std::make_unique<FMovFI>(precision, fpr, gpr));
+            return fpr;
         }
         if (dynamic_cast<const ir::NullPtrConstant *>(&value)) {
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();

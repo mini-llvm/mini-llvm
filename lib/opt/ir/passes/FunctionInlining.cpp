@@ -117,8 +117,8 @@ bool FunctionInlining::runOnFunction(Function &F) {
                         valueMap[&callee_B] = &F.append();
                     }
 
-                    for (auto [arg1, arg2] : std::views::zip(args(*callee), args(*call))) {
-                        valueMap[&arg1] = &*arg2;
+                    for (auto [calleeArg, callArg] : std::views::zip(args(*callee), args(*call))) {
+                        valueMap[&calleeArg] = &*callArg;
                     }
 
                     BasicBlock *calleeEntry = static_cast<BasicBlock *>(valueMap[&callee->entry()]);
