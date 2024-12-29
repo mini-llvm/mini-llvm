@@ -16,13 +16,13 @@ define i32 @select_ni(i1 %0, i32 %1, i32 %2) noinline {
 
 define i32 @main() {
 0:
-  %1 = call i32 @select(i1 true, i32 42, i32 43)
+  %1 = call i32 @select(i1 true, i32 1, i32 2)
   %2 = call i32 @printf(ptr @__format, i32 %1)
-  %3 = call i32 @select(i1 false, i32 42, i32 43)
+  %3 = call i32 @select(i1 false, i32 1, i32 2)
   %4 = call i32 @printf(ptr @__format, i32 %3)
-  %5 = call i32 @select_ni(i1 true, i32 42, i32 43)
+  %5 = call i32 @select_ni(i1 true, i32 1, i32 2)
   %6 = call i32 @printf(ptr @__format, i32 %1)
-  %7 = call i32 @select_ni(i1 false, i32 42, i32 43)
+  %7 = call i32 @select_ni(i1 false, i32 1, i32 2)
   %8 = call i32 @printf(ptr @__format, i32 %3)
   ret i32 0
 }
