@@ -35,7 +35,7 @@ void n_queens(int n, int i, int board[], int cols[], int diags1[], int diags2[])
 
 int main(void) {
     int board[8];
-    int cols[8] = {}, diags1[15] = {}, diags2[15] = {};
+    int cols[8] = {0}, diags1[15] = {0}, diags2[15] = {0};
     n_queens(8, 0, board, cols, diags1, diags2);
     return 0;
 }
