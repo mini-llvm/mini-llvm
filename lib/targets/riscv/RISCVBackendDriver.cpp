@@ -24,7 +24,7 @@
 #include "mini-llvm/mir/Instruction/FStore.h"
 #include "mini-llvm/mir/Instruction/LI.h"
 #include "mini-llvm/mir/Instruction/Load.h"
-#include "mini-llvm/mir/Instruction/Placeholder.h"
+#include "mini-llvm/mir/Instruction/Marker.h"
 #include "mini-llvm/mir/Instruction/Store.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Module.h"
@@ -201,12 +201,12 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                 BasicBlock::const_iterator savePos,
                                            restorePos;
                 for (BasicBlock::const_iterator i = prologueBlock->begin(); i != prologueBlock->end(); ++i) {
-                    if (auto *placeholder = dynamic_cast<const Placeholder *>(&*i); placeholder && placeholder->id() == RISCVMIRGen::kSave) {
+                    if (auto *marker = dynamic_cast<const Marker *>(&*i); marker && marker->id() == RISCVMIRGen::kSave) {
                         savePos = i;
                     }
                 }
                 for (BasicBlock::const_iterator i = epilogueBlock->begin(); i != epilogueBlock->end(); ++i) {
-                    if (auto *placeholder = dynamic_cast<const Placeholder *>(&*i); placeholder && placeholder->id() == RISCVMIRGen::kRestore) {
+                    if (auto *marker = dynamic_cast<const Marker *>(&*i); marker && marker->id() == RISCVMIRGen::kRestore) {
                         restorePos = i;
                     }
                 }

@@ -11,9 +11,9 @@
 
 namespace mini_llvm::mir {
 
-class Placeholder : public Instruction {
+class Marker : public Instruction {
 public:
-    explicit Placeholder(int id) : id_(id) {}
+    explicit Marker(int id) : id_(id) {}
 
     int id() const {
         return id_;
@@ -36,19 +36,19 @@ public:
     }
 
     std::string format() const override {
-        return std::format("PLACEHOLDER {}", id());
+        return std::format("MARKER {}", id());
     }
 
     std::unique_ptr<Instruction> clone() const override {
-        return std::make_unique<Placeholder>(id());
+        return std::make_unique<Marker>(id());
     }
 
     void accept(InstructionVisitor &visitor) override {
-        visitor.visitPlaceholder(*this);
+        visitor.visitMarker(*this);
     }
 
     void accept(InstructionVisitor &visitor) const override {
-        visitor.visitPlaceholder(*this);
+        visitor.visitMarker(*this);
     }
 
 private:

@@ -139,10 +139,10 @@
 #include "mini-llvm/mir/Instruction/LA.h"
 #include "mini-llvm/mir/Instruction/LI.h"
 #include "mini-llvm/mir/Instruction/Load.h"
+#include "mini-llvm/mir/Instruction/Marker.h"
 #include "mini-llvm/mir/Instruction/Mov.h"
 #include "mini-llvm/mir/Instruction/Mul.h"
 #include "mini-llvm/mir/Instruction/Or.h"
-#include "mini-llvm/mir/Instruction/Placeholder.h"
 #include "mini-llvm/mir/Instruction/SDiv.h"
 #include "mini-llvm/mir/Instruction/SExt.h"
 #include "mini-llvm/mir/Instruction/SHL.h"
@@ -1198,7 +1198,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     prologueBlock.append(std::make_unique<Store>(8,
         MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())));
 
-    prologueBlock.append(std::make_unique<Placeholder>(kSave));
+    prologueBlock.append(std::make_unique<Marker>(kSave));
 
     if (endSlot.offset() < 2048) {
         prologueBlock.append(std::make_unique<AddI>(8,
@@ -1216,7 +1216,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     epilogueBlock.append(std::make_unique<Load>(8,
         share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &fpSlot))));
 
-    epilogueBlock.append(std::make_unique<Placeholder>(kRestore));
+    epilogueBlock.append(std::make_unique<Marker>(kRestore));
 
     if (endSlot.offset() < 2048) {
         epilogueBlock.append(std::make_unique<AddI>(8,

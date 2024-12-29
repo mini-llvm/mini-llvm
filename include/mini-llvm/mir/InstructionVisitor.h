@@ -38,12 +38,12 @@ class FSub;
 class LA;
 class LI;
 class Load;
+class Marker;
 class Mov;
 class Mul;
 class Not;
 class Or;
 class OrI;
-class Placeholder;
 class SDiv;
 class CondSet;
 class SExt;
@@ -98,12 +98,12 @@ public:
     virtual void visitLA(LA &I) { visitLA(std::as_const(I)); }
     virtual void visitLI(LI &I) { visitLI(std::as_const(I)); }
     virtual void visitLoad(Load &I) { visitLoad(std::as_const(I)); }
+    virtual void visitMarker(Marker &I) { visitMarker(std::as_const(I)); }
     virtual void visitMov(Mov &I) { visitMov(std::as_const(I)); }
     virtual void visitMul(Mul &I) { visitMul(std::as_const(I)); }
     virtual void visitNot(Not &I) { visitNot(std::as_const(I)); }
     virtual void visitOr(Or &I) { visitOr(std::as_const(I)); }
     virtual void visitOrI(OrI &I) { visitOrI(std::as_const(I)); }
-    virtual void visitPlaceholder(Placeholder &I) { visitPlaceholder(std::as_const(I)); }
     virtual void visitSDiv(SDiv &I) { visitSDiv(std::as_const(I)); }
     virtual void visitSet(CondSet &I) { visitSet(std::as_const(I)); }
     virtual void visitSExt(SExt &I) { visitSExt(std::as_const(I)); }
@@ -154,12 +154,12 @@ public:
     virtual void visitLA(const LA &) { panic(); }
     virtual void visitLI(const LI &) { panic(); }
     virtual void visitLoad(const Load &) { panic(); }
+    virtual void visitMarker(const Marker &) { panic(); }
     virtual void visitMov(const Mov &) { panic(); }
     virtual void visitMul(const Mul &) { panic(); }
     virtual void visitNot(const Not &) { panic(); }
     virtual void visitOr(const Or &) { panic(); }
     virtual void visitOrI(const OrI &) { panic(); }
-    virtual void visitPlaceholder(const Placeholder &) { panic(); }
     virtual void visitSDiv(const SDiv &) { panic(); }
     virtual void visitSet(const CondSet &) { panic(); }
     virtual void visitSExt(const SExt &) { panic(); }
