@@ -26,10 +26,10 @@ Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage) 
 BasicBlock &Function::add(Function::const_iterator pos, std::shared_ptr<BasicBlock> block) {
     assert(block->parent_ == nullptr);
     assert(block->parentIterator_ == std::nullopt);
-    iterator pos2 = iterator(blocks_.insert(pos.base(), std::move(block)));
-    pos2->parent_ = this;
-    pos2->parentIterator_ = pos2;
-    return *pos2;
+    iterator newPos(blocks_.insert(pos.base(), std::move(block)));
+    newPos->parent_ = this;
+    newPos->parentIterator_ = newPos;
+    return *newPos;
 }
 
 BasicBlock &Function::add(Function::const_iterator pos) {

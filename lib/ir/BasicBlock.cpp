@@ -17,10 +17,10 @@ using namespace mini_llvm::ir;
 Instruction &BasicBlock::add(BasicBlock::const_iterator pos, std::shared_ptr<Instruction> I) {
     assert(I->parent_ == nullptr);
     assert(I->parentIterator_ == std::nullopt);
-    iterator pos2 = iterator(insts_.insert(pos.base(), std::move(I)));
-    pos2->parent_ = this;
-    pos2->parentIterator_ = pos2;
-    return *pos2;
+    iterator newPos(insts_.insert(pos.base(), std::move(I)));
+    newPos->parent_ = this;
+    newPos->parentIterator_ = newPos;
+    return *newPos;
 }
 
 void BasicBlock::remove(BasicBlock::const_iterator pos) {
