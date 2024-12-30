@@ -26,8 +26,8 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
 
         changed |= pass1.runOnModule(M);
         changed |= pass2.runOnModule(M);
-        changed |= pass4.runOnModule(M);
         changed |= pass3.runOnModule(M);
+        changed |= pass4.runOnModule(M);
         changed |= pass5.runOnModule(M);
         changed |= pass6.runOnModule(M);
     } while (changed);
@@ -47,8 +47,8 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
 
         changed |= pass1.runOnModule(M);
         changed |= pass2.runOnModule(M);
-        changed |= pass4.runOnModule(M);
         changed |= pass3.runOnModule(M);
+        changed |= pass4.runOnModule(M);
         changed |= pass5.runOnModule(M);
         changed |= pass6.runOnModule(M);
     } while (changed);
