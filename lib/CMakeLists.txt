@@ -74,7 +74,6 @@ add_library(mini-llvm
     opt/mc/passes/RedundantLabelElimination.cpp
     opt/mir/BasicBlockTransform.cpp
     opt/mir/FunctionTransform.cpp
-    opt/mir/passes/ConstantPropagation.cpp
     opt/mir/passes/CopyPropagation.cpp
     opt/mir/passes/DeadCodeElimination.cpp
     opt/mir/passes/LiveVariableAnalysis.cpp
@@ -88,6 +87,7 @@ add_library(mini-llvm
     targets/riscv/mir/RISCVRegister.cpp
     targets/riscv/opt/mc/passes/RISCVFallthrough.cpp
     targets/riscv/opt/mc/RISCVPassManager.cpp
+    targets/riscv/opt/mir/passes/RISCVConstantPropagation.cpp
     targets/riscv/opt/mir/RISCVPassManager.cpp
     targets/riscv/RISCVBackendDriver.cpp
     utils/FileSystem.cpp

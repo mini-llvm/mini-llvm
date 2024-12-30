@@ -119,12 +119,13 @@
 
 ### MIR
 
-- `ConstantPropagation`
 - `CopyPropagation`
 - `DeadCodeElimination`
 - `NullOperationElimination`
 - `RegisterReuse`
 - `ZeroRegisterReplacement`
+- `riscv64`
+  - `RISCVConstantPropagation`
 
 ### MC
 

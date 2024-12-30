@@ -5,7 +5,7 @@
 
 namespace mini_llvm::mir {
 
-class ConstantPropagation final : public BasicBlockTransform {
+class RISCVConstantPropagation final : public BasicBlockTransform {
 public:
     bool runOnBasicBlock(BasicBlock &B) override;
 };
