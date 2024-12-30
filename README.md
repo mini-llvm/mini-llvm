@@ -8,6 +8,10 @@
 
 ![Design](assets/design.svg)
 
+## Supported Targets
+
+- `riscv64`
+
 ## Supported IR Features
 
 ### Types
@@ -96,10 +100,6 @@
 - `select`
 - `call`
 - `phi`
-
-## Supported Targets
-
-- `riscv64`
 
 ## Supported Optimizations (Work in Progress)
 
