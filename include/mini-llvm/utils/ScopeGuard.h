@@ -1,13 +1,16 @@
 #pragma once
 
+#include <functional>
+#include <tuple>
 #include <utility>
 
 namespace mini_llvm {
 
-template <typename F>
 class ScopeGuard {
 public:
-    explicit ScopeGuard(F f) : f_(std::move(f)) {}
+    template <typename F, typename... Args>
+    explicit ScopeGuard(F &&f, Args &&...args)
+        : f_([f = std::forward<F>(f), args = std::tuple(std::forward<Args>(args)...)] { std::apply(f, args); }) {}
 
     ~ScopeGuard() {
         f_();
@@ -19,7 +22,7 @@ public:
     ScopeGuard &operator=(ScopeGuard &&) = default;
 
 private:
-    F f_;
+    std::function<void ()> f_;
 };
 
 } // namespace mini_llvm

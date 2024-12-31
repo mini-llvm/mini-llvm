@@ -20,7 +20,7 @@ Expected<std::string, SystemError> mini_llvm::readAll(const std::filesystem::pat
     if (!fp) {
         return SystemError{"fopen", errno};
     }
-    ScopeGuard guard([fp] { fclose(fp); });
+    ScopeGuard guard(fclose, fp);
     if (fseek(fp, 0, SEEK_END) != -1) {
         long size = ftell(fp);
         if (size != -1) {
@@ -53,7 +53,7 @@ Status<SystemError> mini_llvm::writeAll(const std::filesystem::path &path, std::
     if (!fp) {
         return SystemError{"fopen", errno};
     }
-    ScopeGuard guard([fp] { fclose(fp); });
+    ScopeGuard guard(fclose, fp);
     size_t numWritten = fwrite(content.data(), 1, content.size(), fp);
     if (numWritten != content.size()) {
         return SystemError{"fwrite", errno};
