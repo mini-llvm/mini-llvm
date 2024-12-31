@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdio>
+#include <cstring>
 #include <filesystem>
 #include <string>
 #include <string_view>
@@ -13,38 +14,61 @@
 
 using namespace mini_llvm;
 
-static constexpr size_t kChunkSize = 4096;
+namespace {
 
-Expected<std::string, SystemError> mini_llvm::readAll(const std::filesystem::path &path) {
+Expected<std::string, SystemError> readAllSeekable(const std::filesystem::path &path) {
     FILE *fp = fopen(path.c_str(), "r");
     if (!fp) {
         return SystemError{"fopen", errno};
     }
     ScopeGuard guard(fclose, fp);
-    if (fseek(fp, 0, SEEK_END) != -1) {
-        long size = ftell(fp);
-        if (size != -1) {
-            if (fseek(fp, 0, SEEK_SET) != -1) {
-                std::string content(size, '\0');
-                size_t numRead = fread(content.data(), 1, size, fp);
-                if (numRead == (size_t)size) {
-                    return content;
-                }
-            }
-        }
+    if (fseek(fp, 0, SEEK_END) == -1) {
+        return SystemError{"fseek", errno};
     }
+    long size = ftell(fp);
+    if (size == -1) {
+        return SystemError{"ftell", errno};
+    }
+    if (fseek(fp, 0, SEEK_SET) == -1) {
+        return SystemError{"fseek", errno};
+    }
+    std::string content(size, '\0');
+    size_t numRead = fread(content.data(), 1, size, fp);
+    if (numRead != (size_t)size) {
+        return SystemError{"fread", errno};
+    }
+    return content;
+}
+
+Expected<std::string, SystemError> readAllNonSeekable(const std::filesystem::path &path) {
+    FILE *fp = fopen(path.c_str(), "r");
+    if (!fp) {
+        return SystemError{"fopen", errno};
+    }
+    ScopeGuard guard(fclose, fp);
     std::string content;
-    std::string chunk(kChunkSize, '\0');
+    std::string chunk(4096, '\0');
     for (;;) {
         size_t numRead = fread(chunk.data(), 1, chunk.size(), fp);
-        if (numRead < chunk.size() && ferror(fp)) {
-            return SystemError{"fread", errno};
-        }
         content.append(chunk.data(), numRead);
         if (numRead < chunk.size()) {
+            if (ferror(fp)) {
+                return SystemError{"fread", errno};
+            }
             break;
         }
     }
+    return content;
+}
+
+} // namespace
+
+Expected<std::string, SystemError> mini_llvm::readAll(const std::filesystem::path &path) {
+    Expected<std::string, SystemError> content = readAllSeekable(path);
+    if (content || strcmp(content.error().call, "fopen") == 0) {
+        return content;
+    }
+    content = readAllNonSeekable(path);
     return content;
 }
 
