@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
     }
 
     Expected<std::string, SystemError> input = readAll(options.inputFile);
-    if (!input.ok()) {
+    if (!input) {
         fprintf(stderr, "%s: error: %s: %s\n", argv[0], input.error().call, strerror(input.error().error));
         exit(1);
     }
@@ -176,7 +176,7 @@ int main(int argc, char *argv[]) {
 
     std::string output = program.format() + '\n';
 
-    if (Status status = writeAll(options.outputFile, output); !status.ok()) {
+    if (Status status = writeAll(options.outputFile, output); !status) {
         fprintf(stderr, "%s: error: %s: %s\n", argv[0], status.error().call, strerror(status.error().error));
         exit(1);
     }

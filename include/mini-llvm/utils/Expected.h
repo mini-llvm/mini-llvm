@@ -15,7 +15,7 @@ public:
 
     constexpr Expected(E error) : valueOrError_(std::move(error)) {}
 
-    constexpr bool ok() const {
+    constexpr operator bool() const {
         return std::holds_alternative<T>(valueOrError_);
     }
 

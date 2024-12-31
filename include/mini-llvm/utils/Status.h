@@ -16,7 +16,7 @@ public:
 
     constexpr Status(E error) : error_(std::move(error)) {}
 
-    constexpr bool ok() const {
+    constexpr operator bool() const {
         return !error_.has_value();
     }
 
