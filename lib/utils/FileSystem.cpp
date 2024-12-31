@@ -21,31 +21,28 @@ Expected<std::string, SystemError> mini_llvm::readAll(const std::filesystem::pat
         return SystemError{"fopen", errno};
     }
     ScopeGuard guard([fp] { fclose(fp); });
-    std::string content;
     if (fseek(fp, 0, SEEK_END) != -1) {
         long size = ftell(fp);
-        if (size == -1) {
-            return SystemError{"ftell", errno};
+        if (size != -1) {
+            if (fseek(fp, 0, SEEK_SET) != -1) {
+                std::string content(size, '\0');
+                size_t numRead = fread(content.data(), 1, size, fp);
+                if (numRead == (size_t)size) {
+                    return content;
+                }
+            }
         }
-        if (fseek(fp, 0, SEEK_SET) == -1) {
-            return SystemError{"fseek", errno};
-        }
-        content.resize(size);
-        size_t numRead = fread(content.data(), 1, size, fp);
-        if (numRead != static_cast<size_t>(size)) {
+    }
+    std::string content;
+    std::string chunk(kChunkSize, '\0');
+    for (;;) {
+        size_t numRead = fread(chunk.data(), 1, chunk.size(), fp);
+        if (numRead < chunk.size() && ferror(fp)) {
             return SystemError{"fread", errno};
         }
-    } else {
-        std::string chunk(kChunkSize, '\0');
-        for (;;) {
-            size_t numRead = fread(chunk.data(), 1, chunk.size(), fp);
-            if (numRead < chunk.size() && ferror(fp)) {
-                return SystemError{"fread", errno};
-            }
-            content.append(chunk.data(), numRead);
-            if (numRead < chunk.size()) {
-                break;
-            }
+        content.append(chunk.data(), numRead);
+        if (numRead < chunk.size()) {
+            break;
         }
     }
     return content;
