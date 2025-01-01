@@ -14,7 +14,6 @@
 #include "mini-llvm/opt/ir/passes/StrengthReduction.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/opt/ir/passes/VerificationAnalysis.h"
-#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm::ir;
 
@@ -27,13 +26,13 @@ void PassManager::run(Module &M) const {
         changed = false;
 
         DeadCodeElimination         pass1;
-        JumpThreading               pass2;
-        UnreachableBlockElimination pass3;
-        AlgebraicSimplification     pass4;
-        ConstantFolding             pass5;
-        PoisonPropagation           pass6;
-        BranchSimplification        pass7;
-        BasicBlockMerging           pass8;
+        UnreachableBlockElimination pass2;
+        JumpThreading               pass3;
+        BasicBlockMerging           pass4;
+        BranchSimplification        pass5;
+        AlgebraicSimplification     pass6;
+        ConstantFolding             pass7;
+        PoisonPropagation           pass8;
         StrengthReduction           pass9(3);
         FunctionInlining            pass10;
 
