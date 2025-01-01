@@ -63,6 +63,7 @@ add_library(mini-llvm
     opt/ir/passes/DeadCodeElimination.cpp
     opt/ir/passes/DominatorTreeAnalysis.cpp
     opt/ir/passes/FunctionInlining.cpp
+    opt/ir/passes/GlobalValueNumbering.cpp
     opt/ir/passes/JumpThreading.cpp
     opt/ir/passes/Mem2Reg.cpp
     opt/ir/passes/PoisonPropagation.cpp

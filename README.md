@@ -111,6 +111,7 @@
 - `ConstantFolding`
 - `DeadCodeElimination`
 - `FunctionInlining`
+- `GlobalValueNumbering`
 - `JumpThreading`
 - `Mem2Reg`
 - `PoisonPropagation`

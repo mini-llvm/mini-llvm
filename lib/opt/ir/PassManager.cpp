@@ -8,6 +8,7 @@
 #include "mini-llvm/opt/ir/passes/ConstantFolding.h"
 #include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
 #include "mini-llvm/opt/ir/passes/FunctionInlining.h"
+#include "mini-llvm/opt/ir/passes/GlobalValueNumbering.h"
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
 #include "mini-llvm/opt/ir/passes/Mem2Reg.h"
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
@@ -33,8 +34,9 @@ void PassManager::run(Module &M) const {
         AlgebraicSimplification     pass6;
         ConstantFolding             pass7;
         PoisonPropagation           pass8;
-        StrengthReduction           pass9(3);
-        FunctionInlining            pass10;
+        GlobalValueNumbering        pass9;
+        StrengthReduction           pass10(3);
+        FunctionInlining            pass11;
 
         changed |= run(pass1, M);
         changed |= run(pass2, M);
@@ -46,6 +48,7 @@ void PassManager::run(Module &M) const {
         changed |= run(pass8, M);
         changed |= run(pass9, M);
         changed |= run(pass10, M);
+        changed |= run(pass11, M);
     } while (changed);
 }
 
