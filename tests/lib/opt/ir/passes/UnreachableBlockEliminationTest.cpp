@@ -39,11 +39,7 @@ define void @foo() {
 )").value().functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
-
-    VerificationAnalysis verify;
-    verify.runOnFunction(*F);
-    EXPECT_TRUE(verify.ok());
-
+    VerificationAnalysis().runOnFunction(*F);
     EXPECT_THAT(F->format(), Not(HasSubstr("1:")));
 }
 
@@ -59,11 +55,7 @@ define void @foo() {
 )").value().functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
-
-    VerificationAnalysis verify;
-    verify.runOnFunction(*F);
-    EXPECT_TRUE(verify.ok());
-
+    VerificationAnalysis().runOnFunction(*F);
     EXPECT_THAT(F->format(), Not(HasSubstr("1:")));
 }
 
@@ -82,11 +74,7 @@ define void @foo() {
 )").value().functions.front());
 
     EXPECT_TRUE(UnreachableBlockElimination().runOnFunction(*F));
-
-    VerificationAnalysis verify;
-    verify.runOnFunction(*F);
-    EXPECT_TRUE(verify.ok());
-
+    VerificationAnalysis().runOnFunction(*F);
     EXPECT_THAT(F->format(), AllOf(
         Not(HasSubstr("1:")),
         Not(HasSubstr("2:"))

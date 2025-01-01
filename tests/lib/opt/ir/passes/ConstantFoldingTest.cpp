@@ -34,11 +34,7 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
-
-    VerificationAnalysis verify;
-    verify.runOnFunction(*F);
-    EXPECT_TRUE(verify.ok());
-
+    VerificationAnalysis().runOnFunction(*F);
     EXPECT_THAT(F->format(), HasSubstr("ret i32 85"));
 }
 
@@ -54,11 +50,7 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
-
-    VerificationAnalysis verify;
-    verify.runOnFunction(*F);
-    EXPECT_TRUE(verify.ok());
-
+    VerificationAnalysis().runOnFunction(*F);
     EXPECT_THAT(F->format(), HasSubstr("ret i32 174"));
 }
 
@@ -82,10 +74,6 @@ define i32 @foo() {
 )");
 
     EXPECT_TRUE(ConstantFolding().runOnFunction(*F));
-
-    VerificationAnalysis verify;
-    verify.runOnFunction(*F);
-    EXPECT_TRUE(verify.ok());
-
+    VerificationAnalysis().runOnFunction(*F);
     EXPECT_THAT(F->format(), HasSubstr("ret i32 129"));
 }

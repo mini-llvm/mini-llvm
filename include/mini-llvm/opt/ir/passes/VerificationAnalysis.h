@@ -11,13 +11,6 @@ class VerificationAnalysis final : public FunctionAnalysis, public ModuleAnalysi
 public:
     void runOnFunction(const Function &F) override;
     void runOnModule(const Module &M) override;
-
-    bool ok() const {
-        return ok_;
-    }
-
-private:
-    bool ok_;
 };
 
 } // namespace mini_llvm::ir

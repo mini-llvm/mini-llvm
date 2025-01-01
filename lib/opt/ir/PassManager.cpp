@@ -53,9 +53,7 @@ void PassManager::run(Module &M) const {
 bool PassManager::run(ModuleTransform &pass, Module &M) const {
     bool changed = pass.runOnModule(M);
     if (verifyAfterEach_) {
-        if (VerificationAnalysis verify; verify.runOnModule(M), !verify.ok()) {
-            panic();
-        }
+        VerificationAnalysis().runOnModule(M);
     }
     return changed;
 }

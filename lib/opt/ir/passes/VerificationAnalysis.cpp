@@ -18,6 +18,7 @@
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/Panic.h"
 
 using namespace mini_llvm::ir;
 
@@ -26,8 +27,7 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             for (const UseBase *op : I.operands()) {
                 if (op->expired()) {
-                    ok_ = false;
-                    return;
+                    panic();
                 }
             }
         }
@@ -35,17 +35,14 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
 
     for (const BasicBlock &B : F) {
         if (B.empty()) {
-            ok_ = false;
-            return;
+            panic();
         }
         if (!dynamic_cast<const Terminator *>(&B.back())) {
-            ok_ = false;
-            return;
+            panic();
         }
         for (auto i = B.begin(), e = std::prev(B.end()); i != e; ++i) {
             if (dynamic_cast<const Terminator *>(&*i)) {
-                ok_ = false;
-                return;
+                panic();
             }
         }
     }
@@ -53,15 +50,13 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
     for (const BasicBlock &B : F) {
         if (auto *ret = dynamic_cast<const Ret *>(&B.back())) {
             if (*ret->value()->type() != *F.functionType()->returnType()) {
-                ok_ = false;
-                return;
+                panic();
             }
         }
     }
 
     if (!hasNPredecessors(F.entry(), 0)) {
-        ok_ = false;
-        return;
+        panic();
     }
 
     for (const BasicBlock &B : F) {
@@ -72,8 +67,7 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (incomingBlocks(*phi) != predecessors(B)) {
-                    ok_ = false;
-                    return;
+                    panic();
                 }
             }
         }
@@ -83,20 +77,17 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : B) {
             if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
-                    ok_ = false;
-                    return;
+                    panic();
                 }
             }
             if (auto *op = dynamic_cast<const BinaryFloatingOperator *>(&I)) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
-                    ok_ = false;
-                    return;
+                    panic();
                 }
             }
             if (auto *select = dynamic_cast<const Select *>(&I)) {
                 if (*select->trueValue()->type() != *select->falseValue()->type()) {
-                    ok_ = false;
-                    return;
+                    panic();
                 }
             }
         }
@@ -125,8 +116,7 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
                     if (!S.contains(II->parent()) || (!dynamic_cast<const Phi *>(II) && !domTree.dominates(I, *II))) {
-                        ok_ = false;
-                        return;
+                        panic();
                     }
                 }
             }
@@ -138,25 +128,18 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
             if (!dynamic_cast<const Phi *>(&I)) {
                 for (const UseBase *op : I.operands()) {
                     if (&**op == &I) {
-                        ok_ = false;
-                        return;
+                        panic();
                     }
                 }
             }
         }
     }
-
-    ok_ = true;
 }
 
 void VerificationAnalysis::runOnModule(const Module &M) {
-    ok_ = true;
     for (const Function &F : M.functions) {
         if (!F.empty()) {
             runOnFunction(F);
-            if (!ok_) {
-                return;
-            }
         }
     }
 }
