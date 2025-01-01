@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
@@ -17,7 +17,7 @@
 
 namespace mini_llvm::ir {
 
-class IntToPtr final : public Operator {
+class IntToPtr final : public Instruction {
 public:
     explicit IntToPtr(std::shared_ptr<Value> value) : value_(this, std::move(value)) {}
 

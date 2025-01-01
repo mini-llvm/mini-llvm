@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "mini-llvm/ir/Constant.h"
-#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Use.h"
@@ -14,7 +14,7 @@
 
 namespace mini_llvm::ir {
 
-class BinaryFloatingOperator : public Operator {
+class BinaryFloatingOperator : public Instruction {
 public:
     template <typename Self>
     auto &lhs(this Self &&self) {

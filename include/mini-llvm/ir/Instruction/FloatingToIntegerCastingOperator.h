@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "mini-llvm/ir/Constant.h"
-#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
@@ -14,7 +14,7 @@
 
 namespace mini_llvm::ir {
 
-class FloatingToIntegerCastingOperator : public Operator {
+class FloatingToIntegerCastingOperator : public Instruction {
 public:
     template <typename Self>
     auto &value(this Self &&self) {

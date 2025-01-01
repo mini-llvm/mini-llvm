@@ -6,7 +6,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
@@ -17,7 +17,7 @@
 
 namespace mini_llvm::ir {
 
-class PtrToInt final : public Operator {
+class PtrToInt final : public Instruction {
 public:
     PtrToInt(std::shared_ptr<Value> value, std::unique_ptr<IntegerType> type)
         : value_(this, std::move(value)), type_(std::move(type)) {}

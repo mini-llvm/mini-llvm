@@ -10,7 +10,7 @@
 #include "mini-llvm/ir/Constant/FloatingConstant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Constant/PoisonValue.h"
-#include "mini-llvm/ir/Instruction/Operator.h"
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
@@ -22,7 +22,7 @@
 
 namespace mini_llvm::ir {
 
-class BitCast final : public Operator {
+class BitCast final : public Instruction {
 public:
     BitCast(std::shared_ptr<Value> value, std::unique_ptr<Type> type)
         : value_(this, std::move(value)), type_(std::move(type)) {}
