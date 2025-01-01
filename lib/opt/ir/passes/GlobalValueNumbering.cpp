@@ -131,10 +131,16 @@ template <>
 struct std::hash<ValueNumber> {
     constexpr size_t operator()(const ValueNumber &number) const noexcept {
         if (auto *value = dynamic_cast<const IntegerConstant *>(number.value)) {
-            return std::hash<int64_t>{}(value->signExtendedValue());
+            size_t seed = 0;
+            hash_combine(seed, typeid(*value));
+            hash_combine(seed, value->signExtendedValue());
+            return seed;
         }
         if (auto *value = dynamic_cast<const FloatingConstant *>(number.value)) {
-            return std::hash<uint64_t>{}(value->bitPattern());
+            size_t seed = 0;
+            hash_combine(seed, typeid(*value));
+            hash_combine(seed, value->bitPattern());
+            return seed;
         }
         if (auto *value = dynamic_cast<const BinaryIntegerArithmeticOperator *>(number.value)) {
             size_t seed = 0;
