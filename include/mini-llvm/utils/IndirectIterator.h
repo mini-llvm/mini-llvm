@@ -42,38 +42,32 @@ public:
         return std::addressof(**base_);
     }
 
-    template <typename Self>
-    Self &operator++(this Self &self) {
-        ++self.base_;
-        return self;
+    IndirectIterator &operator++() {
+        ++base_;
+        return *this;
     }
 
-    template <typename Self>
-    Self &operator--(this Self &self) {
-        --self.base_;
-        return self;
+    IndirectIterator &operator--() {
+        --base_;
+        return *this;
     }
 
-    template <typename Self>
-    Self operator++(this Self &self, int) {
-        return Self(self.base_++);
+    IndirectIterator operator++(int) {
+        return IndirectIterator(base_++);
     }
 
-    template <typename Self>
-    Self operator--(this Self &self, int) {
-        return Self(self.base_--);
+    IndirectIterator operator--(int) {
+        return IndirectIterator(base_--);
     }
 
-    template <typename Self>
-    Self &operator+=(this Self &self, difference_type n) {
-        self.base_ += n;
-        return self;
+    IndirectIterator &operator+=(difference_type n) {
+        base_ += n;
+        return *this;
     }
 
-    template <typename Self>
-    Self &operator-=(this Self &self, difference_type n) {
-        self.base_ -= n;
-        return self;
+    IndirectIterator &operator-=(difference_type n) {
+        base_ -= n;
+        return *this;
     }
 
     bool operator==(const IndirectIterator &rhs) const {
@@ -104,14 +98,12 @@ public:
         return base_ - rhs.base_;
     }
 
-    template <typename Self>
-    Self operator+(this Self self, difference_type n) {
-        return self += n;
+    friend IndirectIterator operator+(IndirectIterator i, difference_type n) {
+        return i += n;
     }
 
-    template <typename Self>
-    Self operator-(this Self self, difference_type n) {
-        return self -= n;
+    friend IndirectIterator operator-(IndirectIterator i, difference_type n) {
+        return i -= n;
     }
 
 private:
