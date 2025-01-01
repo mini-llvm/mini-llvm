@@ -21,6 +21,7 @@
 #include "mini-llvm/ir/Instruction/IntegerToFloatingCastingOperator.h"
 #include "mini-llvm/ir/Instruction/IntToPtr.h"
 #include "mini-llvm/ir/Instruction/PtrToInt.h"
+#include "mini-llvm/ir/Instruction/Select.h"
 #include "mini-llvm/ir/Instruction/UnaryFloatingOperator.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
@@ -118,6 +119,13 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
         auto *lhsValue = static_cast<const BitCast *>(lhs.value),
              *rhsValue = static_cast<const BitCast *>(rhs.value);
         return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+    }
+    if (dynamic_cast<const Select *>(lhs.value)) {
+        auto *lhsValue = static_cast<const Select *>(lhs.value),
+             *rhsValue = static_cast<const Select *>(rhs.value);
+        return ValueNumber{&*lhsValue->cond()} == ValueNumber{&*rhsValue->cond()} &&
+               ValueNumber{&*lhsValue->trueValue()} == ValueNumber{&*rhsValue->trueValue()} &&
+               ValueNumber{&*lhsValue->falseValue()} == ValueNumber{&*rhsValue->falseValue()};
     }
     return lhs.value == rhs.value;
 }
@@ -237,6 +245,14 @@ struct std::hash<ValueNumber> {
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
+            return seed;
+        }
+        if (auto *value = dynamic_cast<const Select *>(number.value)) {
+            size_t seed = 0;
+            hash_combine(seed, typeid(*value));
+            hash_combine(seed, ValueNumber{&*value->cond()});
+            hash_combine(seed, ValueNumber{&*value->trueValue()});
+            hash_combine(seed, ValueNumber{&*value->falseValue()});
             return seed;
         }
         return reinterpret_cast<size_t>(number.value);
