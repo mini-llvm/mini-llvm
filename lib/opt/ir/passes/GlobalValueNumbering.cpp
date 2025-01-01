@@ -15,8 +15,10 @@
 #include "mini-llvm/ir/Instruction/BitCast.h"
 #include "mini-llvm/ir/Instruction/FCmp.h"
 #include "mini-llvm/ir/Instruction/FloatingCastingOperator.h"
+#include "mini-llvm/ir/Instruction/FloatingToIntegerCastingOperator.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/ir/Instruction/IntegerCastingOperator.h"
+#include "mini-llvm/ir/Instruction/IntegerToFloatingCastingOperator.h"
 #include "mini-llvm/ir/Instruction/IntToPtr.h"
 #include "mini-llvm/ir/Instruction/PtrToInt.h"
 #include "mini-llvm/ir/Instruction/UnaryFloatingOperator.h"
@@ -90,6 +92,16 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
     if (dynamic_cast<const FloatingCastingOperator *>(lhs.value)) {
         auto *lhsValue = static_cast<const FloatingCastingOperator *>(lhs.value),
              *rhsValue = static_cast<const FloatingCastingOperator *>(rhs.value);
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+    }
+    if (dynamic_cast<const IntegerToFloatingCastingOperator *>(lhs.value)) {
+        auto *lhsValue = static_cast<const IntegerToFloatingCastingOperator *>(lhs.value),
+             *rhsValue = static_cast<const IntegerToFloatingCastingOperator *>(rhs.value);
+        return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
+    }
+    if (dynamic_cast<const FloatingToIntegerCastingOperator *>(lhs.value)) {
+        auto *lhsValue = static_cast<const FloatingToIntegerCastingOperator *>(lhs.value),
+             *rhsValue = static_cast<const FloatingToIntegerCastingOperator *>(rhs.value);
         return ValueNumber{&*lhsValue->value()} == ValueNumber{&*rhsValue->value()} && *lhsValue->type() == *rhsValue->type();
     }
     if (dynamic_cast<const PtrToInt *>(lhs.value)) {
@@ -186,6 +198,20 @@ struct std::hash<ValueNumber> {
             return seed;
         }
         if (auto *value = dynamic_cast<const FloatingCastingOperator *>(number.value)) {
+            size_t seed = 0;
+            hash_combine(seed, typeid(*value));
+            hash_combine(seed, ValueNumber{&*value->value()});
+            hash_combine(seed, *value->type());
+            return seed;
+        }
+        if (auto *value = dynamic_cast<const IntegerToFloatingCastingOperator *>(number.value)) {
+            size_t seed = 0;
+            hash_combine(seed, typeid(*value));
+            hash_combine(seed, ValueNumber{&*value->value()});
+            hash_combine(seed, *value->type());
+            return seed;
+        }
+        if (auto *value = dynamic_cast<const FloatingToIntegerCastingOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
