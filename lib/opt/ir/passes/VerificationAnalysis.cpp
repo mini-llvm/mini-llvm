@@ -60,10 +60,6 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
     }
 
     for (const BasicBlock &B : F) {
-        std::unordered_set<const BasicBlock *> preds;
-        for (const BasicBlock *pred : predecessors(B)) {
-            preds.insert(pred);
-        }
         for (const Instruction &I : B) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (incomingBlocks(*phi) != predecessors(B)) {
@@ -115,7 +111,10 @@ void VerificationAnalysis::runOnFunction(const Function &F) {
         for (const Instruction &I : *B) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                    if (!S.contains(II->parent()) || (!dynamic_cast<const Phi *>(II) && !domTree.dominates(I, *II))) {
+                    if (!S.contains(II->parent())) {
+                        panic();
+                    }
+                    if (!dynamic_cast<const Phi *>(II) && !domTree.dominates(I, *II)) {
                         panic();
                     }
                 }
