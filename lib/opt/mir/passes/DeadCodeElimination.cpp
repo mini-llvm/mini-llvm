@@ -6,7 +6,6 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction.h"
-#include "mini-llvm/mir/Instruction/Marker.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
 
@@ -15,8 +14,9 @@ using namespace mini_llvm::mir;
 namespace {
 
 bool canRemove(const Instruction &I, const std::unordered_set<Register *> &liveOut) {
-    if (dynamic_cast<const Marker *>(&I)) return false;
-    if (I.hasSideEffects()) return false;
+    if (I.hasSideEffects()) {
+        return false;
+    }
     for (Register *reg : def(I)) {
         if (liveOut.contains(reg)) {
             return false;

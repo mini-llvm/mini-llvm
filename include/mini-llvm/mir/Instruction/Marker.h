@@ -37,7 +37,7 @@ public:
     }
 
     bool hasSideEffects() const override {
-        return false;
+        return true;
     }
 
     std::string format() const override {
