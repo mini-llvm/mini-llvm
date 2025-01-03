@@ -31,7 +31,7 @@
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
-#include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
+#include "mini-llvm/mir/StackOffsetImmediate.h"
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
 #include "mini-llvm/targets/riscv/codegen/RISCVMCGen.h"
@@ -95,10 +95,10 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 int width = slot->size();
                                 ExtensionMode extensionMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
                                 if (endSlot->offset() - slot->offset() < 2048) {
-                                    MemoryOperand src(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    MemoryOperand src(share(*fp()), std::make_unique<StackOffsetImmediate>(endSlot, slot));
                                     builder.add(std::make_unique<Load>(width, std::move(dst), std::move(src), extensionMode));
                                 } else {
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
                                     builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
                                     builder.add(std::make_unique<Load>(width, std::move(dst), MemoryOperand(share(*t6())), extensionMode));
                                 }
@@ -113,10 +113,10 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                     default: panic();
                                 }
                                 if (endSlot->offset() - slot->offset() < 2048) {
-                                    MemoryOperand src(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    MemoryOperand src(share(*fp()), std::make_unique<StackOffsetImmediate>(endSlot, slot));
                                     builder.add(std::make_unique<FLoad>(precision, std::move(dst), std::move(src)));
                                 } else {
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
                                     builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
                                     builder.add(std::make_unique<FLoad>(precision, std::move(dst), MemoryOperand(share(*t6()))));
                                 }
@@ -134,10 +134,10 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                             case RegisterClass::kGPR: {
                                 int width = slot->size();
                                 if (endSlot->offset() - slot->offset() < 2048) {
-                                    MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    MemoryOperand dst(share(*fp()), std::make_unique<StackOffsetImmediate>(endSlot, slot));
                                     builder.add(std::make_unique<Store>(width, std::move(dst), std::move(src)));
                                 } else {
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
                                     builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
                                     builder.add(std::make_unique<Store>(width, MemoryOperand(share(*t6())), std::move(src)));
                                 }
@@ -152,10 +152,10 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                     default: panic();
                                 }
                                 if (endSlot->offset() - slot->offset() < 2048) {
-                                    MemoryOperand dst(share(*fp()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot));
+                                    MemoryOperand dst(share(*fp()), std::make_unique<StackOffsetImmediate>(endSlot, slot));
                                     builder.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
                                 } else {
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
                                     builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
                                     builder.add(std::make_unique<FStore>(precision, MemoryOperand(share(*t6())), std::move(src)));
                                 }
@@ -218,13 +218,13 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                     switch (physReg->Class()) {
                     case RegisterClass::kGPR:
                         if (slot->offset() < 2048) {
-                            MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
+                            MemoryOperand mem(share(*sp()), std::make_unique<StackOffsetImmediate>(startSlot, slot));
                             prologueBlock->add(savePos, std::make_unique<Store>(8, mem.clone(), reg));
                             epilogueBlock->add(restorePos, std::make_unique<Load>(8, reg, mem.clone()));
                         } else {
                             prologueBlock->add(
                                 savePos,
-                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
                             prologueBlock->add(
                                 savePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
@@ -233,7 +233,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 std::make_unique<Store>(8, MemoryOperand(share(*t6())), reg));
                             epilogueBlock->add(
                                 restorePos,
-                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
                             epilogueBlock->add(
                                 restorePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
@@ -244,13 +244,13 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         break;
                     case RegisterClass::kFPR:
                         if (slot->offset() < 2048) {
-                            MemoryOperand mem(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot));
+                            MemoryOperand mem(share(*sp()), std::make_unique<StackOffsetImmediate>(startSlot, slot));
                             prologueBlock->add(std::prev(prologueBlock->end(), 2), std::make_unique<FStore>(Precision::kDouble, mem.clone(), reg));
                             epilogueBlock->add(std::prev(epilogueBlock->end(), 2), std::make_unique<FLoad>(Precision::kDouble, reg, mem.clone()));
                         } else {
                             prologueBlock->add(
                                 savePos,
-                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
                             prologueBlock->add(
                                 savePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
@@ -259,7 +259,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6())), reg));
                             epilogueBlock->add(
                                 restorePos,
-                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(startSlot, slot)));
+                                std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
                             epilogueBlock->add(
                                 restorePos,
                                 std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));

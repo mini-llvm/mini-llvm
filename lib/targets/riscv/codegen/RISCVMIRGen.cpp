@@ -162,7 +162,7 @@
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
+#include "mini-llvm/mir/StackOffsetImmediate.h"
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
@@ -699,7 +699,7 @@ public:
         std::shared_ptr<Register> dst = valueMap_.at(&I);
         StackSlot *endSlot = &function_.stackFrame().back(),
                   *slot = memoryMap_.at(&I);
-        std::unique_ptr<Immediate> offset = std::make_unique<StackRelativeOffsetImmediate>(endSlot, slot);
+        std::unique_ptr<Immediate> offset = std::make_unique<StackOffsetImmediate>(endSlot, slot);
         builder_.add(std::make_unique<LI>(8, dst, std::move(offset)));
         builder_.add(std::make_unique<Add>(8, dst, share(*fp()), dst));
     }
@@ -1177,31 +1177,31 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
 
     StackSlot &endSlot = MF.stackFrame().append(0, 16);
 
-    prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
     prologueBlock.append(std::make_unique<Sub>(8, share(*sp()), share(*sp()), share(*t6())));
 
     prologueBlock.append(std::make_unique<Store>(8,
-        MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &raSlot)), share(*ra())));
+        MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra())));
 
     prologueBlock.append(std::make_unique<Store>(8,
-        MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())));
+        MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())));
 
     prologueBlock.append(std::make_unique<Marker>(kSave));
 
-    prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
     prologueBlock.append(std::make_unique<Add>(8, share(*fp()), share(*sp()), share(*t6())));
 
     prologueBlock.append(std::make_unique<Br>(blockMap[&IF.entry()]));
 
     epilogueBlock.append(std::make_unique<Load>(8,
-        share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &raSlot))));
+        share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))));
 
     epilogueBlock.append(std::make_unique<Load>(8,
-        share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &fpSlot))));
+        share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))));
 
     epilogueBlock.append(std::make_unique<Marker>(kRestore));
 
-    epilogueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackRelativeOffsetImmediate>(&startSlot, &endSlot)));
+    epilogueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
     epilogueBlock.append(std::make_unique<Add>(8, share(*sp()), share(*sp()), share(*t6())));
 
     int numIntegerResults = 0,

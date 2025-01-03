@@ -12,7 +12,7 @@
 #include "mini-llvm/mir/IntegerImmediate.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterOperand.h"
-#include "mini-llvm/mir/StackRelativeOffsetImmediate.h"
+#include "mini-llvm/mir/StackOffsetImmediate.h"
 #include "mini-llvm/utils/Hash.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -26,11 +26,11 @@ struct ImmediateHash {
         if (auto *castImm = dynamic_cast<const IntegerImmediate *>(&*imm)) {
             return hash_value(castImm->value());
         }
-        if (auto *castImm = dynamic_cast<const StackRelativeOffsetImmediate *>(&*imm)) {
+        if (auto *castImm = dynamic_cast<const StackOffsetImmediate *>(&*imm)) {
             size_t seed = 0;
 
-            hash_combine(seed, castImm->slot1());
-            hash_combine(seed, castImm->slot2());
+            hash_combine(seed, castImm->baseSlot());
+            hash_combine(seed, castImm->slot());
             hash_combine(seed, castImm->displacement());
 
             return seed;
@@ -46,10 +46,10 @@ struct ImmediateEqual {
                 return castLhs->value() == castRhs->value();
             }
         }
-        if (auto *castLhs = dynamic_cast<const StackRelativeOffsetImmediate *>(&*lhs)) {
-            if (auto *castRhs = dynamic_cast<const StackRelativeOffsetImmediate *>(&*rhs)) {
-                return castLhs->slot1() == castRhs->slot1()
-                    && castLhs->slot2() == castRhs->slot2()
+        if (auto *castLhs = dynamic_cast<const StackOffsetImmediate *>(&*lhs)) {
+            if (auto *castRhs = dynamic_cast<const StackOffsetImmediate *>(&*rhs)) {
+                return castLhs->baseSlot() == castRhs->baseSlot()
+                    && castLhs->slot() == castRhs->slot()
                     && castLhs->displacement() == castRhs->displacement();
             }
         }
