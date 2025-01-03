@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "mini-llvm/mir/BasicBlockBuilder.h"
@@ -20,7 +21,8 @@ public:
                           const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                           const std::unordered_set<mir::PhysicalRegister *> &physRegs,
                           std::function<void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)> load,
-                          std::function<void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)> store) = 0;
+                          std::function<void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)> store,
+                          const std::unordered_map<mir::VirtualRegister *, std::unordered_set<mir::PhysicalRegister *>> &hints) = 0;
 };
 
 } // namespace mini_llvm

@@ -6,6 +6,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
@@ -25,6 +26,7 @@
 #include "mini-llvm/mir/Instruction/LI.h"
 #include "mini-llvm/mir/Instruction/Load.h"
 #include "mini-llvm/mir/Instruction/Marker.h"
+#include "mini-llvm/mir/Instruction/Mov.h"
 #include "mini-llvm/mir/Instruction/Store.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Module.h"
@@ -166,10 +168,27 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                     };
 
-                    LinearScanAllocator allocator;
-                    if (!allocator.allocate(F, 8, virtRegs, physRegs, load, store)) {
-                        NaiveAllocator allocator;
-                        if (!allocator.allocate(F, 8, virtRegs, physRegs, load, store)) {
+                    std::unordered_map<VirtualRegister *, std::unordered_set<PhysicalRegister *>> hints;
+
+                    for (const BasicBlock &B : F) {
+                        for (const Instruction &I : B) {
+                            if (auto *mov = dynamic_cast<const Mov *>(&I)) {
+                                if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->dst())) {
+                                    if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->src())) {
+                                        hints[virtReg].insert(physReg);
+                                    }
+                                }
+                                if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->dst())) {
+                                    if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->src())) {
+                                        hints[virtReg].insert(physReg);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (LinearScanAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, hints)) {
+                        if (NaiveAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, hints)) {
                             panic();
                         }
                     }

@@ -104,6 +104,15 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
     return false;
 }
 
+bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs, const std::unordered_set<PhysicalRegister *> &hint) {
+    bool lhsHinted = hint.contains(lhs),
+         rhsHinted = hint.contains(rhs);
+    if (lhsHinted != rhsHinted) {
+        return lhsHinted;
+    }
+    return isBetter(lhs, rhs);
+}
+
 } // namespace
 
 bool LinearScanAllocator::allocate(Function &F,
@@ -111,7 +120,8 @@ bool LinearScanAllocator::allocate(Function &F,
                                    const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                                    const std::unordered_set<mir::PhysicalRegister *> &physRegs,
                                    std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> load,
-                                   std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store) {
+                                   std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store,
+                                   const std::unordered_map<mir::VirtualRegister *, std::unordered_set<mir::PhysicalRegister *>> &hints) {
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
         assert(physReg->isAllocatable());
@@ -221,7 +231,11 @@ bool LinearScanAllocator::allocate(Function &F,
         }
         PhysicalRegister *bestPhysReg = nullptr;
         for (PhysicalRegister *physReg : free) {
-            if (allocatable[i.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg))) {
+            std::unordered_set<PhysicalRegister *> hint;
+            if (auto j = hints.find(i.virtReg); j != hints.end()) {
+                hint = j->second;
+            }
+            if (allocatable[i.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, hint))) {
                 bestPhysReg = physReg;
             }
         }

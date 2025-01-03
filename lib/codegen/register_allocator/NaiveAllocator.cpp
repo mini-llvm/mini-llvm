@@ -45,7 +45,10 @@ bool NaiveAllocator::allocate(Function &F,
                               const std::unordered_set<mir::VirtualRegister *> &virtRegs,
                               const std::unordered_set<mir::PhysicalRegister *> &physRegs,
                               std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> load,
-                              std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store) {
+                              std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store,
+                              const std::unordered_map<mir::VirtualRegister *, std::unordered_set<mir::PhysicalRegister *>> &hints) {
+    (void)hints;
+
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
         assert(physReg->isAllocatable());
