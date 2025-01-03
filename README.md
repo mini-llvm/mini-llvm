@@ -124,6 +124,7 @@
 - `DeadCodeElimination`
 - `NullOperationElimination`
 - `RegisterReuse`
+- `StackOffsetEvaluation`
 - `ZeroRegisterReplacement`
 - `riscv64`
   - `RISCVConstantPropagation`

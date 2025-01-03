@@ -5,6 +5,7 @@
 #include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
 #include "mini-llvm/opt/mir/passes/NullOperationElimination.h"
 #include "mini-llvm/opt/mir/passes/RegisterReuse.h"
+#include "mini-llvm/opt/mir/passes/StackOffsetEvaluation.h"
 #include "mini-llvm/opt/mir/passes/ZeroRegisterReplacement.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/targets/riscv/opt/mir/passes/RISCVConstantPropagation.h"
@@ -34,6 +35,9 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
 }
 
 void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
+    StackOffsetEvaluation pass;
+    pass.runOnModule(M);
+
     bool changed;
     do {
         changed = false;
