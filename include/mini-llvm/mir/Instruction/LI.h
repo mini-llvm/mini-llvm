@@ -48,6 +48,10 @@ public:
         return {};
     }
 
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {&src()};
+    }
+
     std::string format() const override {
         return std::format("LI<{}> {}, {}", width(), *dst(), *src());
     }

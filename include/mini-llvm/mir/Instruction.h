@@ -6,6 +6,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/Register.h"
@@ -29,6 +30,8 @@ public:
     std::unordered_set<RegisterOperand *> srcs();
     virtual std::unordered_set<PhysicalRegister *> implicitDsts() const { return {}; }
     virtual std::unordered_set<PhysicalRegister *> implicitSrcs() const { return {}; }
+    virtual std::unordered_set<const ImmediateOperand *> immOps() const = 0;
+    std::unordered_set<ImmediateOperand *> immOps();
     virtual bool hasSideEffects() const = 0;
     virtual std::string format() const = 0;
     virtual std::unique_ptr<Instruction> clone() const = 0;

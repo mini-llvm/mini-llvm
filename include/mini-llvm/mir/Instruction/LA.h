@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "mini-llvm/mir/GlobalVarOperand.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
@@ -35,15 +36,19 @@ public:
         return self.src_;
     }
 
-    std::unordered_set<const mir::RegisterOperand *> regOps() const override {
+    std::unordered_set<const RegisterOperand *> regOps() const override {
         return {&dst()};
     }
 
-    std::unordered_set<const mir::RegisterOperand *> dsts() const override {
+    std::unordered_set<const RegisterOperand *> dsts() const override {
         return {&dst()};
     }
 
-    std::unordered_set<const mir::RegisterOperand *> srcs() const override {
+    std::unordered_set<const RegisterOperand *> srcs() const override {
+        return {};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
         return {};
     }
 

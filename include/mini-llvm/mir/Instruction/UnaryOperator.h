@@ -8,6 +8,7 @@
 
 #include "mini-llvm/common/ExtensionMode.h"
 #include "mini-llvm/mir/Formatting.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
@@ -45,6 +46,10 @@ public:
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
         return {&src()};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {};
     }
 
     std::string format() const override {

@@ -8,6 +8,7 @@
 
 #include "mini-llvm/common/ExtensionMode.h"
 #include "mini-llvm/mir/Formatting.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
@@ -57,6 +58,10 @@ public:
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
         return {&src().baseReg()};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {&src().offset()};
     }
 
     bool hasSideEffects() const override {

@@ -2,8 +2,10 @@
 
 #include <format>
 #include <memory>
+#include <unordered_set>
 
 #include "mini-llvm/mir/BasicBlockOperand.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 
 namespace mini_llvm::mir {
@@ -30,6 +32,10 @@ public:
     }
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
+        return {};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
         return {};
     }
 

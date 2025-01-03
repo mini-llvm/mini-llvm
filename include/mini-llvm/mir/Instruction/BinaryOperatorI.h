@@ -54,6 +54,10 @@ public:
         return {&src1()};
     }
 
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {&src2()};
+    }
+
     std::string format() const override {
         return std::format(
             "{}<{}> {}, {}, {}, {}",

@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_set>
 
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/RegisterOperand.h"
@@ -28,6 +29,10 @@ public:
     }
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
+        return {};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
         return {};
     }
 

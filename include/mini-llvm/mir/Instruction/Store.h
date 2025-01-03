@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
@@ -44,6 +45,10 @@ public:
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
         return {&dst().baseReg(), &src()};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {&dst().offset()};
     }
 
     bool hasSideEffects() const override {

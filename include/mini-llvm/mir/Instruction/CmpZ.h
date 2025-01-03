@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
@@ -39,6 +40,10 @@ public:
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
         return {&src()};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {};
     }
 
     bool hasSideEffects() const override {

@@ -9,6 +9,7 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/Condition.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
@@ -79,6 +80,10 @@ public:
 
     std::unordered_set<const RegisterOperand *> srcs() const override {
         return {&src1(), &src2()};
+    }
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {};
     }
 
     std::string format() const override {

@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <utility>
 
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
@@ -30,6 +31,14 @@ std::unordered_set<RegisterOperand *> Instruction::dsts() {
         dsts.insert(const_cast<RegisterOperand *>(op));
     }
     return dsts;
+}
+
+std::unordered_set<ImmediateOperand *> Instruction::immOps() {
+    std::unordered_set<ImmediateOperand *> immOps;
+    for (const ImmediateOperand *op : std::as_const(*this).immOps()) {
+        immOps.insert(const_cast<ImmediateOperand *>(op));
+    }
+    return immOps;
 }
 
 std::unordered_set<Register *> mini_llvm::mir::use(const Instruction &I) {

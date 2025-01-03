@@ -7,6 +7,7 @@
 
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/FunctionOperand.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
@@ -55,6 +56,10 @@ public:
 
     std::unordered_set<PhysicalRegister *> implicitDsts() const override;
     std::unordered_set<PhysicalRegister *> implicitSrcs() const override;
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {};
+    }
 
     bool hasSideEffects() const override {
         return true;

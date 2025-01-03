@@ -6,6 +6,7 @@
 #include <unordered_set>
 
 #include "mini-llvm/mir/BasicBlockOperand.h"
+#include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
@@ -54,6 +55,10 @@ public:
     }
 
     std::unordered_set<PhysicalRegister *> implicitSrcs() const override;
+
+    std::unordered_set<const ImmediateOperand *> immOps() const override {
+        return {};
+    }
 
     void accept(InstructionVisitor &visitor) override {
         static_cast<RISCVInstructionVisitor &>(visitor).visitRISCVRet(*this);
