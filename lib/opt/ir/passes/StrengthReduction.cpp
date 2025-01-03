@@ -21,12 +21,12 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-std::vector<std::shared_ptr<Instruction>> expandMul(const Mul &I, size_t threshold) {
+std::vector<std::shared_ptr<Instruction>> replaceMul(const Mul &I, size_t threshold) {
     if (dynamic_cast<const IntegerConstant *>(&*I.rhs())) {
         uint64_t rhs = dynamic_cast<const IntegerConstant *>(&*I.rhs())->zeroExtendedValue();
 
         if (rhs > 0) {
-            std::vector<std::shared_ptr<Instruction>> expanded;
+            std::vector<std::shared_ptr<Instruction>> replaced;
             std::vector<std::shared_ptr<Value>> sum;
             std::shared_ptr<Value> lhs = share(*I.lhs());
             if (rhs & 1) {
@@ -35,19 +35,19 @@ std::vector<std::shared_ptr<Instruction>> expandMul(const Mul &I, size_t thresho
             for (int i = 1; i < 64; ++i) {
                 if ((rhs >> i) & 1) {
                     std::shared_ptr<Instruction> shl = std::make_shared<SHL>(lhs, createIntegerConstant(lhs->type(), i));
-                    expanded.push_back(shl);
+                    replaced.push_back(shl);
                     sum.push_back(shl);
                 }
             }
             size_t n = sum.size();
             if (n >= 2) {
-                expanded.push_back(std::make_shared<Add>(sum[0], sum[1]));
+                replaced.push_back(std::make_shared<Add>(sum[0], sum[1]));
                 for (size_t i = 2; i < n; ++i) {
-                    expanded.push_back(std::make_shared<Add>(expanded.back(), sum[i]));
+                    replaced.push_back(std::make_shared<Add>(replaced.back(), sum[i]));
                 }
             }
-            if (expanded.size() <= threshold) {
-                return expanded;
+            if (replaced.size() <= threshold) {
+                return replaced;
             }
 
             return {};
@@ -63,15 +63,15 @@ void dfs(const DominatorTreeNode *node, bool &changed, size_t mulThreshold) {
     std::vector<const Instruction *> remove;
 
     for (const Instruction &I : *node->block) {
-        std::vector<std::shared_ptr<Instruction>> expanded;
+        std::vector<std::shared_ptr<Instruction>> replaced;
 
         if (auto *mul = dynamic_cast<const Mul *>(&I)) {
-            expanded = expandMul(*mul, mulThreshold);
+            replaced = replaceMul(*mul, mulThreshold);
         }
 
-        if (!expanded.empty()) {
-            Instruction *result = &*expanded.back();
-            for (auto &II : expanded) {
+        if (!replaced.empty()) {
+            Instruction *result = &*replaced.back();
+            for (auto &II : replaced) {
                 addToParent(I, std::move(II));
                 changed = true;
             }
