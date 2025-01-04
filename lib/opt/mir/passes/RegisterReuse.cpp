@@ -41,16 +41,16 @@ struct ImmediateHash {
 
 struct ImmediateEqual {
     bool operator()(const Immediate *lhs, const Immediate *rhs) const noexcept {
-        if (auto *castLhs = dynamic_cast<const IntegerImmediate *>(&*lhs)) {
-            if (auto *castRhs = dynamic_cast<const IntegerImmediate *>(&*rhs)) {
-                return castLhs->value() == castRhs->value();
+        if (auto *lhsInteger = dynamic_cast<const IntegerImmediate *>(&*lhs)) {
+            if (auto *rhsInteger = dynamic_cast<const IntegerImmediate *>(&*rhs)) {
+                return lhsInteger->value() == rhsInteger->value();
             }
         }
-        if (auto *castLhs = dynamic_cast<const StackOffsetImmediate *>(&*lhs)) {
-            if (auto *castRhs = dynamic_cast<const StackOffsetImmediate *>(&*rhs)) {
-                return castLhs->baseSlot() == castRhs->baseSlot()
-                    && castLhs->slot() == castRhs->slot()
-                    && castLhs->displacement() == castRhs->displacement();
+        if (auto *lhsStackOffset = dynamic_cast<const StackOffsetImmediate *>(&*lhs)) {
+            if (auto *rhsStackOffset = dynamic_cast<const StackOffsetImmediate *>(&*rhs)) {
+                return lhsStackOffset->baseSlot() == rhsStackOffset->baseSlot()
+                    && lhsStackOffset->slot() == rhsStackOffset->slot()
+                    && lhsStackOffset->displacement() == rhsStackOffset->displacement();
             }
         }
         return false;

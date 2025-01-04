@@ -105,10 +105,10 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
 }
 
 bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs, const std::unordered_set<PhysicalRegister *> &hint) {
-    bool lhsHinted = hint.contains(lhs),
-         rhsHinted = hint.contains(rhs);
-    if (lhsHinted != rhsHinted) {
-        return lhsHinted;
+    bool lhsHint = hint.contains(lhs),
+         rhsHint = hint.contains(rhs);
+    if (lhsHint != rhsHint) {
+        return lhsHint;
     }
     return isBetter(lhs, rhs);
 }
