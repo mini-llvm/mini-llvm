@@ -21,7 +21,7 @@ public:
                   const std::unordered_set<mir::PhysicalRegister *> &physRegs,
                   std::function<void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)> load,
                   std::function<void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)> store,
-                  const std::unordered_map<mir::VirtualRegister *, std::unordered_set<mir::PhysicalRegister *>> &hints) override;
+                  const std::unordered_multimap<mir::VirtualRegister *, mir::PhysicalRegister *> &hints) override;
 };
 
 } // namespace mini_llvm

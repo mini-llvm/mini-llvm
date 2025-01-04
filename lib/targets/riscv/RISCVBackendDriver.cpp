@@ -168,19 +168,19 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                     };
 
-                    std::unordered_map<VirtualRegister *, std::unordered_set<PhysicalRegister *>> hints;
+                    std::unordered_multimap<VirtualRegister *, PhysicalRegister *> hints;
 
                     for (const BasicBlock &B : F) {
                         for (const Instruction &I : B) {
                             if (auto *mov = dynamic_cast<const Mov *>(&I)) {
                                 if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->dst())) {
                                     if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->src())) {
-                                        hints[virtReg].insert(physReg);
+                                        hints.emplace(virtReg, physReg);
                                     }
                                 }
                                 if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->dst())) {
                                     if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->src())) {
-                                        hints[virtReg].insert(physReg);
+                                        hints.emplace(virtReg, physReg);
                                     }
                                 }
                             }

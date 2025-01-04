@@ -121,7 +121,7 @@ bool LinearScanAllocator::allocate(Function &F,
                                    const std::unordered_set<mir::PhysicalRegister *> &physRegs,
                                    std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> load,
                                    std::function<void (PhysicalRegister *physReg, StackSlot *slot, const BasicBlockBuilder &builder)> store,
-                                   const std::unordered_map<mir::VirtualRegister *, std::unordered_set<mir::PhysicalRegister *>> &hints) {
+                                   const std::unordered_multimap<mir::VirtualRegister *, mir::PhysicalRegister *> &hints) {
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
         assert(physReg->isAllocatable());
@@ -231,9 +231,10 @@ bool LinearScanAllocator::allocate(Function &F,
         }
         PhysicalRegister *bestPhysReg = nullptr;
         for (PhysicalRegister *physReg : free) {
+            auto range = hints.equal_range(i.virtReg);
             std::unordered_set<PhysicalRegister *> hint;
-            if (auto j = hints.find(i.virtReg); j != hints.end()) {
-                hint = j->second;
+            for (auto j = range.first; j != range.second; ++j) {
+                hint.insert(j->second);
             }
             if (allocatable[i.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, hint))) {
                 bestPhysReg = physReg;
