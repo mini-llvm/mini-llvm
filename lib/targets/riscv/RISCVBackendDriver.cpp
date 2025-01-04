@@ -22,6 +22,7 @@
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Add.h"
 #include "mini-llvm/mir/Instruction/FLoad.h"
+#include "mini-llvm/mir/Instruction/FMov.h"
 #include "mini-llvm/mir/Instruction/FStore.h"
 #include "mini-llvm/mir/Instruction/LI.h"
 #include "mini-llvm/mir/Instruction/Load.h"
@@ -180,6 +181,18 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                                 }
                                 if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->dst())) {
                                     if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->src())) {
+                                        hints.emplace(virtReg, physReg);
+                                    }
+                                }
+                            }
+                            if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
+                                if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*fmov->dst())) {
+                                    if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*fmov->src())) {
+                                        hints.emplace(virtReg, physReg);
+                                    }
+                                }
+                                if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*fmov->dst())) {
+                                    if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*fmov->src())) {
                                         hints.emplace(virtReg, physReg);
                                     }
                                 }
