@@ -1252,6 +1252,9 @@ std::unique_ptr<Type> Parser::parseType() {
             }
             ++cursor_;
             std::unique_ptr<Type> elementType = parseType();
+            if (*elementType == Void() || *elementType == BasicBlockType()) {
+                throw ParseException("invalid element type", cursor_);
+            }
             if (cursor_->kind != kRightBracket) {
                 throw ParseException("expected ']'", cursor_);
             }

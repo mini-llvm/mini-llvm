@@ -115,6 +115,18 @@ TEST(IRReaderTest, paramTypeLabel) {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, elementTypeVoid) {
+    const char *input = "@test = external global [2 x [2 x void]]";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, elementTypeLabel) {
+    const char *input = "@test = external global [2 x [2 x label]]";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, globalVarUseBeforeDeclaration) {
     const char *input = R"(
 define i32 @test1() {
