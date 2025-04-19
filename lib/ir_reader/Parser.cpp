@@ -293,6 +293,9 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     }
 
     std::unique_ptr<Type> returnType = parseType();
+    if (*returnType == BasicBlockType()) {
+        throw ParseException("invalid return type", cursor_);
+    }
 
     Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
     if (symbolTable_.contains(symbol)) {

@@ -97,6 +97,12 @@ define internal private void @test() {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, returnTypeLabel) {
+    const char *input = "declare label @test()";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, globalVarUseBeforeDeclaration) {
     const char *input = R"(
 define i32 @test1() {
