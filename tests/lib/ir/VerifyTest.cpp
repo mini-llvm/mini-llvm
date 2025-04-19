@@ -13,7 +13,6 @@
 #include "mini-llvm/ir/Instruction/Add.h"
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/Void.h"
@@ -36,30 +35,6 @@ TEST(VerifyTest, unnamedFunction) {
     Function F(std::move(functionType), Linkage::kExternal);
     BasicBlock &B = F.append();
     B.append(std::make_shared<Ret>(std::make_shared<VoidValue>()));
-    EXPECT_FALSE(verify(F));
-}
-
-TEST(VerifyTest, globalVarInvalidValueType) {
-    GlobalVar G(std::make_unique<BasicBlockType>(), Linkage::kExternal);
-    G.setName("test");
-    EXPECT_FALSE(verify(G));
-}
-
-TEST(VerifyTest, functionInvalidReturnType) {
-    std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
-        std::make_unique<BasicBlockType>(), std::vector<std::unique_ptr<Type>>(), false
-    );
-    Function F(std::move(functionType), Linkage::kExternal);
-    EXPECT_FALSE(verify(F));
-}
-
-TEST(VerifyTest, functionInvalidParamType) {
-    std::vector<std::unique_ptr<Type>> paramTypes;
-    paramTypes.push_back(std::make_unique<BasicBlockType>());
-    std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
-        std::make_unique<Void>(), std::move(paramTypes), false
-    );
-    Function F(std::move(functionType), Linkage::kExternal);
     EXPECT_FALSE(verify(F));
 }
 

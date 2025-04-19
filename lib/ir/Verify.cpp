@@ -21,8 +21,6 @@
 #include "mini-llvm/ir/Instruction/Trunc.h"
 #include "mini-llvm/ir/Instruction/ZExt.h"
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
@@ -31,64 +29,8 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-namespace {
-
-bool isValidValueType(const Type &type) {
-    if (dynamic_cast<const BasicBlockType *>(&type)) {
-        return false;
-    }
-    if (dynamic_cast<const FunctionType *>(&type)) {
-        return false;
-    }
-    if (type == Void()) {
-        return false;
-    }
-    return true;
-}
-
-bool isValidReturnType(const Type &type) {
-    if (dynamic_cast<const BasicBlockType *>(&type)) {
-        return false;
-    }
-    if (dynamic_cast<const FunctionType *>(&type)) {
-        return false;
-    }
-    return true;
-}
-
-bool isValidParamType(const Type &type) {
-    if (dynamic_cast<const BasicBlockType *>(&type)) {
-        return false;
-    }
-    if (dynamic_cast<const FunctionType *>(&type)) {
-        return false;
-    }
-    if (type == Void()) {
-        return false;
-    }
-    return true;
-}
-
-bool isValidFunctionType(const FunctionType &type) {
-    if (!isValidReturnType(*type.returnType())) {
-        return false;
-    }
-    for (const Type &paramType : paramTypes(type)) {
-        if (!isValidParamType(paramType)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-} // namespace
-
 bool ir::verify(const GlobalVar &G) {
     if (G.name().empty()) {
-        return false;
-    }
-
-    if (!isValidValueType(*G.valueType())) {
         return false;
     }
 
@@ -101,10 +43,6 @@ bool ir::verify(const GlobalVar &G) {
 
 bool ir::verify(const Function &F) {
     if (F.name().empty()) {
-        return false;
-    }
-
-    if (!isValidFunctionType(*F.functionType())) {
         return false;
     }
 
