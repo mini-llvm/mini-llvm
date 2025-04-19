@@ -53,7 +53,7 @@ TEST(VerifyTest, functionInvalidLinkage) {
     EXPECT_FALSE(verify(F));
 }
 
-TEST(VerifyTest, selfReferentialAdd) {
+TEST(VerifyTest, selfReferentialInstruction) {
     std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
     );
