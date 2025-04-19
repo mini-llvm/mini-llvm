@@ -317,6 +317,9 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
             ++cursor_;
         } else {
             type = parseType();
+            if (*type == Void() || *type == BasicBlockType()) {
+                throw ParseException("invalid parameter type", cursor_);
+            }
             paramTypes.push_back(std::move(type));
             if (hasBody) {
                 std::string name = parseSymbol(Symbol::Scope::kLocal).name;
@@ -330,6 +333,9 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
                 ++cursor_;
             } else {
                 type = parseType();
+                if (*type == Void() || *type == BasicBlockType()) {
+                    throw ParseException("invalid parameter type", cursor_);
+                }
                 paramTypes.push_back(std::move(type));
                 if (hasBody) {
                     std::string name = parseSymbol(Symbol::Scope::kLocal).name;

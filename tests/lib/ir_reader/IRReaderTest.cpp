@@ -103,6 +103,18 @@ TEST(IRReaderTest, returnTypeLabel) {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, paramTypeVoid) {
+    const char *input = "declare void @test(void)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, paramTypeLabel) {
+    const char *input = "declare void @test(label)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, globalVarUseBeforeDeclaration) {
     const char *input = R"(
 define i32 @test1() {
