@@ -2,6 +2,8 @@
 
 #include <concepts>
 #include <iterator>
+#include <type_traits>
+#include <utility>
 
 namespace mini_llvm {
 
@@ -42,6 +44,15 @@ S &operator|=(S &lhs, const T &rhs) {
 }
 
 template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T> && std::is_rvalue_reference_v<T &&>
+S &operator|=(S &lhs, T &&rhs) {
+    for (auto &value : rhs) {
+        lhs.insert(std::move(value));
+    }
+    return lhs;
+}
+
+template <typename S, typename T>
     requires detail::Set<S> && detail::Set<T>
 S &operator&=(S &lhs, const T &rhs) {
     for (auto i = lhs.begin(); i != lhs.end();) {
@@ -67,6 +78,12 @@ template <typename S, typename T>
     requires detail::Set<S> && detail::Set<T>
 S operator|(S lhs, const T &rhs) {
     return lhs |= rhs;
+}
+
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T> && std::is_rvalue_reference_v<T &&>
+S operator|(S lhs, T &&rhs) {
+    return lhs |= std::move(rhs);
 }
 
 template <typename S, typename T>
