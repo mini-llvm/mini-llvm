@@ -71,11 +71,11 @@ public:
     }
 
     void accept(InstructionVisitor &visitor) override {
-        visitor.visitSet(*this);
+        visitor.visitCondSet(*this);
     }
 
     void accept(InstructionVisitor &visitor) const override {
-        visitor.visitSet(*this);
+        visitor.visitCondSet(*this);
     }
 
 private:

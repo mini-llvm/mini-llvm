@@ -17,6 +17,7 @@ class CmpZBr;
 class CmpZ;
 class CmpZSet;
 class CondBr;
+class CondSet;
 class FAdd;
 class FCmp;
 class FCmpSet;
@@ -45,7 +46,6 @@ class Not;
 class Or;
 class OrI;
 class SDiv;
-class CondSet;
 class SExt;
 class SHL;
 class SHLI;
@@ -78,6 +78,7 @@ public:
     virtual void visitCmpZ(CmpZ &I) { visitCmpZ(std::as_const(I)); }
     virtual void visitCmpZSet(CmpZSet &I) { visitCmpZSet(std::as_const(I)); }
     virtual void visitCondBr(CondBr &I) { visitCondBr(std::as_const(I)); }
+    virtual void visitCondSet(CondSet &I) { visitCondSet(std::as_const(I)); }
     virtual void visitFAdd(FAdd &I) { visitFAdd(std::as_const(I)); }
     virtual void visitFCmp(FCmp &I) { visitFCmp(std::as_const(I)); }
     virtual void visitFCmpSet(FCmpSet &I) { visitFCmpSet(std::as_const(I)); }
@@ -106,7 +107,6 @@ public:
     virtual void visitOr(Or &I) { visitOr(std::as_const(I)); }
     virtual void visitOrI(OrI &I) { visitOrI(std::as_const(I)); }
     virtual void visitSDiv(SDiv &I) { visitSDiv(std::as_const(I)); }
-    virtual void visitSet(CondSet &I) { visitSet(std::as_const(I)); }
     virtual void visitSExt(SExt &I) { visitSExt(std::as_const(I)); }
     virtual void visitSHL(SHL &I) { visitSHL(std::as_const(I)); }
     virtual void visitSHLI(SHLI &I) { visitSHLI(std::as_const(I)); }
@@ -135,6 +135,7 @@ public:
     virtual void visitCmpZ(const CmpZ &) { abort(); }
     virtual void visitCmpZSet(const CmpZSet &) { abort(); }
     virtual void visitCondBr(const CondBr &) { abort(); }
+    virtual void visitCondSet(const CondSet &) { abort(); }
     virtual void visitFAdd(const FAdd &) { abort(); }
     virtual void visitFCmp(const FCmp &) { abort(); }
     virtual void visitFCmpSet(const FCmpSet &) { abort(); }
@@ -163,7 +164,6 @@ public:
     virtual void visitOr(const Or &) { abort(); }
     virtual void visitOrI(const OrI &) { abort(); }
     virtual void visitSDiv(const SDiv &) { abort(); }
-    virtual void visitSet(const CondSet &) { abort(); }
     virtual void visitSExt(const SExt &) { abort(); }
     virtual void visitSHL(const SHL &) { abort(); }
     virtual void visitSHLI(const SHLI &) { abort(); }
