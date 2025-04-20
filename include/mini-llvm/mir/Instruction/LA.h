@@ -62,7 +62,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("LA<{}> {}, {:o}", width(), *dst(), *src());
+        return std::format("LA({}) {}, {:o}", width(), *dst(), *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {

@@ -92,7 +92,7 @@ public:
 
     std::string format() const override {
         return std::format(
-            "FCMPSET<{}, {}> {}, {}, {}, {}",
+            "FCMPSET({}, {}) {}, {}, {}, {}",
             dstWidth(), specifier(srcPrecision()), specifier(cond()), *dst(), *src1(), *src2());
     }
 

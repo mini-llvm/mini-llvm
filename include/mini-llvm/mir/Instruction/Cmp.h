@@ -63,7 +63,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("CMP<{}> {}, {}", width(), *src1(), *src2());
+        return std::format("CMP({}) {}, {}", width(), *src1(), *src2());
     }
 
     std::unique_ptr<Instruction> clone() const override {

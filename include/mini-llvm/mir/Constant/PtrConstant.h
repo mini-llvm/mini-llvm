@@ -26,7 +26,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("ptr<{}> {:o}", size(), *ptr());
+        return std::format("ptr({}) {:o}", size(), *ptr());
     }
 
     void accept(ConstantVisitor &visitor) override {

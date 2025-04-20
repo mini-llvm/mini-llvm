@@ -85,7 +85,7 @@ public:
 
     std::string format() const override {
         return std::format(
-            "CMPZBR<{}> {}, {}, {:o}, {:o}",
+            "CMPZBR({}) {}, {}, {:o}, {:o}",
             width(), specifier(cond()), *src(), *trueDest(), *falseDest());
     }
 

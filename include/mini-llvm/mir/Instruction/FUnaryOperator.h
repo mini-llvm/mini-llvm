@@ -53,7 +53,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("{}<{}> {}, {}", mnemonic(), specifier(precision()), *dst(), *src());
+        return std::format("{}({}) {}, {}", mnemonic(), specifier(precision()), *dst(), *src());
     }
 
 protected:

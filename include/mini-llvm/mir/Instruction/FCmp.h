@@ -66,7 +66,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("FCMP<{}> {}, {}", specifier(precision()), *src1(), *src2());
+        return std::format("FCMP({}) {}, {}", specifier(precision()), *src1(), *src2());
     }
 
     std::unique_ptr<Instruction> clone() const override {

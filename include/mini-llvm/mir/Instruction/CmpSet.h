@@ -90,7 +90,7 @@ public:
 
     std::string format() const override {
         return std::format(
-            "CMPSET<{}, {}> {}, {}, {}, {}",
+            "CMPSET({}, {}) {}, {}, {}, {}",
             dstWidth(), srcWidth(), specifier(cond()), *dst(), *src1(), *src2());
     }
 

@@ -93,7 +93,7 @@ public:
 
     std::string format() const override {
         return std::format(
-            "CMPBR<{}> {}, {}, {}, {:o}, {:o}",
+            "CMPBR({}) {}, {}, {}, {:o}, {:o}",
             width(), specifier(cond()), *src1(), *src2(), *trueDest(), *falseDest());
     }
 

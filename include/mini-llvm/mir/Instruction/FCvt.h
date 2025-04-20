@@ -74,7 +74,7 @@ public:
 
     std::string format() const override {
         return std::format(
-            "FCVT<{}, {}> {}, {}",
+            "FCVT({}, {}) {}, {}",
             specifier(dstPrecision()), specifier(srcPrecision()), *dst(), *src());
     }
 

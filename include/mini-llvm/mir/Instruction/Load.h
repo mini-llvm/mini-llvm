@@ -74,7 +74,7 @@ public:
 
     std::string format() const override {
         return std::format(
-            "LOAD<{}> {}, {}, {}",
+            "LOAD({}) {}, {}, {}",
             width(), *dst(), src(), specifier(extMode()));
     }
 

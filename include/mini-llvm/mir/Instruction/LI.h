@@ -58,7 +58,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("LI<{}> {}, {}", width(), *dst(), *src());
+        return std::format("LI({}) {}, {}", width(), *dst(), *src());
     }
 
     bool hasSideEffects() const override {
