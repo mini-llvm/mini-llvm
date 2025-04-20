@@ -74,12 +74,12 @@ bool NaiveAllocator::allocate(
         for (const auto &I : tmp) {
             std::unordered_set<VirtualRegister *> srcs, dsts;
             for (const RegisterOperand *op : I->srcs()) {
-                if (auto *virtReg = dynamic_cast<VirtualRegister *>(&**op)) {
+                if (auto *virtReg = dynamic_cast<VirtualRegister *>(&**op); virtReg && virtRegs.contains(virtReg)) {
                     srcs.insert(virtReg);
                 }
             }
             for (const RegisterOperand *op : I->dsts()) {
-                if (auto *virtReg = dynamic_cast<VirtualRegister *>(&**op)) {
+                if (auto *virtReg = dynamic_cast<VirtualRegister *>(&**op); virtReg && virtRegs.contains(virtReg)) {
                     dsts.insert(virtReg);
                 }
             }
