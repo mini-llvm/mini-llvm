@@ -1,39 +1,32 @@
 #pragma once
 
-#include <set>
-#include <type_traits>
-#include <unordered_set>
+#include <concepts>
+#include <iterator>
 
 namespace mini_llvm {
 
 namespace detail {
 
-template <typename>
-struct is_std_set_impl : std::false_type {};
-
-template <typename Key, typename Compare, typename Allocator>
-struct is_std_set_impl<std::set<Key, Compare, Allocator>> : std::true_type {};
-
-template <typename>
-struct is_std_unordered_set_impl : std::false_type {};
-
-template <typename Key, typename Hash, typename Pred, typename Allocator>
-struct is_std_unordered_set_impl<std::unordered_set<Key, Hash, Pred, Allocator>> : std::true_type {};
+template <typename T>
+concept SetImpl = requires {
+    requires std::forward_iterator<typename T::iterator>;
+    requires std::forward_iterator<typename T::const_iterator>;
+    requires std::same_as<typename std::iterator_traits<typename T::iterator>::value_type, typename T::value_type>;
+    requires std::same_as<typename std::iterator_traits<typename T::const_iterator>::value_type, typename T::value_type>;
+    { std::declval<T &>().begin() } -> std::same_as<typename T::iterator>;
+    { std::declval<T &>().end() } -> std::same_as<typename T::iterator>;
+    { std::declval<const T &>().begin() } -> std::same_as<typename T::const_iterator>;
+    { std::declval<const T &>().end() } -> std::same_as<typename T::const_iterator>;
+    { std::declval<T &>().contains(std::declval<const typename T::value_type &>()) } -> std::convertible_to<bool>;
+    { std::declval<const T &>().contains(std::declval<const typename T::value_type &>()) } -> std::convertible_to<bool>;
+    std::declval<T &>().insert(std::declval<const typename T::value_type &>());
+    std::declval<T &>().erase(std::declval<const typename T::value_type &>());
+    { std::declval<T &>().erase(std::declval<const typename T::iterator &>()) } -> std::same_as<typename T::iterator>;
+    { std::declval<T &>().erase(std::declval<const typename T::const_iterator &>()) } -> std::same_as<typename T::iterator>;
+};
 
 template <typename T>
-struct is_std_set : detail::is_std_set_impl<std::remove_cv_t<T>> {};
-
-template <typename T>
-inline constexpr bool is_std_set_v = is_std_set<T>::value;
-
-template <typename T>
-struct is_std_unordered_set : detail::is_std_unordered_set_impl<std::remove_cv_t<T>> {};
-
-template <typename T>
-inline constexpr bool is_std_unordered_set_v = is_std_unordered_set<T>::value;
-
-template <typename T>
-concept Set = is_std_set_v<T> || is_std_unordered_set_v<T>;
+concept Set = SetImpl<std::remove_cv_t<std::remove_reference_t<T>>>;
 
 } // namespace detail
 
@@ -42,7 +35,9 @@ namespace set_ops {
 template <typename S>
     requires detail::Set<S>
 S &operator|=(S &lhs, const S &rhs) {
-    lhs.insert(rhs.begin(), rhs.end());
+    for (const auto &value : rhs) {
+        lhs.insert(value);
+    }
     return lhs;
 }
 
