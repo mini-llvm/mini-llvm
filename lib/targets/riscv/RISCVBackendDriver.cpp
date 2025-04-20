@@ -24,6 +24,7 @@
 #include "mini-llvm/mir/Instruction/FMov.h"
 #include "mini-llvm/mir/Instruction/FStore.h"
 #include "mini-llvm/mir/Instruction/LI.h"
+#include "mini-llvm/mir/Instruction/Live.h"
 #include "mini-llvm/mir/Instruction/Load.h"
 #include "mini-llvm/mir/Instruction/Marker.h"
 #include "mini-llvm/mir/Instruction/Mov.h"
@@ -49,6 +50,19 @@ using namespace mini_llvm;
 mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
     mir::Module MM;
     RISCVMIRGen(&IM, &MM).emit();
+
+    {
+        using namespace mir;
+        using namespace mir::riscv;
+
+        for (Function &F : MM.functions) {
+            for (BasicBlock &B : F) {
+                if (&B != &F.entry() && !dynamic_cast<const RISCVRet *>(&B.back())) {
+                    B.add(std::prev(B.end()), std::make_unique<Live>(fp()));
+                }
+            }
+        }
+    }
 
     mir::RISCVPassManager passManager;
     passManager.runBeforeRegisterAllocation(MM);
@@ -252,6 +266,16 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
 
                 prologueBlock->remove(savePos);
                 epilogueBlock->remove(restorePos);
+
+                for (BasicBlock &B : F) {
+                    for (BasicBlock::const_iterator i = B.begin(); i != B.end();) {
+                        if (dynamic_cast<const Live *>(&*i)) {
+                            B.remove(i++);
+                        } else {
+                            ++i;
+                        }
+                    }
+                }
             }
         }
     }
