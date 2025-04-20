@@ -32,18 +32,18 @@ concept Set = SetImpl<std::remove_cv_t<std::remove_reference_t<T>>>;
 
 namespace set_ops {
 
-template <typename S>
-    requires detail::Set<S>
-S &operator|=(S &lhs, const S &rhs) {
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T>
+S &operator|=(S &lhs, const T &rhs) {
     for (const auto &value : rhs) {
         lhs.insert(value);
     }
     return lhs;
 }
 
-template <typename S>
-    requires detail::Set<S>
-S &operator&=(S &lhs, const S &rhs) {
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T>
+S &operator&=(S &lhs, const T &rhs) {
     for (auto i = lhs.begin(); i != lhs.end();) {
         if (!rhs.contains(*i)) {
             i = lhs.erase(i);
@@ -54,30 +54,30 @@ S &operator&=(S &lhs, const S &rhs) {
     return lhs;
 }
 
-template <typename S>
-    requires detail::Set<S>
-S &operator-=(S &lhs, const S &rhs) {
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T>
+S &operator-=(S &lhs, const T &rhs) {
     for (const auto &element : rhs) {
         lhs.erase(element);
     }
     return lhs;
 }
 
-template <typename S>
-    requires detail::Set<S>
-S operator|(S lhs, const S &rhs) {
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T>
+S operator|(S lhs, const T &rhs) {
     return lhs |= rhs;
 }
 
-template <typename S>
-    requires detail::Set<S>
-S operator&(S lhs, const S &rhs) {
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T>
+S operator&(S lhs, const T &rhs) {
     return lhs &= rhs;
 }
 
-template <typename S>
-    requires detail::Set<S>
-S operator-(S lhs, const S &rhs) {
+template <typename S, typename T>
+    requires detail::Set<S> && detail::Set<T>
+S operator-(S lhs, const T &rhs) {
     return lhs -= rhs;
 }
 
