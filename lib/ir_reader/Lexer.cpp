@@ -58,7 +58,7 @@ Token Lexer::nextTokenImpl() {
         }
     }
 
-    const std::unordered_map<char, Token::Kind> kLUT{
+    static const std::unordered_map<char, Token::Kind> kLUT{
         {',', kComma},
         {':', kColon},
         {'=', kEqual},
@@ -175,7 +175,7 @@ Token Lexer::nextTokenImpl() {
 
         if (*cursor_ == ':') return {kName, std::move(name), start};
 
-        const std::unordered_map<std::string_view, Token::Kind> kLUT{
+        static const std::unordered_map<std::string_view, Token::Kind> kLUT{
             {"define", kDefine},
             {"declare", kDeclare},
             {"global", kGlobal},
