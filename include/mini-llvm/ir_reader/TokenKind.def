@@ -9,6 +9,7 @@ X(External)
 
 X(NoInline)
 X(AlwaysInline)
+X(ReadNone)
 
 X(I1)
 X(I8)

@@ -374,6 +374,11 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
                 ++cursor_;
                 break;
 
+            case kReadNone:
+                F->setAttr(Attribute::kReadNone);
+                ++cursor_;
+                break;
+
             default:
                 completed = true;
                 break;

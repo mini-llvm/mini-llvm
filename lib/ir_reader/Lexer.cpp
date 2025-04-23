@@ -185,6 +185,7 @@ Token Lexer::nextTokenImpl() {
 
             {"noinline", kNoInline},
             {"alwaysinline", kAlwaysInline},
+            {"readnone", kReadNone},
 
             {"i1", kI1},
             {"i8", kI8},

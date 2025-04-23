@@ -1,2 +1,3 @@
 X(NoInline, "noinline")
 X(AlwaysInline, "alwaysinline")
+X(ReadNone, "readnone")
