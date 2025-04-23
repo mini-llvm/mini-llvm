@@ -121,7 +121,7 @@ bool LinearScanAllocator::allocate(
     const std::unordered_set<PhysicalRegister *> &physRegs,
     PhysicalRegisterAction load,
     PhysicalRegisterAction store,
-    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &preferences
+    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &hints
 ) {
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
@@ -233,7 +233,7 @@ bool LinearScanAllocator::allocate(
         PhysicalRegister *bestPhysReg = nullptr;
         for (PhysicalRegister *physReg : free) {
             std::unordered_set<PhysicalRegister *> preferred;
-            auto range = preferences.equal_range(i.virtReg);
+            auto range = hints.equal_range(i.virtReg);
             for (auto j = range.first; j != range.second; ++j) {
                 preferred.insert(j->second);
             }

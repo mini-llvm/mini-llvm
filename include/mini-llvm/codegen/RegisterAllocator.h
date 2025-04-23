@@ -26,7 +26,7 @@ public:
         const std::unordered_set<mir::PhysicalRegister *> &physRegs,
         PhysicalRegisterAction load,
         PhysicalRegisterAction store,
-        const std::unordered_multimap<mir::VirtualRegister *, mir::PhysicalRegister *> &preferences
+        const std::unordered_multimap<mir::VirtualRegister *, mir::PhysicalRegister *> &hints
     ) = 0;
 };
 

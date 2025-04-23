@@ -46,9 +46,9 @@ bool NaiveAllocator::allocate(
     const std::unordered_set<PhysicalRegister *> &physRegs,
     PhysicalRegisterAction load,
     PhysicalRegisterAction store,
-    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &preferences
+    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &hints
 ) {
-    (void)preferences;
+    (void)hints;
 
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {

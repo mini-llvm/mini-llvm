@@ -144,39 +144,39 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
                         }
                     };
 
-                    std::unordered_multimap<VirtualRegister *, PhysicalRegister *> preferences;
+                    std::unordered_multimap<VirtualRegister *, PhysicalRegister *> hints;
 
                     for (const BasicBlock &B : F) {
                         for (const Instruction &I : B) {
                             if (auto *mov = dynamic_cast<const Mov *>(&I)) {
                                 if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->dst())) {
                                     if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->src())) {
-                                        preferences.emplace(virtReg, physReg);
+                                        hints.emplace(virtReg, physReg);
                                     }
                                 }
                                 if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*mov->dst())) {
                                     if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*mov->src())) {
-                                        preferences.emplace(virtReg, physReg);
+                                        hints.emplace(virtReg, physReg);
                                     }
                                 }
                             }
                             if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
                                 if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*fmov->dst())) {
                                     if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*fmov->src())) {
-                                        preferences.emplace(virtReg, physReg);
+                                        hints.emplace(virtReg, physReg);
                                     }
                                 }
                                 if (auto *virtReg = dynamic_cast<VirtualRegister *>(&*fmov->dst())) {
                                     if (auto *physReg = dynamic_cast<PhysicalRegister *>(&*fmov->src())) {
-                                        preferences.emplace(virtReg, physReg);
+                                        hints.emplace(virtReg, physReg);
                                     }
                                 }
                             }
                         }
                     }
 
-                    if (LinearScanAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, preferences)) {
-                        if (NaiveAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, preferences)) {
+                    if (LinearScanAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, hints)) {
+                        if (NaiveAllocator allocator; !allocator.allocate(F, 8, virtRegs, physRegs, load, store, hints)) {
                             assert(false);
                             abort();
                         }
