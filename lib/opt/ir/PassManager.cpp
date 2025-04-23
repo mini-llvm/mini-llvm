@@ -7,6 +7,7 @@
 #include "mini-llvm/opt/ir/ModuleTransform.h"
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 #include "mini-llvm/opt/ir/passes/ArrayFlattening.h"
+#include "mini-llvm/opt/ir/passes/AttributeDeduction.h"
 #include "mini-llvm/opt/ir/passes/BasicBlockMerging.h"
 #include "mini-llvm/opt/ir/passes/BranchSimplification.h"
 #include "mini-llvm/opt/ir/passes/ConstantFolding.h"
@@ -36,21 +37,22 @@ void PassManager::run(Module &M) const {
     do {
         changed = false;
 
-        DeadCodeElimination         pass1;
-        BranchSimplification        pass2;
-        JumpThreading               pass3;
-        BasicBlockMerging           pass4;
-        UnreachableBlockElimination pass5;
-        RedundantLoadElimination    pass6;
-        DeadStoreElimination        pass7;
-        ArrayFlattening             pass8;
-        InstructionCombining        pass9;
-        AlgebraicSimplification     pass10;
-        ConstantFolding             pass11;
-        PoisonPropagation           pass12;
-        GlobalValueNumbering        pass13;
-        StrengthReduction           pass14(3, 20, 20);
-        FunctionInlining            pass15;
+        AttributeDeduction          pass1;
+        DeadCodeElimination         pass2;
+        BranchSimplification        pass3;
+        JumpThreading               pass4;
+        BasicBlockMerging           pass5;
+        UnreachableBlockElimination pass6;
+        RedundantLoadElimination    pass7;
+        DeadStoreElimination        pass8;
+        ArrayFlattening             pass9;
+        InstructionCombining        pass10;
+        AlgebraicSimplification     pass11;
+        ConstantFolding             pass12;
+        PoisonPropagation           pass13;
+        GlobalValueNumbering        pass14;
+        StrengthReduction           pass15(3, 20, 20);
+        FunctionInlining            pass16;
 
         ModuleTransform *passes[] = {
             &pass1,
@@ -68,6 +70,7 @@ void PassManager::run(Module &M) const {
             &pass13,
             &pass14,
             &pass15,
+            &pass16,
         };
 
         for (ModuleTransform *pass : passes) {

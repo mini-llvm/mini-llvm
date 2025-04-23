@@ -107,6 +107,7 @@
 
 - `AlgebraicSimplification`
 - `ArrayFlattening`
+- `AttributeDeduction`
 - `BasicBlockMerging`
 - `BranchSimplification`
 - `ConstantFolding`

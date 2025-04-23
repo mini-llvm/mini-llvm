@@ -57,6 +57,7 @@ add_library(mini-llvm
     opt/ir/FunctionTransform.cpp
     opt/ir/passes/AlgebraicSimplification.cpp
     opt/ir/passes/ArrayFlattening.cpp
+    opt/ir/passes/AttributeDeduction.cpp
     opt/ir/passes/BasicBlockMerging.cpp
     opt/ir/passes/BranchSimplification.cpp
     opt/ir/passes/ConstantFolding.cpp
