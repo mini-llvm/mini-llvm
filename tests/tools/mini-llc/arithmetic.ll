@@ -289,19 +289,19 @@ define i32 @main() {
   %66 = call i32 @ashr_ni(i32 -42, i32 2)
   %67 = call i32 @printf(ptr @format1, i32 %66)
   %68 = call double @fadd_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
-  %69 = bitcast double %27 to i64
+  %69 = bitcast double %68 to i64
   %70 = call i32 @printf(ptr @format2, i64 %69)
   %71 = call double @fsub_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
-  %72 = bitcast double %30 to i64
+  %72 = bitcast double %71 to i64
   %73 = call i32 @printf(ptr @format2, i64 %72)
   %74 = call double @fmul_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
-  %75 = bitcast double %33 to i64
+  %75 = bitcast double %74 to i64
   %76 = call i32 @printf(ptr @format2, i64 %75)
   %77 = call double @fdiv_ni(double 0x40091eb851eb851f, double 0x4005c28f5c28f5c3)
-  %78 = bitcast double %36 to i64
+  %78 = bitcast double %77 to i64
   %79 = call i32 @printf(ptr @format2, i64 %78)
   %80 = call double @fneg_ni(double 0x40091eb851eb851f)
-  %81 = bitcast double %39 to i64
+  %81 = bitcast double %80 to i64
   %82 = call i32 @printf(ptr @format2, i64 %81)
   ret i32 0
 }
