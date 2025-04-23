@@ -261,7 +261,7 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
 
     std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), linkage);
     G->setName(symbol.name);
-    symbolTable_[symbol] = G;
+    symbolTable_(symbol) = G;
     return G;
 }
 
@@ -354,7 +354,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     std::shared_ptr<Function> F =
         std::make_shared<Function>(std::move(type), linkage);
     F->setName(symbol.name);
-    symbolTable_[symbol] = F;
+    symbolTable_(symbol) = F;
 
     if (hasBody) {
         for (auto [arg, paramName] : std::views::zip(args(*F), paramNames)) {
@@ -390,7 +390,7 @@ void Parser::parseFunctionBody(Function &F) {
         if (symbolTable_.contains(symbol)) {
             throw ParseException("redefinition of argument", cursor_);
         }
-        symbolTable_[symbol] = share(arg);
+        symbolTable_(symbol) = share(arg);
     }
 
     if (cursor_->kind != kLeftBrace) {
@@ -405,7 +405,7 @@ void Parser::parseFunctionBody(Function &F) {
             if (symbolTable_.contains(symbol)) {
                 throw ParseException("redefinition of label", cursor_);
             }
-            symbolTable_[symbol] = std::make_shared<BasicBlock>();
+            symbolTable_(symbol) = std::make_shared<BasicBlock>();
         }
         ++cursor_;
     }
@@ -431,10 +431,14 @@ void Parser::parseFunctionBody(Function &F) {
         }
     }
 
-    std::erase_if(symbolTable_, [](const auto &entry) {
-        const auto &[symbol, value] = entry;
-        return symbol.scope == Symbol::Scope::kLocal;
-    });
+    for (auto i = symbolTable_.begin(); i != symbolTable_.end();) {
+        const auto &[symbol, value] = *i;
+        if (symbol.scope == Symbol::Scope::kLocal) {
+            i = symbolTable_.erase(i);
+        } else {
+            ++i;
+        }
+    }
 }
 
 void Parser::parseBasicBlock(BasicBlock &B) {
@@ -916,7 +920,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             replaceAllUsesWith(*II, I);
             symbolTable_[symbol] = I;
         } else {
-            symbolTable_[symbol] = I;
+            symbolTable_(symbol) = I;
         }
     } else if (cursor_->kind == kStore) {
         ++cursor_;
@@ -1068,7 +1072,7 @@ std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
     if (type == BasicBlockType()) {
         throw ParseException("undefined label", cursor_);
     }
-    return symbolTable_[symbol] = std::make_shared<Dummy>(type.clone());
+    return symbolTable_(symbol) = std::make_shared<Dummy>(type.clone());
 }
 
 std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {

@@ -4,7 +4,6 @@
 #include <cassert>
 #include <memory>
 #include <queue>
-#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -19,6 +18,7 @@
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -47,12 +47,12 @@ class Rename {
 public:
     Rename(const DominatorTreeNode *root,
            const std::unordered_set<const Alloca *> &vars,
-           const std::unordered_map<const Phi *, const Alloca *> &phis)
+           const HashMap<const Phi *, const Alloca *> &phis)
         : root_(root), vars_(vars), phis_(phis) {}
 
     void operator()() {
         for (const Alloca *v : vars_) {
-            defs_.emplace(v, nullptr);
+            defs_(v) = nullptr;
         }
         dfs(root_);
     }
@@ -60,22 +60,22 @@ public:
 private:
     const DominatorTreeNode *root_;
     const std::unordered_set<const Alloca *> &vars_;
-    const std::unordered_map<const Phi *, const Alloca *> &phis_;
-    std::unordered_map<const Alloca *, const Value *> defs_;
+    const HashMap<const Phi *, const Alloca *> &phis_;
+    HashMap<const Alloca *, const Value *> defs_;
 
     void dfs(const DominatorTreeNode *node) {
-        std::unordered_map<const Alloca *, const Value *> oldDefs = defs_;
+        HashMap<const Alloca *, const Value *> oldDefs = defs_;
         for (const Instruction &I : *node->block) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (phis_.contains(phi)) {
-                    const Alloca *v = phis_.at(phi);
-                    defs_[v] = phi;
+                    const Alloca *v = phis_[phi];
+                    defs_(v) = phi;
                 }
             }
             if (auto *store = dynamic_cast<const Store *>(&I)) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars_.contains(v)) {
-                        defs_[v] = &*store->value();
+                        defs_(v) = &*store->value();
                     }
                 }
             }
@@ -93,7 +93,7 @@ private:
             for (Instruction &I : *succ) {
                 if (auto *phi = dynamic_cast<Phi *>(&I)) {
                     if (phis_.contains(phi)) {
-                        const Alloca *v = phis_.at(phi);
+                        const Alloca *v = phis_[phi];
                         const Value *value = defs_[v];
                         if (value != nullptr) {
                             phi->putIncoming(*node->block, share(*const_cast<Value *>(value)));
@@ -130,9 +130,9 @@ bool Mem2Reg::runOnFunction(Function &F) {
     DominatorTreeAnalysis domTree;
     domTree.runOnFunction(F);
 
-    std::unordered_map<const BasicBlock *, std::vector<const BasicBlock *>> DF;
+    HashMap<const BasicBlock *, std::vector<const BasicBlock *>> DF;
     for (const BasicBlock &B : F) {
-        DF[&B] = {};
+        DF(&B) = {};
     }
     for (const BasicBlock &X : F) {
         for (const BasicBlock *Y : successors(X)) {
@@ -144,7 +144,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
         }
     }
 
-    std::unordered_map<const Phi *, const Alloca *> phis;
+    HashMap<const Phi *, const Alloca *> phis;
 
     for (const Alloca *v : vars) {
         std::unordered_set<const BasicBlock *> S;
@@ -174,7 +174,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
         }
         for (const BasicBlock *B : S) {
             const Phi &phi = const_cast<BasicBlock *>(B)->prepend(std::make_shared<Phi>(v->allocatedType()));
-            phis[&phi] = v;
+            phis(&phi) = v;
         }
     }
 

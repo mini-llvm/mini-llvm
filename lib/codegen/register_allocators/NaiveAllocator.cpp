@@ -18,6 +18,7 @@
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
 #include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/SetOps.h"
 
@@ -56,9 +57,9 @@ bool NaiveAllocator::allocate(
     }
 #endif
 
-    std::unordered_map<VirtualRegister *, StackSlot *> slots;
+    HashMap<VirtualRegister *, StackSlot *> slots;
     for (VirtualRegister *virtReg : virtRegs) {
-        slots[virtReg] = &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth);
+        slots(virtReg) = &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth);
     }
 
     LiveVariableAnalysis liveVars;
@@ -93,7 +94,7 @@ bool NaiveAllocator::allocate(
                     liveOut.insert(physReg);
                 }
             }
-            std::unordered_map<VirtualRegister *, PhysicalRegister *> allocation;
+            HashMap<VirtualRegister *, PhysicalRegister *> allocation;
             std::unordered_set<PhysicalRegister *> srcAllocated, dstAllocated;
             for (VirtualRegister *virtReg : srcs & dsts) {
                 std::unordered_set<PhysicalRegister *> allocatable = physRegs - liveIn - liveOut;
@@ -107,7 +108,7 @@ bool NaiveAllocator::allocate(
                 if (bestPhysReg == nullptr) {
                     return false;
                 }
-                allocation[virtReg] = bestPhysReg;
+                allocation(virtReg) = bestPhysReg;
                 srcAllocated.insert(bestPhysReg);
                 dstAllocated.insert(bestPhysReg);
             }
@@ -122,7 +123,7 @@ bool NaiveAllocator::allocate(
                 if (bestPhysReg == nullptr) {
                     return false;
                 }
-                allocation[virtReg] = bestPhysReg;
+                allocation(virtReg) = bestPhysReg;
                 srcAllocated.insert(bestPhysReg);
             }
             for (VirtualRegister *virtReg : dsts - srcs) {
@@ -136,7 +137,7 @@ bool NaiveAllocator::allocate(
                 if (bestPhysReg == nullptr) {
                     return false;
                 }
-                allocation[virtReg] = bestPhysReg;
+                allocation(virtReg) = bestPhysReg;
                 dstAllocated.insert(bestPhysReg);
             }
             for (VirtualRegister *virtReg : srcs) {

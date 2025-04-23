@@ -6,11 +6,11 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -58,7 +58,7 @@ Token Lexer::nextTokenImpl() {
         }
     }
 
-    static const std::unordered_map<char, Token::Kind> kLUT{
+    static const HashMap<char, Token::Kind> kLUT{
         {',', kComma},
         {':', kColon},
         {'=', kEqual},
@@ -175,7 +175,7 @@ Token Lexer::nextTokenImpl() {
 
         if (*cursor_ == ':') return {kName, std::move(name), start};
 
-        static const std::unordered_map<std::string_view, Token::Kind> kLUT{
+        static const HashMap<std::string_view, Token::Kind> kLUT{
             {"define", kDefine},
             {"declare", kDeclare},
             {"global", kGlobal},

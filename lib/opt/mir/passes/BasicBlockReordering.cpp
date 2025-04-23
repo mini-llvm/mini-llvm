@@ -7,13 +7,13 @@
 #include <memory>
 #include <random>
 #include <ranges>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
+#include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm::mir;
 
@@ -141,9 +141,9 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
     BranchPredictionAnalysis predictor;
     predictor.runOnFunction(F);
 
-    std::unordered_map<const BasicBlock *, int> indices;
+    HashMap<const BasicBlock *, int> indices;
     for (auto [i, B] : std::views::enumerate(F)) {
-        indices.emplace(&B, i);
+        indices(&B) = i;
     }
 
     std::vector<std::vector<double>> D(n, std::vector<double>(n, 1e+10));

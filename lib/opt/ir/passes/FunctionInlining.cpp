@@ -4,7 +4,6 @@
 #include <iterator>
 #include <memory>
 #include <ranges>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -18,6 +17,7 @@
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -103,14 +103,14 @@ bool FunctionInlining::runOnFunction(Function &F) {
                         replaceAllUsesWith(*call, weaken(phi));
                     }
 
-                    std::unordered_map<const Value *, Value *> valueMap;
+                    HashMap<const Value *, Value *> valueMap;
 
                     for (auto [calleeArg, callArg] : std::views::zip(args(*callee), args(*call))) {
-                        valueMap[&calleeArg] = &*callArg;
+                        valueMap(&calleeArg) = &*callArg;
                     }
 
                     for (const BasicBlock &callee_B : *callee) {
-                        valueMap[&callee_B] = &F.append();
+                        valueMap(&callee_B) = &F.append();
                     }
 
                     BasicBlock *calleeEntry = static_cast<BasicBlock *>(valueMap[&callee->entry()]);
@@ -125,7 +125,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
                             if (!dynamic_cast<const Ret *>(&callee_I)) {
                                 std::shared_ptr<Instruction> caller_I = cast<Instruction>(callee_I.clone());
                                 caller_B->append(caller_I);
-                                valueMap[&callee_I] = &*caller_I;
+                                valueMap(&callee_I) = &*caller_I;
                                 cloned.push_back(&*caller_I);
                             } else {
                                 caller_B->append(std::make_shared<Br>(weaken(*B2)));

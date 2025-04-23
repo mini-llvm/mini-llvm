@@ -3,7 +3,6 @@
 #include <bit>
 #include <cstdint>
 #include <memory>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -31,6 +30,7 @@
 #include "mini-llvm/mir/IntegerImmediate.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -39,13 +39,13 @@ using namespace mini_llvm::mir;
 bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
-    std::unordered_map<Register *, int64_t> values;
+    HashMap<Register *, int64_t> values;
     std::vector<std::pair<BasicBlock::const_iterator, std::unique_ptr<Instruction>>> replace;
 
     for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
         if (auto *li = dynamic_cast<const LI *>(&*i)) {
             if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*li->src())) {
-                values[&*li->dst()] = imm->value();
+                values(&*li->dst()) = imm->value();
                 continue;
             }
         }
@@ -173,13 +173,13 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
         changed = true;
     }
 
-    std::unordered_map<Register *, std::pair<Register *, int64_t>> sums;
+    HashMap<Register *, std::pair<Register *, int64_t>> sums;
 
     for (Instruction &I : B) {
         if (auto *addi = dynamic_cast<const AddI *>(&I)) {
             if (&*addi->dst() != &*addi->src1()) {
                 if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*addi->src2())) {
-                    sums.emplace(&*addi->dst(), std::pair{&*addi->src1(), imm->value()});
+                    sums(&*addi->dst()) = {&*addi->src1(), imm->value()};
                     continue;
                 }
             }

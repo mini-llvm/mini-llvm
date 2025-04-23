@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <list>
-#include <unordered_map>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Immediate.h"
@@ -14,6 +13,7 @@
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/mir/StackOffsetImmediate.h"
 #include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -62,8 +62,8 @@ struct ImmediateEqual {
 bool RegisterReuse::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
-    std::unordered_map<Register *, const Immediate *> imms;
-    std::unordered_map<const Immediate *, std::list<Register *>, ImmediateHash, ImmediateEqual> regs;
+    HashMap<Register *, const Immediate *> imms;
+    HashMap<const Immediate *, std::list<Register *>, ImmediateHash, ImmediateEqual> regs;
 
     for (Instruction &I : B) {
         for (Register *reg : def(I)) {
@@ -74,7 +74,10 @@ bool RegisterReuse::runOnBasicBlock(BasicBlock &B) {
             }
         }
         if (auto *li = dynamic_cast<const LI *>(&I)) {
-            imms[&*li->dst()] = &*li->src();
+            imms(&*li->dst()) = &*li->src();
+            if (!regs.contains(&*li->src())) {
+                regs(&*li->src()) = {};
+            }
             regs[&*li->src()].push_back(&*li->dst());
         }
         for (RegisterOperand *op : I.srcs()) {

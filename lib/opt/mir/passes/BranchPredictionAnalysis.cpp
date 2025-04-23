@@ -1,12 +1,12 @@
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
 
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
@@ -22,7 +22,7 @@ enum class Color {
 };
 
 void dfs(const BasicBlock *u,
-         std::unordered_map<const BasicBlock *, Color> &colors,
+         HashMap<const BasicBlock *, Color> &colors,
          std::unordered_set<Edge, Hash<Edge>> &backEdges) {
     colors[u] = Color::kGray;
     for (const BasicBlock *v : successors(*u)) {
@@ -40,11 +40,11 @@ void dfs(const BasicBlock *u,
 class BranchPredictionAnalysis::Impl {
 public:
     void runOnFunction(const Function &F) {
-        std::unordered_map<const BasicBlock *, Color> colors;
+        HashMap<const BasicBlock *, Color> colors;
         std::unordered_set<Edge, Hash<Edge>> backEdges;
 
         for (const BasicBlock &B : F) {
-            colors.emplace(&B, Color::kWhite);
+            colors(&B) = Color::kWhite;
         }
 
         for (const BasicBlock &B : F) {

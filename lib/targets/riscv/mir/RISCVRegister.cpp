@@ -2,15 +2,14 @@
 
 #include <cstdlib>
 #include <memory>
-#include <unordered_map>
-#include <utility>
 
 #include "mini-llvm/mir/RegisterClass.h"
+#include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm::mir;
 
 RISCVRegister *RISCVRegister::get(int idx) {
-    static std::unordered_map<int, std::shared_ptr<RISCVRegister>> pool;
+    static HashMap<int, std::shared_ptr<RISCVRegister>> pool;
 
     if (pool.contains(idx)) {
         return &*pool[idx];
@@ -20,8 +19,7 @@ RISCVRegister *RISCVRegister::get(int idx) {
 #define REGS
 #define X(idx, name, class, isPreserved, isAllocatable) \
     case idx: \
-        return &*pool.insert( \
-            {idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, isPreserved, isAllocatable))}).first->second;
+        return &*(pool(idx) = std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, isPreserved, isAllocatable)));
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS

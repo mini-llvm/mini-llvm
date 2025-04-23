@@ -1,6 +1,5 @@
 #include "mini-llvm/opt/ir/passes/RedundantLoadElimination.h"
 
-#include <unordered_map>
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
@@ -10,6 +9,7 @@
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/Store.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -21,12 +21,12 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
     std::vector<Instruction *> remove;
 
     for (BasicBlock &B : F) {
-        std::unordered_map<Value *, Value *> lastValue;
-        std::unordered_map<Value *, Load *> lastLoad;
+        HashMap<Value *, Value *> lastValue;
+        HashMap<Value *, Load *> lastLoad;
 
         for (Instruction &I : B) {
             if (auto *store = dynamic_cast<Store *>(&I)) {
-                lastValue.insert_or_assign(&*store->ptr(), &*store->value());
+                lastValue(&*store->ptr()) = &*store->value();
                 continue;
             }
             if (dynamic_cast<Call *>(&I)) {
@@ -45,7 +45,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                     remove.push_back(load);
                     continue;
                 }
-                lastLoad.insert_or_assign(&*load->ptr(), &*load);
+                lastLoad(&*load->ptr()) = &*load;
                 continue;
             }
         }

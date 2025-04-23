@@ -1,14 +1,15 @@
 #include "mini-llvm/opt/mir/passes/TailDuplication.h"
 
 #include <memory>
-#include <unordered_map>
 #include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Br.h"
+#include "mini-llvm/utils/HashMap.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::mir;
 
 bool TailDuplication::runOnFunction(Function &F) {
@@ -18,8 +19,11 @@ bool TailDuplication::runOnFunction(Function &F) {
     do {
         changed2 = false;
 
-        std::unordered_map<BasicBlock *, std::vector<BasicBlock *>> predecessors;
+        HashMap<BasicBlock *, std::vector<BasicBlock *>> predecessors;
 
+        for (BasicBlock &B : F) {
+            predecessors(&B) = {};
+        }
         for (BasicBlock &B : F) {
             for (BasicBlock *succ : successors(B)) {
                 predecessors[succ].push_back(&B);

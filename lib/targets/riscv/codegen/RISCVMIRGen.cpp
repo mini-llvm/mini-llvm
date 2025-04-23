@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -171,6 +170,7 @@
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -249,7 +249,7 @@ private:
 class ConstantVisitorImpl final : public ir::ConstantVisitor {
 public:
     explicit ConstantVisitorImpl(GlobalVar &globalVar,
-                                 const std::unordered_map<const ir::GlobalVar *, GlobalVar *> &globalVarMap)
+                                 const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap)
         : globalVar_(globalVar), globalVarMap_(globalVarMap) {}
 
     void visitI1Constant(const ir::I1Constant &C) override {
@@ -285,7 +285,7 @@ public:
     }
 
     void visitGlobalVar(const ir::GlobalVar &G) override {
-        GlobalVar *ptr = globalVarMap_.at(&G);
+        GlobalVar *ptr = globalVarMap_[&G];
         globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr));
     }
 
@@ -308,7 +308,7 @@ public:
 
 private:
     GlobalVar &globalVar_;
-    const std::unordered_map<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
+    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
 
     template <typename IConst, typename MConst, typename Integer>
     void visitIntegerConstant(const IConst &C) {
@@ -332,11 +332,11 @@ private:
 class InstructionVisitorImpl final : public ir::InstructionVisitor {
 public:
     InstructionVisitorImpl(Function &function,
-                           const std::unordered_map<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
-                           const std::unordered_map<const ir::Function *, Function *> &functionMap,
-                           const std::unordered_map<const ir::BasicBlock *, BasicBlock *> &blockMap,
-                           const std::unordered_map<const ir::Alloca *, StackSlot *> &memoryMap,
-                           const std::unordered_map<const ir::Value *, std::shared_ptr<Register>> &valueMap,
+                           const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
+                           const HashMap<const ir::Function *, Function *> &functionMap,
+                           const HashMap<const ir::BasicBlock *, BasicBlock *> &blockMap,
+                           const HashMap<const ir::Alloca *, StackSlot *> &memoryMap,
+                           const HashMap<const ir::Value *, std::shared_ptr<Register>> &valueMap,
                            BasicBlock *epilogueBlock)
         : function_(function),
           globalVarMap_(globalVarMap),
@@ -407,7 +407,7 @@ public:
     }
 
     void visitTrunc(const ir::Trunc &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         int dstBitWidth = I.type()->sizeInBits(8),
             srcBitWidth = I.value()->type()->sizeInBits(8);
@@ -423,7 +423,7 @@ public:
 
     void visitSExt(const ir::SExt &I) override {
         if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
-            std::shared_ptr<Register> dst = valueMap_.at(&I),
+            std::shared_ptr<Register> dst = valueMap_[&I],
                                       src1 = prepareRegister(*icmp->lhs()),
                                       src2 = prepareRegister(*icmp->rhs());
             switch (icmp->cond()) {
@@ -476,7 +476,7 @@ public:
                 }
             }
         } else {
-            std::shared_ptr<Register> dst = valueMap_.at(&I),
+            std::shared_ptr<Register> dst = valueMap_[&I],
                                       src = prepareRegister(*I.value());
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<Neg>(8, dst, src));
@@ -497,7 +497,7 @@ public:
 
     void visitZExt(const ir::ZExt &I) override {
         if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
-            std::shared_ptr<Register> dst = valueMap_.at(&I),
+            std::shared_ptr<Register> dst = valueMap_[&I],
                                       src1 = prepareRegister(*icmp->lhs()),
                                       src2 = prepareRegister(*icmp->rhs());
             switch (icmp->cond()) {
@@ -548,7 +548,7 @@ public:
                 }
             }
         } else {
-            std::shared_ptr<Register> dst = valueMap_.at(&I),
+            std::shared_ptr<Register> dst = valueMap_[&I],
                                       src = prepareRegister(*I.value());
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(1)));
@@ -568,7 +568,7 @@ public:
     }
 
     void visitICmp(const ir::ICmp &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
 
@@ -648,7 +648,7 @@ public:
     void visitFPTrunc(const ir::FPTrunc &I) override {
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision(),
                   srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<FCvt>(dstPrecision, srcPrecision, std::move(dst), std::move(src)));
     }
@@ -656,7 +656,7 @@ public:
     void visitFPExt(const ir::FPExt &I) override {
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision(),
                   srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<FCvt>(dstPrecision, srcPrecision, std::move(dst), std::move(src)));
     }
@@ -664,7 +664,7 @@ public:
     void visitSIToFP(const ir::SIToFP &I) override {
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
         int srcWidth = I.value()->type()->size();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<FCvtFS>(dstPrecision, srcWidth, std::move(dst), std::move(src)));
     }
@@ -672,7 +672,7 @@ public:
     void visitUIToFP(const ir::UIToFP &I) override {
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
         int srcWidth = I.value()->type()->size();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<FCvtFU>(dstPrecision, srcWidth, std::move(dst), std::move(src)));
     }
@@ -680,7 +680,7 @@ public:
     void visitFPToSI(const ir::FPToSI &I) override {
         int dstWidth = I.type()->size();
         Precision srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<FCvtSF>(dstWidth, srcPrecision, std::move(dst), std::move(src)));
     }
@@ -688,7 +688,7 @@ public:
     void visitFPToUI(const ir::FPToUI &I) override {
         int dstWidth = I.type()->size();
         Precision srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<FCvtUF>(dstWidth, srcPrecision, std::move(dst), std::move(src)));
     }
@@ -706,7 +706,7 @@ public:
             case ir::FCmp::Condition::kOGE: cond = Condition::kOGE; negate = false; break;
             default: abort();
         }
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
         builder_.add(std::make_unique<FCmpSet>(8, precision, cond, dst, src1, src2));
@@ -717,7 +717,7 @@ public:
     }
 
     void visitPtrToInt(const ir::PtrToInt &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
         int dstBitWidth = I.type()->sizeInBits(8);
@@ -728,7 +728,7 @@ public:
     }
 
     void visitIntToPtr(const ir::IntToPtr &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
         int srcBitWidth = I.value()->type()->sizeInBits(8);
@@ -739,7 +739,7 @@ public:
     }
 
     void visitBitCast(const ir::BitCast &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         if (dynamic_cast<const ir::IntegerType *>(&*I.type()) && dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
@@ -759,7 +759,7 @@ public:
                    &falseBlock = function_.append(),
                    &endBlock = function_.append();
 
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   cond = prepareRegister(*I.cond()),
                                   src1 = prepareRegister(*I.trueValue()),
                                   src2 = prepareRegister(*I.falseValue());
@@ -792,9 +792,9 @@ public:
     }
 
     void visitAlloca(const ir::Alloca &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I);
+        std::shared_ptr<Register> dst = valueMap_[&I];
         StackSlot *endSlot = &function_.stackFrame().back(),
-                  *slot = memoryMap_.at(&I);
+                  *slot = memoryMap_[&I];
         std::unique_ptr<Immediate> offset = std::make_unique<StackOffsetImmediate>(endSlot, slot);
         builder_.add(std::make_unique<LI>(8, dst, std::move(offset)));
         builder_.add(std::make_unique<Add>(8, dst, share(*fp()), dst));
@@ -802,7 +802,7 @@ public:
 
     void visitLoad(const ir::Load &I) override {
         MemoryOperand src(prepareRegister(*I.ptr()));
-        std::shared_ptr<Register> dst = valueMap_.at(&I);
+        std::shared_ptr<Register> dst = valueMap_[&I];
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
             int width = I.type()->size(8);
@@ -832,7 +832,7 @@ public:
     }
 
     void visitGetElementPtr(const ir::GetElementPtr &I) override {
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.ptr());
 
         builder_.add(std::make_unique<Mov>(8, dst, src));
@@ -859,7 +859,7 @@ public:
     }
 
     void visitCall(const ir::Call &I) override {
-        Function *callee = functionMap_.at(&*I.callee());
+        Function *callee = functionMap_[&*I.callee()];
 
         size_t numIntegerArgs = 0,
                numFloatingArgs = 0;
@@ -931,12 +931,12 @@ public:
         }
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
-            std::shared_ptr<Register> dst = valueMap_.at(&I),
+            std::shared_ptr<Register> dst = valueMap_[&I],
                                       src = share(*riscvIntegerResultRegs()[0]);
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.type())) {
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
-            std::shared_ptr<Register> dst = valueMap_.at(&I),
+            std::shared_ptr<Register> dst = valueMap_[&I],
                                       src = share(*riscvFloatingResultRegs()[0]);
             builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
         } else {
@@ -945,7 +945,7 @@ public:
     }
 
     void visitBr(const ir::Br &I) override {
-        BasicBlock *dest = blockMap_.at(&*I.dest());
+        BasicBlock *dest = blockMap_[&*I.dest()];
         std::vector<const ir::Phi *> phis;
         for (const ir::Instruction &II : *I.dest()) {
             if (auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
@@ -956,9 +956,9 @@ public:
             BasicBlockBuilder builder = builder_;
             BasicBlock &middle = function_.append();
             builder_.setPos(&middle);
-            std::unordered_map<const ir::Phi *, std::shared_ptr<Register>> tmps;
+            HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
             for (const ir::Phi *phi : phis) {
-                tmps[phi] = std::make_shared<VirtualRegister>();
+                tmps(phi) = std::make_shared<VirtualRegister>();
             }
             for (const ir::Phi *phi : phis) {
                 std::shared_ptr<Register> dst = tmps[phi],
@@ -973,7 +973,7 @@ public:
                 }
             }
             for (const ir::Phi *phi : phis) {
-                std::shared_ptr<Register> dst = valueMap_.at(phi),
+                std::shared_ptr<Register> dst = valueMap_[phi],
                                           src = tmps[phi];
                 if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
                     builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
@@ -992,8 +992,8 @@ public:
     }
 
     void visitCondBr(const ir::CondBr &I) override {
-        BasicBlock *trueDest = blockMap_.at(&*I.trueDest());
-        BasicBlock *falseDest = blockMap_.at(&*I.falseDest());
+        BasicBlock *trueDest = blockMap_[&*I.trueDest()];
+        BasicBlock *falseDest = blockMap_[&*I.falseDest()];
         {
             std::vector<const ir::Phi *> phis;
             for (const ir::Instruction &II : *I.trueDest()) {
@@ -1005,9 +1005,9 @@ public:
                 BasicBlockBuilder builder = builder_;
                 BasicBlock &middle = function_.append();
                 builder_.setPos(&middle);
-                std::unordered_map<const ir::Phi *, std::shared_ptr<Register>> tmps;
+                HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
                 for (const ir::Phi *phi : phis) {
-                    tmps[phi] = std::make_shared<VirtualRegister>();
+                    tmps(phi) = std::make_shared<VirtualRegister>();
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
@@ -1022,7 +1022,7 @@ public:
                     }
                 }
                 for (const ir::Phi *phi : phis) {
-                    std::shared_ptr<Register> dst = valueMap_.at(phi),
+                    std::shared_ptr<Register> dst = valueMap_[phi],
                                               src = tmps[phi];
                     if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
@@ -1049,9 +1049,9 @@ public:
                 BasicBlockBuilder builder = builder_;
                 BasicBlock &middle = function_.append();
                 builder_.setPos(&middle);
-                std::unordered_map<const ir::Phi *, std::shared_ptr<Register>> tmps;
+                HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
                 for (const ir::Phi *phi : phis) {
-                    tmps[phi] = std::make_shared<VirtualRegister>();
+                    tmps(phi) = std::make_shared<VirtualRegister>();
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
@@ -1066,7 +1066,7 @@ public:
                     }
                 }
                 for (const ir::Phi *phi : phis) {
-                    std::shared_ptr<Register> dst = valueMap_.at(phi),
+                    std::shared_ptr<Register> dst = valueMap_[phi],
                                               src = tmps[phi];
                     if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
@@ -1127,11 +1127,11 @@ public:
 
 private:
     Function &function_;
-    const std::unordered_map<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
-    const std::unordered_map<const ir::Function *, Function *> &functionMap_;
-    const std::unordered_map<const ir::BasicBlock *, BasicBlock *> &blockMap_;
-    const std::unordered_map<const ir::Alloca *, StackSlot *> &memoryMap_;
-    const std::unordered_map<const ir::Value *, std::shared_ptr<Register>> &valueMap_;
+    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
+    const HashMap<const ir::Function *, Function *> &functionMap_;
+    const HashMap<const ir::BasicBlock *, BasicBlock *> &blockMap_;
+    const HashMap<const ir::Alloca *, StackSlot *> &memoryMap_;
+    const HashMap<const ir::Value *, std::shared_ptr<Register>> &valueMap_;
     BasicBlock *epilogueBlock_;
     BasicBlockBuilder builder_;
 
@@ -1139,7 +1139,7 @@ private:
     void visitBinaryIntegerArithmeticOperator(const IInstr &I) {
         int bitWidth = I.type()->sizeInBits(8);
         ExtensionMode extMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
 
@@ -1157,7 +1157,7 @@ private:
     template <typename IInstr, typename MInstr>
     void visitBinaryIntegerBitwiseOperator(const IInstr &I) {
         int width = 8;
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
         builder_.add(std::make_unique<MInstr>(width, std::move(dst), std::move(src1), std::move(src2)));
@@ -1166,7 +1166,7 @@ private:
     template <typename IInstr, typename MInstr>
     void visitUnaryFloatingArithmeticOperator(const IInstr &I) {
         Precision precision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = prepareRegister(*I.value());
         builder_.add(std::make_unique<MInstr>(precision, std::move(dst), std::move(src)));
     }
@@ -1174,7 +1174,7 @@ private:
     template <typename IInstr, typename MInstr>
     void visitBinaryFloatingArithmeticOperator(const IInstr &I) {
         Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
-        std::shared_ptr<Register> dst = valueMap_.at(&I),
+        std::shared_ptr<Register> dst = valueMap_[&I],
                                   src1 = prepareRegister(*I.lhs()),
                                   src2 = prepareRegister(*I.rhs());
         builder_.add(std::make_unique<MInstr>(precision, std::move(dst), std::move(src1), std::move(src2)));
@@ -1182,11 +1182,11 @@ private:
 
     std::shared_ptr<Register> prepareRegister(const ir::Value &value) {
         if (dynamic_cast<const ir::Argument *>(&value) || dynamic_cast<const ir::Instruction *>(&value)) {
-            return valueMap_.at(&value);
+            return valueMap_[&value];
         }
         if (auto *G = dynamic_cast<const ir::GlobalVar *>(&value)) {
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
-            GlobalVar *ptr = globalVarMap_.at(G);
+            GlobalVar *ptr = globalVarMap_[G];
             builder_.add(std::make_unique<LA>(8, reg, ptr));
             return reg;
         }
@@ -1224,11 +1224,11 @@ private:
 void RISCVMIRGen::emit() {
     for (const ir::GlobalVar &IG : IM_->globalVars) {
         GlobalVar &MG = MM_->globalVars.append(std::make_unique<GlobalVar>(IG.name(), IG.linkage()));
-        globalVarMap_[&IG] = &MG;
+        globalVarMap_(&IG) = &MG;
     }
     for (const ir::Function &IF : IM_->functions) {
         Function &MF = MM_->functions.append(std::make_unique<Function>(IF.name(), IF.linkage()));
-        functionMap_[&IF] = &MF;
+        functionMap_(&IF) = &MF;
     }
     for (auto &[IG, MG] : globalVarMap_) {
         if (IG->hasInitializer()) {
@@ -1250,9 +1250,9 @@ void RISCVMIRGen::emitGlobalVar(const ir::GlobalVar &IG, GlobalVar &MG) {
 void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     BasicBlock &prologueBlock = MF.append();
 
-    std::unordered_map<const ir::BasicBlock *, BasicBlock *> blockMap;
+    HashMap<const ir::BasicBlock *, BasicBlock *> blockMap;
     for (const ir::BasicBlock &IB : IF) {
-        blockMap[&IB] = &MF.append();
+        blockMap(&IB) = &MF.append();
     }
 
     BasicBlock &epilogueBlock = MF.append();
@@ -1267,13 +1267,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     StackSlot &raSlot = MF.stackFrame().append(8, 8);
     StackSlot &fpSlot = MF.stackFrame().append(8, 8);
 
-    std::unordered_map<const ir::Alloca *, StackSlot *> memoryMap;
+    HashMap<const ir::Alloca *, StackSlot *> memoryMap;
     for (const ir::BasicBlock &IB : IF) {
         for (const ir::Instruction &II : IB) {
             if (auto *alloca = dynamic_cast<const ir::Alloca *>(&II)) {
                 int size = alloca->allocatedType()->size(8);
                 int alignment = alloca->allocatedType()->alignment(8);
-                memoryMap[alloca] = &MF.stackFrame().append(size, alignment);
+                memoryMap(alloca) = &MF.stackFrame().append(size, alignment);
             }
         }
     }
@@ -1323,7 +1323,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     }
     epilogueBlock.append(std::make_unique<RISCVRet>(numIntegerResults, numFloatingResults));
 
-    std::unordered_map<const ir::Value *, std::shared_ptr<Register>> valueMap;
+    HashMap<const ir::Value *, std::shared_ptr<Register>> valueMap;
     size_t numIntegerArgs = 0,
            numFloatingArgs = 0,
            numStackArgs = 0;
@@ -1333,13 +1333,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
                                           src = share(*riscvIntegerArgRegs()[numIntegerArgs]);
                 blockMap[&IF.entry()]->append(std::make_unique<Mov>(8, dst, src));
-                valueMap[&arg] = dst;
+                valueMap(&arg) = dst;
                 ++numIntegerArgs;
             } else {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
                 MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                 blockMap[&IF.entry()]->append(std::make_unique<Load>(8, dst, std::move(src)));
-                valueMap[&arg] = dst;
+                valueMap(&arg) = dst;
                 ++numStackArgs;
             }
         } else if (dynamic_cast<const ir::FloatingType *>(&*arg.type())) {
@@ -1348,13 +1348,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
                                           src = share(*riscvFloatingArgRegs()[numFloatingArgs]);
                 blockMap[&IF.entry()]->append(std::make_unique<FMov>(precision, dst, src));
-                valueMap[&arg] = dst;
+                valueMap(&arg) = dst;
                 ++numFloatingArgs;
             } else {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
                 MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                 blockMap[&IF.entry()]->append(std::make_unique<FLoad>(precision, dst, std::move(src)));
-                valueMap[&arg] = dst;
+                valueMap(&arg) = dst;
                 ++numStackArgs;
             }
         } else {
@@ -1364,7 +1364,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     for (const ir::BasicBlock &IB : IF) {
         for (const ir::Instruction &II : IB) {
             if (*II.type() != ir::Void()) {
-                valueMap[&II] = std::make_shared<VirtualRegister>();
+                valueMap(&II) = std::make_shared<VirtualRegister>();
             }
         }
     }

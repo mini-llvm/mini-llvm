@@ -1,13 +1,12 @@
 #include "mini-llvm/opt/mir/passes/CopyPropagation.h"
 
-#include <unordered_map>
-
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/FMov.h"
 #include "mini-llvm/mir/Instruction/Mov.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -15,7 +14,7 @@ using namespace mini_llvm::mir;
 
 bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
-    std::unordered_map<Register *, Register *> copies;
+    HashMap<Register *, Register *> copies;
 
     for (Instruction &I : B) {
         for (RegisterOperand *op : I.srcs()) {
@@ -41,10 +40,10 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
             }
         }
         if (auto *mov = dynamic_cast<const Mov *>(&I)) {
-            copies[&*mov->dst()] = &*mov->src();
+            copies(&*mov->dst()) = &*mov->src();
         }
         if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
-            copies[&*fmov->dst()] = &*fmov->src();
+            copies(&*fmov->dst()) = &*fmov->src();
         }
     }
 

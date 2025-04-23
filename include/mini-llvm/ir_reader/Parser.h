@@ -5,7 +5,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
@@ -18,6 +17,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/ir_reader/Symbol.h"
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/HashMap.h"
 
 namespace mini_llvm::ir {
 
@@ -62,7 +62,7 @@ public:
 
 private:
     std::vector<Token>::const_iterator cursor_;
-    std::unordered_map<Symbol, std::shared_ptr<Value>> symbolTable_;
+    HashMap<Symbol, std::shared_ptr<Value>> symbolTable_;
 };
 
 Module parseModule(const std::vector<Token> &tokens);

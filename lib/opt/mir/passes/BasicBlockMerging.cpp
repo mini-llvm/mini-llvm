@@ -1,16 +1,16 @@
 #include "mini-llvm/opt/mir/passes/BasicBlockMerging.h"
 
-#include <unordered_map>
-
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction/Br.h"
+#include "mini-llvm/utils/HashMap.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::mir;
 
 namespace {
 
-bool canMergeWithSuccessor(const BasicBlock &B, const std::unordered_map<const BasicBlock *, int> &numPredecessors) {
+bool canMergeWithSuccessor(const BasicBlock &B, const HashMap<const BasicBlock *, int> &numPredecessors) {
     if (B.empty()) {
         return false;
     }
@@ -18,7 +18,7 @@ bool canMergeWithSuccessor(const BasicBlock &B, const std::unordered_map<const B
         return false;
     }
     const BasicBlock &succ = *static_cast<const Br *>(&B.back())->dest();
-    if (numPredecessors.at(&succ) > 1) {
+    if (numPredecessors[&succ] > 1) {
         return false;
     }
     return true;
@@ -29,9 +29,9 @@ bool canMergeWithSuccessor(const BasicBlock &B, const std::unordered_map<const B
 bool BasicBlockMerging::runOnFunction(Function &F) {
     bool changed = false;
 
-    std::unordered_map<const BasicBlock *, int> numPredecessors;
+    HashMap<const BasicBlock *, int> numPredecessors;
     for (const BasicBlock &B : F) {
-        numPredecessors.emplace(&B, 0);
+        numPredecessors(&B) = 0;
     }
     for (const BasicBlock &B : F) {
         for (const BasicBlock *succ : successors(B)) {
