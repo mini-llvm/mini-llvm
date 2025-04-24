@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "mini-llvm/ir/Attribute.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -11,6 +12,7 @@
 #include "mini-llvm/ir/Instruction/BinaryFloatingOperator.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"
 #include "mini-llvm/ir/Instruction/BitCast.h"
+#include "mini-llvm/ir/Instruction/Call.h"
 #include "mini-llvm/ir/Instruction/FloatingCastingOperator.h"
 #include "mini-llvm/ir/Instruction/FloatingToIntegerCastingOperator.h"
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
@@ -28,6 +30,15 @@ using namespace mini_llvm::ir;
 
 namespace {
 
+bool isCallToReadNone(const Instruction &I) {
+    if (auto *call = dynamic_cast<const Call *>(&I)) {
+        if (call->callee()->hasAttr(Attribute::kReadNone)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool isCritical(const Instruction &I) {
     return !dynamic_cast<const BinaryIntegerOperator *>(&I)
         && !dynamic_cast<const BinaryFloatingOperator *>(&I)
@@ -43,7 +54,8 @@ bool isCritical(const Instruction &I) {
         && !dynamic_cast<const GetElementPtr *>(&I)
         && !dynamic_cast<const Alloca *>(&I)
         && !dynamic_cast<const Load *>(&I)
-        && !dynamic_cast<const Phi *>(&I);
+        && !dynamic_cast<const Phi *>(&I)
+        && !isCallToReadNone(I);
 }
 
 } // namespace
