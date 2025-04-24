@@ -1,19 +1,17 @@
-@format1 = private global [6 x i8] c"%lld\0A\00"
+@format1 = private global [1 x i8] c"\00"
 @format2 = private global [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
 define i32 @source(i32 %0) noinline {
 1:
+  %2 = call i32 @printf(ptr @format1)
   ret i32 %0
 }
 
-define void @sink1(ptr %0, ptr %1) noinline {
-2:
-  %3 = ptrtoint ptr %0 to i64
-  %4 = ptrtoint ptr %1 to i64
-  %5 = sub i64 %3, %4
-  %6 = call i32 @printf(ptr @format1, i64 %5)
+define void @sink1(ptr %0) noinline {
+1:
+  %2 = call i32 @printf(ptr @format1)
   ret void
 }
 
@@ -25,8 +23,8 @@ define void @sink2(i32 %0) noinline {
 
 define void @test() noinline {
 1:
-  %2 = alloca [2048 x i8]
-  call void @sink1(ptr %2, ptr %2)
+  %2 = alloca [4096 x i8]
+  call void @sink1(ptr %2)
   %3 = call i32 @source(i32 0)
   %4 = call i32 @source(i32 1)
   %5 = call i32 @source(i32 2)
