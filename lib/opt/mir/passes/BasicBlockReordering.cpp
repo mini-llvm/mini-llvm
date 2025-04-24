@@ -95,17 +95,17 @@ std::vector<int> aco(
     for (int iter = 0; iter < maxIter; ++iter) {
         std::vector<std::vector<int>> paths;
         for (int i = 0; i < m; ++i) {
-            std::vector<int> path(n);
-            path[0] = s;
+            std::vector<int> path;
+            path.push_back(s);
             for (int j = 1; j < n; ++j) {
-                std::vector<double> probs(n);
+                std::vector<double> weights;
                 for (int k = 0; k < n; ++k) {
-                    probs[k] = pow(tau[path[j - 1]][k], alpha) * pow(1. / (D[path[j - 1]][k] + 1e-10), beta);
+                    weights.push_back(pow(tau[path[j - 1]][k], alpha) * pow(1. / (D[path[j - 1]][k] + 1e-10), beta));
                 }
                 for (int k = 0; k < j; ++k) {
-                    probs[path[k]] = 0.;
+                    weights[path[k]] = 0.;
                 }
-                path[j] = std::discrete_distribution<int>(probs.begin(), probs.end())(rng);
+                path.push_back(std::discrete_distribution<int>(weights.begin(), weights.end())(rng));
             }
             paths.push_back(path);
         }
