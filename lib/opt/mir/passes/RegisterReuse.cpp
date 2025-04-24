@@ -63,23 +63,23 @@ bool RegisterReuse::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
     std::unordered_map<Register *, const Immediate *> imms;
-    std::unordered_map<const Immediate *, std::list<Register *>, ImmediateHash, ImmediateEqual> regLists;
+    std::unordered_map<const Immediate *, std::list<Register *>, ImmediateHash, ImmediateEqual> regs;
 
     for (Instruction &I : B) {
         for (Register *reg : def(I)) {
             if (imms.contains(reg)) {
                 const Immediate *imm = imms[reg];
                 imms.erase(reg);
-                regLists[imm].erase(std::ranges::find(regLists[imm], reg));
+                regs[imm].erase(std::ranges::find(regs[imm], reg));
             }
         }
         if (auto *li = dynamic_cast<const LI *>(&I)) {
             imms[&*li->dst()] = &*li->src();
-            regLists[&*li->src()].push_back(&*li->dst());
+            regs[&*li->src()].push_back(&*li->dst());
         }
         for (RegisterOperand *op : I.srcs()) {
             if (imms.contains(&**op)) {
-                Register *reg = regLists[imms[&**op]].front();
+                Register *reg = regs[imms[&**op]].front();
                 if (&**op != reg) {
                     op->set(share(*reg));
                     changed = true;
