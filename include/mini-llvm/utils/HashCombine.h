@@ -4,8 +4,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <tuple>
-#include <utility>
 
 namespace mini_llvm {
 
@@ -16,9 +14,6 @@ namespace mini_llvm {
 // Distributed under the Boost Software License, Version 1.0.
 // https://www.boost.org/LICENSE_1_0.txt
 // Modified under the MIT License.
-
-template <typename T>
-constexpr size_t hash_value(const T &) noexcept;
 
 namespace detail {
 
@@ -60,52 +55,11 @@ inline constexpr size_t hash_mix(size_t v) noexcept {
     return hash_mix_impl<sizeof(size_t) * CHAR_BIT>::fn(v);
 }
 
-template <size_t I, typename T>
-constexpr void hash_combine_tuple(size_t &, const T &) noexcept {}
-
-template <size_t I, typename T>
-    requires (I < std::tuple_size_v<T>)
-constexpr void hash_combine_tuple(size_t &seed, const T &v) noexcept {
-    hash_combine(seed, std::get<I>(v));
-    hash_combine_tuple<I + 1>(seed, v);
-}
-
 } // namespace detail
 
-template <typename T>
+template <typename T, typename Hash = std::hash<T>>
 constexpr void hash_combine(size_t &seed, const T &v) noexcept {
-    seed = detail::hash_mix(seed + 0x9e3779b9 + hash_value(v));
+    seed = detail::hash_mix(seed + 0x9e3779b9 + Hash()(v));
 }
-
-template <typename T>
-constexpr size_t hash_value(const T &v) noexcept {
-    return std::hash<T>()(v);
-}
-
-template <typename T1, typename T2>
-constexpr size_t hash_value(const std::pair<T1, T2> &v) noexcept {
-    size_t seed = 0;
-
-    hash_combine(seed, v.first);
-    hash_combine(seed, v.second);
-
-    return seed;
-}
-
-template <typename... Types>
-constexpr size_t hash_value(const std::tuple<Types...> &v) noexcept {
-    size_t seed = 0;
-
-    detail::hash_combine_tuple<0>(seed, v);
-
-    return seed;
-}
-
-template <typename T>
-struct Hash {
-    constexpr size_t operator()(const T &v) const noexcept {
-        return hash_value(v);
-    }
-};
 
 } // namespace mini_llvm

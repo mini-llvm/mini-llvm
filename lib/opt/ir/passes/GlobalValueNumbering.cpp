@@ -28,7 +28,7 @@
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
-#include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/HashCombine.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;

@@ -1,11 +1,12 @@
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
 
+#include <cstddef>
 #include <unordered_set>
 #include <utility>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
-#include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/HashCombine.h"
 #include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm;
@@ -15,6 +16,17 @@ namespace {
 
 using Edge = std::pair<const BasicBlock *, const BasicBlock *>;
 
+struct EdgeHash {
+    constexpr size_t operator()(const Edge &e) const noexcept {
+        size_t seed = 0;
+
+        hash_combine(seed, e.first);
+        hash_combine(seed, e.second);
+
+        return seed;
+    }
+};
+
 enum class Color {
     kWhite,
     kGray,
@@ -23,7 +35,7 @@ enum class Color {
 
 void dfs(const BasicBlock *u,
          HashMap<const BasicBlock *, Color> &colors,
-         std::unordered_set<Edge, Hash<Edge>> &backEdges) {
+         std::unordered_set<Edge, EdgeHash> &backEdges) {
     colors[u] = Color::kGray;
     for (const BasicBlock *v : successors(*u)) {
         if (colors[v] == Color::kWhite) {
@@ -41,7 +53,7 @@ class BranchPredictionAnalysis::Impl {
 public:
     void runOnFunction(const Function &F) {
         HashMap<const BasicBlock *, Color> colors;
-        std::unordered_set<Edge, Hash<Edge>> backEdges;
+        std::unordered_set<Edge, EdgeHash> backEdges;
 
         for (const BasicBlock &B : F) {
             colors(&B) = Color::kWhite;
@@ -79,7 +91,7 @@ public:
     }
 
 private:
-    std::unordered_set<Edge, Hash<Edge>> predictions_;
+    std::unordered_set<Edge, EdgeHash> predictions_;
 };
 
 BranchPredictionAnalysis::BranchPredictionAnalysis() : impl_(std::make_unique<Impl>()) {}

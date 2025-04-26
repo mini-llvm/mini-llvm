@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <list>
 
 #include "mini-llvm/mir/BasicBlock.h"
@@ -12,7 +13,7 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/mir/StackOffsetImmediate.h"
-#include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/HashCombine.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -24,7 +25,7 @@ namespace {
 struct ImmediateHash {
     size_t operator()(const Immediate *imm) const noexcept {
         if (auto *integerImm = dynamic_cast<const IntegerImmediate *>(&*imm)) {
-            return hash_value(integerImm->value());
+            return std::hash<int64_t>()(integerImm->value());
         }
         if (auto *stackOffsetImm = dynamic_cast<const StackOffsetImmediate *>(&*imm)) {
             size_t seed = 0;

@@ -4,7 +4,7 @@
 #include <functional>
 #include <string>
 
-#include "mini-llvm/utils/Hash.h"
+#include "mini-llvm/utils/HashCombine.h"
 
 namespace mini_llvm::ir {
 
