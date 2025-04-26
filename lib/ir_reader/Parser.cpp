@@ -654,14 +654,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         throw ParseException("must be integer type", cursor_);
                     }
 
-                    std::unique_ptr<IntegerType> castType2 = cast<IntegerType>(std::move(type2));
+                    std::unique_ptr<IntegerType> integerType2 = cast<IntegerType>(std::move(type2));
 
                     switch (mnemonic) {
-                        case kTrunc: I = std::make_shared<Trunc>(std::move(value), std::move(castType2)); break;
-                        case kSExt: I = std::make_shared<SExt>(std::move(value), std::move(castType2)); break;
-                        case kZExt: I = std::make_shared<ZExt>(std::move(value), std::move(castType2)); break;
-                        case kFPToSI: I = std::make_shared<FPToSI>(std::move(value), std::move(castType2)); break;
-                        case kFPToUI: I = std::make_shared<FPToUI>(std::move(value), std::move(castType2)); break;
+                        case kTrunc: I = std::make_shared<Trunc>(std::move(value), std::move(integerType2)); break;
+                        case kSExt: I = std::make_shared<SExt>(std::move(value), std::move(integerType2)); break;
+                        case kZExt: I = std::make_shared<ZExt>(std::move(value), std::move(integerType2)); break;
+                        case kFPToSI: I = std::make_shared<FPToSI>(std::move(value), std::move(integerType2)); break;
+                        case kFPToUI: I = std::make_shared<FPToUI>(std::move(value), std::move(integerType2)); break;
                         default: abort();
                     }
                 } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kSIToFP || mnemonic == kUIToFP) {
@@ -669,13 +669,13 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         throw ParseException("must be floating point type", cursor_);
                     }
 
-                    std::unique_ptr<FloatingType> castType2 = cast<FloatingType>(std::move(type2));
+                    std::unique_ptr<FloatingType> floatingType2 = cast<FloatingType>(std::move(type2));
 
                     switch (mnemonic) {
-                        case kFPTrunc: I = std::make_shared<FPTrunc>(std::move(value), std::move(castType2)); break;
-                        case kFPExt: I = std::make_shared<FPExt>(std::move(value), std::move(castType2)); break;
-                        case kSIToFP: I = std::make_shared<SIToFP>(std::move(value), std::move(castType2)); break;
-                        case kUIToFP: I = std::make_shared<UIToFP>(std::move(value), std::move(castType2)); break;
+                        case kFPTrunc: I = std::make_shared<FPTrunc>(std::move(value), std::move(floatingType2)); break;
+                        case kFPExt: I = std::make_shared<FPExt>(std::move(value), std::move(floatingType2)); break;
+                        case kSIToFP: I = std::make_shared<SIToFP>(std::move(value), std::move(floatingType2)); break;
+                        case kUIToFP: I = std::make_shared<UIToFP>(std::move(value), std::move(floatingType2)); break;
                         default: abort();
                     }
                 } else if (mnemonic == kPtrToInt) {

@@ -23,15 +23,15 @@ namespace {
 
 struct ImmediateHash {
     size_t operator()(const Immediate *imm) const noexcept {
-        if (auto *castImm = dynamic_cast<const IntegerImmediate *>(&*imm)) {
-            return hash_value(castImm->value());
+        if (auto *integerImm = dynamic_cast<const IntegerImmediate *>(&*imm)) {
+            return hash_value(integerImm->value());
         }
-        if (auto *castImm = dynamic_cast<const StackOffsetImmediate *>(&*imm)) {
+        if (auto *stackOffsetImm = dynamic_cast<const StackOffsetImmediate *>(&*imm)) {
             size_t seed = 0;
 
-            hash_combine(seed, castImm->baseSlot());
-            hash_combine(seed, castImm->slot());
-            hash_combine(seed, castImm->displacement());
+            hash_combine(seed, stackOffsetImm->baseSlot());
+            hash_combine(seed, stackOffsetImm->slot());
+            hash_combine(seed, stackOffsetImm->displacement());
 
             return seed;
         }
