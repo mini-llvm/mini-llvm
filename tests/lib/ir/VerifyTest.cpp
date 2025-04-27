@@ -23,12 +23,12 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-TEST(VerifyTest, unnamedGlobalVar) {
+TEST(VerifyTest, UnnamedGlobalVar) {
     GlobalVar G(std::make_unique<I32>(), Linkage::kExternal);
     EXPECT_FALSE(verify(G));
 }
 
-TEST(VerifyTest, unnamedFunction) {
+TEST(VerifyTest, UnnamedFunction) {
     std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
     );
@@ -38,13 +38,13 @@ TEST(VerifyTest, unnamedFunction) {
     EXPECT_FALSE(verify(F));
 }
 
-TEST(VerifyTest, globalVarInvalidLinkage) {
+TEST(VerifyTest, GlobalVarInvalidLinkage) {
     GlobalVar G(std::make_unique<I32>(), Linkage::kInternal);
     G.setName("test");
     EXPECT_FALSE(verify(G));
 }
 
-TEST(VerifyTest, functionInvalidLinkage) {
+TEST(VerifyTest, FunctionInvalidLinkage) {
     std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
     );
@@ -53,7 +53,7 @@ TEST(VerifyTest, functionInvalidLinkage) {
     EXPECT_FALSE(verify(F));
 }
 
-TEST(VerifyTest, selfReferentialInstruction) {
+TEST(VerifyTest, SelfReferentialInstruction) {
     std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
     );

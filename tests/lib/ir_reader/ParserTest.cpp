@@ -15,7 +15,7 @@ using namespace mini_llvm::ir;
 
 using enum Token::Kind;
 
-TEST(ParserTest, empty) {
+TEST(ParserTest, Empty) {
     std::vector<Token> input{
         {kEOF, {}, nullptr},
     };
@@ -23,7 +23,7 @@ TEST(ParserTest, empty) {
     Parser(input.begin()).parseModule();
 }
 
-TEST(ParserTest, arrayType) {
+TEST(ParserTest, ArrayType) {
     // [2 x [3 x [4 x i32]]]
     std::vector<Token> input{
         {kLeftBracket,  {}, nullptr},
@@ -56,7 +56,7 @@ TEST(ParserTest, arrayType) {
     EXPECT_EQ(*Parser(input.begin()).parseType(), *expectedOutput);
 }
 
-TEST(ParserTest, arrayConstant) {
+TEST(ParserTest, ArrayConstant) {
     // [[2 x i32] [i32 42, i32 43], [2 x i32] [i32 44, i32 45]]
     std::vector<Token> input{
         {kLeftBracket,  {}, nullptr},
