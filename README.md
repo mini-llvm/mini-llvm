@@ -101,7 +101,7 @@
 - `call`
 - `phi`
 
-## Supported Optimizations (Work in Progress)
+## Transform & Analysis Passes (Work in Progress)
 
 ### IR
 
@@ -112,6 +112,7 @@
 - `ConstantFolding`
 - `DeadCodeElimination`
 - `DeadStoreElimination`
+- `DominatorTreeAnalysis`
 - `FunctionInlining`
 - `GlobalValueNumbering`
 - `InstructionCombining`
@@ -126,9 +127,11 @@
 
 - `BasicBlockMerging`
 - `BasicBlockReordering`
+- `BranchPredictionAnalysis`
 - `CopyPropagation`
 - `DeadCodeElimination`
 - `JumpThreading`
+- `LiveVariableAnalysis`
 - `NullOperationElimination`
 - `RegisterReuse`
 - `StackOffsetEvaluation`
@@ -142,7 +145,7 @@
 - `RedundantLabelElimination`
 - `RISCVFallthrough` (`riscv64`)
 
-## Supported Register Allocators (Work in Progress)
+## Register Allocators (Work in Progress)
 
 - `NaiveAllocator`
 - `LinearScanAllocator`
