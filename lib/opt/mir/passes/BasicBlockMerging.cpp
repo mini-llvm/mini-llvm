@@ -40,15 +40,13 @@ bool BasicBlockMerging::runOnFunction(Function &F) {
     }
 
     for (BasicBlock &B : F) {
-        if (numPredecessors[&B] != 1) {
-            while (canMergeWithSuccessor(B, numPredecessors)) {
-                BasicBlock &succ = *static_cast<const Br *>(&B.back())->dest();
-                B.removeLast();
-                while (!succ.empty()) {
-                    B.append(succ.removeFirst());
-                }
-                changed = true;
+        while (canMergeWithSuccessor(B, numPredecessors)) {
+            BasicBlock &succ = *static_cast<const Br *>(&B.back())->dest();
+            B.removeLast();
+            while (!succ.empty()) {
+                B.append(succ.removeFirst());
             }
+            changed = true;
         }
     }
 
