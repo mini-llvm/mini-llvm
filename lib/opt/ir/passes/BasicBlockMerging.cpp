@@ -55,23 +55,21 @@ bool BasicBlockMerging::runOnFunction(Function &F) {
     }
 
     for (BasicBlock &B : F) {
-        if (numPredecessors[&B] != 1) {
-            while (canMergeWithSuccessor(B, numPredecessors)) {
-                BasicBlock &succ = *static_cast<Br *>(&B.back())->dest();
-                removeFromParent(B.back());
-                while (!succ.empty()) {
-                    std::shared_ptr<Instruction> I = share(succ.front());
-                    removeFromParent(*I);
-                    B.append(std::move(I));
-                }
-#ifndef NDEBUG
-                for (const UseBase &use : uses(succ)) {
-                    assert(dynamic_cast<const Phi *>(use.user()));
-                }
-#endif
-                replaceAllUsesWith(succ, weaken(B));
-                changed = true;
+        while (canMergeWithSuccessor(B, numPredecessors)) {
+            BasicBlock &succ = *static_cast<Br *>(&B.back())->dest();
+            removeFromParent(B.back());
+            while (!succ.empty()) {
+                std::shared_ptr<Instruction> I = share(succ.front());
+                removeFromParent(*I);
+                B.append(std::move(I));
             }
+#ifndef NDEBUG
+            for (const UseBase &use : uses(succ)) {
+                assert(dynamic_cast<const Phi *>(use.user()));
+            }
+#endif
+            replaceAllUsesWith(succ, weaken(B));
+            changed = true;
         }
     }
 
