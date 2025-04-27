@@ -44,7 +44,40 @@ global i32 42 ; Comment
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, numberInt64Max) {
+TEST(LexerTest, numberPositive) {
+    const char *input = "42";
+
+    std::vector<Token> expectedOutput{
+        {kNumber, 42, input + 0},
+        {kEOF, {}, input + 2},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, numberNegative) {
+    const char *input = "-42";
+
+    std::vector<Token> expectedOutput{
+        {kNumber, -42, input + 0},
+        {kEOF, {}, input + 3},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, numberZero) {
+    const char *input = "0";
+
+    std::vector<Token> expectedOutput{
+        {kNumber, 0, input + 0},
+        {kEOF, {}, input + 1},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, numberSignedMax) {
     const char *input = "9223372036854775807";
 
     std::vector<Token> expectedOutput{
@@ -55,7 +88,7 @@ TEST(LexerTest, numberInt64Max) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, numberInt64Min) {
+TEST(LexerTest, numberSignedMin) {
     const char *input = "-9223372036854775808";
 
     std::vector<Token> expectedOutput{
@@ -66,7 +99,7 @@ TEST(LexerTest, numberInt64Min) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, numberUInt64Max) {
+TEST(LexerTest, numberUnsignedMax) {
     const char *input = "18446744073709551615";
 
     std::vector<Token> expectedOutput{
@@ -77,7 +110,7 @@ TEST(LexerTest, numberUInt64Max) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, numberInt64MaxHex) {
+TEST(LexerTest, hexNumberSignedMax) {
     const char *input = "0x7fffffffffffffff";
 
     std::vector<Token> expectedOutput{
@@ -88,7 +121,7 @@ TEST(LexerTest, numberInt64MaxHex) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, numberInt64MinHex) {
+TEST(LexerTest, hexNumberSignedMin) {
     const char *input = "0x8000000000000000";
 
     std::vector<Token> expectedOutput{
@@ -99,7 +132,7 @@ TEST(LexerTest, numberInt64MinHex) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, numberUInt64MaxHex) {
+TEST(LexerTest, hexNumberUnsignedMax) {
     const char *input = "0xffffffffffffffff";
 
     std::vector<Token> expectedOutput{
@@ -111,24 +144,12 @@ TEST(LexerTest, numberUInt64MaxHex) {
 }
 
 TEST(LexerTest, label) {
-    const char *input = "_test.42:";
+    const char *input = "some_test.42:";
 
     std::vector<Token> expectedOutput{
-        {kName,  "_test.42", input + 0},
-        {kColon, {},         input + 8},
-        {kEOF,   {},         input + 9},
-    };
-
-    EXPECT_EQ(lex(input), expectedOutput);
-}
-
-TEST(LexerTest, labelKeyword) {
-    const char *input = "define:";
-
-    std::vector<Token> expectedOutput{
-        {kName, "define", input + 0},
-        {kColon, {},      input + 6},
-        {kEOF,   {},      input + 7},
+        {kName,  "some_test.42", input + 0},
+        {kColon, {},             input + 12},
+        {kEOF,   {},             input + 13},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
@@ -146,25 +167,49 @@ TEST(LexerTest, labelNumber) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, localIdentifier) {
-    const char *input = "%_test.42";
+TEST(LexerTest, labelUnderscore) {
+    const char *input = "_:";
 
     std::vector<Token> expectedOutput{
-        {kPercent, {},         input + 0},
-        {kName,    "_test.42", input + 1},
-        {kEOF,     {},         input + 9},
+        {kName, "_", input + 0},
+        {kColon, {}, input + 1},
+        {kEOF,   {}, input + 2},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, localIdentifierKeyword) {
-    const char *input = "@define";
+TEST(LexerTest, labelDot) {
+    const char *input = ".:";
 
     std::vector<Token> expectedOutput{
-        {kAt,   {},       input + 0},
-        {kName, "define", input + 1},
-        {kEOF,  {},       input + 7},
+        {kName, ".", input + 0},
+        {kColon, {}, input + 1},
+        {kEOF,   {}, input + 2},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, labelReserved) {
+    const char *input = "define:";
+
+    std::vector<Token> expectedOutput{
+        {kName, "define", input + 0},
+        {kColon, {},      input + 6},
+        {kEOF,   {},      input + 7},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, localIdentifier) {
+    const char *input = "%some_test.42";
+
+    std::vector<Token> expectedOutput{
+        {kPercent, {},             input + 0},
+        {kName,    "some_test.42", input + 1},
+        {kEOF,     {},             input + 13},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
@@ -177,6 +222,42 @@ TEST(LexerTest, localIdentifierNumber) {
         {kPercent, {},   input + 0},
         {kName,    "42", input + 1},
         {kEOF,     {},   input + 3},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, localIdentifierUnderscore) {
+    const char *input = "%_";
+
+    std::vector<Token> expectedOutput{
+        {kPercent, {},  input + 0},
+        {kName,    "_", input + 1},
+        {kEOF,     {},  input + 2},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, localIdentifierDot) {
+    const char *input = "%.";
+
+    std::vector<Token> expectedOutput{
+        {kPercent, {},  input + 0},
+        {kName,    ".", input + 1},
+        {kEOF,     {},  input + 2},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, localIdentifierReserved) {
+    const char *input = "@define";
+
+    std::vector<Token> expectedOutput{
+        {kAt,   {},       input + 0},
+        {kName, "define", input + 1},
+        {kEOF,  {},       input + 7},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
