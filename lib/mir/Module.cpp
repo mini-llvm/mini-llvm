@@ -10,32 +10,40 @@
 
 using namespace mini_llvm::mir;
 
-GlobalVar &Module::GlobalVars::add(Module::GlobalVars::const_iterator pos, std::unique_ptr<GlobalVar> G) {
+GlobalVar &Module::addGlobalVar(const_global_var_iterator pos, std::unique_ptr<GlobalVar> G) {
     return **globalVars_.insert(pos.base(), std::move(G));
 }
 
-std::unique_ptr<GlobalVar> Module::GlobalVars::remove(Module::GlobalVars::const_iterator pos) {
+std::unique_ptr<GlobalVar> Module::removeGlobalVar(const_global_var_iterator pos) {
     std::unique_ptr<GlobalVar> G = std::move(const_cast<std::unique_ptr<GlobalVar> &>(*pos.base()));
     globalVars_.erase(pos.base());
     return G;
 }
 
-Function &Module::Functions::add(Module::Functions::const_iterator pos, std::unique_ptr<Function> F) {
+void Module::clearGlobalVars() {
+    globalVars_.clear();
+}
+
+Function &Module::addFunction(const_function_iterator pos, std::unique_ptr<Function> F) {
     return **functions_.insert(pos.base(), std::move(F));
 }
 
-std::unique_ptr<Function> Module::Functions::remove(Module::Functions::iterator pos) {
-    std::unique_ptr<Function> F = std::move(*pos.base());
+std::unique_ptr<Function> Module::removeFunction(const_function_iterator pos) {
+    std::unique_ptr<Function> F = std::move(const_cast<std::unique_ptr<Function> &>(*pos.base()));
     functions_.erase(pos.base());
     return F;
 }
 
+void Module::clearFunctions() {
+    functions_.clear();
+}
+
 std::string Module::format() const {
     StringJoiner formatted("\n\n");
-    for (const GlobalVar &G : globalVars) {
+    for (const GlobalVar &G : globalVars(*this)) {
         formatted.addFormat("{}", G);
     }
-    for (const Function &F : functions) {
+    for (const Function &F : functions(*this)) {
         formatted.addFormat("{}", F);
     }
     return formatted.toString();

@@ -55,7 +55,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
         using namespace mir;
         using namespace mir::riscv;
 
-        for (Function &F : MM.functions) {
+        for (Function &F : functions(MM)) {
             for (BasicBlock &B : F) {
                 if (&B != &F.entry() && !dynamic_cast<const RISCVRet *>(&B.back())) {
                     B.add(std::prev(B.end()), std::make_unique<Live>(fp()));
@@ -71,7 +71,7 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
         using namespace mir;
         using namespace mir::riscv;
 
-        for (Function &F : MM.functions) {
+        for (Function &F : functions(MM)) {
             if (!F.empty()) {
                 for (RegisterClass Class : {RegisterClass::kGPR, RegisterClass::kFPR}) {
                     std::unordered_set<VirtualRegister *> virtRegs;
