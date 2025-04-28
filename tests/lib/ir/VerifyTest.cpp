@@ -32,5 +32,5 @@ TEST(VerifyTest, SelfReferentialInstruction) {
     Add &I = B.append(std::make_shared<Add>(op, op));
     replaceAllUsesWith(*op, share(I));
     B.append(std::make_shared<Ret>(std::make_shared<VoidValue>()));
-    EXPECT_FALSE(verify(F));
+    EXPECT_FALSE(verifyFunction(F));
 }

@@ -5,7 +5,7 @@
 
 namespace mini_llvm::ir {
 
-bool verify(const Function &F);
-bool verify(const Module &M);
+bool verifyFunction(const Function &F);
+bool verifyModule(const Module &M);
 
 } // namespace mini_llvm::ir

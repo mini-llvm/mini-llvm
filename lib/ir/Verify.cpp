@@ -28,7 +28,7 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-bool ir::verify(const Function &F) {
+bool ir::verifyFunction(const Function &F) {
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
             for (const UseBase *op : I.operands()) {
@@ -199,10 +199,10 @@ bool ir::verify(const Function &F) {
     return true;
 }
 
-bool ir::verify(const Module &M) {
+bool ir::verifyModule(const Module &M) {
     for (const Function &F : M.functions) {
         if (!F.empty()) {
-            if (!verify(F)) {
+            if (!verifyFunction(F)) {
                 return false;
             }
         }

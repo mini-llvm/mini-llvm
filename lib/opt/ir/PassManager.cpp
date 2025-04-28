@@ -26,12 +26,12 @@
 using namespace mini_llvm::ir;
 
 void PassManager::run(Module &M) const {
-    assert(verify(M));
+    assert(verifyModule(M));
 
     Mem2Reg pass0;
 
     pass0.runOnModule(M);
-    assert(verify(M));
+    assert(verifyModule(M));
 
     bool changed;
     do {
@@ -75,7 +75,7 @@ void PassManager::run(Module &M) const {
 
         for (ModuleTransform *pass : passes) {
             changed |= pass->runOnModule(M);
-            assert(verify(M));
+            assert(verifyModule(M));
         }
     } while (changed);
 }

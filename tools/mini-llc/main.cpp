@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
-    if (!ir::verify(*M)) {
+    if (!ir::verifyModule(*M)) {
         fprintf(stderr, "%s: error: invalid module\n", argv[0]);
         return EXIT_FAILURE;
     }
