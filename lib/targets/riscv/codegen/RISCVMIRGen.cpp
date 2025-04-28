@@ -1222,11 +1222,11 @@ private:
 } // namespace
 
 void RISCVMIRGen::emit() {
-    for (const ir::GlobalVar &IG : IM_->globalVars) {
+    for (const ir::GlobalVar &IG : globalVars(*IM_)) {
         GlobalVar &MG = MM_->globalVars.append(std::make_unique<GlobalVar>(IG.name(), IG.linkage()));
         globalVarMap_(&IG) = &MG;
     }
-    for (const ir::Function &IF : IM_->functions) {
+    for (const ir::Function &IF : functions(*IM_)) {
         Function &MF = MM_->functions.append(std::make_unique<Function>(IF.name(), IF.linkage()));
         functionMap_(&IF) = &MF;
     }

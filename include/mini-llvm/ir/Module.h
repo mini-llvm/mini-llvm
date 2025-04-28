@@ -4,6 +4,7 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <ranges>
 #include <string>
 
 #include "mini-llvm/ir/Function.h"
@@ -13,194 +14,130 @@
 namespace mini_llvm::ir {
 
 class Module {
+    using GlobalVarList = std::list<std::shared_ptr<GlobalVar>>;
+    using FunctionList = std::list<std::shared_ptr<Function>>;
+
 public:
-    class GlobalVars {
-        using GlobalVarList = std::list<std::shared_ptr<GlobalVar>>;
+    using global_var_iterator = IndirectIterator<GlobalVarList::iterator, GlobalVar>;
+    using const_global_var_iterator = IndirectIterator<GlobalVarList::const_iterator, const GlobalVar>;
 
-    public:
-        using iterator = IndirectIterator<GlobalVarList::iterator, GlobalVar>;
-        using const_iterator = IndirectIterator<GlobalVarList::const_iterator, const GlobalVar>;
-        using reverse_iterator = IndirectIterator<GlobalVarList::reverse_iterator, GlobalVar>;
-        using const_reverse_iterator = IndirectIterator<GlobalVarList::const_reverse_iterator, const GlobalVar>;
+    using function_iterator = IndirectIterator<FunctionList::iterator, Function>;
+    using const_function_iterator = IndirectIterator<FunctionList::const_iterator, const Function>;
 
-        iterator begin() {
-            return iterator(globalVars_.begin());
-        }
+    global_var_iterator global_var_begin() {
+        return global_var_iterator(globalVars_.begin());
+    }
 
-        const_iterator begin() const {
-            return const_iterator(globalVars_.begin());
-        }
+    const_global_var_iterator global_var_begin() const {
+        return const_global_var_iterator(globalVars_.begin());
+    }
 
-        iterator end() {
-            return iterator(globalVars_.end());
-        }
+    global_var_iterator global_var_end() {
+        return global_var_iterator(globalVars_.end());
+    }
 
-        const_iterator end() const {
-            return const_iterator(globalVars_.end());
-        }
+    const_global_var_iterator global_var_end() const {
+        return const_global_var_iterator(globalVars_.end());
+    }
 
-        reverse_iterator rbegin() {
-            return reverse_iterator(globalVars_.rbegin());
-        }
+    bool global_var_empty() const {
+        return globalVars_.empty();
+    }
 
-        const_reverse_iterator rbegin() const {
-            return const_reverse_iterator(globalVars_.rbegin());
-        }
+    size_t global_var_size() const {
+        return globalVars_.size();
+    }
 
-        reverse_iterator rend() {
-            return reverse_iterator(globalVars_.rend());
-        }
+    GlobalVar &addGlobalVar(const_global_var_iterator pos, std::shared_ptr<GlobalVar> G);
 
-        const_reverse_iterator rend() const {
-            return const_reverse_iterator(globalVars_.rend());
-        }
+    GlobalVar &prependGlobalVar(std::shared_ptr<GlobalVar> G) {
+        return addGlobalVar(global_var_begin(), std::move(G));
+    }
 
-        GlobalVar &front() {
-            return *begin();
-        }
+    GlobalVar &appendGlobalVar(std::shared_ptr<GlobalVar> G) {
+        return addGlobalVar(global_var_end(), std::move(G));
+    }
 
-        const GlobalVar &front() const {
-            return *begin();
-        }
+    void removeGlobalVar(const_global_var_iterator pos);
 
-        GlobalVar &back() {
-            return *std::prev(end());
-        }
+    void removeFirstGlobalVar() {
+        removeGlobalVar(global_var_begin());
+    }
 
-        const GlobalVar &back() const {
-            return *std::prev(end());
-        }
+    void removeLastGlobalVar() {
+        removeGlobalVar(std::prev(global_var_end()));
+    }
 
-        bool empty() const {
-            return globalVars_.empty();
-        }
+    void clearGlobalVars();
 
-        size_t size() const {
-            return globalVars_.size();
-        }
+    function_iterator function_begin() {
+        return function_iterator(functions_.begin());
+    }
 
-        GlobalVar &add(const_iterator pos, std::shared_ptr<GlobalVar> G);
+    const_function_iterator function_begin() const {
+        return const_function_iterator(functions_.begin());
+    }
 
-        GlobalVar &prepend(std::shared_ptr<GlobalVar> G) {
-            return add(begin(), std::move(G));
-        }
+    function_iterator function_end() {
+        return function_iterator(functions_.end());
+    }
 
-        GlobalVar &append(std::shared_ptr<GlobalVar> G) {
-            return add(end(), std::move(G));
-        }
+    const_function_iterator function_end() const {
+        return const_function_iterator(functions_.end());
+    }
 
-        void remove(const_iterator pos);
+    bool function_empty() const {
+        return functions_.empty();
+    }
 
-        void removeFirst() {
-            remove(begin());
-        }
+    size_t function_size() const {
+        return functions_.size();
+    }
 
-        void removeLast() {
-            remove(std::prev(end()));
-        }
+    Function &addFunction(const_function_iterator pos, std::shared_ptr<Function> F);
 
-        void clear();
+    Function &prependFunction(std::shared_ptr<Function> F) {
+        return addFunction(function_begin(), std::move(F));
+    }
 
-    private:
-        GlobalVarList globalVars_;
-    };
+    Function &appendFunction(std::shared_ptr<Function> F) {
+        return addFunction(function_end(), std::move(F));
+    }
 
-    class Functions {
-        using FunctionList = std::list<std::shared_ptr<Function>>;
+    void removeFunction(const_function_iterator pos);
 
-    public:
-        using iterator = IndirectIterator<FunctionList::iterator, Function>;
-        using const_iterator = IndirectIterator<FunctionList::const_iterator, const Function>;
-        using reverse_iterator = IndirectIterator<FunctionList::reverse_iterator, Function>;
-        using const_reverse_iterator = IndirectIterator<FunctionList::const_reverse_iterator, const Function>;
+    void removeFirstFunction() {
+        removeFunction(function_begin());
+    }
 
-        iterator begin() {
-            return iterator(functions_.begin());
-        }
+    void removeLastFunction() {
+        removeFunction(std::prev(function_end()));
+    }
 
-        const_iterator begin() const {
-            return const_iterator(functions_.begin());
-        }
-
-        iterator end() {
-            return iterator(functions_.end());
-        }
-
-        const_iterator end() const {
-            return const_iterator(functions_.end());
-        }
-
-        reverse_iterator rbegin() {
-            return reverse_iterator(functions_.rbegin());
-        }
-
-        const_reverse_iterator rbegin() const {
-            return const_reverse_iterator(functions_.rbegin());
-        }
-
-        reverse_iterator rend() {
-            return reverse_iterator(functions_.rend());
-        }
-
-        const_reverse_iterator rend() const {
-            return const_reverse_iterator(functions_.rend());
-        }
-
-        Function &front() {
-            return *begin();
-        }
-
-        const Function &front() const {
-            return *begin();
-        }
-
-        Function &back() {
-            return *std::prev(end());
-        }
-
-        const Function &back() const {
-            return *std::prev(end());
-        }
-
-        bool empty() const {
-            return functions_.empty();
-        }
-
-        size_t size() const {
-            return functions_.size();
-        }
-
-        Function &add(const_iterator pos, std::shared_ptr<Function> F);
-
-        Function &prepend(std::shared_ptr<Function> F) {
-            return add(begin(), std::move(F));
-        }
-
-        Function &append(std::shared_ptr<Function> F) {
-            return add(end(), std::move(F));
-        }
-
-        void remove(const_iterator pos);
-
-        void removeFirst() {
-            remove(begin());
-        }
-
-        void removeLast() {
-            remove(std::prev(end()));
-        }
-
-        void clear();
-
-    private:
-        FunctionList functions_;
-    };
-
-    GlobalVars globalVars;
-    Functions functions;
+    void clearFunctions();
 
     std::string format() const;
+
+private:
+    GlobalVarList globalVars_;
+    FunctionList functions_;
 };
+
+inline auto globalVars(Module &M) {
+    return std::ranges::subrange(M.global_var_begin(), M.global_var_end());
+}
+
+inline auto globalVars(const Module &M) {
+    return std::ranges::subrange(M.global_var_begin(), M.global_var_end());
+}
+
+inline auto functions(Module &M) {
+    return std::ranges::subrange(M.function_begin(), M.function_end());
+}
+
+inline auto functions(const Module &M) {
+    return std::ranges::subrange(M.function_begin(), M.function_end());
+}
 
 } // namespace mini_llvm::ir
 

@@ -59,10 +59,10 @@ void dfs(
 
 bool AttributeDeduction::runOnModule(Module &M) {
     HashMap<const Function *, std::unordered_set<const Function *>> callGraph;
-    for (const Function &F : M.functions) {
+    for (const Function &F : functions(M)) {
         callGraph(&F) = {};
     }
-    for (const Function &F : M.functions) {
+    for (const Function &F : functions(M)) {
         for (const BasicBlock &B : F) {
             for (const Instruction &I : B) {
                 if (auto *call = dynamic_cast<const Call *>(&I)) {
@@ -90,7 +90,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
     }
 
     std::unordered_set<int> impure;
-    for (const Function &F : M.functions) {
+    for (const Function &F : functions(M)) {
         if (!F.hasAttr(Attribute::kReadNone)) {
             if (!F.empty()) {
                 bool isImpure = false;
@@ -172,7 +172,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     bool changed = false;
 
-    for (Function &F : M.functions) {
+    for (Function &F : functions(M)) {
         if (!F.hasAttr(Attribute::kReadNone) && !impure.contains(scc[&F])) {
             F.setAttr(Attribute::kReadNone);
             changed = true;

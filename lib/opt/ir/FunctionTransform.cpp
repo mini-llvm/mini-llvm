@@ -7,7 +7,7 @@ using namespace mini_llvm::ir;
 
 bool FunctionTransform::runOnModule(Module &M) {
     bool changed = false;
-    for (Function &F : M.functions) {
+    for (Function &F : functions(M)) {
         if (!F.empty()) {
             changed |= runOnFunction(F);
         }

@@ -150,7 +150,7 @@ Module Parser::parseModule() {
         if (cursor_->kind == kAt) {
             bool hasInitializer;
             std::shared_ptr<GlobalVar> G = parseGlobalVarHeader(hasInitializer);
-            M.globalVars.append(G);
+            M.appendGlobalVar(G);
             if (hasInitializer) {
                 globalVars.emplace_back(&*G, cursor_);
                 int count = 0;
@@ -189,7 +189,7 @@ Module Parser::parseModule() {
         } else if (cursor_->kind == kDefine || cursor_->kind == kDeclare) {
             bool hasBody;
             std::shared_ptr<Function> F = parseFunctionHeader(hasBody);
-            M.functions.append(F);
+            M.appendFunction(F);
             if (hasBody) {
                 functions.emplace_back(&*F, cursor_);
                 if (cursor_->kind != kLeftBrace) {
