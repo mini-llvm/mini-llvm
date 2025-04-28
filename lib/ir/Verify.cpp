@@ -34,19 +34,11 @@ bool ir::verify(const GlobalVar &G) {
         return false;
     }
 
-    if (!G.hasInitializer() && G.linkage() != Linkage::kExternal) {
-        return false;
-    }
-
     return true;
 }
 
 bool ir::verify(const Function &F) {
     if (F.name().empty()) {
-        return false;
-    }
-
-    if (F.empty() && F.linkage() != Linkage::kExternal) {
         return false;
     }
 

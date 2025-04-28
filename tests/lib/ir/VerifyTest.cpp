@@ -38,21 +38,6 @@ TEST(VerifyTest, UnnamedFunction) {
     EXPECT_FALSE(verify(F));
 }
 
-TEST(VerifyTest, GlobalVarInvalidLinkage) {
-    GlobalVar G(std::make_unique<I32>(), Linkage::kInternal);
-    G.setName("test");
-    EXPECT_FALSE(verify(G));
-}
-
-TEST(VerifyTest, FunctionInvalidLinkage) {
-    std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
-        std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
-    );
-    Function F(std::move(functionType), Linkage::kInternal);
-    F.setName("test");
-    EXPECT_FALSE(verify(F));
-}
-
 TEST(VerifyTest, SelfReferentialInstruction) {
     std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
