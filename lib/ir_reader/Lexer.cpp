@@ -152,7 +152,7 @@ Token Lexer::nextTokenImpl() {
             } else {
                 char ch = *cursor_;
                 if (!(0x20 <= ch && ch <= 0x7e)) {
-                    throw LexException("only characters between \\x20 and \\x7e are permitted", cursor_);
+                    throw LexException("unescaped non-printable character", cursor_);
                 }
                 int8_t element = static_cast<int8_t>(ch);
                 elements.push_back(element);
