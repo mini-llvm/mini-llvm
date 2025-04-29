@@ -72,6 +72,7 @@ add_library(mini-llvm
     opt/ir/passes/GlobalValueNumbering.cpp
     opt/ir/passes/InstructionCombining.cpp
     opt/ir/passes/JumpThreading.cpp
+    opt/ir/passes/LoopTreeAnalysis.cpp
     opt/ir/passes/Mem2Reg.cpp
     opt/ir/passes/PoisonPropagation.cpp
     opt/ir/passes/RedundantLoadElimination.cpp

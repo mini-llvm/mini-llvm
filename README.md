@@ -118,6 +118,7 @@
 - `GlobalValueNumbering`
 - `InstructionCombining`
 - `JumpThreading`
+- `LoopTreeAnalysis`
 - `Mem2Reg`
 - `PoisonPropagation`
 - `RedundantLoadElimination`
