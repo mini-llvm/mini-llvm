@@ -115,6 +115,7 @@
 - `DeadStoreElimination`
 - `DominatorTreeAnalysis`
 - `FunctionInlining`
+- `GlobalCodeMotion`
 - `GlobalValueNumbering`
 - `InstructionCombining`
 - `JumpThreading`
