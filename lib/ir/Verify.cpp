@@ -173,10 +173,7 @@ bool ir::verifyFunction(const Function &F) {
         for (const Instruction &I : *B) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                    if (!S.contains(II->parent())) {
-                        return false;
-                    }
-                    if (!dynamic_cast<const Phi *>(II) && !domTree.dominates(I, *II)) {
+                    if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
                         return false;
                     }
                 }
