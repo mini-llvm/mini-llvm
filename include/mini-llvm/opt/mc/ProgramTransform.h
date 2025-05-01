@@ -1,12 +1,12 @@
 #pragma once
 
 #include "mini-llvm/mc/Program.h"
+#include "mini-llvm/opt/mc/Pass.h"
 
 namespace mini_llvm::mc {
 
-class ProgramTransform {
+class ProgramTransform : public Pass {
 public:
-    ~ProgramTransform() = default;
     virtual bool runOnProgram(Program &program) = 0;
 };
 
