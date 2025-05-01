@@ -10,7 +10,7 @@
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
-#include "mini-llvm/ir/Instruction/BinaryFloatingRelationalOperator.h"
+#include "mini-llvm/ir/Instruction/BinaryFloatingArithmeticOperator.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 #include "mini-llvm/ir/Instruction/BitCast.h"
 #include "mini-llvm/ir/Instruction/FCmp.h"
@@ -73,9 +73,9 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
                ValueNumber{&*lhsValue->lhs()} == ValueNumber{&*rhsValue->lhs()} &&
                ValueNumber{&*lhsValue->rhs()} == ValueNumber{&*rhsValue->rhs()};
     }
-    if (dynamic_cast<const BinaryFloatingRelationalOperator *>(lhs.value)) {
-        auto *lhsValue = static_cast<const BinaryFloatingRelationalOperator *>(lhs.value),
-             *rhsValue = static_cast<const BinaryFloatingRelationalOperator *>(rhs.value);
+    if (dynamic_cast<const BinaryFloatingArithmeticOperator *>(lhs.value)) {
+        auto *lhsValue = static_cast<const BinaryFloatingArithmeticOperator *>(lhs.value),
+             *rhsValue = static_cast<const BinaryFloatingArithmeticOperator *>(rhs.value);
         return ValueNumber{&*lhsValue->lhs()} == ValueNumber{&*rhsValue->lhs()} &&
                ValueNumber{&*lhsValue->rhs()} == ValueNumber{&*rhsValue->rhs()};
     }
@@ -190,7 +190,7 @@ struct std::hash<ValueNumber> {
             hash_combine(seed, ValueNumber{&*value->rhs()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const BinaryFloatingRelationalOperator *>(number.value)) {
+        if (auto *value = dynamic_cast<const BinaryFloatingArithmeticOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->lhs()});
