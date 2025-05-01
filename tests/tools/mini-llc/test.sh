@@ -8,9 +8,9 @@ function run_test {
     local result_dir="$3"
 
     mkdir -p "$(dirname "$result_dir/$test_name")" &&
-    timeout -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$target" -o "$result_dir/$test_name.s" "$test_name.ll" &&
-    timeout -v "$LINKER_TIMEOUT" $LINKER_COMMAND -o "$result_dir/$test_name" "$result_dir/$test_name.s" -lm &&
-    timeout -v "$EMULATOR_TIMEOUT" $EMULATOR_COMMAND "$result_dir/$test_name" > "$result_dir/$test_name.out" &&
+    timeout --foreground -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$target" -o "$result_dir/$test_name.s" "$test_name.ll" &&
+    timeout --foreground -v "$LINKER_TIMEOUT" $LINKER_COMMAND -o "$result_dir/$test_name" "$result_dir/$test_name.s" -lm &&
+    timeout --foreground -v "$EMULATOR_TIMEOUT" $EMULATOR_COMMAND "$result_dir/$test_name" > "$result_dir/$test_name.out" &&
     $DIFF_COMMAND "${test_name}.ans" "$result_dir/$test_name.out"
 }
 
@@ -86,7 +86,7 @@ function main {
 
     if (( "${#failed_tests[@]}" > 0 )); then
         for test_name in "${failed_tests[@]}"; do
-            echo "$test_name" >> "$result_dir/failed_tests.txt"
+            echo "$test_name" >> "$result_dir/failed_tests"
         done
         return 1
     fi
