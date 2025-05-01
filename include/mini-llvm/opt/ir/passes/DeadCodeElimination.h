@@ -8,6 +8,10 @@ namespace mini_llvm::ir {
 class DeadCodeElimination final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
+
+    const char *name() const override {
+        return "DeadCodeElimination";
+    }
 };
 
 } // namespace mini_llvm::ir

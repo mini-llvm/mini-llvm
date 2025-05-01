@@ -28,6 +28,10 @@ public:
     const LoopTreeNode *node(const Loop &loop) const;
     const LoopTreeNode *rootNode() const;
 
+    const char *name() const override {
+        return "LoopTreeAnalysis";
+    }
+
 private:
     class Impl;
 

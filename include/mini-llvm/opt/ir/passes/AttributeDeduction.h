@@ -8,6 +8,10 @@ namespace mini_llvm::ir {
 class AttributeDeduction final : public ModuleTransform {
 public:
     bool runOnModule(Module &M) override;
+
+    const char *name() const override {
+        return "AttributeDeduction";
+    }
 };
 
 } // namespace mini_llvm::ir

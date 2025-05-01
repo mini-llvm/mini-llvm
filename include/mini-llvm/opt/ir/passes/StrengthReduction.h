@@ -12,6 +12,10 @@ public:
 
     bool runOnFunction(Function &F) override;
 
+    const char *name() const override {
+        return "StrengthReduction";
+    }
+
 private:
     size_t mulThreshold_;
     size_t divThreshold_;

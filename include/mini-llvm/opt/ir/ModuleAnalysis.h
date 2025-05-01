@@ -1,12 +1,12 @@
 #pragma once
 
 #include "mini-llvm/ir/Module.h"
+#include "mini-llvm/opt/ir/Pass.h"
 
 namespace mini_llvm::ir {
 
-class ModuleAnalysis {
+class ModuleAnalysis : public Pass {
 public:
-    virtual ~ModuleAnalysis() = default;
     virtual void runOnModule(const Module &M) = 0;
 };
 

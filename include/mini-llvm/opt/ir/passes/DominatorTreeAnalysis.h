@@ -24,6 +24,10 @@ public:
     bool dominates(const BasicBlock &u, const BasicBlock &v) const;
     bool dominates(const Instruction &u, const Instruction &v) const;
 
+    const char *name() const override {
+        return "DominatorTreeAnalysis";
+    }
+
 private:
     class Impl;
 

@@ -8,6 +8,10 @@ namespace mini_llvm::ir {
 class RedundantLoadElimination final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
+
+    const char *name() const override {
+        return "RedundantLoadElimination";
+    }
 };
 
 } // namespace mini_llvm::ir
