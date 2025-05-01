@@ -12,6 +12,10 @@ public:
 
     bool runOnBasicBlock(BasicBlock &B) override;
 
+    const char *name() const override {
+        return "ZeroRegisterReplacement";
+    }
+
 private:
     PhysicalRegister *zeroReg_;
 };

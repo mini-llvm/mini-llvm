@@ -21,6 +21,10 @@ public:
     std::unordered_set<Register *> liveIn(const Instruction &I) const;
     std::unordered_set<Register *> liveOut(const Instruction &I) const;
 
+    const char *name() const override {
+        return "LiveVariableAnalysis";
+    }
+
 private:
     class Impl;
 

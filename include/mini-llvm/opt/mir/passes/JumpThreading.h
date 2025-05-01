@@ -8,6 +8,10 @@ namespace mini_llvm::mir {
 class JumpThreading final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
+
+    const char *name() const override {
+        return "JumpThreading";
+    }
 };
 
 } // namespace mini_llvm::mir

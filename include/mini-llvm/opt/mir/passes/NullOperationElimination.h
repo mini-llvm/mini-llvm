@@ -11,6 +11,10 @@ public:
 
     bool runOnBasicBlock(BasicBlock &B) override;
 
+    const char *name() const override {
+        return "NullOperationElimination";
+    }
+
 private:
     int regWidth_;
 };

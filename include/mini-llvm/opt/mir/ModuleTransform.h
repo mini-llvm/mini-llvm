@@ -1,12 +1,12 @@
 #pragma once
 
 #include "mini-llvm/mir/Module.h"
+#include "mini-llvm/opt/mir/Pass.h"
 
 namespace mini_llvm::mir {
 
-class ModuleTransform {
+class ModuleTransform : Pass {
 public:
-    virtual ~ModuleTransform() = default;
     virtual bool runOnModule(Module &M) = 0;
 };
 
