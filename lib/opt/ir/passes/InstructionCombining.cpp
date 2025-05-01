@@ -20,7 +20,8 @@ using namespace mini_llvm::ir;
 namespace {
 
 void dfs(const DominatorTreeNode *node, bool &changed) {
-    for (Instruction &I : *const_cast<BasicBlock *>(node->block)) {
+    for (auto i = const_cast<BasicBlock *>(node->block)->begin(); i != const_cast<BasicBlock *>(node->block)->end();) {
+        Instruction &I = *i++;
         if (dynamic_cast<const Add *>(&I) && dynamic_cast<const Constant *>(&*static_cast<const Add *>(&I)->rhs())) {
             Add *add = static_cast<Add *>(&I);
             std::shared_ptr<Value> lhs = share(*add->lhs()),
@@ -34,6 +35,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                 std::shared_ptr<Instruction> II = std::make_shared<Add>(lhs, rhs);
                 addToParent(I, II);
                 replaceAllUsesWith(I, II);
+                removeFromParent(I);
                 changed = true;
             }
             continue;
@@ -51,6 +53,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                 std::shared_ptr<Instruction> II = std::make_shared<Mul>(lhs, rhs);
                 addToParent(I, II);
                 replaceAllUsesWith(I, II);
+                removeFromParent(I);
                 changed = true;
             }
             continue;
@@ -68,7 +71,8 @@ bool InstructionCombining::runOnFunction(Function &F) {
     bool changed = false;
 
     for (BasicBlock &B : F) {
-        for (Instruction &I : B) {
+        for (auto i = B.begin(); i != B.end();) {
+            Instruction &I = *i++;
             if (auto *op = dynamic_cast<BinaryIntegerArithmeticOperator *>(&I)) {
                 if (op->isCommutative()
                         && dynamic_cast<const Constant *>(&*op->lhs())
@@ -87,6 +91,7 @@ bool InstructionCombining::runOnFunction(Function &F) {
                     );
                     addToParent(*sub, add);
                     replaceAllUsesWith(*sub, add);
+                    removeFromParent(*sub);
                     changed = true;
                 }
             }
