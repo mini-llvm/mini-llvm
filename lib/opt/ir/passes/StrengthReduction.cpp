@@ -20,6 +20,7 @@
 #include "mini-llvm/ir/Instruction/LSHR.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
 #include "mini-llvm/ir/Instruction/SDiv.h"
+#include "mini-llvm/ir/Instruction/SExt.h"
 #include "mini-llvm/ir/Instruction/SHL.h"
 #include "mini-llvm/ir/Instruction/SRem.h"
 #include "mini-llvm/ir/Instruction/Sub.h"
@@ -226,7 +227,7 @@ std::vector<std::shared_ptr<Instruction>> replaceSDivGeneral(Value &n, int64_t d
     int l = std::max(N - std::countl_zero(static_cast<uint32_t>(std::abs(d) - 1)), 1);
     int32_t m = static_cast<int32_t>(1 + (UINT64_C(1) << (N + l - 1)) / std::abs(d) - (UINT64_C(1) << N));
 
-    std::shared_ptr<Instruction> x1 = std::make_shared<ZExt>(share(n), cast<IntegerType>(n.type()->promoted()));
+    std::shared_ptr<Instruction> x1 = std::make_shared<SExt>(share(n), cast<IntegerType>(n.type()->promoted()));
     replaced += x1;
 
     std::shared_ptr<Instruction> x2;
