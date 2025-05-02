@@ -87,22 +87,19 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    for (; optind < argc; ++optind) {
-        if (!options.inputFile.empty()) {
-            fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
-            return EXIT_FAILURE;
-        }
-        if (*argv[optind] == '\0') {
-            fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
-            return EXIT_FAILURE;
-        }
-        options.inputFile = argv[optind];
-    }
-
-    if (options.inputFile.empty()) {
+    if (optind == argc) {
         fprintf(stderr, "%s: error: no input file\n", argv[0]);
         return EXIT_FAILURE;
     }
+    if (optind < argc - 1) {
+        fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+    if (*argv[optind] == '\0') {
+        fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
+        return EXIT_FAILURE;
+    }
+    options.inputFile = argv[optind];
 
     if (options.outputFile.empty()) {
         options.outputFile = options.inputFile;
