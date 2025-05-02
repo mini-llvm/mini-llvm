@@ -15,6 +15,7 @@
 #include "mini-llvm/ir/Verify.h"
 #include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/mc/Program.h"
+#include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/FileSystem.h"
@@ -37,9 +38,11 @@ Target toTarget(std::string_view targetName) {
 }
 
 struct Options {
+    Target target;
     std::filesystem::path inputFile;
     std::filesystem::path outputFile;
-    Target target;
+    bool dumpIR;
+    bool dumpMIR;
 };
 
 } // namespace
@@ -51,6 +54,8 @@ int main(int argc, char *argv[]) {
     struct option longOpts[] = {
         {"help", no_argument, nullptr, CHAR_MAX + 1},
         {"target", required_argument, nullptr, CHAR_MAX + 2},
+        {"dump-ir", no_argument, nullptr, CHAR_MAX + 3},
+        {"dump-mir", no_argument, nullptr, CHAR_MAX + 4},
         {nullptr, 0, nullptr, 0},
     };
 
@@ -69,6 +74,16 @@ int main(int argc, char *argv[]) {
                     return EXIT_FAILURE;
                 }
                 options.target = target;
+                break;
+            }
+
+            case CHAR_MAX + 3: {
+                options.dumpIR = true;
+                break;
+            }
+
+            case CHAR_MAX + 4: {
+                options.dumpMIR = true;
                 break;
             }
 
@@ -161,11 +176,20 @@ int main(int argc, char *argv[]) {
     ir::PassManager passManager;
     passManager.run(*M);
 
+    if (options.dumpIR) {
+        fprintf(stderr, "%s\n", M->format().c_str());
+    }
+
+    mir::Module MM;
     mc::Program program;
 
     if (options.target == Target::kRISCV64) {
         RISCVBackendDriver backendDriver;
-        program = backendDriver.run(*M);
+        backendDriver.run(*M, MM, program);
+    }
+
+    if (options.dumpMIR) {
+        fprintf(stderr, "%s\n", MM.format().c_str());
     }
 
     std::string output = program.format() + '\n';

@@ -47,8 +47,7 @@
 
 using namespace mini_llvm;
 
-mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
-    mir::Module MM;
+void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Program &program) {
     RISCVMIRGen(&IM, &MM).emit();
 
     {
@@ -282,11 +281,8 @@ mini_llvm::mc::Program RISCVBackendDriver::run(const ir::Module &IM) {
 
     passManager.runAfterRegisterAllocation(MM);
 
-    mc::Program program;
     RISCVMCGen(&MM, &program).emit();
 
     mc::RISCVPassManager mcPassManager;
     mcPassManager.run(program);
-
-    return program;
 }
