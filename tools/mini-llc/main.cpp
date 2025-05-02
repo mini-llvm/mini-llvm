@@ -63,10 +63,6 @@ int main(int argc, char *argv[]) {
             }
 
             case CHAR_MAX + 2: {
-                if (options.target != Target::kNone) {
-                    fprintf(stderr, "%s: error: multiple targets\n", argv[0]);
-                    return EXIT_FAILURE;
-                }
                 Target target = toTarget(optarg);
                 if (target == Target::kNone) {
                     fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], optarg);
@@ -77,10 +73,6 @@ int main(int argc, char *argv[]) {
             }
 
             case 'o': {
-                if (!options.outputFile.empty()) {
-                    fprintf(stderr, "%s: error: multiple output files\n", argv[0]);
-                    return EXIT_FAILURE;
-                }
                 if (*optarg == '\0') {
                     fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
                     return EXIT_FAILURE;
