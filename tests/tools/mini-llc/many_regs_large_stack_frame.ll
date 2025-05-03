@@ -1,23 +1,23 @@
-@format1 = private global [1 x i8] c"\00"
-@format2 = private global [4 x i8] c"%d\0A\00"
+@empty = private global [1 x i8] c"\00"
+@format = private global [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
 define i32 @source(i32 %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @format1)
+  %2 = call i32 @printf(ptr @empty)
   ret i32 %0
 }
 
 define void @sink1(ptr %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @format1)
+  %2 = call i32 @printf(ptr @empty)
   ret void
 }
 
 define void @sink2(i32 %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @format2, i32 %0)
+  %2 = call i32 @printf(ptr @format, i32 %0)
   ret void
 }
 
