@@ -3,9 +3,11 @@
 #include <cassert>
 #include <cstddef>
 #include <functional>
+#include <ranges>
 #include <typeinfo>
 #include <unordered_set>
 
+#include "mini-llvm/ir/Attribute.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/FloatingConstant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
@@ -14,6 +16,7 @@
 #include "mini-llvm/ir/Instruction/BinaryFloatingArithmeticOperator.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 #include "mini-llvm/ir/Instruction/BitCast.h"
+#include "mini-llvm/ir/Instruction/Call.h"
 #include "mini-llvm/ir/Instruction/FCmp.h"
 #include "mini-llvm/ir/Instruction/FloatingCastingOperator.h"
 #include "mini-llvm/ir/Instruction/FloatingToIntegerCastingOperator.h"
@@ -27,6 +30,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 #include "mini-llvm/utils/HashCombine.h"
@@ -143,6 +147,26 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
         return ValueNumber{&*lhsValue->cond()} == ValueNumber{&*rhsValue->cond()} &&
                ValueNumber{&*lhsValue->trueValue()} == ValueNumber{&*rhsValue->trueValue()} &&
                ValueNumber{&*lhsValue->falseValue()} == ValueNumber{&*rhsValue->falseValue()};
+    }
+    if (dynamic_cast<const Call *>(lhs.value)) {
+        auto *lhsValue = static_cast<const Call *>(lhs.value),
+             *rhsValue = static_cast<const Call *>(rhs.value);
+        if (&*lhsValue->callee() != &*rhsValue->callee()) {
+            return false;
+        }
+        const Function *callee = &*lhsValue->callee();
+        if (!callee->hasAttr(Attribute::kReadNone)) {
+            return false;
+        }
+        if (lhsValue->arg_size() != rhsValue->arg_size()) {
+            return false;
+        }
+        for (auto [lhsArg, rhsArg] : std::views::zip(args(*lhsValue), args(*rhsValue))) {
+            if (ValueNumber{&*lhsArg} != ValueNumber{&*rhsArg}) {
+                return false;
+            }
+        }
+        return true;
     }
     return false;
 }
@@ -270,6 +294,18 @@ struct std::hash<ValueNumber> {
             hash_combine(seed, ValueNumber{&*value->cond()});
             hash_combine(seed, ValueNumber{&*value->trueValue()});
             hash_combine(seed, ValueNumber{&*value->falseValue()});
+            return seed;
+        }
+        if (auto *value = dynamic_cast<const Call *>(number.value)) {
+            const Function *callee = &*value->callee();
+            if (!callee->hasAttr(Attribute::kReadNone)) {
+                return reinterpret_cast<size_t>(value);
+            }
+            size_t seed = 0;
+            hash_combine(seed, ValueNumber{callee});
+            for (const Use<Value> &arg : args(*value)) {
+                hash_combine(seed, ValueNumber{&*arg});
+            }
             return seed;
         }
         return reinterpret_cast<size_t>(number.value);
