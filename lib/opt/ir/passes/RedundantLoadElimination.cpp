@@ -1,7 +1,5 @@
 #include "mini-llvm/opt/ir/passes/RedundantLoadElimination.h"
 
-#include <vector>
-
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -18,13 +16,12 @@ using namespace mini_llvm::ir;
 bool RedundantLoadElimination::runOnFunction(Function &F) {
     bool changed = false;
 
-    std::vector<Instruction *> remove;
-
     for (BasicBlock &B : F) {
         HashMap<Value *, Value *> lastValue;
         HashMap<Value *, Load *> lastLoad;
 
-        for (Instruction &I : B) {
+        for (auto i = B.begin(); i != B.end();) {
+            Instruction &I = *i++;
             if (auto *store = dynamic_cast<Store *>(&I)) {
                 lastValue(&*store->ptr()) = &*store->value();
                 continue;
@@ -35,25 +32,22 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                 continue;
             }
             if (auto *load = dynamic_cast<Load *>(&I)) {
-                if (auto i = lastValue.find(&*load->ptr()); i != lastValue.end()) {
-                    changed |= replaceAllUsesWith(*load, share(*i->second));
-                    remove.push_back(load);
+                if (auto j = lastValue.find(&*load->ptr()); j != lastValue.end()) {
+                    replaceAllUsesWith(*load, share(*j->second));
+                    removeFromParent(*load);
+                    changed = true;
                     continue;
                 }
-                if (auto i = lastLoad.find(&*load->ptr()); i != lastLoad.end()) {
-                    changed |= replaceAllUsesWith(*load, share(*i->second));
-                    remove.push_back(load);
+                if (auto j = lastLoad.find(&*load->ptr()); j != lastLoad.end()) {
+                    replaceAllUsesWith(*load, share(*j->second));
+                    removeFromParent(*load);
+                    changed = true;
                     continue;
                 }
                 lastLoad(&*load->ptr()) = &*load;
                 continue;
             }
         }
-    }
-
-    for (Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     return changed;

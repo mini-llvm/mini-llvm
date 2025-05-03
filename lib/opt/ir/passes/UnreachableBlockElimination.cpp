@@ -28,30 +28,26 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
 
     bool changed = false;
 
-    std::vector<const BasicBlock *> remove;
-
-    for (const BasicBlock &B : F) {
-        if (!S.contains(&B)) {
-            remove.push_back(&B);
-        }
-    }
-
     for (BasicBlock &B : F) {
         for (Instruction &I : B) {
             if (auto *phi = dynamic_cast<Phi *>(&I)) {
-                for (const BasicBlock *BB : remove) {
-                    if (hasIncomingBlock(*phi, *BB)) {
-                        removeIncomingBlock(*phi, *BB);
-                        changed = true;
+                for (auto i = phi->incoming_begin(); i != phi->incoming_end();) {
+                    if (!S.contains(&*i->block)) {
+                        phi->removeIncoming(i++);
+                    } else {
+                        ++i;
                     }
                 }
             }
         }
     }
 
-    for (const BasicBlock *B : remove) {
-        removeFromParent(*B);
-        changed = true;
+    for (auto i = F.begin(); i != F.end();) {
+        const BasicBlock &B = *i++;
+        if (!S.contains(&B)) {
+            removeFromParent(B);
+            changed = true;
+        }
     }
 
     return changed;

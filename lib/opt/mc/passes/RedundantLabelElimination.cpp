@@ -2,7 +2,6 @@
 
 #include <string>
 #include <unordered_set>
-#include <vector>
 
 #include "mini-llvm/mc/Fragment.h"
 #include "mini-llvm/mc/Instruction.h"
@@ -28,21 +27,17 @@ bool RedundantLabelElimination::runOnFragment(Fragment &fragment) {
         }
     }
 
-    std::vector<Fragment::const_iterator> remove;
-
-    for (Fragment::const_iterator i = fragment.begin(), e = fragment.end(); i != e; ++i) {
-        if (auto *label = dynamic_cast<const Label *>(&*i)) {
-            if (!referenced.contains(label->labelName())) {
-                remove.push_back(i);
-            }
-        }
-    }
-
     bool changed = false;
 
-    for (Fragment::const_iterator i : remove) {
-        fragment.remove(i);
-        changed = true;
+    for (Fragment::const_iterator i = fragment.begin(); i != fragment.end();) {
+        if (auto *label = dynamic_cast<const Label *>(&*i)) {
+            if (!referenced.contains(label->labelName())) {
+                fragment.remove(i++);
+                changed = true;
+                continue;
+            }
+        }
+        ++i;
     }
 
     return changed;

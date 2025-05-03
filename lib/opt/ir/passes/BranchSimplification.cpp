@@ -1,7 +1,6 @@
 #include "mini-llvm/opt/ir/passes/BranchSimplification.h"
 
 #include <memory>
-#include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Constant/I1Constant.h"
@@ -17,8 +16,6 @@ using namespace mini_llvm::ir;
 bool BranchSimplification::runOnFunction(Function &F) {
     bool changed = false;
 
-    std::vector<const Instruction *> remove;
-
     for (const BasicBlock &B : F) {
         if (auto *condBr = dynamic_cast<const CondBr *>(&B.back())) {
             if (auto *cond = dynamic_cast<const I1Constant *>(&*condBr->cond())) {
@@ -31,8 +28,8 @@ bool BranchSimplification::runOnFunction(Function &F) {
                     notDest = &*condBr->trueDest();
                 }
                 addToParent(*condBr, std::make_shared<Br>(weaken(*dest)));
+                removeFromParent(*condBr);
                 changed = true;
-                remove.push_back(condBr);
                 for (Instruction &I : *notDest) {
                     if (auto *phi = dynamic_cast<Phi *>(&I)) {
                         if (hasIncomingBlock(*phi, B)) {
@@ -47,16 +44,11 @@ bool BranchSimplification::runOnFunction(Function &F) {
             if (&*condBr->trueDest() == &*condBr->falseDest()) {
                 BasicBlock *dest = &*condBr->trueDest();
                 addToParent(*condBr, std::make_shared<Br>(weaken(*dest)));
+                removeFromParent(*condBr);
                 changed = true;
-                remove.push_back(condBr);
                 continue;
             }
         }
-    }
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     return changed;

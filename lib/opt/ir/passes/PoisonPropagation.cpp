@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <vector>
 
 #include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/Function.h"
@@ -54,18 +53,13 @@ bool isPoison(const Instruction &I) {
 }
 
 void dfs(const DominatorTreeNode *node, bool &changed) {
-    std::vector<const Instruction *> remove;
-
-    for (const Instruction &I : *node->block) {
+    for (auto i = node->block->begin(); i != node->block->end();) {
+        const Instruction &I = *i++;
         if (isPoison(I)) {
-            changed |= replaceAllUsesWith(I, std::make_shared<PoisonValue>(I.type()));
-            remove.push_back(&I);
+            replaceAllUsesWith(I, std::make_shared<PoisonValue>(I.type()));
+            removeFromParent(I);
+            changed = true;
         }
-    }
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     for (const DominatorTreeNode *child : node->children) {

@@ -1,7 +1,5 @@
 #include "mini-llvm/opt/mir/passes/NullOperationElimination.h"
 
-#include <vector>
-
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Instruction/AddI.h"
 #include "mini-llvm/mir/Instruction/AndI.h"
@@ -20,19 +18,21 @@ using namespace mini_llvm::mir;
 bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
-    std::vector<BasicBlock::const_iterator> remove;
-
-    for (auto i = B.begin(), e = B.end(); i != e; ++i) {
+    for (auto i = B.begin(); i != B.end();) {
         if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
             if (mov->width() == regWidth_) {
                 if (&*mov->dst() == &*mov->src()) {
-                    remove.emplace_back(i);
+                    B.remove(i++);
+                    changed = true;
+                    continue;
                 }
             }
         }
         if (auto *fmov = dynamic_cast<const FMov *>(&*i)) {
             if (&*fmov->dst() == &*fmov->src()) {
-                remove.emplace_back(i);
+                B.remove(i++);
+                changed = true;
+                continue;
             }
         }
         if (auto *addi = dynamic_cast<const AddI *>(&*i)) {
@@ -40,7 +40,9 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*addi->dst() == &*addi->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*addi->src2())) {
                         if (imm->value() == 0) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
@@ -51,7 +53,9 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*andi->dst() == &*andi->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*andi->src2())) {
                         if (imm->value() == -1) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
@@ -62,7 +66,9 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*ori->dst() == &*ori->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*ori->src2())) {
                         if (imm->value() == 0) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
@@ -73,7 +79,9 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*xori->dst() == &*xori->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*xori->src2())) {
                         if (imm->value() == 0) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
@@ -84,7 +92,9 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*shli->dst() == &*shli->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*shli->src2())) {
                         if (imm->value() == 0) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
@@ -95,7 +105,9 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*shrli->dst() == &*shrli->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*shrli->src2())) {
                         if (imm->value() == 0) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
@@ -106,17 +118,15 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
                 if (&*shrai->dst() == &*shrai->src1()) {
                     if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*shrai->src2())) {
                         if (imm->value() == 0) {
-                            remove.emplace_back(i);
+                            B.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
             }
         }
-    }
-
-    for (auto i : remove) {
-        B.remove(i);
-        changed = true;
+        ++i;
     }
 
     return changed;

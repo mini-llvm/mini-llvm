@@ -180,27 +180,27 @@ bool Mem2Reg::runOnFunction(Function &F) {
 
     Rename(domTree.node(F.entry()), vars, phis)();
 
-    std::vector<const Instruction *> remove(vars.begin(), vars.end());
     for (const BasicBlock &B : F) {
-        for (const Instruction &I : B) {
+        for (auto i = B.begin(); i != B.end();) {
+            const Instruction &I = *i++;
             if (auto *store = dynamic_cast<const Store *>(&I)) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars.contains(v)) {
-                        remove.push_back(store);
+                        removeFromParent(*store);
                     }
                 }
             }
             if (auto *load = dynamic_cast<const Load *>(&I)) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
                     if (vars.contains(v)) {
-                        remove.push_back(load);
+                        removeFromParent(*load);
                     }
                 }
             }
         }
     }
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
+    for (const Alloca *v : vars) {
+        removeFromParent(*v);
     }
 
     return true;

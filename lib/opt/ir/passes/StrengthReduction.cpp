@@ -346,9 +346,9 @@ std::vector<std::shared_ptr<Instruction>> replaceSRem(const SRem &I) {
 }
 
 void dfs(const DominatorTreeNode *node, bool &changed, size_t mulThreshold, size_t divThreshold, size_t remThreshold) {
-    std::vector<const Instruction *> remove;
+    for (auto i = node->block->begin(); i != node->block->end();) {
+        const Instruction &I = *i++;
 
-    for (const Instruction &I : *node->block) {
         std::vector<std::shared_ptr<Instruction>> replaced;
 
         if (auto *mul = dynamic_cast<const Mul *>(&I)) {
@@ -389,14 +389,10 @@ void dfs(const DominatorTreeNode *node, bool &changed, size_t mulThreshold, size
                 addToParent(I, std::move(II));
                 changed = true;
             }
-            changed |= replaceAllUsesWith(I, share(*result));
-            remove.push_back(&I);
+            replaceAllUsesWith(I, share(*result));
+            removeFromParent(I);
+            changed = true;
         }
-    }
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     for (const DominatorTreeNode *child : node->children) {

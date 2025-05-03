@@ -1,7 +1,5 @@
 #include "mini-llvm/opt/ir/passes/DeadStoreElimination.h"
 
-#include <vector>
-
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -15,15 +13,17 @@ using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 bool DeadStoreElimination::runOnFunction(Function &F) {
-    std::vector<const Instruction *> remove;
+    bool changed = false;
 
     for (const BasicBlock &B : F) {
         HashMap<const Value *, const Store *> lastStore;
 
-        for (const Instruction &I : B) {
+        for (auto i = B.begin(); i != B.end();) {
+            const Instruction &I = *i++;
             if (auto *store = dynamic_cast<const Store *>(&I)) {
-                if (auto i = lastStore.find(&*store->ptr()); i != lastStore.end()) {
-                    remove.push_back(i->second);
+                if (auto j = lastStore.find(&*store->ptr()); j != lastStore.end()) {
+                    removeFromParent(*j->second);
+                    changed = true;
                 }
                 lastStore(&*store->ptr()) = &*store;
                 continue;
@@ -36,13 +36,6 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
                 continue;
             }
         }
-    }
-
-    bool changed = false;
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     return changed;

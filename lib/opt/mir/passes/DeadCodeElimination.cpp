@@ -1,7 +1,6 @@
 #include "mini-llvm/opt/mir/passes/DeadCodeElimination.h"
 
 #include <unordered_set>
-#include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
@@ -38,17 +37,13 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         liveVars.runOnFunction(F);
 
         for (BasicBlock &B : F) {
-            std::vector<BasicBlock::const_iterator> remove;
-
-            for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
+            for (BasicBlock::const_iterator i = B.begin(); i != B.end();) {
                 if (canRemove(*i, liveVars.liveOut(*i))) {
-                    remove.push_back(i);
+                    B.remove(i++);
+                    changed2 = true;
+                    continue;
                 }
-            }
-
-            for (BasicBlock::const_iterator i : remove) {
-                B.remove(i);
-                changed2 = true;
+                ++i;
             }
         }
 

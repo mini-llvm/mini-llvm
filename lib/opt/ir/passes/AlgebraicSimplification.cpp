@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Constant/I1Constant.h"
@@ -75,29 +74,32 @@ bool isPoison(const BinaryIntegerArithmeticOperator &op) {
 }
 
 void dfs(const DominatorTreeNode *node, bool &changed) {
-    std::vector<const Instruction *> remove;
+    for (auto i = node->block->begin(); i != node->block->end();) {
+        const Instruction &I = *i++;
 
-    for (const Instruction &I : *node->block) {
         if (auto *op = dynamic_cast<const BinaryIntegerArithmeticOperator *>(&I)) {
             const Value *lhs = &*op->lhs(),
                         *rhs = &*op->rhs();
 
             if (!dynamic_cast<const IntegerConstant *>(lhs) && dynamic_cast<const IntegerConstant *>(rhs)) {
                 if (isUnchanged(*op)) {
-                    changed |= replaceAllUsesWith(*op, share(*const_cast<Value *>(lhs)));
-                    remove.push_back(op);
+                    replaceAllUsesWith(*op, share(*const_cast<Value *>(lhs)));
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
                 if (isZero(*op)) {
-                    changed |= replaceAllUsesWith(*op, op->type()->constant(0));
-                    remove.push_back(op);
+                    replaceAllUsesWith(*op, op->type()->constant(0));
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
                 if (isPoison(*op)) {
-                    changed |= replaceAllUsesWith(*op, std::make_shared<PoisonValue>(op->type()));
-                    remove.push_back(op);
+                    replaceAllUsesWith(*op, std::make_shared<PoisonValue>(op->type()));
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
@@ -109,13 +111,15 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                     Mul &mul = addToParent(*op, std::make_shared<Mul>(share(*const_cast<Value *>(lhs)), op->lhs()->type()->constant(2)));
                     replaceAllUsesWith(*op, share(mul));
                     changed = true;
-                    remove.push_back(op);
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
                 if (dynamic_cast<const And *>(op) || dynamic_cast<const Or *>(op)) {
-                    changed |= replaceAllUsesWith(*op, share(*const_cast<Value *>(lhs)));
-                    remove.push_back(op);
+                    replaceAllUsesWith(*op, share(*const_cast<Value *>(lhs)));
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
@@ -123,14 +127,16 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                         || dynamic_cast<const SRem *>(op)
                         || dynamic_cast<const URem *>(op)
                         || dynamic_cast<const Xor *>(op)) {
-                    changed |= replaceAllUsesWith(*op, op->type()->constant(0));
-                    remove.push_back(op);
+                    replaceAllUsesWith(*op, op->type()->constant(0));
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
                 if (dynamic_cast<const SDiv *>(op) || dynamic_cast<const UDiv *>(op)) {
-                    changed |= replaceAllUsesWith(*op, op->type()->constant(1));
-                    remove.push_back(op);
+                    replaceAllUsesWith(*op, op->type()->constant(1));
+                    removeFromParent(*op);
+                    changed = true;
                     continue;
                 }
 
@@ -160,7 +166,9 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                         result = false;
                         break;
                 }
-                changed |= replaceAllUsesWith(*icmp, std::make_shared<I1Constant>(result));
+                replaceAllUsesWith(*icmp, std::make_shared<I1Constant>(result));
+                removeFromParent(*icmp);
+                changed = true;
                 continue;
             }
 
@@ -172,8 +180,9 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
                         *falseValue = &*select->falseValue();
 
             if (!dynamic_cast<const IntegerConstant *>(trueValue) && trueValue == falseValue) {
-                changed |= replaceAllUsesWith(*select, share(*const_cast<Value *>(trueValue)));
-                remove.push_back(select);
+                replaceAllUsesWith(*select, share(*const_cast<Value *>(trueValue)));
+                removeFromParent(*select);
+                changed = true;
                 continue;
             }
 
@@ -182,18 +191,14 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
 
         if (auto *phi = dynamic_cast<const Phi *>(&I)) {
             if (phi->incoming_size() == 1) {
-                changed |= replaceAllUsesWith(*phi, share(*phi->incoming_begin()->value));
-                remove.push_back(phi);
+                replaceAllUsesWith(*phi, share(*phi->incoming_begin()->value));
+                removeFromParent(*phi);
+                changed = true;
                 continue;
             }
 
             continue;
         }
-    }
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     for (const DominatorTreeNode *child : node->children) {

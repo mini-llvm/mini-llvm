@@ -3,7 +3,6 @@
 #include <cassert>
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
@@ -73,15 +72,12 @@ bool BasicBlockMerging::runOnFunction(Function &F) {
         }
     }
 
-    std::vector<const BasicBlock *> remove;
-    for (const BasicBlock &B : F) {
+    for (auto i = F.begin(); i != F.end();) {
+        const BasicBlock &B = *i++;
         if (B.empty()) {
-            remove.push_back(&B);
+            removeFromParent(B);
+            changed = true;
         }
-    }
-    for (const BasicBlock *B : remove) {
-        removeFromParent(*B);
-        changed = true;
     }
 
     return changed;

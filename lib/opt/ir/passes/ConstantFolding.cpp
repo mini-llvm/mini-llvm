@@ -1,7 +1,5 @@
 #include "mini-llvm/opt/ir/passes/ConstantFolding.h"
 
-#include <vector>
-
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Value.h"
@@ -12,18 +10,13 @@ using namespace mini_llvm::ir;
 namespace {
 
 void dfs(const DominatorTreeNode *node, bool &changed) {
-    std::vector<const Instruction *> remove;
-
-    for (const Instruction &I : *node->block) {
+    for (auto i = node->block->begin(); i != node->block->end();) {
+        const Instruction &I = *i++;
         if (I.isFoldable()) {
-            changed |= replaceAllUsesWith(I, I.fold());
-            remove.push_back(&I);
+            replaceAllUsesWith(I, I.fold());
+            removeFromParent(I);
+            changed = true;
         }
-    }
-
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
     }
 
     for (const DominatorTreeNode *child : node->children) {

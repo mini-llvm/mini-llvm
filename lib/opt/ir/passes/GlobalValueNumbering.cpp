@@ -277,10 +277,13 @@ namespace {
 void dfs(const DominatorTreeNode *node, std::unordered_set<ValueNumber> &valueNumbers, bool &changed) {
     std::unordered_set<ValueNumber> newValueNumbers;
 
-    for (const Instruction &I : *node->block) {
+    for (auto i = node->block->begin(); i != node->block->end();) {
+        const Instruction &I = *i++;
         ValueNumber number{&I};
-        if (auto i = valueNumbers.find(number); i != valueNumbers.end()) {
-            changed |= replaceAllUsesWith(I, share(*const_cast<Value *>(i->value)));
+        if (auto j = valueNumbers.find(number); j != valueNumbers.end()) {
+            replaceAllUsesWith(I, share(*const_cast<Value *>(j->value)));
+            removeFromParent(I);
+            changed = true;
         } else {
             valueNumbers.insert(number);
             newValueNumbers.insert(number);

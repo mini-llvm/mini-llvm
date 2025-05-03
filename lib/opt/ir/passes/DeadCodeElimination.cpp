@@ -2,7 +2,6 @@
 
 #include <queue>
 #include <unordered_set>
-#include <vector>
 
 #include "mini-llvm/ir/Attribute.h"
 #include "mini-llvm/ir/BasicBlock.h"
@@ -84,20 +83,16 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         }
     }
 
-    std::vector<const Instruction *> remove;
-    for (const BasicBlock &B : F) {
-        for (const Instruction &I : B) {
-            if (!S.contains(&I)) {
-                remove.push_back(&I);
-            }
-        }
-    }
-
     bool changed = false;
 
-    for (const Instruction *I : remove) {
-        removeFromParent(*I);
-        changed = true;
+    for (const BasicBlock &B : F) {
+        for (auto i = B.begin(); i != B.end();) {
+            const Instruction &I = *i++;
+            if (!S.contains(&I)) {
+                removeFromParent(I);
+                changed = true;
+            }
+        }
     }
 
     return changed;

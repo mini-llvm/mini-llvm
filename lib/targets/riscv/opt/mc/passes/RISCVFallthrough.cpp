@@ -1,7 +1,6 @@
 #include "mini-llvm/targets/riscv/opt/mc/passes/RISCVFallthrough.h"
 
 #include <iterator>
-#include <vector>
 
 #include "mini-llvm/mc/Fragment.h"
 #include "mini-llvm/mc/Label.h"
@@ -15,27 +14,23 @@ using namespace mini_llvm::mc;
 bool RISCVFallthrough::runOnFragment(Fragment &fragment) {
     if (fragment.section() != Section::kText) return false;
 
-    std::vector<Fragment::const_iterator> remove;
+    bool changed = false;
 
-    for (Fragment::const_iterator i = fragment.begin(), j = std::next(fragment.begin()), e = fragment.end(); j != e; ++i, ++j) {
+    for (Fragment::const_iterator i = fragment.begin(); std::next(i) != fragment.end();) {
         if (auto *I = dynamic_cast<const RISCVInstruction *>(&*i)) {
             if (I->opcode() == RISCV_J) {
                 if (auto *labelOp = dynamic_cast<const LabelOperand *>(&*I->operand_begin())) {
-                    if (auto *label = dynamic_cast<const Label *>(&*j)) {
+                    if (auto *label = dynamic_cast<const Label *>(&*std::next(i))) {
                         if (labelOp->labelName() == label->labelName()) {
-                            remove.push_back(i);
+                            fragment.remove(i++);
+                            changed = true;
+                            continue;
                         }
                     }
                 }
             }
         }
-    }
-
-    bool changed = false;
-
-    for (Fragment::const_iterator i : remove) {
-        fragment.remove(i);
-        changed = true;
+        ++i;
     }
 
     return changed;
