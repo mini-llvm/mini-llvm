@@ -22,7 +22,8 @@ bool ArrayFlattening::runOnFunction(Function &F) {
     bool changed = false;
 
     for (BasicBlock &B : F) {
-        for (Instruction &I : B) {
+        for (auto i = B.begin(); i != B.end();) {
+            Instruction &I = *i++;
             if (auto *gep = dynamic_cast<GetElementPtr *>(&I)) {
                 std::unique_ptr<Type> type = gep->sourceType();
                 while (dynamic_cast<const ArrayType *>(&*type)) {
@@ -60,6 +61,7 @@ bool ArrayFlattening::runOnFunction(Function &F) {
                     );
                     addToParent(*gep, newGep);
                     replaceAllUsesWith(*gep, newGep);
+                    removeFromParent(*gep);
                     changed = true;
                 }
             }
