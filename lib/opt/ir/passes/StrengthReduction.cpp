@@ -31,12 +31,12 @@
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
-#include "mini-llvm/utils/Assignment.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/SequenceOps.h"
 
 using namespace mini_llvm;
-using namespace mini_llvm::assignment_ops;
 using namespace mini_llvm::ir;
+using namespace mini_llvm::sequence_ops;
 
 namespace {
 
