@@ -1,6 +1,7 @@
 #include "mini-llvm/opt/ir/passes/GlobalValueNumbering.h"
 
 #include <cassert>
+#include <cstddef>
 #include <functional>
 #include <typeinfo>
 #include <unordered_set>
@@ -47,6 +48,9 @@ struct ValueNumber {
 };
 
 bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
+    if (lhs.value == rhs.value) {
+        return true;
+    }
     if (typeid(*lhs.value) != typeid(*rhs.value)) {
         return false;
     }
@@ -140,7 +144,7 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
                ValueNumber{&*lhsValue->trueValue()} == ValueNumber{&*rhsValue->trueValue()} &&
                ValueNumber{&*lhsValue->falseValue()} == ValueNumber{&*rhsValue->falseValue()};
     }
-    return lhs.value == rhs.value;
+    return false;
 }
 
 } // namespace
