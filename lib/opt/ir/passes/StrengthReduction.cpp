@@ -103,7 +103,7 @@ std::vector<std::shared_ptr<Instruction>> replaceMul(Value &lhs, uint64_t rhs) {
         return {};
     }
 
-    if (rhs == (static_cast<uint64_t>(-1) >> (64 - lhs.type()->sizeInBits()))) { // -1
+    if (rhs == (static_cast<uint64_t>(-1) >> (64 - lhs.type()->bitSize()))) { // -1
         return replaceMulNeg1(lhs);
     }
 
@@ -139,7 +139,7 @@ std::vector<std::shared_ptr<Instruction>> replaceUDivPow2(Value &n, uint64_t d) 
 std::vector<std::shared_ptr<Instruction>> replaceUDivGeneral(Value &n, uint64_t d) {
     std::vector<std::shared_ptr<Instruction>> replaced;
 
-    int N = n.type()->sizeInBits();
+    int N = n.type()->bitSize();
     int l = N - std::countl_zero(static_cast<uint32_t>(d - 1));
     uint32_t m = (UINT64_C(1) << (N + l)) / d - (UINT64_C(1) << N) + 1;
 
@@ -169,7 +169,7 @@ std::vector<std::shared_ptr<Instruction>> replaceUDiv(Value &n, uint64_t d) {
         return {};
     }
 
-    if (d >= (UINT64_C(1) << (n.type()->sizeInBits() - 1))) {
+    if (d >= (UINT64_C(1) << (n.type()->bitSize() - 1))) {
         return replaceUDivLarge(n, d);
     }
 
@@ -201,7 +201,7 @@ std::vector<std::shared_ptr<Instruction>> replaceSDivNeg1(Value &n) {
 std::vector<std::shared_ptr<Instruction>> replaceSDivPow2(Value &n, int64_t d) {
     std::vector<std::shared_ptr<Instruction>> replaced;
 
-    int N = n.type()->sizeInBits();
+    int N = n.type()->bitSize();
     int l = std::countr_zero(static_cast<uint64_t>(std::abs(d)));
 
     std::shared_ptr<Instruction> x1 = std::make_shared<ASHR>(share(n), n.type()->constant(l - 1));
@@ -222,7 +222,7 @@ std::vector<std::shared_ptr<Instruction>> replaceSDivPow2(Value &n, int64_t d) {
 std::vector<std::shared_ptr<Instruction>> replaceSDivGeneral(Value &n, int64_t d) {
     std::vector<std::shared_ptr<Instruction>> replaced;
 
-    int N = n.type()->sizeInBits();
+    int N = n.type()->bitSize();
     int l = std::max(N - std::countl_zero(static_cast<uint32_t>(std::abs(d) - 1)), 1);
     int32_t m = static_cast<int32_t>(1 + (UINT64_C(1) << (N + l - 1)) / std::abs(d) - (UINT64_C(1) << N));
 

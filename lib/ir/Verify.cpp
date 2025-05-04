@@ -107,7 +107,7 @@ bool ir::verifyFunction(const Function &F) {
                 if (*trunc->type() == Ptr()) {
                     return false;
                 }
-                if (trunc->type()->sizeInBits() >= trunc->value()->type()->sizeInBits()) {
+                if (trunc->type()->bitSize() >= trunc->value()->type()->bitSize()) {
                     return false;
                 }
             }
@@ -118,7 +118,7 @@ bool ir::verifyFunction(const Function &F) {
                 if (*sext->type() == Ptr()) {
                     return false;
                 }
-                if (sext->type()->sizeInBits() <= sext->value()->type()->sizeInBits()) {
+                if (sext->type()->bitSize() <= sext->value()->type()->bitSize()) {
                     return false;
                 }
             }
@@ -129,17 +129,17 @@ bool ir::verifyFunction(const Function &F) {
                 if (*zext->type() == Ptr()) {
                     return false;
                 }
-                if (zext->type()->sizeInBits() <= zext->value()->type()->sizeInBits()) {
+                if (zext->type()->bitSize() <= zext->value()->type()->bitSize()) {
                     return false;
                 }
             }
             if (auto *fptrunc = dynamic_cast<const FPTrunc *>(&I)) {
-                if (fptrunc->type()->sizeInBits() >= fptrunc->value()->type()->sizeInBits()) {
+                if (fptrunc->type()->bitSize() >= fptrunc->value()->type()->bitSize()) {
                     return false;
                 }
             }
             if (auto *fpext = dynamic_cast<const FPExt *>(&I)) {
-                if (fpext->type()->sizeInBits() <= fpext->value()->type()->sizeInBits()) {
+                if (fpext->type()->bitSize() <= fpext->value()->type()->bitSize()) {
                     return false;
                 }
             }

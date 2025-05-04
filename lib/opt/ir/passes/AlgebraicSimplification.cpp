@@ -68,9 +68,9 @@ bool isPoison(const BinaryIntegerArithmeticOperator &op) {
         || (dynamic_cast<const UDiv *>(&op) && rhs == 0)
         || (dynamic_cast<const SRem *>(&op) && rhs == 0)
         || (dynamic_cast<const URem *>(&op) && rhs == 0)
-        || (dynamic_cast<const SHL *>(&op) && rhs >= op.type()->sizeInBits())
-        || (dynamic_cast<const LSHR *>(&op) && rhs >= op.type()->sizeInBits())
-        || (dynamic_cast<const ASHR *>(&op) && rhs >= op.type()->sizeInBits());
+        || (dynamic_cast<const SHL *>(&op) && rhs >= op.type()->bitSize())
+        || (dynamic_cast<const LSHR *>(&op) && rhs >= op.type()->bitSize())
+        || (dynamic_cast<const ASHR *>(&op) && rhs >= op.type()->bitSize());
 }
 
 void dfs(const DominatorTreeNode *node, bool &changed) {

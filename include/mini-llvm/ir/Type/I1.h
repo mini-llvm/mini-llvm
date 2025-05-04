@@ -23,11 +23,11 @@ public:
         abort();
     }
 
-    int sizeInBits() const override {
+    int bitSize() const override {
         return 1;
     }
 
-    int alignmentInBits() const override {
+    int bitAlignment() const override {
         abort();
     }
 

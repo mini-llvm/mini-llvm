@@ -25,19 +25,19 @@ public:
     virtual int size(int) const { return size(); }
     virtual int alignment(int) const { return alignment(); }
 
-    virtual int sizeInBits() const {
+    virtual int bitSize() const {
         return size() * 8;
     }
 
-    virtual int alignmentInBits() const {
+    virtual int bitAlignment() const {
         return alignment() * 8;
     }
 
-    virtual int sizeInBits(int pointerSize) const {
+    virtual int bitSize(int pointerSize) const {
         return size(pointerSize) * 8;
     }
 
-    virtual int alignmentInBits(int pointerAlignment) const {
+    virtual int bitAlignment(int pointerAlignment) const {
         return alignment(pointerAlignment) * 8;
     }
 
