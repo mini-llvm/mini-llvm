@@ -135,7 +135,7 @@ Token Lexer::nextTokenImpl() {
                     for (int i = 0; i < 2; ++i) {
                         char ch = *cursor_;
                         if (ch == 0) {
-                            throw LexException("unterminated string", cursor_);
+                            throw LexException("missing terminating \" character", cursor_);
                         }
                         if (!isxdigit(ch)) {
                             if (ch == '"') {
@@ -160,7 +160,7 @@ Token Lexer::nextTokenImpl() {
             }
         }
         if (*cursor_ == '\0') {
-            throw LexException("unterminated string", cursor_);
+            throw LexException("missing terminating \" character", cursor_);
         }
         ++cursor_;
         return {kString, std::move(elements), start};
