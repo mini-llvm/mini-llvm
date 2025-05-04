@@ -3,11 +3,14 @@
 #include <algorithm>
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 namespace mini_llvm {
 
 void computeLineColumn(const char *start, const char *location, size_t &line, size_t &column);
+
+std::string quote(std::string_view str);
 
 template <typename T>
     requires std::is_integral_v<T>

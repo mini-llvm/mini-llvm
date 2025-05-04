@@ -1,7 +1,10 @@
 #include "mini-llvm/ir/BasicBlock.h"
 
+#include <algorithm>
 #include <cassert>
+#include <cctype>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,6 +14,7 @@
 #include "mini-llvm/ir/Instruction/Terminator.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/utils/StringJoiner.h"
+#include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -37,6 +41,16 @@ std::string BasicBlock::format() const {
         formatted.addFormat("  {}", I);
     }
     return formatted.toString();
+}
+
+std::string BasicBlock::formatAsOperand() const {
+    if (name().empty()) {
+        return std::format("%_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
+    }
+    if (!std::ranges::all_of(name(), [](char ch) { return isalnum(ch) || ch == '_' || ch == '.'; })) {
+        return std::format("%{}", quote(name()));
+    }
+    return std::format("%{}", name());
 }
 
 bool ir::hasNPredecessors(const BasicBlock &B, size_t n) {

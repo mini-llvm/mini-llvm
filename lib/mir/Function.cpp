@@ -1,5 +1,7 @@
 #include "mini-llvm/mir/Function.h"
 
+#include <algorithm>
+#include <cctype>
 #include <format>
 #include <memory>
 #include <string>
@@ -7,6 +9,7 @@
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/utils/StringJoiner.h"
+#include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm::mir;
 
@@ -37,4 +40,11 @@ std::string Function::format() const {
         formattedBody.addFormat("{}", B);
     }
     return std::format("{}\n{}", formattedHeader, formattedBody);
+}
+
+std::string Function::formatAsOperand() const {
+    if (!std::ranges::all_of(name(), [](char ch) { return isalnum(ch) || ch == '_' || ch == '.'; })) {
+        return "@" + quote(name());
+    }
+    return "@" + name();
 }

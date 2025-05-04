@@ -1,7 +1,6 @@
 #pragma once
 
 #include <concepts>
-#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <optional>
@@ -14,7 +13,6 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::ir {
 
@@ -42,9 +40,7 @@ public:
     virtual void accept(InstructionVisitor &visitor) = 0;
     virtual void accept(InstructionVisitor &visitor) const = 0;
 
-    std::string formatAsOperand() const override {
-        return "%" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
-    }
+    std::string formatAsOperand() const override;
 
 private:
     mutable BasicBlock *parent_ = nullptr;

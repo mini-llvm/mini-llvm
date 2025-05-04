@@ -1,6 +1,5 @@
 #pragma once
 
-#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <string>
@@ -8,7 +7,6 @@
 
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::ir {
 
@@ -24,9 +22,7 @@ public:
         abort();
     }
 
-    std::string formatAsOperand() const override {
-        return "%" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
-    }
+    std::string formatAsOperand() const override;
 
     std::unique_ptr<Value> clone() const override {
         abort();

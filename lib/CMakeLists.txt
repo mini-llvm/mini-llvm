@@ -1,9 +1,11 @@
 add_library(mini-llvm
     codegen/register_allocators/LinearScanAllocator.cpp
     codegen/register_allocators/NaiveAllocator.cpp
+    ir/Argument.cpp
     ir/BasicBlock.cpp
     ir/Constant/ArrayConstant.cpp
     ir/Function.cpp
+    ir/GlobalValue.cpp
     ir/GlobalVar.cpp
     ir/Instruction.cpp
     ir/Instruction/BinaryFloatingArithmeticOperators.cpp
@@ -52,8 +54,10 @@ add_library(mini-llvm
     mir/Instruction.cpp
     mir/Instruction/Terminator.cpp
     mir/Module.cpp
+    mir/PhysicalRegister.cpp
     mir/StackFrame.cpp
     mir/StackSlot.cpp
+    mir/VirtualRegister.cpp
     opt/ir/FunctionTransform.cpp
     opt/ir/passes/AlgebraicSimplification.cpp
     opt/ir/passes/ArrayFlattening.cpp

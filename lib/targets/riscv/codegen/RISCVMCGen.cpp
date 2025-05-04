@@ -107,6 +107,7 @@
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mc;

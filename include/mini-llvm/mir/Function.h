@@ -151,10 +151,7 @@ public:
     }
 
     std::string format() const;
-
-    std::string formatAsOperand() const {
-        return "@" + name();
-    }
+    std::string formatAsOperand() const;
 
 private:
     std::string name_;

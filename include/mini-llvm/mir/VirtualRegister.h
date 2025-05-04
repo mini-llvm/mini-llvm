@@ -1,11 +1,9 @@
 #pragma once
 
-#include <cstdint>
 #include <string>
 #include <utility>
 
 #include "mini-llvm/mir/Register.h"
-#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::mir {
 
@@ -19,9 +17,7 @@ public:
         name_ = std::move(name);
     }
 
-    std::string format() const override {
-        return "$" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
-    }
+    std::string format() const override;
 
 private:
     std::string name_;

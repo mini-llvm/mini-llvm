@@ -2,7 +2,6 @@
 
 #include <concepts>
 #include <cstddef>
-#include <cstdint>
 #include <format>
 #include <iterator>
 #include <list>
@@ -16,7 +15,6 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::mir {
 
@@ -159,10 +157,7 @@ public:
     }
 
     std::string format() const;
-
-    std::string formatAsOperand() const {
-        return "#" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
-    }
+    std::string formatAsOperand() const;
 
 private:
     std::string name_;

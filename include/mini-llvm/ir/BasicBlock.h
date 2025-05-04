@@ -2,7 +2,6 @@
 
 #include <concepts>
 #include <cstddef>
-#include <cstdint>
 #include <cstdlib>
 #include <iterator>
 #include <list>
@@ -18,7 +17,6 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::ir {
 
@@ -146,10 +144,7 @@ public:
     }
 
     std::string format() const override;
-
-    std::string formatAsOperand() const override {
-        return "%" + (!name().empty() ? name() : "_" + toString(reinterpret_cast<uintptr_t>(this), 62));
-    }
+    std::string formatAsOperand() const override;
 
     std::unique_ptr<Value> clone() const override {
         abort();

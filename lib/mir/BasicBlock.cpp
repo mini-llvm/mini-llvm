@@ -1,6 +1,10 @@
 #include "mini-llvm/mir/BasicBlock.h"
 
+#include <algorithm>
 #include <cassert>
+#include <cctype>
+#include <cstdint>
+#include <format>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -12,6 +16,7 @@
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/utils/SetOps.h"
 #include "mini-llvm/utils/StringJoiner.h"
+#include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
@@ -34,6 +39,16 @@ std::string BasicBlock::format() const {
         formatted.addFormat("  {}", I);
     }
     return formatted.toString();
+}
+
+std::string BasicBlock::formatAsOperand() const {
+    if (name().empty()) {
+        return std::format("#_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
+    }
+    if (!std::ranges::all_of(name(), [](char ch) { return isalnum(ch) || ch == '_' || ch == '.'; })) {
+        return std::format("#{}", quote(name()));
+    }
+    return std::format("#{}", name());
 }
 
 std::unordered_set<BasicBlock *> mir::successors(const BasicBlock &B) {
