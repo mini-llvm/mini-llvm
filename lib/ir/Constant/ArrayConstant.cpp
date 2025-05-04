@@ -32,6 +32,29 @@ bool isZeroInitializer(const ArrayConstant &C) {
     return true;
 }
 
+std::string formatAsString(const ArrayConstant &C) {
+    StringJoiner formatted("", "c\"", "\"");
+    for (const Use<Constant> &element : elements(C)) {
+        int8_t value = static_cast<const I8Constant *>(&*element)->value();
+        if (value == static_cast<int8_t>('\\')) {
+            formatted.add("\\\\");
+        } else if (0x20 <= value && value <= 0x7e) {
+            formatted.addFormat("{:c}", value);
+        } else {
+            formatted.addFormat("\\{:02X}", value);
+        }
+    }
+    return formatted.toString();
+}
+
+std::string formatAsArray(const ArrayConstant &C) {
+    StringJoiner formatted(", ", "[", "]");
+    for (const Use<Constant> &element : elements(C)) {
+        formatted.addFormat("{} {}", *element->type(), *element);
+    }
+    return formatted.toString();
+}
+
 } // namespace
 
 ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::shared_ptr<Constant>> elements)
@@ -60,25 +83,9 @@ std::string ArrayConstant::format() const {
         return "zeroinitializer";
     }
     if (*static_cast<const ArrayType *>(&*type())->elementType() == I8()) {
-        StringJoiner formatted("", "c\"", "\"");
-        for (const Use<Constant> &element : elements(*this)) {
-            int8_t value = static_cast<const I8Constant *>(&*element)->value();
-            if (value == static_cast<int8_t>('\\')) {
-                formatted.add("\\\\");
-            } else if (0x20 <= value && value <= 0x7e) {
-                formatted.addFormat("{:c}", value);
-            } else {
-                formatted.addFormat("\\{:02X}", value);
-            }
-        }
-        return formatted.toString();
-    } else {
-        StringJoiner formatted(", ", "[", "]");
-        for (const Use<Constant> &element : elements(*this)) {
-            formatted.addFormat("{} {}", *element->type(), *element);
-        }
-        return formatted.toString();
+        return formatAsString(*this);
     }
+    return formatAsArray(*this);
 }
 
 std::unique_ptr<Value> ArrayConstant::clone() const {
@@ -91,11 +98,15 @@ std::unique_ptr<Value> ArrayConstant::clone() const {
 }
 
 bool ArrayConstant::equals(const Constant &other) const {
-    if (typeid(*this) != typeid(other)) return false;
+    if (typeid(*this) != typeid(other)) {
+        return false;
+    }
     const ArrayConstant &castOther = static_cast<const ArrayConstant &>(other);
     if (*type() != *castOther.type()) return false;
     for (auto [element1, element2] : std::views::zip(elements(*this), elements(castOther))) {
-        if (*element1 != *element2) return false;
+        if (*element1 != *element2) {
+            return false;
+        }
     }
     return true;
 }

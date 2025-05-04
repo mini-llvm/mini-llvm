@@ -16,9 +16,9 @@ std::unique_ptr<Constant> ArrayType::zeroValue() const {
 }
 
 bool ArrayType::equals(const Type &other) const {
-    if (typeid(*this) == typeid(other)) {
-        const ArrayType &castOther = static_cast<const ArrayType &>(other);
-        return *elementType() == *castOther.elementType() && numElements() == castOther.numElements();
+    if (typeid(*this) != typeid(other)) {
+        return false;
     }
-    return false;
+    const ArrayType &castOther = static_cast<const ArrayType &>(other);
+    return *elementType() == *castOther.elementType() && numElements() == castOther.numElements();
 }
