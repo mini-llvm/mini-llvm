@@ -28,8 +28,8 @@ public:
         return pointerSize;
     }
 
-    int alignment(int pointerSize) const override {
-        return pointerSize;
+    int alignment(int pointerAlignment) const override {
+        return pointerAlignment;
     }
 
     std::unique_ptr<Constant> zeroValue() const override;

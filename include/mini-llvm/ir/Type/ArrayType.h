@@ -39,8 +39,8 @@ public:
         return static_cast<int>(numElements()) * elementType()->size(pointerSize);
     }
 
-    int alignment(int pointerSize) const override {
-        return elementType()->alignment(pointerSize);
+    int alignment(int pointerAlignment) const override {
+        return elementType()->alignment(pointerAlignment);
     }
 
     std::unique_ptr<Constant> zeroValue() const override;
