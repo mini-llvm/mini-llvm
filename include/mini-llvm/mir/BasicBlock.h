@@ -16,7 +16,7 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/ToString.h"
+#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::mir {
 

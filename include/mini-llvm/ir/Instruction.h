@@ -14,7 +14,7 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/ToString.h"
+#include "mini-llvm/utils/Strings.h"
 
 namespace mini_llvm::ir {
 
