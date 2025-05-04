@@ -120,9 +120,11 @@ Token Lexer::nextTokenImpl() {
         return {kNumber, std::bit_cast<int64_t>(value), start};
     }
 
-    if (*cursor_ == 'c' && *(cursor_ + 1) == '"') {
+    if ((*cursor_ == 'c' && *(cursor_ + 1) == '"') || *cursor_ == '"') {
         const char *start = cursor_;
-        cursor_ += 2;
+        while (*cursor_ == 'c' || *cursor_ == '"') {
+            ++cursor_;
+        }
         std::vector<int8_t> elements;
         while (*cursor_ != '\0' && *cursor_ != '"') {
             if (*cursor_ == '\\') {
@@ -163,7 +165,15 @@ Token Lexer::nextTokenImpl() {
             throw LexException("missing terminating \" character", cursor_);
         }
         ++cursor_;
-        return {kString, std::move(elements), start};
+        if (*start == 'c') {
+            return {kString, std::move(elements), start};
+        } else {
+            std::string name;
+            for (int8_t element : elements) {
+                name.push_back(static_cast<char>(element));
+            }
+            return {kName, std::move(name), start};
+        }
     }
 
     if (isalpha(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
