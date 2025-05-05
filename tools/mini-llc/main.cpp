@@ -19,6 +19,7 @@
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/Lines.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
@@ -157,13 +158,13 @@ int main(int argc, char *argv[]) {
         std::println(stderr, "{}: error: {}", argv[0], strerror(input.error()));
         return EXIT_FAILURE;
     }
-    if (input.value().back() != '\n') {
-        input.value().push_back('\n');
+    if (input->back() != '\n') {
+        input->push_back('\n');
     }
-    Lines inputLines(input.value());
+    Lines inputLines(*input);
 
     std::vector<Diagnostic> diags;
-    std::optional<ir::Module> M = ir::parseModule(input.value().c_str(), diags);
+    std::optional<ir::Module> M = ir::parseModule(input->c_str(), diags);
     for (Diagnostic &diag : diags) {
         diag.file = options.inputFile;
     }

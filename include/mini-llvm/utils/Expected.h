@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <utility>
 #include <variant>
 
@@ -17,6 +18,22 @@ public:
 
     constexpr operator bool() const {
         return std::holds_alternative<T>(valueOrError_);
+    }
+
+    constexpr T &operator*() {
+        return std::get<T>(valueOrError_);
+    }
+
+    constexpr const T &operator*() const {
+        return std::get<T>(valueOrError_);
+    }
+
+    constexpr T *operator->() {
+        return std::addressof(std::get<T>(valueOrError_));
+    }
+
+    constexpr const T *operator->() const {
+        return std::addressof(std::get<T>(valueOrError_));
     }
 
     constexpr T &value() {
