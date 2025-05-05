@@ -403,7 +403,7 @@ void Parser::parseFunctionBody(Function &F) {
     }
     ++cursor_;
 
-    auto start = cursor_;
+    auto marker = cursor_;
     while (cursor_->kind != kRightBrace) {
         if (cursor_->kind == kName && std::next(cursor_)->kind == kColon) {
             Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(cursor_->value)};
@@ -414,7 +414,7 @@ void Parser::parseFunctionBody(Function &F) {
         }
         ++cursor_;
     }
-    cursor_ = start;
+    cursor_ = marker;
 
     while (cursor_->kind != kRightBrace) {
         if (!(cursor_->kind == kName && std::next(cursor_)->kind == kColon)) {

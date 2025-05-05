@@ -49,11 +49,11 @@ Token Lexer::nextTokenImpl() {
         Token::Kind kind = lastToken()->kind;
         if (kind == kAt || kind == kPercent) {
             if (isalpha(*cursor_) || isdigit(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
-                const char *start = cursor_;
+                const char *marker = cursor_;
                 while (isalpha(*cursor_) || isdigit(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
                     ++cursor_;
                 }
-                return {kName, std::string(start, cursor_), start};
+                return {kName, std::string(marker, cursor_), marker};
             }
         }
     }
@@ -73,43 +73,41 @@ Token Lexer::nextTokenImpl() {
     };
 
     if (auto i = kLUT.find(*cursor_); i != kLUT.end()) {
-        const char *start = cursor_;
-        ++cursor_;
-        return {i->second, {}, start};
+        return {i->second, {}, cursor_++};
     }
 
     if (*cursor_ == '0' && (*(cursor_ + 1) == 'X' || *(cursor_ + 1) == 'x')) {
-        const char *start = cursor_;
-        cursor_ = start + 2;
+        const char *marker = cursor_;
+        cursor_ = marker + 2;
         while (isxdigit(*cursor_)) ++cursor_;
         if (*cursor_ == ':') {
-            return {kName, std::string(start, cursor_), start};
+            return {kName, std::string(marker, cursor_), marker};
         }
-        cursor_ = start + 2;
+        cursor_ = marker + 2;
         uint64_t value = 0;
         while (isxdigit(*cursor_)) {
             value = value * 0x10 + ((isdigit(*cursor_)  ? (*cursor_ - '0') : ((*cursor_ | 0x20) - 'a' + 0xa)));
             ++cursor_;
         }
-        return {kNumber, std::bit_cast<int64_t>(value), start};
+        return {kNumber, std::bit_cast<int64_t>(value), marker};
     }
 
     if (isdigit(*cursor_)) {
-        const char *start = cursor_;
+        const char *marker = cursor_;
         uint64_t value = 0;
         while (isdigit(*cursor_)) {
             value = value * 10 + (*cursor_ - '0');
             ++cursor_;
         }
         if (*cursor_ == ':') {
-            return {kName, std::to_string(value), start};
+            return {kName, std::to_string(value), marker};
         } else {
-            return {kNumber, std::bit_cast<int64_t>(value), start};
+            return {kNumber, std::bit_cast<int64_t>(value), marker};
         }
     }
 
     if (*cursor_ == '-') {
-        const char *start = cursor_;
+        const char *marker = cursor_;
         ++cursor_;
         uint64_t value = 0;
         while (isdigit(*cursor_)) {
@@ -117,11 +115,11 @@ Token Lexer::nextTokenImpl() {
             ++cursor_;
         }
         value = -value;
-        return {kNumber, std::bit_cast<int64_t>(value), start};
+        return {kNumber, std::bit_cast<int64_t>(value), marker};
     }
 
     if ((*cursor_ == 'c' && *(cursor_ + 1) == '"') || *cursor_ == '"') {
-        const char *start = cursor_;
+        const char *marker = cursor_;
         while (*cursor_ == 'c' || *cursor_ == '"') {
             ++cursor_;
         }
@@ -165,25 +163,26 @@ Token Lexer::nextTokenImpl() {
             throw LexException("missing terminating \" character", cursor_);
         }
         ++cursor_;
-        if (*start == 'c') {
-            return {kString, std::move(elements), start};
-        } else {
-            std::string name;
-            for (int8_t element : elements) {
-                name.push_back(static_cast<char>(element));
-            }
-            return {kName, std::move(name), start};
+        if (*marker == 'c') {
+            return {kString, std::move(elements), marker};
         }
+        std::string name;
+        for (int8_t element : elements) {
+            name.push_back(static_cast<char>(element));
+        }
+        return {kName, std::move(name), marker};
     }
 
     if (isalpha(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
-        const char *start = cursor_;
+        const char *marker = cursor_;
         while (isalpha(*cursor_) || *cursor_ == '_' || *cursor_ == '.' || isdigit(*cursor_)) {
             ++cursor_;
         }
-        std::string name(start, cursor_);
+        std::string name(marker, cursor_);
 
-        if (*cursor_ == ':') return {kName, std::move(name), start};
+        if (*cursor_ == ':') {
+            return {kName, std::move(name), marker};
+        }
 
         static const HashMap<std::string_view, Token::Kind> kLUT{
             {"define", kDefine},
@@ -283,10 +282,10 @@ Token Lexer::nextTokenImpl() {
         };
 
         if (auto i = kLUT.find(name); i != kLUT.end()) {
-            return {i->second, {}, start};
+            return {i->second, {}, marker};
         }
 
-        return {kName, std::move(name), start};
+        return {kName, std::move(name), marker};
     }
 
     throw LexException("unexpected character", cursor_);
