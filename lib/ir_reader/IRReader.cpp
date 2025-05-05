@@ -8,7 +8,6 @@
 #include "mini-llvm/ir_reader/Lexer.h"
 #include "mini-llvm/ir_reader/Parser.h"
 #include "mini-llvm/ir_reader/Token.h"
-#include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -21,14 +20,10 @@ std::optional<Module> ir::parseModule(const char *source, std::vector<Diagnostic
         M = parseModule(tokens);
         return M;
     } catch (const LexException &e) {
-        size_t line, column;
-        computeLineColumn(source, e.location(), line, column);
-        diags.push_back(Diagnostic::error(e.message(), "<source>", line, column));
+        diags.push_back(Diagnostic::error(e.message(), "<source>", e.location() - source));
         return std::nullopt;
     } catch (const ParseException &e) {
-        size_t line, column;
-        computeLineColumn(source, e.location()->location, line, column);
-        diags.push_back(Diagnostic::error(e.message(), "<source>", line, column));
+        diags.push_back(Diagnostic::error(e.message(), "<source>", e.location()->location - source));
         return std::nullopt;
     }
 }

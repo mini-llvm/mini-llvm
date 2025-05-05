@@ -4,6 +4,7 @@
 #include <cstring>
 #include <filesystem>
 #include <optional>
+#include <print>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -19,6 +20,7 @@
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/FileSystem.h"
+#include "mini-llvm/utils/Lines.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 
 using namespace mini_llvm;
@@ -63,14 +65,14 @@ int main(int argc, char *argv[]) {
     while ((opt = getopt_long(argc, argv, shortOpts, longOpts, nullptr)) != -1) {
         switch (opt) {
             case CHAR_MAX + 1: {
-                fprintf(stdout, "Usage: %s [--target=<target>] [-o <output-file>] <input-file>\n", argv[0]);
+                std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", argv[0]);
                 return EXIT_SUCCESS;
             }
 
             case CHAR_MAX + 2: {
                 Target target = toTarget(optarg);
                 if (target == Target::kNone) {
-                    fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], optarg);
+                    std::println(stderr, "{}: error: unsupported target '%s'", argv[0], optarg);
                     return EXIT_FAILURE;
                 }
                 options.target = target;
@@ -89,7 +91,7 @@ int main(int argc, char *argv[]) {
 
             case 'o': {
                 if (*optarg == '\0') {
-                    fprintf(stderr, "%s: error: output file cannot be empty\n", argv[0]);
+                    std::println(stderr, "{}: error: output file cannot be empty", argv[0]);
                     return EXIT_FAILURE;
                 }
                 options.outputFile = optarg;
@@ -103,15 +105,15 @@ int main(int argc, char *argv[]) {
     }
 
     if (optind == argc) {
-        fprintf(stderr, "%s: error: no input file\n", argv[0]);
+        std::println(stderr, "{}: error: no input file", argv[0]);
         return EXIT_FAILURE;
     }
     if (optind < argc - 1) {
-        fprintf(stderr, "%s: error: multiple input files\n", argv[0]);
+        std::println(stderr, "{}: error: multiple input files", argv[0]);
         return EXIT_FAILURE;
     }
     if (*argv[optind] == '\0') {
-        fprintf(stderr, "%s: error: input file cannot be empty\n", argv[0]);
+        std::println(stderr, "{}: error: input file cannot be empty", argv[0]);
         return EXIT_FAILURE;
     }
     options.inputFile = argv[optind];
@@ -144,7 +146,7 @@ int main(int argc, char *argv[]) {
 #endif
         Target target = toTarget(targetName);
         if (target == Target::kNone) {
-            fprintf(stderr, "%s: error: unsupported target '%s'\n", argv[0], targetName);
+            std::println(stderr, "{}: error: unsupported target '{}'", argv[0], targetName);
             return EXIT_FAILURE;
         }
         options.target = target;
@@ -152,24 +154,31 @@ int main(int argc, char *argv[]) {
 
     Expected<std::string, int> input = readAll(options.inputFile);
     if (!input) {
-        fprintf(stderr, "%s: error: %s\n", argv[0], strerror(input.error()));
+        std::println(stderr, "{}: error: {}", argv[0], strerror(input.error()));
         return EXIT_FAILURE;
     }
+    if (input.value().back() != '\n') {
+        input.value().push_back('\n');
+    }
+    Lines inputLines(input.value());
 
     std::vector<Diagnostic> diags;
     std::optional<ir::Module> M = ir::parseModule(input.value().c_str(), diags);
+    for (Diagnostic &diag : diags) {
+        diag.file = options.inputFile;
+    }
+    for (const Diagnostic &diag : diags) {
+        auto [line, column] = inputLines.getLineColumn(diag.offset);
+        std::println(stderr, "{}:{}:{}: {}: {}", diag.file.c_str(), line + 1, column + 1, name(diag.severity), diag.message);
+        std::print(stderr, "{}", inputLines[line]);
+        std::println(stderr, "{:>{}}", '^', column + 1);
+    }
     if (!M) {
-        for (Diagnostic &diag : diags) {
-            diag.file = options.inputFile;
-        }
-        for (const Diagnostic &diag : diags) {
-            fprintf(stderr, "%s\n", diag.format().c_str());
-        }
         return EXIT_FAILURE;
     }
 
     if (!ir::verifyModule(*M)) {
-        fprintf(stderr, "%s: error: invalid module\n", argv[0]);
+        std::println(stderr, "{}: error: invalid module", argv[0]);
         return EXIT_FAILURE;
     }
 
@@ -177,7 +186,7 @@ int main(int argc, char *argv[]) {
     passManager.run(*M);
 
     if (options.dumpIR) {
-        fprintf(stderr, "%s\n", M->format().c_str());
+        std::println(stderr, "{}", M->format());
     }
 
     mir::Module MM;
@@ -189,13 +198,13 @@ int main(int argc, char *argv[]) {
     }
 
     if (options.dumpMIR) {
-        fprintf(stderr, "%s\n", MM.format().c_str());
+        std::println(stderr, "{}", MM.format());
     }
 
     std::string output = program.format() + '\n';
 
     if (int error = writeAll(options.outputFile, output)) {
-        fprintf(stderr, "%s: error: %s\n", argv[0], strerror(error));
+        std::println(stderr, "{}: error: {}", argv[0], strerror(error));
         return EXIT_FAILURE;
     }
 

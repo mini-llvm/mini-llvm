@@ -1,7 +1,7 @@
 #pragma once
 
+#include <cstdlib>
 #include <filesystem>
-#include <format>
 #include <string>
 
 namespace mini_llvm {
@@ -16,30 +16,29 @@ struct Diagnostic {
     Severity severity;
     std::string message;
     std::filesystem::path file;
-    size_t line;
-    size_t column;
+    size_t offset;
 
-    std::string format() const {
-        const char *severityName;
-        switch (severity) {
-            case Severity::kNote: severityName = "note"; break;
-            case Severity::kWarning: severityName = "warning"; break;
-            case Severity::kError: severityName = "error"; break;
-        }
-        return std::format("{}:{}:{}: {}: {}", file.c_str(), line, column, severityName, message);
+    static Diagnostic note(std::string message, std::filesystem::path file, size_t offset) {
+        return {Severity::kNote, std::move(message), std::move(file), offset};
     }
 
-    static Diagnostic note(std::string message, std::filesystem::path file, size_t line, size_t column) {
-        return {Severity::kNote, std::move(message), std::move(file), line, column};
+    static Diagnostic warning(std::string message, std::filesystem::path file, size_t offset) {
+        return {Severity::kWarning, std::move(message), std::move(file), offset};
     }
 
-    static Diagnostic warning(std::string message, std::filesystem::path file, size_t line, size_t column) {
-        return {Severity::kWarning, std::move(message), std::move(file), line, column};
-    }
-
-    static Diagnostic error(std::string message, std::filesystem::path file, size_t line, size_t column) {
-        return {Severity::kError, std::move(message), std::move(file), line, column};
+    static Diagnostic error(std::string message, std::filesystem::path file, size_t offset) {
+        return {Severity::kError, std::move(message), std::move(file), offset};
     }
 };
+
+inline constexpr const char *name(Diagnostic::Severity severity) {
+    using enum Diagnostic::Severity;
+    switch (severity) {
+        case kNote: return "note";
+        case kWarning: return "warning";
+        case kError: return "error";
+        default: abort();
+    }
+}
 
 } // namespace mini_llvm

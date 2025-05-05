@@ -107,6 +107,7 @@ add_library(mini-llvm
     targets/riscv/RISCVBackendDriver.cpp
     utils/FileHandle.cpp
     utils/FileSystem.cpp
+    utils/Lines.cpp
     utils/Strings.cpp
 )
 target_compile_features(mini-llvm PUBLIC cxx_std_23)
