@@ -1,5 +1,5 @@
 @format1 = private global [4 x i8] c"%d\0A\00"
-@format2 = private global [4 x i8] c"%f\0A\00"
+@format2 = private global [7 x i8] c"%.17g\0A\00"
 
 declare i32 @printf(ptr, ...)
 

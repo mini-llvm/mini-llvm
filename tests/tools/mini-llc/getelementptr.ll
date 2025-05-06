@@ -17,10 +17,13 @@ declare i32 @printf(ptr, ...)
 
 define i32 @main() {
 0:
-  %1 = getelementptr [2 x [3 x [4 x i32]]], ptr @a, i32 0, i32 1
-  %2 = getelementptr [3 x [4 x i32]], ptr %1, i32 0, i32 2
-  %3 = getelementptr [4 x i32], ptr %2, i32 0, i32 3
-  %4 = load i32, ptr %3
-  %5 = call i32 @printf(ptr @format, i32 %4)
+  %1 = getelementptr [2 x [3 x [4 x i32]]], ptr @a, i32 0, i32 1, i32 2, i32 3
+  %2 = load i32, ptr %1
+  %3 = call i32 @printf(ptr @format, i32 %2)
+  %4 = getelementptr [2 x [3 x [4 x i32]]], ptr @a, i32 0, i32 1
+  %5 = getelementptr [3 x [4 x i32]], ptr %4, i32 0, i32 2
+  %6 = getelementptr [4 x i32], ptr %5, i32 0, i32 3
+  %7 = load i32, ptr %6
+  %8 = call i32 @printf(ptr @format, i32 %7)
   ret i32 0
 }

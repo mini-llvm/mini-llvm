@@ -43,6 +43,6 @@ void gaussian_elimination(double A[], int m, int n) {
 int main(void) {
     double A[] = {2., 1., -1., 8., -3., -1., 2., -11., -2., 1., 2., -3.};
     gaussian_elimination(A, 3, 4);
-    printf("%f %f %f\n", A[3], A[7], A[11]);
+    printf("%.17g %.17g %.17g\n", A[3], A[7], A[11]);
     return 0;
 }

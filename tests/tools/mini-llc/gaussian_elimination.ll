@@ -12,7 +12,7 @@
   double 0x4000000000000000,
   double 0xc008000000000000
 ]
-@format = private global [10 x i8] c"%f %f %f\0A\00"
+@format = private global [19 x i8] c"%.17g %.17g %.17g\0A\00"
 
 declare double @fabs(double)
 declare ptr @memcpy(ptr, ptr, i64)
