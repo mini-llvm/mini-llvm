@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstddef>
 #include <limits>
 #include <memory>
 #include <random>
@@ -21,48 +22,48 @@ namespace {
 
 // Held-Karp algorithm
 
-std::vector<int> dp(int n, const std::vector<std::vector<double>> &D, int s) {
+std::vector<size_t> dp(size_t n, const std::vector<std::vector<double>> &D, size_t s) {
     assert(n > 2);
-    std::vector<std::vector<double>> f(1 << n, std::vector<double>(n));
-    for (int v = 0; v < n; ++v) {
+    std::vector<std::vector<double>> f(1zu << n, std::vector<double>(n));
+    for (size_t v = 0; v < n; ++v) {
         if (v != s) {
             f[0][v] = D[s][v];
         }
     }
-    for (int S = 1; S < (1 << n); ++S) {
-        for (int v = 0; v < n; ++v) {
+    for (size_t S = 1; S < (1zu << n); ++S) {
+        for (size_t v = 0; v < n; ++v) {
             if (v != s && !((S >> s) & 1) && !((S >> v) & 1)) {
                 f[S][v] = std::numeric_limits<double>::infinity();
-                for (int u = 0; u < n; ++u) {
+                for (size_t u = 0; u < n; ++u) {
                     if ((S >> u) & 1) {
-                        f[S][v] = std::min(f[S][v], f[S & ~(1 << u)][u] + D[u][v]);
+                        f[S][v] = std::min(f[S][v], f[S & ~(1zu << u)][u] + D[u][v]);
                     }
                 }
             }
         }
     }
-    int t;
+    size_t t;
     double min = std::numeric_limits<double>::infinity();
-    for (int v = 0; v < n; ++v) {
-        if (v != s && f[((1 << n) - 1) & ~(1 << s) & ~(1 << v)][v] < min) {
+    for (size_t v = 0; v < n; ++v) {
+        if (v != s && f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v)][v] < min) {
             t = v;
-            min = f[((1 << n) - 1) & ~(1 << s) & ~(1 << v)][v];
+            min = f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v)][v];
         }
     }
-    int S = ((1 << n) - 1) & ~(1 << s) & ~(1 << t);
-    std::vector<int> path;
+    size_t S = ((1zu << n) - 1) & ~(1zu << s) & ~(1zu << t);
+    std::vector<size_t> path;
     path.push_back(t);
-    for (int i = 1; i < n - 1; ++i) {
-        int v;
+    for (size_t i = 1; i < n - 1; ++i) {
+        size_t v;
         double min = std::numeric_limits<double>::infinity();
-        for (int u = 0; u < n; ++u) {
-            if (u != t && ((S >> u) & 1) && f[S & ~(1 << u)][u] + D[u][t] < min) {
+        for (size_t u = 0; u < n; ++u) {
+            if (u != t && ((S >> u) & 1) && f[S & ~(1zu << u)][u] + D[u][t] < min) {
                 v = u;
-                min = f[S & ~(1 << u)][u] + D[u][t];
+                min = f[S & ~(1zu << u)][u] + D[u][t];
             }
         }
         t = v;
-        S &= ~(1 << v);
+        S &= ~(1zu << v);
         path.push_back(t);
     }
     path.push_back(s);
@@ -73,53 +74,53 @@ std::vector<int> dp(int n, const std::vector<std::vector<double>> &D, int s) {
 // Ant Colony Optimization (ACO)
 
 template <typename RNG>
-std::vector<int> aco(
-    int n,
+std::vector<size_t> aco(
+    size_t n,
     const std::vector<std::vector<double>> &D,
-    int s,
-    int m,
+    size_t s,
+    size_t m,
     double alpha,
     double beta,
     double rho,
     double Q,
-    const std::vector<int> &initialPath,
-    int maxIter,
+    const std::vector<size_t> &initialPath,
+    size_t maxIter,
     RNG &&rng
 ) {
     std::vector<std::vector<double>> tau(n, std::vector<double>(n, 1.));
-    std::vector<int> bestPath = initialPath;
+    std::vector<size_t> bestPath = initialPath;
     double bestPathLength = 0.;
-    for (int i = 1; i < n; ++i) {
+    for (size_t i = 1; i < n; ++i) {
         bestPathLength += D[initialPath[i - 1]][initialPath[i]];
     }
-    for (int iter = 0; iter < maxIter; ++iter) {
-        std::vector<std::vector<int>> paths;
-        for (int i = 0; i < m; ++i) {
-            std::vector<int> path;
+    for (size_t iter = 0; iter < maxIter; ++iter) {
+        std::vector<std::vector<size_t>> paths;
+        for (size_t i = 0; i < m; ++i) {
+            std::vector<size_t> path;
             path.push_back(s);
-            for (int j = 1; j < n; ++j) {
+            for (size_t j = 1; j < n; ++j) {
                 std::vector<double> weights;
-                for (int k = 0; k < n; ++k) {
+                for (size_t k = 0; k < n; ++k) {
                     weights.push_back(pow(tau[path[j - 1]][k], alpha) * pow(1. / (D[path[j - 1]][k] + 1e-10), beta));
                 }
-                for (int k = 0; k < j; ++k) {
+                for (size_t k = 0; k < j; ++k) {
                     weights[path[k]] = 0.;
                 }
-                path.push_back(std::discrete_distribution<int>(weights.begin(), weights.end())(rng));
+                path.push_back(std::discrete_distribution<size_t>(weights.begin(), weights.end())(rng));
             }
             paths.push_back(path);
         }
-        for (int i = 0; i < n; ++i) {
-            for (int j = 0; j < n; ++j) {
+        for (size_t i = 0; i < n; ++i) {
+            for (size_t j = 0; j < n; ++j) {
                 tau[i][j] *= 1. - rho;
             }
         }
-        for (int i = 0; i < m; ++i) {
+        for (size_t i = 0; i < m; ++i) {
             double pathLength = 0.;
-            for (int j = 1; j < n; ++j) {
+            for (size_t j = 1; j < n; ++j) {
                 pathLength += D[paths[i][j - 1]][paths[i][j]];
             }
-            for (int j = 1; j < n; ++j) {
+            for (size_t j = 1; j < n; ++j) {
                 tau[paths[i][j - 1]][paths[i][j]] += Q / (pathLength + 1e-10);
             }
             if (pathLength < bestPathLength) {
@@ -134,14 +135,15 @@ std::vector<int> aco(
 } // namespace
 
 bool BasicBlockReordering::runOnFunction(Function &F) {
-    int n = F.size();
-
-    if (n <= 2) return false;
+    size_t n = F.size();
+    if (n <= 2) {
+        return false;
+    }
 
     BranchPredictionAnalysis predictor;
     predictor.runOnFunction(F);
 
-    HashMap<const BasicBlock *, int> indices;
+    HashMap<const BasicBlock *, size_t> indices;
     for (auto [i, B] : std::views::enumerate(F)) {
         indices(&B) = i;
     }
@@ -153,12 +155,12 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         }
     }
 
-    std::vector<int> initialPath;
-    for (int i = 0; i < n; ++i) {
+    std::vector<size_t> initialPath;
+    for (size_t i = 0; i < n; ++i) {
         initialPath.push_back(i);
     }
 
-    std::vector<int> bestPath;
+    std::vector<size_t> bestPath;
 
     if (n <= 16) {
         bestPath = dp(n, D, 0);
@@ -167,13 +169,15 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         bestPath = aco(n, D, 0, 10, 1., 1., 0.1, 1., initialPath, 100, rng);
     }
 
-    if (bestPath == initialPath) return false;
+    if (bestPath == initialPath) {
+        return false;
+    }
 
     std::vector<std::unique_ptr<BasicBlock>> tmp;
     while (!F.empty()) {
         tmp.push_back(F.removeFirst());
     }
-    for (int i : bestPath) {
+    for (size_t i : bestPath) {
         F.append(std::move(tmp[i]));
     }
 
