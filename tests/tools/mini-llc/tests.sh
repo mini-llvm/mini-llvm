@@ -28,6 +28,7 @@ tests=(
     is_prime
     gcd
     gcd_iterative
+    exgcd
     hanoi
     partition_function
     n_queens
