@@ -48,6 +48,7 @@ tests=(
     topological_sort
     tarjan_strongly_connected_components
     dijkstra_shortest_paths
+    floyd_warshall_all_pairs_shortest_paths
     gaussian_elimination
     xorshift32
     xorshift64
