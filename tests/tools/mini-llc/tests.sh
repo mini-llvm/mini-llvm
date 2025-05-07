@@ -21,6 +21,7 @@ tests=(
     casting
     select
     getelementptr
+    bit
     max
     sum
     fibonacci
