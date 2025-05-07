@@ -50,6 +50,7 @@ tests=(
     dijkstra_shortest_paths
     floyd_warshall_all_pairs_shortest_paths
     gaussian_elimination
+    linear_regression
     xorshift32
     xorshift64
     splitmix64
