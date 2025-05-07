@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstddef>
+#include <iterator>
 #include <limits>
 #include <memory>
 #include <random>
@@ -12,7 +13,12 @@
 #include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/BasicBlockOperand.h"
+#include "mini-llvm/mir/Condition.h"
 #include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/Instruction/CmpBr.h"
+#include "mini-llvm/mir/Instruction/CmpZBr.h"
+#include "mini-llvm/mir/Instruction/CondBr.h"
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Matrix.h"
@@ -134,6 +140,12 @@ std::vector<size_t> aco(
     return bestPath;
 }
 
+void swap(BasicBlockOperand &lhs, BasicBlockOperand &rhs) {
+    BasicBlock *tmp = &*lhs;
+    lhs.set(&*rhs);
+    rhs.set(tmp);
+}
+
 } // namespace
 
 bool BasicBlockReordering::runOnFunction(Function &F) {
@@ -171,17 +183,48 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         bestPath = aco(n, D, 0, 10, 1., 1., 0.1, 1., initialPath, 100, rng);
     }
 
-    if (bestPath == initialPath) {
-        return false;
+    bool changed = false;
+
+    if (bestPath != initialPath) {
+        std::vector<std::unique_ptr<BasicBlock>> tmp;
+        while (!F.empty()) {
+            tmp.push_back(F.removeFirst());
+        }
+        for (size_t i : bestPath) {
+            F.append(std::move(tmp[i]));
+        }
+        changed = true;
     }
 
-    std::vector<std::unique_ptr<BasicBlock>> tmp;
-    while (!F.empty()) {
-        tmp.push_back(F.removeFirst());
-    }
-    for (size_t i : bestPath) {
-        F.append(std::move(tmp[i]));
+    for (auto i = F.begin(), j = std::next(F.begin()); j != F.end(); ++i, ++j) {
+        if (auto *br = dynamic_cast<CondBr *>(&i->back())) {
+            if (&*j == &*br->falseDest()) {
+                br->setCond(inverted(br->cond()));
+                swap(br->trueDest(), br->falseDest());
+                changed = true;
+                continue;
+            }
+            continue;
+        }
+        if (auto *br = dynamic_cast<CmpBr *>(&i->back())) {
+            if (&*j == &*br->falseDest()) {
+                br->setCond(inverted(br->cond()));
+                swap(br->trueDest(), br->falseDest());
+                changed = true;
+                continue;
+            }
+            continue;
+        }
+        if (auto *br = dynamic_cast<CmpZBr *>(&i->back())) {
+            if (&*j == &*br->falseDest()) {
+                br->setCond(inverted(br->cond()));
+                swap(br->trueDest(), br->falseDest());
+                changed = true;
+                continue;
+            }
+            continue;
+        }
     }
 
-    return true;
+    return changed;
 }
