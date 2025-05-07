@@ -187,6 +187,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars.contains(v)) {
                         removeFromParent(*store);
+                        continue;
                     }
                 }
             }
@@ -194,6 +195,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
                     if (vars.contains(v)) {
                         removeFromParent(*load);
+                        continue;
                     }
                 }
             }
