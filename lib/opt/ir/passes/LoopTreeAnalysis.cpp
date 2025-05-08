@@ -5,6 +5,7 @@
 #include <queue>
 #include <ranges>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"

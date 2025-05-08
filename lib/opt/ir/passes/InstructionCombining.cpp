@@ -1,6 +1,7 @@
 #include "mini-llvm/opt/ir/passes/InstructionCombining.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"

@@ -4,6 +4,8 @@
 #include <ranges>
 #include <string>
 #include <typeinfo>
+#include <utility>
+#include <vector>
 
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/utils/StringJoiner.h"

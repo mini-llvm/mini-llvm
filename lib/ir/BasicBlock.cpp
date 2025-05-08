@@ -5,10 +5,12 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <optional>
 #include <string>
 #include <unordered_set>
+#include <utility>
 
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Terminator.h"

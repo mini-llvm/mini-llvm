@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "mini-llvm/common/ops/BitCast.h"
 #include "mini-llvm/ir/Constant.h"

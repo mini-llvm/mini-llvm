@@ -1,5 +1,6 @@
 #include "mini-llvm/mir/Constant/I16ArrayConstant.h"
 
+#include <cstdint>
 #include <string>
 
 #include "mini-llvm/utils/StringJoiner.h"

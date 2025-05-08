@@ -1,6 +1,8 @@
 #include "mini-llvm/opt/ir/passes/ArrayFlattening.h"
 
+#include <cstddef>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"

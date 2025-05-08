@@ -5,6 +5,7 @@
 #include <memory>
 #include <ranges>
 #include <string>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 

@@ -1,6 +1,7 @@
 #include "mini-llvm/opt/mir/passes/TailDuplication.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"

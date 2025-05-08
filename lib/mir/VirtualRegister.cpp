@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <format>
 #include <string>
 
 #include "mini-llvm/utils/Strings.h"
