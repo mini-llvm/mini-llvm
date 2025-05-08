@@ -225,29 +225,29 @@ bool LinearScanAllocator::allocate(
 
     std::ranges::sort(intervals, compareStart);
 
-    for (const Interval &i : intervals) {
-        for (auto j = active.begin(); j != active.end();) {
-            if ((*j)->end >= i.start) break;
-            free.insert(allocation[(*j)->virtReg]);
-            j = active.erase(j);
+    for (const Interval &I : intervals) {
+        for (auto i = active.begin(); i != active.end();) {
+            if ((*i)->end >= I.start) break;
+            free.insert(allocation[(*i)->virtReg]);
+            i = active.erase(i);
         }
         PhysicalRegister *bestPhysReg = nullptr;
+        std::unordered_set<PhysicalRegister *> preferred;
+        auto [i, j] = hints.equal_range(I.virtReg);
+        for (PhysicalRegister *physReg : std::views::values(std::ranges::subrange(i, j))) {
+            preferred.insert(physReg);
+        }
         for (PhysicalRegister *physReg : free) {
-            std::unordered_set<PhysicalRegister *> preferred;
-            auto range = hints.equal_range(i.virtReg);
-            for (auto j = range.first; j != range.second; ++j) {
-                preferred.insert(j->second);
-            }
-            if (allocatable[i.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, preferred))) {
+            if (allocatable[I.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, preferred))) {
                 bestPhysReg = physReg;
             }
         }
         if (bestPhysReg != nullptr) {
             free.erase(bestPhysReg);
-            allocation(i.virtReg) = bestPhysReg;
-            active.insert(&i);
+            allocation(I.virtReg) = bestPhysReg;
+            active.insert(&I);
         } else {
-            spilled.insert(i.virtReg);
+            spilled.insert(I.virtReg);
         }
     }
 
