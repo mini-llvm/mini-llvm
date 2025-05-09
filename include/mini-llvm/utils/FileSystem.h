@@ -9,6 +9,6 @@
 namespace mini_llvm {
 
 Expected<std::string, int> readAll(const std::filesystem::path &path);
-[[nodiscard]] int writeAll(const std::filesystem::path &path, std::string_view content);
+Expected<void, int> writeAll(const std::filesystem::path &path, std::string_view content);
 
 } // namespace mini_llvm

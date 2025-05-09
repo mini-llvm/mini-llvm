@@ -197,8 +197,8 @@ int main(int argc, char *argv[]) {
 
     std::string output = program.format() + '\n';
 
-    if (int error = writeAll(options.outputFile, output)) {
-        std::println(stderr, "{}: error: {}: {}", argv[0], options.outputFile.c_str(), strerror(error));
+    if (Expected<void, int> result = writeAll(options.outputFile, output); !result) {
+        std::println(stderr, "{}: error: {}: {}", argv[0], options.outputFile.c_str(), strerror(result.error()));
         return EXIT_FAILURE;
     }
 

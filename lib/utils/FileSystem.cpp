@@ -15,7 +15,7 @@ using namespace mini_llvm;
 Expected<std::string, int> mini_llvm::readAll(const std::filesystem::path &path) {
     FileHandle handle(path.c_str(), "r");
     if (!handle) {
-        return errno;
+        return Unexpected(errno);
     }
     std::string content;
     std::string chunk(4096, '\0');
@@ -24,7 +24,7 @@ Expected<std::string, int> mini_llvm::readAll(const std::filesystem::path &path)
         content.append(chunk.data(), n);
         if (n < chunk.size()) {
             if (ferror(handle.get())) {
-                return errno;
+                return Unexpected(errno);
             }
             break;
         }
@@ -32,13 +32,13 @@ Expected<std::string, int> mini_llvm::readAll(const std::filesystem::path &path)
     return content;
 }
 
-int mini_llvm::writeAll(const std::filesystem::path &path, std::string_view content) {
+Expected<void, int> mini_llvm::writeAll(const std::filesystem::path &path, std::string_view content) {
     FileHandle handle(path.c_str(), "w");
     if (!handle) {
-        return errno;
+        return Unexpected(errno);
     }
     if (fwrite(content.data(), 1, content.size(), handle.get()) != content.size()) {
-        return errno;
+        return Unexpected(errno);
     }
-    return 0;
+    return {};
 }
