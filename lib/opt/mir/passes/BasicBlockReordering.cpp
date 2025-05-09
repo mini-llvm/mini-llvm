@@ -15,28 +15,30 @@
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
 #include "mini-llvm/utils/HashMap.h"
+#include "mini-llvm/utils/Matrix.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::mir;
 
 namespace {
 
 // Held-Karp algorithm
 
-std::vector<size_t> dp(size_t n, const std::vector<std::vector<double>> &D, size_t s) {
+std::vector<size_t> dp(size_t n, const Matrix<double> &D, size_t s) {
     assert(n > 2);
-    std::vector<std::vector<double>> f(1zu << n, std::vector<double>(n));
+    Matrix<double> f(1zu << n, n);
     for (size_t v = 0; v < n; ++v) {
         if (v != s) {
-            f[0][v] = D[s][v];
+            f[0, v] = D[s, v];
         }
     }
     for (size_t S = 1; S < (1zu << n); ++S) {
         for (size_t v = 0; v < n; ++v) {
             if (v != s && !((S >> s) & 1) && !((S >> v) & 1)) {
-                f[S][v] = std::numeric_limits<double>::infinity();
+                f[S, v] = std::numeric_limits<double>::infinity();
                 for (size_t u = 0; u < n; ++u) {
                     if ((S >> u) & 1) {
-                        f[S][v] = std::min(f[S][v], f[S & ~(1zu << u)][u] + D[u][v]);
+                        f[S, v] = std::min(f[S, v], f[S & ~(1zu << u), u] + D[u, v]);
                     }
                 }
             }
@@ -45,9 +47,9 @@ std::vector<size_t> dp(size_t n, const std::vector<std::vector<double>> &D, size
     size_t t;
     double min = std::numeric_limits<double>::infinity();
     for (size_t v = 0; v < n; ++v) {
-        if (v != s && f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v)][v] < min) {
+        if (v != s && f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v), v] < min) {
             t = v;
-            min = f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v)][v];
+            min = f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v), v];
         }
     }
     size_t S = ((1zu << n) - 1) & ~(1zu << s) & ~(1zu << t);
@@ -57,9 +59,9 @@ std::vector<size_t> dp(size_t n, const std::vector<std::vector<double>> &D, size
         size_t v;
         double min = std::numeric_limits<double>::infinity();
         for (size_t u = 0; u < n; ++u) {
-            if (u != t && ((S >> u) & 1) && f[S & ~(1zu << u)][u] + D[u][t] < min) {
+            if (u != t && ((S >> u) & 1) && f[S & ~(1zu << u), u] + D[u, t] < min) {
                 v = u;
-                min = f[S & ~(1zu << u)][u] + D[u][t];
+                min = f[S & ~(1zu << u), u] + D[u, t];
             }
         }
         t = v;
@@ -76,7 +78,7 @@ std::vector<size_t> dp(size_t n, const std::vector<std::vector<double>> &D, size
 template <typename RNG>
 std::vector<size_t> aco(
     size_t n,
-    const std::vector<std::vector<double>> &D,
+    const Matrix<double> &D,
     size_t s,
     size_t m,
     double alpha,
@@ -87,11 +89,11 @@ std::vector<size_t> aco(
     size_t maxIter,
     RNG &&rng
 ) {
-    std::vector<std::vector<double>> tau(n, std::vector<double>(n, 1.));
+    Matrix<double> tau(n, n, 1.);
     std::vector<size_t> bestPath = initialPath;
     double bestPathLength = 0.;
     for (size_t i = 1; i < n; ++i) {
-        bestPathLength += D[initialPath[i - 1]][initialPath[i]];
+        bestPathLength += D[initialPath[i - 1], initialPath[i]];
     }
     for (size_t iter = 0; iter < maxIter; ++iter) {
         std::vector<std::vector<size_t>> paths;
@@ -101,7 +103,7 @@ std::vector<size_t> aco(
             for (size_t j = 1; j < n; ++j) {
                 std::vector<double> weights;
                 for (size_t k = 0; k < n; ++k) {
-                    weights.push_back(pow(tau[path[j - 1]][k], alpha) * pow(1. / (D[path[j - 1]][k] + 1e-10), beta));
+                    weights.push_back(pow(tau[path[j - 1], k], alpha) * pow(1. / (D[path[j - 1], k] + 1e-10), beta));
                 }
                 for (size_t k = 0; k < j; ++k) {
                     weights[path[k]] = 0.;
@@ -112,16 +114,16 @@ std::vector<size_t> aco(
         }
         for (size_t i = 0; i < n; ++i) {
             for (size_t j = 0; j < n; ++j) {
-                tau[i][j] *= 1. - rho;
+                tau[i, j] *= 1. - rho;
             }
         }
         for (size_t i = 0; i < m; ++i) {
             double pathLength = 0.;
             for (size_t j = 1; j < n; ++j) {
-                pathLength += D[paths[i][j - 1]][paths[i][j]];
+                pathLength += D[paths[i][j - 1], paths[i][j]];
             }
             for (size_t j = 1; j < n; ++j) {
-                tau[paths[i][j - 1]][paths[i][j]] += Q / (pathLength + 1e-10);
+                tau[paths[i][j - 1], paths[i][j]] += Q / (pathLength + 1e-10);
             }
             if (pathLength < bestPathLength) {
                 bestPath = paths[i];
@@ -148,10 +150,10 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         indices(&B) = i;
     }
 
-    std::vector<std::vector<double>> D(n, std::vector<double>(n, 1e+10));
+    Matrix<double> D(n, n, 1e+10);
     for (const BasicBlock &B : F) {
         for (const BasicBlock *succ : successors(B)) {
-            D[indices[&B]][indices[succ]] = static_cast<double>(!predictor.predict(B, *succ));
+            D[indices[&B], indices[succ]] = static_cast<double>(!predictor.predict(B, *succ));
         }
     }
 
