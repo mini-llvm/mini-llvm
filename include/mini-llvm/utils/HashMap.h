@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <functional>
 #include <unordered_map>
 #include <utility>
@@ -95,12 +96,16 @@ public:
 
     template <typename T = K>
     V &operator[](const T &key) {
-        return find(key)->second;
+        auto i = find(key);
+        assert(i != end());
+        return i->second;
     }
 
     template <typename T = K>
     const V &operator[](const T &key) const {
-        return find(key)->second;
+        auto i = find(key);
+        assert(i != end());
+        return i->second;
     }
 
     template <typename T = K>
