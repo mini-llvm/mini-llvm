@@ -38,7 +38,7 @@ void BasicBlock::remove(BasicBlock::const_iterator pos) {
 
 std::string BasicBlock::format() const {
     StringJoiner formatted("\n");
-    formatted.addFormat("{}:", formatAsOperand().substr(1));
+    formatted.add(formatAsLabel());
     for (const Instruction &I : *this) {
         formatted.addFormat("  {}", I);
     }
@@ -53,6 +53,16 @@ std::string BasicBlock::formatAsOperand() const {
         return std::format("%{}", quote(name()));
     }
     return std::format("%{}", name());
+}
+
+std::string BasicBlock::formatAsLabel() const {
+    if (name().empty()) {
+        return std::format("_{}:", toString(reinterpret_cast<uintptr_t>(this), 62));
+    }
+    if (!std::ranges::all_of(name(), [](char ch) { return isalnum(ch) || ch == '_' || ch == '.'; })) {
+        return std::format("{}:", quote(name()));
+    }
+    return std::format("{}:", name());
 }
 
 bool ir::hasNPredecessors(const BasicBlock &B, size_t n) {
