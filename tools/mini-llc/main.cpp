@@ -7,11 +7,13 @@
 #include <print>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include <getopt.h>
 
 #include "mini-llvm/common/Diagnostic.h"
+#include "mini-llvm/common/SourceManger.h"
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir/Verify.h"
 #include "mini-llvm/ir_reader/IRReader.h"
@@ -21,7 +23,6 @@
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
-#include "mini-llvm/utils/Lines.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 
 using namespace mini_llvm;
@@ -91,10 +92,6 @@ int main(int argc, char *argv[]) {
             }
 
             case 'o': {
-                if (*optarg == '\0') {
-                    std::println(stderr, "{}: error: output file cannot be empty", argv[0]);
-                    return EXIT_FAILURE;
-                }
                 options.outputFile = optarg;
                 break;
             }
@@ -111,10 +108,6 @@ int main(int argc, char *argv[]) {
     }
     if (optind < argc - 1) {
         std::println(stderr, "{}: error: multiple input files", argv[0]);
-        return EXIT_FAILURE;
-    }
-    if (*argv[optind] == '\0') {
-        std::println(stderr, "{}: error: input file cannot be empty", argv[0]);
         return EXIT_FAILURE;
     }
     options.inputFile = argv[optind];
@@ -153,41 +146,41 @@ int main(int argc, char *argv[]) {
         options.target = target;
     }
 
-    Expected<std::string, int> input = readAll(options.inputFile);
-    if (!input) {
-        std::println(stderr, "{}: error: {}", argv[0], strerror(input.error()));
+    Expected<std::string, int> source = readAll(options.inputFile);
+    if (!source) {
+        std::println(stderr, "{}: error: {}: {}", argv[0], options.inputFile.c_str(), strerror(source.error()));
         return EXIT_FAILURE;
     }
-    if (input->back() != '\n') {
-        input->push_back('\n');
+    if (!source->empty() && source->back() != '\n') {
+        source->push_back('\n');
     }
-    Lines inputLines(*input);
+    SourceManager sourceManager;
+    sourceManager.setSource(std::move(*source));
 
     std::vector<Diagnostic> diags;
-    std::optional<ir::Module> M = ir::parseModule(input->c_str(), diags);
-    for (Diagnostic &diag : diags) {
-        diag.file = options.inputFile;
-    }
+    std::optional<ir::Module> IM = ir::parseModule(sourceManager.source().c_str(), diags);
     for (const Diagnostic &diag : diags) {
-        auto [line, column] = inputLines.getLineColumn(diag.offset);
-        std::println(stderr, "{}:{}:{}: {}: {}", diag.file.c_str(), line + 1, column + 1, name(diag.severity), diag.message);
-        std::print(stderr, "{}", inputLines[line]);
-        std::println(stderr, "{:>{}}", '^', column + 1);
+        auto [line, column] = sourceManager.lineColumn(diag.location);
+        std::println(stderr, "{}:{}:{}: {}: {}", options.inputFile.c_str(), line + 1, column + 1, name(diag.level), diag.message);
+        if (line < sourceManager.lineCount()) {
+            std::print(stderr, "{}", sourceManager.line(line));
+            std::println(stderr, "{}^", std::string(column, ' '));
+        }
     }
-    if (!M) {
+    if (!IM) {
         return EXIT_FAILURE;
     }
 
-    if (!ir::verifyModule(*M)) {
+    if (!ir::verifyModule(*IM)) {
         std::println(stderr, "{}: error: invalid module", argv[0]);
         return EXIT_FAILURE;
     }
 
     ir::PassManager passManager;
-    passManager.run(*M);
+    passManager.run(*IM);
 
     if (options.dumpIR) {
-        std::println(stderr, "{}", M->format());
+        std::println(stderr, "{}", IM->format());
     }
 
     mir::Module MM;
@@ -195,7 +188,7 @@ int main(int argc, char *argv[]) {
 
     if (options.target == Target::kRISCV64) {
         RISCVBackendDriver backendDriver;
-        backendDriver.run(*M, MM, program);
+        backendDriver.run(*IM, MM, program);
     }
 
     if (options.dumpMIR) {
@@ -205,7 +198,7 @@ int main(int argc, char *argv[]) {
     std::string output = program.format() + '\n';
 
     if (int error = writeAll(options.outputFile, output)) {
-        std::println(stderr, "{}: error: {}", argv[0], strerror(error));
+        std::println(stderr, "{}: error: {}: {}", argv[0], options.outputFile.c_str(), strerror(error));
         return EXIT_FAILURE;
     }
 

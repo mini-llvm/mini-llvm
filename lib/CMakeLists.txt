@@ -1,6 +1,7 @@
 add_library(mini-llvm
     codegen/register_allocators/LinearScanAllocator.cpp
     codegen/register_allocators/NaiveAllocator.cpp
+    common/SourceManager.cpp
     ir/Argument.cpp
     ir/BasicBlock.cpp
     ir/Constant/ArrayConstant.cpp
@@ -109,7 +110,6 @@ add_library(mini-llvm
     targets/riscv/RISCVBackendDriver.cpp
     utils/FileHandle.cpp
     utils/FileSystem.cpp
-    utils/Lines.cpp
     utils/Strings.cpp
 )
 target_compile_features(mini-llvm PUBLIC cxx_std_23)

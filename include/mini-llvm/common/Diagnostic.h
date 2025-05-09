@@ -1,39 +1,37 @@
 #pragma once
 
 #include <cstdlib>
-#include <filesystem>
 #include <string>
 
 namespace mini_llvm {
 
 struct Diagnostic {
-    enum class Severity {
+    enum class Level {
         kNote,
         kWarning,
         kError,
     };
 
-    Severity severity;
+    Level level;
     std::string message;
-    std::filesystem::path file;
-    size_t offset;
+    size_t location;
 
-    static Diagnostic note(std::string message, std::filesystem::path file, size_t offset) {
-        return {Severity::kNote, std::move(message), std::move(file), offset};
+    static Diagnostic note(std::string message, size_t location) {
+        return {Level::kNote, std::move(message), location};
     }
 
-    static Diagnostic warning(std::string message, std::filesystem::path file, size_t offset) {
-        return {Severity::kWarning, std::move(message), std::move(file), offset};
+    static Diagnostic warning(std::string message, size_t location) {
+        return {Level::kWarning, std::move(message), location};
     }
 
-    static Diagnostic error(std::string message, std::filesystem::path file, size_t offset) {
-        return {Severity::kError, std::move(message), std::move(file), offset};
+    static Diagnostic error(std::string message, size_t location) {
+        return {Level::kError, std::move(message), location};
     }
 };
 
-inline constexpr const char *name(Diagnostic::Severity severity) {
-    using enum Diagnostic::Severity;
-    switch (severity) {
+inline constexpr const char *name(Diagnostic::Level level) {
+    using enum Diagnostic::Level;
+    switch (level) {
         case kNote: return "note";
         case kWarning: return "warning";
         case kError: return "error";
