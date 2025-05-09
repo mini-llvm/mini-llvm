@@ -12,7 +12,9 @@
 using namespace mini_llvm::mc;
 
 bool RISCVFallthrough::runOnFragment(Fragment &fragment) {
-    if (fragment.section() != Section::kText) return false;
+    if (fragment.section() != Section::kText) {
+        return false;
+    }
 
     bool changed = false;
 

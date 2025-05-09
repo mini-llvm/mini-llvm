@@ -102,7 +102,9 @@ bool ArrayConstant::equals(const Constant &other) const {
         return false;
     }
     const ArrayConstant &castOther = static_cast<const ArrayConstant &>(other);
-    if (*type() != *castOther.type()) return false;
+    if (*type() != *castOther.type()) {
+        return false;
+    }
     for (auto [element1, element2] : std::views::zip(elements(*this), elements(castOther))) {
         if (*element1 != *element2) {
             return false;

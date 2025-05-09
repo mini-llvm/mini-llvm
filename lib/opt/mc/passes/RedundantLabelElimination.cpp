@@ -13,7 +13,9 @@
 using namespace mini_llvm::mc;
 
 bool RedundantLabelElimination::runOnFragment(Fragment &fragment) {
-    if (fragment.section() != Section::kText) return false;
+    if (fragment.section() != Section::kText) {
+        return false;
+    }
 
     std::unordered_set<std::string> referenced;
 

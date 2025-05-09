@@ -125,7 +125,9 @@ bool Mem2Reg::runOnFunction(Function &F) {
         }
     }
 
-    if (vars.empty()) return false;
+    if (vars.empty()) {
+        return false;
+    }
 
     DominatorTreeAnalysis domTree;
     domTree.runOnFunction(F);
