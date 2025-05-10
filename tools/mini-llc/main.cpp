@@ -1,4 +1,3 @@
-#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -10,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include <getopt.h>
-
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/common/SourceManger.h"
 #include "mini-llvm/ir/Module.h"
@@ -21,6 +18,7 @@
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
@@ -41,83 +39,86 @@ Target toTarget(std::string_view targetName) {
     return Target::kNone;
 }
 
-struct Options {
-    Target target;
-    std::filesystem::path inputFile;
-    std::filesystem::path outputFile;
-    bool dumpIR;
-    bool dumpMIR;
-};
-
 } // namespace
 
 int main(int argc, char *argv[]) {
-    Options options{};
+    CommandLineParser parser;
 
-    const char *shortOpts = "o:";
-    struct option longOpts[] = {
-        {"help", no_argument, nullptr, CHAR_MAX + 1},
-        {"target", required_argument, nullptr, CHAR_MAX + 2},
-        {"dump-ir", no_argument, nullptr, CHAR_MAX + 3},
-        {"dump-mir", no_argument, nullptr, CHAR_MAX + 4},
-        {nullptr, 0, nullptr, 0},
-    };
+    parser.addOption("--help");
+    parser.addOption("--target:");
+    parser.addOption("-o:");
+    parser.addOption("--dump-ir");
+    parser.addOption("--dump-mir");
 
-    int opt;
-    while ((opt = getopt_long(argc, argv, shortOpts, longOpts, nullptr)) != -1) {
-        switch (opt) {
-            case CHAR_MAX + 1: {
+    if (Expected<void, CommandLineParser::Error> result = parser.parse(argc, argv); !result) {
+        using enum CommandLineParser::ErrorKind;
+        switch (result.error().kind()) {
+        case kMissingValue:
+            std::println(stderr, "{}: error: missing value to '{}'", argv[0], result.error().optionName());
+            break;
+
+        case kUnexpectedValue:
+            std::println(stderr, "{}: error: unexpected value to '{}'", argv[0], result.error().optionName());
+            break;
+
+        case kUnrecognizedOption:
+            std::println(stderr, "{}: error: unrecognized option '{}'", argv[0], result.error().optionName());
+            break;
+        }
+        return EXIT_FAILURE;
+    }
+
+    Target target = Target::kNone;
+    std::filesystem::path inputFile;
+    std::filesystem::path outputFile;
+    bool dumpIR = false;
+    bool dumpMIR = false;
+
+    for (const CommandLineParser::Argument &arg : parser) {
+        if (arg.isOption()) {
+            if (arg.name() == "--help") {
                 std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", argv[0]);
                 return EXIT_SUCCESS;
             }
-
-            case CHAR_MAX + 2: {
-                Target target = toTarget(optarg);
+            if (arg.name() == "--target") {
+                target = toTarget(arg.value());
                 if (target == Target::kNone) {
-                    std::println(stderr, "{}: error: unsupported target '%s'", argv[0], optarg);
+                    std::println(stderr, "{}: error: unsupported target '%s'", argv[0], arg.value());
                     return EXIT_FAILURE;
                 }
-                options.target = target;
-                break;
+                continue;
             }
-
-            case CHAR_MAX + 3: {
-                options.dumpIR = true;
-                break;
+            if (arg.name() == "-o") {
+                outputFile = arg.value();
+                continue;
             }
-
-            case CHAR_MAX + 4: {
-                options.dumpMIR = true;
-                break;
+            if (arg.name() == "--dump-ir") {
+                dumpIR = true;
+                continue;
             }
-
-            case 'o': {
-                options.outputFile = optarg;
-                break;
-            }
-
-            default: {
-                return EXIT_FAILURE;
+            if (arg.name() == "--dump-mir") {
+                dumpMIR = true;
+                continue;
             }
         }
+        if (!inputFile.empty()) {
+            std::println(stderr, "{}: error: multiple input files", argv[0]);
+            return EXIT_FAILURE;
+        }
+        inputFile = arg.arg();
     }
 
-    if (optind == argc) {
+    if (inputFile.empty()) {
         std::println(stderr, "{}: error: no input file", argv[0]);
         return EXIT_FAILURE;
     }
-    if (optind < argc - 1) {
-        std::println(stderr, "{}: error: multiple input files", argv[0]);
-        return EXIT_FAILURE;
-    }
-    options.inputFile = argv[optind];
 
-    if (options.outputFile.empty()) {
-        options.outputFile = options.inputFile;
-        options.outputFile.replace_extension(".s");
+    if (outputFile.empty()) {
+        outputFile = inputFile;
+        outputFile.replace_extension(".s");
     }
 
-    if (options.target == Target::kNone) {
+    if (target == Target::kNone) {
         const char *targetName;
 #if defined(MINI_LLVM_X86_64)
         targetName = "x86_64";
@@ -138,17 +139,16 @@ int main(int argc, char *argv[]) {
 #else
         targetName = "unknown";
 #endif
-        Target target = toTarget(targetName);
+        target = toTarget(targetName);
         if (target == Target::kNone) {
             std::println(stderr, "{}: error: unsupported target '{}'", argv[0], targetName);
             return EXIT_FAILURE;
         }
-        options.target = target;
     }
 
-    Expected<std::string, int> source = readAll(options.inputFile);
+    Expected<std::string, int> source = readAll(inputFile);
     if (!source) {
-        std::println(stderr, "{}: error: {}: {}", argv[0], options.inputFile.c_str(), strerror(source.error()));
+        std::println(stderr, "{}: error: {}: {}", argv[0], inputFile.c_str(), strerror(source.error()));
         return EXIT_FAILURE;
     }
     if (!source->empty() && source->back() != '\n') {
@@ -161,7 +161,7 @@ int main(int argc, char *argv[]) {
     std::optional<ir::Module> IM = ir::parseModule(sourceManager.source().c_str(), diags);
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
-        std::println(stderr, "{}:{}:{}: {}: {}", options.inputFile.c_str(), line + 1, column + 1, name(diag.level), diag.message);
+        std::println(stderr, "{}:{}:{}: {}: {}", inputFile.c_str(), line + 1, column + 1, name(diag.level), diag.message);
         if (line < sourceManager.lineCount()) {
             std::print(stderr, "{}", sourceManager.line(line));
             std::println(stderr, "{}^", std::string(column, ' '));
@@ -179,26 +179,26 @@ int main(int argc, char *argv[]) {
     ir::PassManager passManager;
     passManager.run(*IM);
 
-    if (options.dumpIR) {
+    if (dumpIR) {
         std::println(stderr, "{}", IM->format());
     }
 
     mir::Module MM;
     mc::Program program;
 
-    if (options.target == Target::kRISCV64) {
+    if (target == Target::kRISCV64) {
         RISCVBackendDriver backendDriver;
         backendDriver.run(*IM, MM, program);
     }
 
-    if (options.dumpMIR) {
+    if (dumpMIR) {
         std::println(stderr, "{}", MM.format());
     }
 
     std::string output = program.format() + '\n';
 
-    if (Expected<void, int> result = writeAll(options.outputFile, output); !result) {
-        std::println(stderr, "{}: error: {}: {}", argv[0], options.outputFile.c_str(), strerror(result.error()));
+    if (Expected<void, int> result = writeAll(outputFile, output); !result) {
+        std::println(stderr, "{}: error: {}: {}", argv[0], outputFile.c_str(), strerror(result.error()));
         return EXIT_FAILURE;
     }
 
