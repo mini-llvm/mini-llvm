@@ -175,14 +175,14 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
 
 template <>
 struct std::hash<std::type_info> {
-    constexpr size_t operator()(const std::type_info &type) const noexcept {
+    size_t operator()(const std::type_info &type) const noexcept {
         return type.hash_code();
     }
 };
 
 template <>
 struct std::hash<Type> {
-    constexpr size_t operator()(const Type &type) const noexcept {
+    size_t operator()(const Type &type) const noexcept {
         assert(dynamic_cast<const IntegerType *>(&type) || dynamic_cast<const FloatingType *>(&type));
         return typeid(type).hash_code();
     }
@@ -190,7 +190,7 @@ struct std::hash<Type> {
 
 template <>
 struct std::hash<ValueNumber> {
-    constexpr size_t operator()(const ValueNumber &number) const noexcept {
+    size_t operator()(const ValueNumber &number) const noexcept {
         if (auto *value = dynamic_cast<const IntegerConstant *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
