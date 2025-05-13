@@ -284,7 +284,6 @@ bool LinearScanAllocator::allocate(
                     dsts.insert(virtReg);
                 }
             }
-            HashMap<VirtualRegister *, PhysicalRegister *> allocation;
             std::unordered_set<PhysicalRegister *> srcAllocated, dstAllocated;
             for (VirtualRegister *virtReg : srcs & dsts) {
                 PhysicalRegister *bestPhysReg = nullptr;

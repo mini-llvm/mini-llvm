@@ -43,16 +43,16 @@ bool ArrayFlattening::runOnFunction(Function &F) {
                         type = static_cast<const ArrayType *>(&*type)->elementType();
                     }
                     std::vector<std::shared_ptr<Value>> terms;
-                    for (size_t i = 0; i < n; ++i) {
+                    for (size_t j = 0; j < n; ++j) {
                         std::shared_ptr<Instruction> mul = std::make_shared<Mul>(
-                            share(*gep->idx_begin()[i]), gep->idx_begin()[i]->type()->constant(sizes[i])
+                            share(*gep->idx_begin()[j]), gep->idx_begin()[j]->type()->constant(sizes[j])
                         );
                         addToParent(*gep, mul);
                         terms.push_back(mul);
                     }
                     std::shared_ptr<Value> sum = terms[0];
-                    for (size_t i = 1; i < n; ++i) {
-                        std::shared_ptr<Instruction> add = std::make_shared<Add>(sum, terms[i]);
+                    for (size_t j = 1; j < n; ++j) {
+                        std::shared_ptr<Instruction> add = std::make_shared<Add>(sum, terms[j]);
                         addToParent(*gep, add);
                         sum = add;
                     }

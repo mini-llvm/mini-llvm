@@ -68,9 +68,9 @@ BasicBlock *splitBefore(BasicBlock::const_iterator i) {
     for (BasicBlock *succ : successors(*B)) {
         for (Instruction &I : *succ) {
             if (auto *phi = dynamic_cast<Phi *>(&I)) {
-                if (auto i = phi->findIncoming(*B); i != phi->incoming_end()) {
-                    std::shared_ptr<Value> value = share(*i->value);
-                    phi->removeIncoming(i);
+                if (auto j = phi->findIncoming(*B); j != phi->incoming_end()) {
+                    std::shared_ptr<Value> value = share(*j->value);
+                    phi->removeIncoming(j);
                     phi->putIncoming(*B2, std::move(value));
                 }
             }
@@ -138,16 +138,16 @@ bool FunctionInlining::runOnFunction(Function &F) {
 
                     for (Instruction *caller_I : cloned) {
                         for (UseBase *op : caller_I->operands()) {
-                            if (auto i = valueMap.find(&**op); i != valueMap.end()) {
-                                op->set(share(*i->second));
+                            if (auto j = valueMap.find(&**op); j != valueMap.end()) {
+                                op->set(share(*j->second));
                             }
                         }
                     }
 
                     if (*callee->functionType()->returnType() != Void()) {
                         for (auto [caller_B, value] : exits) {
-                            if (auto i = valueMap.find(value); i != valueMap.end()) {
-                                value = i->second;
+                            if (auto j = valueMap.find(value); j != valueMap.end()) {
+                                value = j->second;
                             }
                             static_cast<Phi *>(&B2->front())->putIncoming(*caller_B, share(*value));
                         }
