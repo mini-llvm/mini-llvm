@@ -22,13 +22,12 @@ void CommandLineParser::addOption(std::string name) {
     options_.emplace(std::move(name), kind);
 }
 
-Expected<void, CommandLineParser::Error> CommandLineParser::parse(int argc, char *argv[]) {
-    --argc;
-    ++argv;
+Expected<void, CommandLineParser::Error> CommandLineParser::parse(const std::vector<std::string> &args) {
     bool isPositional = false;
-    int i = 0;
-    while (i < argc) {
-        std::string arg = argv[i++];
+    size_t n = args.size();
+    size_t i = 1;
+    while (i < n) {
+        std::string arg = args[i++];
         if (isPositional) {
             args_.emplace_back(PositionalArgument(arg));
             continue;
@@ -45,10 +44,10 @@ Expected<void, CommandLineParser::Error> CommandLineParser::parse(int argc, char
                     return Unexpected(Error(ErrorKind::kUnrecognizedOption, arg));
                 }
                 if (option->second == OptionKind::kRequiredValue) {
-                    if (i == argc) {
+                    if (i == n) {
                         return Unexpected(Error(ErrorKind::kMissingValue, arg));
                     }
-                    std::string value = argv[i++];
+                    std::string value = args[i++];
                     if (value.starts_with("-") && value != "-") {
                         return Unexpected(Error(ErrorKind::kMissingValue, arg));
                     }
@@ -78,10 +77,10 @@ Expected<void, CommandLineParser::Error> CommandLineParser::parse(int argc, char
                         return Unexpected(Error(ErrorKind::kUnrecognizedOption, arg));
                     }
                     if (option->second == OptionKind::kRequiredValue) {
-                        if (i == argc) {
+                        if (i == n) {
                             return Unexpected(Error(ErrorKind::kMissingValue, arg));
                         }
-                        std::string value = argv[i++];
+                        std::string value = args[i++];
                         if (value.starts_with("-") && value != "-") {
                             return Unexpected(Error(ErrorKind::kMissingValue, arg));
                         }

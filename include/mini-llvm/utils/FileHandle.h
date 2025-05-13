@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdio>
+#include <string>
 #include <utility>
 
 namespace mini_llvm {
@@ -12,6 +13,16 @@ public:
     explicit FileHandle(FILE *handle) : handle_(handle) {}
 
     FileHandle(const char *path, const char *mode);
+
+    FileHandle(const std::string &path, const char *mode)
+        : FileHandle(path.c_str(), mode) {}
+
+    FileHandle(const char *path, const std::string &mode)
+        : FileHandle(path, mode.c_str()) {}
+
+    FileHandle(const std::string &path, const std::string &mode)
+        : FileHandle(path.c_str(), mode.c_str()) {}
+
     ~FileHandle();
 
     FileHandle(const FileHandle &) = delete;
@@ -38,6 +49,19 @@ public:
     }
 
     void open(const char *path, const char *mode);
+
+    void open(const std::string &path, const char *mode) {
+        open(path.c_str(), mode);
+    }
+
+    void open(const char *path, const std::string &mode) {
+        open(path, mode.c_str());
+    }
+
+    void open(const std::string &path, const std::string &mode) {
+        open(path.c_str(), mode.c_str());
+    }
+
     void close();
 
     void swap(FileHandle &other) noexcept {

@@ -129,7 +129,7 @@ public:
 
     void addOption(std::string name);
 
-    Expected<void, Error> parse(int argc, char *argv[]);
+    Expected<void, Error> parse(const std::vector<std::string> &args);
 
     iterator begin() const {
         return args_.begin();

@@ -3,17 +3,15 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstring>
-#include <filesystem>
 #include <string>
-#include <string_view>
 
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileHandle.h"
 
 using namespace mini_llvm;
 
-Expected<std::string, int> mini_llvm::readAll(const std::filesystem::path &path) {
-    FileHandle handle(path.c_str(), "r");
+Expected<std::string, int> mini_llvm::readAll(const char *path) {
+    FileHandle handle(path, "r");
     if (!handle) {
         return Unexpected(errno);
     }
@@ -32,12 +30,12 @@ Expected<std::string, int> mini_llvm::readAll(const std::filesystem::path &path)
     return content;
 }
 
-Expected<void, int> mini_llvm::writeAll(const std::filesystem::path &path, std::string_view content) {
-    FileHandle handle(path.c_str(), "w");
+Expected<void, int> mini_llvm::writeAll(const char *path, const char *data, size_t size) {
+    FileHandle handle(path, "w");
     if (!handle) {
         return Unexpected(errno);
     }
-    if (fwrite(content.data(), 1, content.size(), handle.get()) != content.size()) {
+    if (fwrite(data, 1, size, handle.get()) != size) {
         return Unexpected(errno);
     }
     return {};

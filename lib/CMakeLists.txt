@@ -112,6 +112,7 @@ add_library(mini-llvm
     utils/FileHandle.cpp
     utils/FileSystem.cpp
     utils/Strings.cpp
+    utils/Windows.cpp
 )
 target_compile_features(mini-llvm PUBLIC cxx_std_23)
 target_include_directories(mini-llvm PUBLIC

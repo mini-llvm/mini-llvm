@@ -2,6 +2,10 @@
 
 #include <cstdio>
 
+#ifdef _WIN32
+    #include "mini-llvm/utils/Windows.h"
+#endif
+
 using namespace mini_llvm;
 
 FileHandle::FileHandle(const char *path, const char *mode) {
@@ -13,7 +17,11 @@ FileHandle::~FileHandle() {
 }
 
 void FileHandle::open(const char *path, const char *mode) {
+#ifdef _WIN32
+    handle_ = _wfopen(windows::widen(path).c_str(), windows::widen(mode).c_str());
+#else
     handle_ = fopen(path, mode);
+#endif
 }
 
 void FileHandle::close() {

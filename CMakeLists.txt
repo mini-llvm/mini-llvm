@@ -9,14 +9,20 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
         set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
     endif()
 
-    if(CMAKE_BUILD_TYPE STREQUAL Debug)
-        add_compile_definitions(_GLIBCXX_ASSERTIONS)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        if(CMAKE_BUILD_TYPE STREQUAL Debug)
+            add_compile_definitions(_GLIBCXX_ASSERTIONS)
+        endif()
+
+        add_compile_options(-Wall -Wextra -Wpedantic)
+
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            add_compile_options(-Wno-potentially-evaluated-expression)
+        endif()
     endif()
 
-    add_compile_options(-Wall -Wextra -Wpedantic)
-
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        add_compile_options(-Wno-potentially-evaluated-expression)
+    if(MSVC)
+        add_compile_options(/utf-8 /W4)
     endif()
 endif()
 

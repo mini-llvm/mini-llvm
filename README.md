@@ -180,13 +180,13 @@ mini-llc --target=riscv64 -o example.s example.ll
 
 ## Building
 
-| Linux | macOS | Windows |
-|:-:|:-:|:-:|
-| ✓ | ✗ | ✗ |
-
-| GCC | Clang |
+| Linux | Windows |
 |:-:|:-:|
-| ≥ 14 | ≥ 18 |
+| ✓ | ✓ |
+
+| GCC | Clang | MSVC |
+|:-:|:-:|:-:|
+| ≥ 14 | ≥ 18 | ≥ 19.42 (VS 2022 17.12) |
 
 | CMake |
 |:-:|
