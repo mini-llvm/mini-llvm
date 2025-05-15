@@ -3,7 +3,6 @@
 #include <memory>
 #include <unordered_set>
 #include <utility>
-#include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Immediate.h"
@@ -49,23 +48,19 @@ bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {
             }
         }
 
-        std::vector<std::pair<BasicBlock::const_iterator, std::unique_ptr<Instruction>>> replace;
-
-        for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
+        for (BasicBlock::const_iterator i = B.begin(); i != B.end();) {
             if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
                 if (&*mov->src() == zeroReg_) {
                     int width = mov->width();
                     std::shared_ptr<Register> dst = share(*mov->dst());
                     std::unique_ptr<Immediate> src = std::make_unique<IntegerImmediate>(0);
-                    replace.emplace_back(i, std::make_unique<LI>(width, std::move(dst), std::move(src)));
+                    std::unique_ptr<Instruction> I = std::make_unique<LI>(width, std::move(dst), std::move(src));
+                    B.replace(i, std::move(I));
+                    changed2 = true;
+                    continue;
                 }
             }
-        }
-
-        for (auto &[i, I] : replace) {
-            B.add(i, std::move(I));
-            B.remove(i);
-            changed2 = true;
+            ++i;
         }
 
         changed |= changed2;

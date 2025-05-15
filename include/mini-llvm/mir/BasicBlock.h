@@ -135,6 +135,8 @@ public:
         return remove(std::prev(end()));
     }
 
+    void replace(const_iterator pos, std::unique_ptr<Instruction> I);
+
     void clear() {
         while (!empty()) {
             removeFirst();
