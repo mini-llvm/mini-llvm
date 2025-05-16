@@ -17,6 +17,7 @@
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/utils/Colors.h"
 #include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
@@ -27,6 +28,8 @@
 #endif
 
 using namespace mini_llvm;
+
+using enum Color;
 
 namespace {
 
@@ -45,6 +48,8 @@ Target toTarget(std::string_view targetName) {
 } // namespace
 
 int mainImpl(std::vector<std::string> args) {
+    bool showColor = supportsColor(stderr);
+
     CommandLineParser parser;
 
     parser.addOption("--help");
@@ -57,15 +62,15 @@ int mainImpl(std::vector<std::string> args) {
         using enum CommandLineParser::ErrorKind;
         switch (result.error().kind()) {
         case kMissingValue:
-            std::println(stderr, "{}: error: missing value to '{}'", args[0], result.error().optionName());
+            print(stderr, showColor, "{}: {}error: {}missing value to '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
             break;
 
         case kUnexpectedValue:
-            std::println(stderr, "{}: error: unexpected value to '{}'", args[0], result.error().optionName());
+            print(stderr, showColor, "{}: {}error: {}unexpected value to '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
             break;
 
         case kUnrecognizedOption:
-            std::println(stderr, "{}: error: unrecognized option '{}'", args[0], result.error().optionName());
+            print(stderr, showColor, "{}: {}error: {}unrecognized option '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
             break;
         }
         return EXIT_FAILURE;
@@ -80,13 +85,13 @@ int mainImpl(std::vector<std::string> args) {
     for (const CommandLineParser::Argument &arg : parser) {
         if (arg.isOption()) {
             if (arg.name() == "--help") {
-                std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", args[0]);
+                std::print(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>\n", args[0]);
                 return EXIT_SUCCESS;
             }
             if (arg.name() == "--target") {
                 target = toTarget(arg.value());
                 if (target == Target::kNone) {
-                    std::println(stderr, "{}: error: unsupported target '%s'", args[0], arg.value());
+                    print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, arg.value());
                     return EXIT_FAILURE;
                 }
                 continue;
@@ -105,14 +110,14 @@ int mainImpl(std::vector<std::string> args) {
             }
         }
         if (!inputFile.empty()) {
-            std::println(stderr, "{}: error: multiple input files", args[0]);
+            print(stderr, showColor, "{}: {}error: {}multiple input files\n", args[0], kBold + kRed, kReset);
             return EXIT_FAILURE;
         }
         inputFile = arg.arg();
     }
 
     if (inputFile.empty()) {
-        std::println(stderr, "{}: error: no input file", args[0]);
+        print(stderr, showColor, "{}: {}error: {}no input file\n", args[0], kBold + kRed, kReset);
         return EXIT_FAILURE;
     }
 
@@ -149,14 +154,14 @@ int mainImpl(std::vector<std::string> args) {
 #endif
         target = toTarget(targetName);
         if (target == Target::kNone) {
-            std::println(stderr, "{}: error: unsupported target '{}'", args[0], targetName);
+            print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, targetName);
             return EXIT_FAILURE;
         }
     }
 
     Expected<std::string, int> source = readAll(inputFile);
     if (!source) {
-        std::println(stderr, "{}: error: {}: {}", args[0], inputFile, strerror(source.error()));
+        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, inputFile, strerror(source.error()));
         return EXIT_FAILURE;
     }
     if (!source->empty() && source->back() != '\n') {
@@ -169,10 +174,22 @@ int mainImpl(std::vector<std::string> args) {
     std::optional<ir::Module> IM = ir::parseModule(sourceManager.source(), diags);
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
-        std::println(stderr, "{}:{}:{}: {}: {}", inputFile, line + 1, column + 1, name(diag.level), diag.message);
+        print(stderr, showColor, "{}:{}:{}: ", inputFile, line + 1, column + 1);
+        switch (diag.level) {
+        case Diagnostic::Level::kNote:
+            print(stderr, showColor, "{}note: {}", kBold + kCyan, kReset);
+            break;
+        case Diagnostic::Level::kWarning:
+            print(stderr, showColor, "{}warning: {}", kBold + kMagenta, kReset);
+            break;
+        case Diagnostic::Level::kError:
+            print(stderr, showColor, "{}error: {}", kBold + kRed, kReset);
+            break;
+        }
+        print(stderr, showColor, "{}\n", diag.message);
         if (line < sourceManager.lineCount()) {
-            std::print(stderr, "{}", sourceManager.line(line));
-            std::println(stderr, "{}^", std::string(column, ' '));
+            print(stderr, showColor, "{}", sourceManager.line(line));
+            print(stderr, showColor, "{}{}^{}\n", std::string(column, ' '), kBold + kGreen, kReset);
         }
     }
     if (!IM) {
@@ -180,7 +197,7 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (!ir::verifyModule(*IM)) {
-        std::println(stderr, "{}: error: invalid module", args[0]);
+        print(stderr, showColor, "{}: {}error: {}invalid module\n", args[0], kBold + kRed, kReset);
         return EXIT_FAILURE;
     }
 
@@ -188,7 +205,7 @@ int mainImpl(std::vector<std::string> args) {
     passManager.run(*IM);
 
     if (dumpIR) {
-        std::println(stderr, "{}", IM->format());
+        std::print(stderr, "{}\n", IM->format());
     }
 
     mir::Module MM;
@@ -200,13 +217,13 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (dumpMIR) {
-        std::println(stderr, "{}", MM.format());
+        std::print(stderr, "{}\n", MM.format());
     }
 
     std::string output = program.format() + '\n';
 
     if (Expected<void, int> result = writeAll(outputFile, output.data(), output.size()); !result) {
-        std::println(stderr, "{}: error: {}: {}", args[0], outputFile, strerror(result.error()));
+        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, outputFile, strerror(result.error()));
         return EXIT_FAILURE;
     }
 
