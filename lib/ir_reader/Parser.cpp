@@ -10,8 +10,6 @@
 #include <optional>
 #include <ranges>
 #include <string>
-#include <typeinfo>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -104,29 +102,28 @@ using namespace mini_llvm::ir;
 
 using enum Token::Kind;
 
+using Location = std::vector<Token>::const_iterator;
+
 namespace {
 
-class Dummy final : public Instruction {
+class Undefined final : public Value {
 public:
-    explicit Dummy(std::unique_ptr<Type> type) : type_(std::move(type)) {}
+    explicit Undefined(std::unique_ptr<Type> type, Location location)
+        : type_(std::move(type)), location_(location) {}
 
     std::unique_ptr<Type> type() const override {
         return type_->clone();
     }
 
-    std::unordered_set<const UseBase *> operands() const override {
-        abort();
-    }
-
-    void accept(InstructionVisitor &) override {
-        abort();
-    }
-
-    void accept(InstructionVisitor &) const override {
-        abort();
+    Location location() const {
+        return location_;
     }
 
     std::string format() const override {
+        abort();
+    }
+
+    std::string formatAsOperand() const override {
         abort();
     }
 
@@ -136,6 +133,7 @@ public:
 
 private:
     std::unique_ptr<Type> type_;
+    Location location_;
 };
 
 } // namespace
@@ -143,8 +141,8 @@ private:
 Module Parser::parseModule() {
     Module M;
 
-    std::vector<std::pair<GlobalVar *, std::vector<Token>::const_iterator>> globalVars;
-    std::vector<std::pair<Function *, std::vector<Token>::const_iterator>> functions;
+    std::vector<std::pair<GlobalVar *, Location>> globalVars;
+    std::vector<std::pair<Function *, Location>> functions;
 
     while (cursor_->kind != kEOF) {
         if (cursor_->kind == kAt) {
@@ -221,9 +219,10 @@ Module Parser::parseModule() {
 }
 
 std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
+    Location symbolLocation = cursor_;
     Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
     if (symbolTable_.contains(symbol)) {
-        throw ParseException("redefinition of global identifier", cursor_);
+        throw ParseException("redefinition of global identifier", symbolLocation);
     }
 
     if (cursor_->kind != kEqual) {
@@ -292,14 +291,16 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
         ++cursor_;
     }
 
+    Location returnTypeLocation = cursor_;
     std::unique_ptr<Type> returnType = parseType();
     if (*returnType == BasicBlockType()) {
-        throw ParseException("invalid return type", cursor_);
+        throw ParseException("invalid return type", returnTypeLocation);
     }
 
+    Location symbolLocation = cursor_;
     Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
     if (symbolTable_.contains(symbol)) {
-        throw ParseException("redefinition of global identifier", cursor_);
+        throw ParseException("redefinition of global identifier", symbolLocation);
     }
 
     std::vector<std::unique_ptr<Type>> paramTypes;
@@ -311,19 +312,21 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     }
     ++cursor_;
     if (cursor_->kind != kRightParen) {
+        Location typeLocation;
         std::unique_ptr<Type> type;
         if (cursor_->kind == kEllipsis) {
             isVarArgs = true;
             ++cursor_;
         } else {
+            typeLocation = cursor_;
             type = parseType();
             if (*type == Void() || *type == BasicBlockType()) {
-                throw ParseException("invalid parameter type", cursor_);
+                throw ParseException("invalid parameter type", typeLocation);
             }
             paramTypes.push_back(std::move(type));
             if (hasBody) {
-                std::string name = parseSymbol(Symbol::Scope::kLocal).name;
-                paramNames.push_back(std::move(name));
+                Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
+                paramNames.push_back(std::move(symbol.name));
             }
         }
         while (!isVarArgs && cursor_->kind == kComma) {
@@ -332,14 +335,19 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
                 isVarArgs = true;
                 ++cursor_;
             } else {
+                typeLocation = cursor_;
                 type = parseType();
                 if (*type == Void() || *type == BasicBlockType()) {
-                    throw ParseException("invalid parameter type", cursor_);
+                    throw ParseException("invalid parameter type", typeLocation);
                 }
                 paramTypes.push_back(std::move(type));
                 if (hasBody) {
-                    std::string name = parseSymbol(Symbol::Scope::kLocal).name;
-                    paramNames.push_back(std::move(name));
+                    Location symbolLocation = cursor_;
+                    Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
+                    if (std::ranges::find(paramNames, symbol.name) != paramNames.end()) {
+                        throw ParseException("redefinition of argument", symbolLocation);
+                    }
+                    paramNames.push_back(std::move(symbol.name));
                 }
             }
         }
@@ -395,9 +403,6 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
 void Parser::parseFunctionBody(Function &F) {
     for (Argument &arg : args(F)) {
         Symbol symbol{Symbol::Scope::kLocal, arg.name()};
-        if (symbolTable_.contains(symbol)) {
-            throw ParseException("redefinition of argument", cursor_);
-        }
         symbolTable_(symbol) = share(arg);
     }
 
@@ -406,12 +411,13 @@ void Parser::parseFunctionBody(Function &F) {
     }
     ++cursor_;
 
-    auto marker = cursor_;
+    Location marker = cursor_;
     while (cursor_->kind != kRightBrace) {
         if (cursor_->kind == kName && std::next(cursor_)->kind == kColon) {
+            Location symbolLocation = cursor_;
             Symbol symbol{Symbol::Scope::kLocal, std::get<std::string>(cursor_->value)};
             if (symbolTable_.contains(symbol)) {
-                throw ParseException("redefinition of label", cursor_);
+                throw ParseException("redefinition of label", symbolLocation);
             }
             symbolTable_(symbol) = std::make_shared<BasicBlock>();
         }
@@ -434,8 +440,8 @@ void Parser::parseFunctionBody(Function &F) {
     ++cursor_;
 
     for (const auto &[symbol, value] : symbolTable_) {
-        if (typeid(*value) == typeid(Dummy)) {
-            throw ParseException("undefined local identifier", cursor_);
+        if (auto *undefined = dynamic_cast<const Undefined *>(&*value)) {
+            throw ParseException("undefined local identifier", undefined->location());
         }
     }
 
@@ -473,6 +479,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
     std::shared_ptr<Instruction> I;
 
     if (cursor_->kind == kPercent) {
+        Location symbolLocation = cursor_;
         Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
 
         if (cursor_->kind != kEqual) {
@@ -510,6 +517,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 Token::Kind mnemonic = cursor_->kind;
                 ++cursor_;
 
+                Location typeLocation = cursor_;
                 std::unique_ptr<Type> type = parseType();
                 std::shared_ptr<Value> lhs = parseValue(*type);
 
@@ -535,7 +543,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kLSHR:
                     case kASHR:
                         if (!dynamic_cast<const IntegerType *>(&*type)) {
-                            throw ParseException("must be integer type", cursor_);
+                            throw ParseException("must be integer type", typeLocation);
                         }
                         break;
 
@@ -545,7 +553,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kFDiv:
                     case kFRem:
                         if (!dynamic_cast<const FloatingType *>(&*type)) {
-                            throw ParseException("must be floating point type", cursor_);
+                            throw ParseException("must be floating point type", typeLocation);
                         }
                         break;
 
@@ -651,6 +659,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 Token::Kind mnemonic = cursor_->kind;
                 ++cursor_;
 
+                Location type1Location = cursor_;
                 std::unique_ptr<Type> type1 = parseType();
                 std::shared_ptr<Value> value = parseValue(*type1);
 
@@ -659,11 +668,12 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
+                Location type2Location = cursor_;
                 std::unique_ptr<Type> type2 = parseType();
 
                 if (mnemonic == kTrunc || mnemonic == kSExt || mnemonic == kZExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                        throw ParseException("must be integer type", cursor_);
+                        throw ParseException("must be integer type", type2Location);
                     }
 
                     std::unique_ptr<IntegerType> integerType2 = cast<IntegerType>(std::move(type2));
@@ -678,7 +688,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                 } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kSIToFP || mnemonic == kUIToFP) {
                     if (!dynamic_cast<const FloatingType *>(&*type2)) {
-                        throw ParseException("must be floating point type", cursor_);
+                        throw ParseException("must be floating point type", type2Location);
                     }
 
                     std::unique_ptr<FloatingType> floatingType2 = cast<FloatingType>(std::move(type2));
@@ -692,18 +702,18 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                 } else if (mnemonic == kPtrToInt) {
                     if (*type1 != Ptr()) {
-                        throw ParseException("must be ptr", cursor_);
+                        throw ParseException("must be ptr", type1Location);
                     }
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                        throw ParseException("must be integer type", cursor_);
+                        throw ParseException("must be integer type", type2Location);
                     }
                     I = std::make_shared<PtrToInt>(std::move(value), cast<IntegerType>(std::move(type2)));
                 } else if (mnemonic == kIntToPtr) {
                     if (!dynamic_cast<const IntegerType *>(&*type1)) {
-                        throw ParseException("must be integer type", cursor_);
+                        throw ParseException("must be integer type", type1Location);
                     }
                     if (*type2 != Ptr()) {
-                        throw ParseException("must be ptr", cursor_);
+                        throw ParseException("must be ptr", type2Location);
                     }
                     I = std::make_unique<IntToPtr>(std::move(value));
                 } else if (mnemonic == kBitCast) {
@@ -733,8 +743,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
-                if (*parseType() != Ptr()) {
-                    throw ParseException("must be ptr", cursor_);
+                Location ptrTypeLocation = cursor_;
+                std::unique_ptr<Type> ptrType = parseType();
+                if (*ptrType != Ptr()) {
+                    throw ParseException("must be ptr", ptrTypeLocation);
                 }
 
                 std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -746,8 +758,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             case kSelect: {
                 ++cursor_;
 
-                if (*parseType() != I1()) {
-                    throw ParseException("must be i1", cursor_);
+                Location condTypeLocation = cursor_;
+                std::unique_ptr<Type> condType = parseType();
+                if (*condType != I1()) {
+                    throw ParseException("must be i1", condTypeLocation);
                 }
 
                 std::shared_ptr<Value> cond = parseValue(I1());
@@ -757,19 +771,21 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
-                std::unique_ptr<Type> type = parseType();
-                std::shared_ptr<Value> trueValue = parseValue(*type);
+                std::unique_ptr<Type> trueValueType = parseType();
+                std::shared_ptr<Value> trueValue = parseValue(*trueValueType);
 
                 if (cursor_->kind != kComma) {
                     throw ParseException("expected ','", cursor_);
                 }
                 ++cursor_;
 
-                if (*parseType() != *type) {
-                    throw ParseException("both values to select must have same type", cursor_);
+                Location falseValueTypeLocation = cursor_;
+                std::unique_ptr<Type> falseValueType = parseType();
+                if (*falseValueType != *trueValueType) {
+                    throw ParseException("both values to select must have same type", falseValueTypeLocation);
                 }
 
-                std::shared_ptr<Value> falseValue = parseValue(*type);
+                std::shared_ptr<Value> falseValue = parseValue(*trueValueType);
 
                 I = std::make_shared<Select>(std::move(cond), std::move(trueValue), std::move(falseValue));
                 break;
@@ -785,8 +801,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
-                if (*parseType() != Ptr()) {
-                    throw ParseException("must be ptr", cursor_);
+                Location ptrTypeLocation = cursor_;
+                std::unique_ptr<Type> ptrType = parseType();
+                if (*ptrType != Ptr()) {
+                    throw ParseException("must be ptr", ptrTypeLocation);
                 }
 
                 std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -797,17 +815,20 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 ++cursor_;
 
                 std::vector<std::shared_ptr<Value>> indices;
+                Location idxTypeLocation;
                 std::unique_ptr<Type> idxType;
+                idxTypeLocation = cursor_;
                 idxType = parseType();
                 if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                    throw ParseException("must be integer type", cursor_);
+                    throw ParseException("must be integer type", idxTypeLocation);
                 }
                 indices.push_back(parseValue(*idxType));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
+                    idxTypeLocation = cursor_;
                     idxType = parseType();
                     if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                        throw ParseException("must be integer type", cursor_);
+                        throw ParseException("must be integer type", idxTypeLocation);
                     }
                     indices.push_back(parseValue(*idxType));
                 }
@@ -820,9 +841,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             case kCall: {
                 ++cursor_;
 
+                Location returnTypeLocation = cursor_;
                 std::unique_ptr<Type> returnType = parseType();
                 if (*returnType == Void()) {
-                    throw ParseException("must not be void", cursor_);
+                    throw ParseException("must not be void", returnTypeLocation);
                 }
 
                 std::shared_ptr<Value> callee = parseValue(Ptr());
@@ -850,7 +872,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
 
                     if (*calleeFunction->functionType()->returnType() != *returnType) {
-                        throw ParseException("inconsistent return type", cursor_);
+                        throw ParseException("inconsistent return type", returnTypeLocation);
                     }
 
                     I =  std::make_shared<Call>(std::move(calleeFunction), std::move(args));
@@ -888,18 +910,19 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     }
                     ++cursor_;
 
-                    std::shared_ptr<BasicBlock> B = cast<BasicBlock>(parseValue(BasicBlockType()));
+                    Location blockLocation = cursor_;
+                    std::shared_ptr<BasicBlock> block = cast<BasicBlock>(parseValue(BasicBlockType()));
 
                     if (cursor_->kind != kRightBracket) {
                         throw ParseException("expected ']'", cursor_);
                     }
                     ++cursor_;
 
-                    if (hasIncomingBlock(phi, *B)) {
-                        throw ParseException("duplicate incoming block", cursor_);
+                    if (hasIncomingBlock(phi, *block)) {
+                        throw ParseException("duplicate incoming block", blockLocation);
                     }
 
-                    phi.putIncoming(*B, value);
+                    phi.putIncoming(*block, value);
                 };
 
                 parseIncoming(*phi);
@@ -921,11 +944,11 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
         if (symbolTable_.contains(symbol)) {
             std::shared_ptr<Value> II = symbolTable_[symbol];
-            if (typeid(*II) != typeid(Dummy)) {
-                throw ParseException("redefinition of local identifier", cursor_);
+            if (!dynamic_cast<const Undefined *>(&*II)) {
+                throw ParseException("redefinition of local identifier", symbolLocation);
             }
             if (*II->type() != *I->type()) {
-                throw ParseException("inconsistent type", cursor_);
+                throw ParseException("inconsistent type", symbolLocation);
             }
             replaceAllUsesWith(*II, I);
             symbolTable_[symbol] = I;
@@ -943,8 +966,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         }
         ++cursor_;
 
-        if (*parseType() != Ptr()) {
-            throw ParseException("must be ptr", cursor_);
+        Location ptrTypeLocation = cursor_;
+        std::unique_ptr<Type> ptrType = parseType();
+        if (*ptrType != Ptr()) {
+            throw ParseException("must be ptr", ptrTypeLocation);
         }
 
         std::shared_ptr<Value> ptr = parseValue(Ptr());
@@ -953,23 +978,25 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
     } else if (cursor_->kind == kCall) {
         ++cursor_;
 
+        Location returnTypeLocation = cursor_;
         std::unique_ptr<Type> returnType = parseType();
         if (*returnType != Void()) {
-            throw ParseException("must be void", cursor_);
+            throw ParseException("must be void", returnTypeLocation);
         }
 
+        Location symbolLocation = cursor_;
         Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
         if (!symbolTable_.contains(symbol)) {
-            throw ParseException("undefined global identifier", cursor_);
+            throw ParseException("undefined global identifier", symbolLocation);
         }
         std::shared_ptr<Value> value = symbolTable_[symbol];
         if (!dynamic_cast<const Function *>(&*value)) {
-            throw ParseException("identifier must be function", cursor_);
+            throw ParseException("identifier must be function", symbolLocation);
         }
         std::shared_ptr<Function> callee = cast<Function>(value);
 
         if (*callee->functionType()->returnType() != *returnType) {
-            throw ParseException("inconsistent return type", cursor_);
+            throw ParseException("inconsistent return type", symbolLocation);
         }
 
         if (cursor_->kind != kLeftParen) {
@@ -995,6 +1022,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
     } else if (cursor_->kind == kBr) {
         ++cursor_;
 
+        Location typeLocation = cursor_;
         std::unique_ptr<Type> type = parseType();
 
         if (*type == BasicBlockType()) {
@@ -1008,8 +1036,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             }
             ++cursor_;
 
-            if (*parseType() != BasicBlockType()) {
-                throw ParseException("must be label", cursor_);
+            Location trueDestTypeLocation = cursor_;
+            std::unique_ptr<Type> trueDestType = parseType();
+            if (*trueDestType != BasicBlockType()) {
+                throw ParseException("must be label", trueDestTypeLocation);
             }
 
             std::shared_ptr<BasicBlock> trueDest = cast<BasicBlock>(parseValue(BasicBlockType()));
@@ -1019,15 +1049,17 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             }
             ++cursor_;
 
-            if (*parseType() != BasicBlockType()) {
-                throw ParseException("must be label", cursor_);
+            Location falseDestTypeLocation = cursor_;
+            std::unique_ptr<Type> falseDestType = parseType();
+            if (*falseDestType != BasicBlockType()) {
+                throw ParseException("must be label", falseDestTypeLocation);
             }
 
             std::shared_ptr<BasicBlock> falseDest = cast<BasicBlock>(parseValue(BasicBlockType()));
 
             return std::make_shared<CondBr>(std::move(cond), std::move(trueDest), std::move(falseDest));
         } else {
-            throw ParseException("must be label or i1", cursor_);
+            throw ParseException("must be label or i1", typeLocation);
         }
     } else if (cursor_->kind == kRet) {
         ++cursor_;
@@ -1068,21 +1100,24 @@ std::shared_ptr<Value> Parser::parseValue(const Type &type) {
 }
 
 std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
+    Location symbolLocation = cursor_;
     Symbol symbol = parseSymbol();
     if (symbolTable_.contains(symbol)) {
         std::shared_ptr<Value> value = symbolTable_[symbol];
         if (*value->type() != type) {
-            throw ParseException("inconsistent type", cursor_);
+            throw ParseException("inconsistent type", symbolLocation);
         }
         return value;
     }
     if (symbol.scope == Symbol::Scope::kGlobal) {
-        throw ParseException("undefined global identifier", cursor_);
+        throw ParseException("undefined global identifier", symbolLocation);
     }
     if (type == BasicBlockType()) {
-        throw ParseException("undefined label", cursor_);
+        throw ParseException("undefined label", symbolLocation);
     }
-    return symbolTable_(symbol) = std::make_shared<Dummy>(type.clone());
+    std::shared_ptr<Value> undefined = std::make_shared<Undefined>(type.clone(), symbolLocation);
+    symbolTable_(symbol) = undefined;
+    return undefined;
 }
 
 std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
@@ -1214,18 +1249,25 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             ++cursor_;
             return arrayType->zeroValue();
         }
+        Location elementsLocation = cursor_;
         std::vector<std::shared_ptr<Constant>> elements;
         if (cursor_->kind == kLeftBracket) {
             ++cursor_;
             if (cursor_->kind != kRightBracket) {
-                if (*parseType() != *arrayType->elementType()) {
-                    throw ParseException("inconsistent element type", cursor_);
+                Location elementTypeLocation;
+                std::unique_ptr<Type> elementType;
+                elementTypeLocation = cursor_;
+                elementType = parseType();
+                if (*elementType != *arrayType->elementType()) {
+                    throw ParseException("inconsistent element type", elementTypeLocation);
                 }
                 elements.push_back(parseConstant(*arrayType->elementType()));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
-                    if (*parseType() != *arrayType->elementType()) {
-                        throw ParseException("inconsistent element type", cursor_);
+                    elementTypeLocation = cursor_;
+                    elementType = parseType();
+                    if (*elementType != *arrayType->elementType()) {
+                        throw ParseException("inconsistent element type", elementTypeLocation);
                     }
                     elements.push_back(parseConstant(*arrayType->elementType()));
                 }
@@ -1235,14 +1277,14 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             }
             ++cursor_;
             if (elements.size() != arrayType->numElements()) {
-                throw ParseException("inconsistent number of elements", cursor_);
+                throw ParseException("inconsistent number of elements", elementsLocation);
             }
         } else if (cursor_->kind == kString) {
             if (ir::I8() != *arrayType->elementType()) {
-                throw ParseException("inconsistent element type", cursor_);
+                throw ParseException("inconsistent element type", elementsLocation);
             }
             if (std::get<std::vector<int8_t>>(cursor_->value).size() != arrayType->numElements()) {
-                throw ParseException("inconsistent number of elements", cursor_);
+                throw ParseException("inconsistent number of elements", elementsLocation);
             }
             for (int8_t element : std::get<std::vector<int8_t>>(cursor_->value)) {
                 elements.push_back(std::make_shared<I8Constant>(element));
@@ -1280,9 +1322,10 @@ std::unique_ptr<Type> Parser::parseType() {
                 throw ParseException("expected 'x'", cursor_);
             }
             ++cursor_;
+            Location elementTypeLocation = cursor_;
             std::unique_ptr<Type> elementType = parseType();
             if (*elementType == Void() || *elementType == BasicBlockType()) {
-                throw ParseException("invalid element type", cursor_);
+                throw ParseException("invalid element type", elementTypeLocation);
             }
             if (cursor_->kind != kRightBracket) {
                 throw ParseException("expected ']'", cursor_);
