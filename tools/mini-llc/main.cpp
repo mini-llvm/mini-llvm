@@ -54,8 +54,8 @@ int mainImpl(std::vector<std::string> args) {
     parser.addOption("--help");
     parser.addOption("--target:");
     parser.addOption("-o:");
-    parser.addOption("--dump-ir");
-    parser.addOption("--dump-mir");
+    parser.addOption("--dump-ir::");
+    parser.addOption("--dump-mir::");
 
     if (Expected<void, CommandLineParser::Error> result = parser.parse(args); !result) {
         using enum CommandLineParser::ErrorKind;
@@ -78,8 +78,8 @@ int mainImpl(std::vector<std::string> args) {
     std::optional<Target> target;
     std::optional<std::string> inputFile;
     std::optional<std::string> outputFile;
-    bool dumpIR = false;
-    bool dumpMIR = false;
+    std::optional<std::string> irDumpFile;
+    std::optional<std::string> mirDumpFile;
 
     for (const CommandLineParser::Argument &arg : parser) {
         if (arg.isOption()) {
@@ -100,11 +100,11 @@ int mainImpl(std::vector<std::string> args) {
                 continue;
             }
             if (arg.name() == "--dump-ir") {
-                dumpIR = true;
+                irDumpFile = arg.valueOr("-");
                 continue;
             }
             if (arg.name() == "--dump-mir") {
-                dumpMIR = true;
+                mirDumpFile = arg.valueOr("-");
                 continue;
             }
         }
@@ -207,8 +207,18 @@ int mainImpl(std::vector<std::string> args) {
     ir::PassManager passManager;
     passManager.run(*IM);
 
-    if (dumpIR) {
-        std::print(stderr, "{}\n", IM->format());
+    if (irDumpFile) {
+        std::string output = IM->format() + '\n';
+        Expected<void, int> result;
+        if (*irDumpFile == "-") {
+            result = writeAll(stdout, output.data(), output.size());
+        } else {
+            result = writeAll(*irDumpFile, output.data(), output.size());
+        }
+        if (!result) {
+            print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *irDumpFile, strerror(result.error()));
+            return EXIT_FAILURE;
+        }
     }
 
     mir::Module MM;
@@ -219,12 +229,21 @@ int mainImpl(std::vector<std::string> args) {
         backendDriver.run(*IM, MM, program);
     }
 
-    if (dumpMIR) {
-        std::print(stderr, "{}\n", MM.format());
+    if (mirDumpFile) {
+        std::string output = MM.format() + '\n';
+        Expected<void, int> result;
+        if (*mirDumpFile == "-") {
+            result = writeAll(stdout, output.data(), output.size());
+        } else {
+            result = writeAll(*mirDumpFile, output.data(), output.size());
+        }
+        if (!result) {
+            print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *mirDumpFile, strerror(result.error()));
+            return EXIT_FAILURE;
+        }
     }
 
     std::string output = program.format() + '\n';
-
     Expected<void, int> result;
     if (*outputFile == "-") {
         result = writeAll(stdout, output.data(), output.size());
