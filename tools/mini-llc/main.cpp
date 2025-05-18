@@ -34,15 +34,14 @@ using enum Color;
 namespace {
 
 enum class Target {
-    kNone,
     kRISCV64,
 };
 
-Target toTarget(std::string_view targetName) {
+std::optional<Target> toTarget(std::string_view targetName) {
     if (targetName == "riscv64") {
         return Target::kRISCV64;
     }
-    return Target::kNone;
+    return std::nullopt;
 }
 
 } // namespace
@@ -76,9 +75,9 @@ int mainImpl(std::vector<std::string> args) {
         return EXIT_FAILURE;
     }
 
-    Target target = Target::kNone;
-    std::string inputFile;
-    std::string outputFile;
+    std::optional<Target> target;
+    std::optional<std::string> inputFile;
+    std::optional<std::string> outputFile;
     bool dumpIR = false;
     bool dumpMIR = false;
 
@@ -90,7 +89,7 @@ int mainImpl(std::vector<std::string> args) {
             }
             if (arg.name() == "--target") {
                 target = toTarget(arg.value());
-                if (target == Target::kNone) {
+                if (!target) {
                     print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, arg.value());
                     return EXIT_FAILURE;
                 }
@@ -109,29 +108,28 @@ int mainImpl(std::vector<std::string> args) {
                 continue;
             }
         }
-        if (!inputFile.empty()) {
+        if (inputFile) {
             print(stderr, showColor, "{}: {}error: {}multiple input files\n", args[0], kBold + kRed, kReset);
             return EXIT_FAILURE;
         }
         inputFile = arg.arg();
     }
 
-    if (inputFile.empty()) {
+    if (!inputFile) {
         print(stderr, showColor, "{}: {}error: {}no input file\n", args[0], kBold + kRed, kReset);
         return EXIT_FAILURE;
     }
 
-    if (outputFile.empty()) {
-        outputFile = inputFile;
-        size_t i = outputFile.rfind('.');
-        if (i == std::string::npos) {
-            outputFile += ".s";
-        } else {
-            outputFile = outputFile.substr(0, i) + ".s";
+    if (outputFile->empty()) {
+        outputFile = *inputFile;
+        size_t i = outputFile->rfind('.');
+        if (i != std::string::npos) {
+            outputFile->erase(i);
         }
+        outputFile->append(".s");
     }
 
-    if (target == Target::kNone) {
+    if (!target) {
         const char *targetName;
 #if defined(MINI_LLVM_X86_64)
         targetName = "x86_64";
@@ -153,15 +151,15 @@ int mainImpl(std::vector<std::string> args) {
         targetName = "unknown";
 #endif
         target = toTarget(targetName);
-        if (target == Target::kNone) {
+        if (!target) {
             print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, targetName);
             return EXIT_FAILURE;
         }
     }
 
-    Expected<std::string, int> source = readAll(inputFile);
+    Expected<std::string, int> source = readAll(*inputFile);
     if (!source) {
-        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, inputFile, strerror(source.error()));
+        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *inputFile, strerror(source.error()));
         return EXIT_FAILURE;
     }
     if (!source->empty() && source->back() != '\n') {
@@ -174,7 +172,7 @@ int mainImpl(std::vector<std::string> args) {
     std::optional<ir::Module> IM = ir::parseModule(sourceManager.source(), diags);
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
-        print(stderr, showColor, "{}:{}:{}: ", inputFile, line + 1, column + 1);
+        print(stderr, showColor, "{}:{}:{}: ", *inputFile, line + 1, column + 1);
         switch (diag.level) {
         case Diagnostic::Level::kNote:
             print(stderr, showColor, "{}note: {}", kBold + kCyan, kReset);
@@ -222,8 +220,8 @@ int mainImpl(std::vector<std::string> args) {
 
     std::string output = program.format() + '\n';
 
-    if (Expected<void, int> result = writeAll(outputFile, output.data(), output.size()); !result) {
-        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, outputFile, strerror(result.error()));
+    if (Expected<void, int> result = writeAll(*outputFile, output.data(), output.size()); !result) {
+        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *outputFile, strerror(result.error()));
         return EXIT_FAILURE;
     }
 
