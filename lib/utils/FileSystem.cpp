@@ -10,18 +10,14 @@
 
 using namespace mini_llvm;
 
-Expected<std::string, int> mini_llvm::readAll(const char *path) {
-    FileHandle handle(path, "r");
-    if (!handle) {
-        return Unexpected(errno);
-    }
+Expected<std::string, int> mini_llvm::readAll(FILE *stream) {
     std::string content;
     std::string chunk(4096, '\0');
     for (;;) {
-        size_t n = fread(chunk.data(), 1, chunk.size(), handle.get());
+        size_t n = fread(chunk.data(), 1, chunk.size(), stream);
         content.append(chunk.data(), n);
         if (n < chunk.size()) {
-            if (ferror(handle.get())) {
+            if (ferror(stream)) {
                 return Unexpected(errno);
             }
             break;
@@ -30,13 +26,25 @@ Expected<std::string, int> mini_llvm::readAll(const char *path) {
     return content;
 }
 
+Expected<std::string, int> mini_llvm::readAll(const char *path) {
+    FileHandle handle(path, "r");
+    if (!handle) {
+        return Unexpected(errno);
+    }
+    return readAll(handle.get());
+}
+
+Expected<void, int> mini_llvm::writeAll(FILE *stream, const char *data, size_t size) {
+    if (fwrite(data, 1, size, stream) != size) {
+        return Unexpected(errno);
+    }
+    return {};
+}
+
 Expected<void, int> mini_llvm::writeAll(const char *path, const char *data, size_t size) {
     FileHandle handle(path, "w");
     if (!handle) {
         return Unexpected(errno);
     }
-    if (fwrite(data, 1, size, handle.get()) != size) {
-        return Unexpected(errno);
-    }
-    return {};
+    return writeAll(handle.get(), data, size);
 }

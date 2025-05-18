@@ -57,6 +57,8 @@ public:
     using value_type = T;
     using error_type = E;
 
+    constexpr Expected() = default;
+
     constexpr Expected(T value) : valueOrError_(std::move(value)) {}
 
     template <typename U>

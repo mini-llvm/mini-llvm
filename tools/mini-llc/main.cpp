@@ -108,25 +108,22 @@ int mainImpl(std::vector<std::string> args) {
                 continue;
             }
         }
-        if (inputFile) {
-            print(stderr, showColor, "{}: {}error: {}multiple input files\n", args[0], kBold + kRed, kReset);
-            return EXIT_FAILURE;
-        }
         inputFile = arg.arg();
     }
 
     if (!inputFile) {
-        print(stderr, showColor, "{}: {}error: {}no input file\n", args[0], kBold + kRed, kReset);
-        return EXIT_FAILURE;
+        inputFile = "-";
     }
 
-    if (outputFile->empty()) {
+    if (!outputFile) {
         outputFile = *inputFile;
-        size_t i = outputFile->rfind('.');
-        if (i != std::string::npos) {
-            outputFile->erase(i);
+        if (*outputFile != "-") {
+            size_t i = outputFile->rfind('.');
+            if (i != std::string::npos) {
+                outputFile->erase(i);
+            }
+            outputFile->append(".s");
         }
-        outputFile->append(".s");
     }
 
     if (!target) {
@@ -157,7 +154,12 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
 
-    Expected<std::string, int> source = readAll(*inputFile);
+    Expected<std::string, int> source;
+    if (*inputFile == "-") {
+        source = readAll(stdin);
+    } else {
+        source = readAll(*inputFile);
+    }
     if (!source) {
         print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *inputFile, strerror(source.error()));
         return EXIT_FAILURE;
@@ -170,6 +172,9 @@ int mainImpl(std::vector<std::string> args) {
 
     std::vector<Diagnostic> diags;
     std::optional<ir::Module> IM = ir::parseModule(sourceManager.source(), diags);
+    if (*inputFile == "-") {
+        *inputFile = "<stdin>";
+    }
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
         print(stderr, showColor, "{}:{}:{}: ", *inputFile, line + 1, column + 1);
@@ -220,7 +225,13 @@ int mainImpl(std::vector<std::string> args) {
 
     std::string output = program.format() + '\n';
 
-    if (Expected<void, int> result = writeAll(*outputFile, output.data(), output.size()); !result) {
+    Expected<void, int> result;
+    if (*outputFile == "-") {
+        result = writeAll(stdout, output.data(), output.size());
+    } else {
+        result = writeAll(*outputFile, output.data(), output.size());
+    }
+    if (!result) {
         print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *outputFile, strerror(result.error()));
         return EXIT_FAILURE;
     }
