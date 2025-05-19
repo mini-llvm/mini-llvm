@@ -360,32 +360,32 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
         for (auto [arg, paramName] : std::views::zip(args(*F), paramNames)) {
             arg.setName(paramName);
         }
+    }
 
-        for (;;) {
-            bool shouldBreak = false;
-            switch (cursor_->kind) {
-            case kNoInline:
-                F->setAttr(Attribute::kNoInline);
-                ++cursor_;
-                break;
+    for (;;) {
+        bool shouldBreak = false;
+        switch (cursor_->kind) {
+        case kNoInline:
+            F->setAttr(Attribute::kNoInline);
+            ++cursor_;
+            break;
 
-            case kAlwaysInline:
-                F->setAttr(Attribute::kAlwaysInline);
-                ++cursor_;
-                break;
+        case kAlwaysInline:
+            F->setAttr(Attribute::kAlwaysInline);
+            ++cursor_;
+            break;
 
-            case kReadNone:
-                F->setAttr(Attribute::kReadNone);
-                ++cursor_;
-                break;
+        case kReadNone:
+            F->setAttr(Attribute::kReadNone);
+            ++cursor_;
+            break;
 
-            default:
-                shouldBreak = true;
-                break;
-            }
-            if (shouldBreak) {
-                break;
-            }
+        default:
+            shouldBreak = true;
+            break;
+        }
+        if (shouldBreak) {
+            break;
         }
     }
 
