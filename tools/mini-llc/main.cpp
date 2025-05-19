@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <optional>
 #include <print>
@@ -72,7 +71,7 @@ int mainImpl(std::vector<std::string> args) {
             print(stderr, showColor, "{}: {}error: {}unrecognized option '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
             break;
         }
-        return EXIT_FAILURE;
+        return 1;
     }
 
     std::optional<Target> target;
@@ -85,13 +84,13 @@ int mainImpl(std::vector<std::string> args) {
         if (arg.isOption()) {
             if (arg.name() == "--help") {
                 std::print(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>\n", args[0]);
-                return EXIT_SUCCESS;
+                return 0;
             }
             if (arg.name() == "--target") {
                 target = toTarget(arg.value());
                 if (!target) {
                     print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, arg.value());
-                    return EXIT_FAILURE;
+                    return 1;
                 }
                 continue;
             }
@@ -150,7 +149,7 @@ int mainImpl(std::vector<std::string> args) {
         target = toTarget(targetName);
         if (!target) {
             print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, targetName);
-            return EXIT_FAILURE;
+            return 1;
         }
     }
 
@@ -162,7 +161,7 @@ int mainImpl(std::vector<std::string> args) {
     }
     if (!source) {
         print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *inputFile, strerror(source.error()));
-        return EXIT_FAILURE;
+        return 1;
     }
     if (!source->empty() && source->back() != '\n') {
         source->push_back('\n');
@@ -196,12 +195,12 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
     if (!IM) {
-        return EXIT_FAILURE;
+        return 1;
     }
 
     if (!ir::verifyModule(*IM)) {
         print(stderr, showColor, "{}: {}error: {}invalid module\n", args[0], kBold + kRed, kReset);
-        return EXIT_FAILURE;
+        return 1;
     }
 
     ir::PassManager passManager;
@@ -217,7 +216,7 @@ int mainImpl(std::vector<std::string> args) {
         }
         if (!result) {
             print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *irDumpFile, strerror(result.error()));
-            return EXIT_FAILURE;
+            return 1;
         }
     }
 
@@ -239,7 +238,7 @@ int mainImpl(std::vector<std::string> args) {
         }
         if (!result) {
             print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *mirDumpFile, strerror(result.error()));
-            return EXIT_FAILURE;
+            return 1;
         }
     }
 
@@ -252,10 +251,10 @@ int mainImpl(std::vector<std::string> args) {
     }
     if (!result) {
         print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *outputFile, strerror(result.error()));
-        return EXIT_FAILURE;
+        return 1;
     }
 
-    return EXIT_SUCCESS;
+    return 0;
 }
 
 #ifdef _WIN32
