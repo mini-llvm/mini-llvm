@@ -349,10 +349,10 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     }
     ++cursor_;
 
-    std::unique_ptr<FunctionType> type =
-        std::make_unique<FunctionType>(std::move(returnType), std::move(paramTypes), isVarArgs);
-    std::shared_ptr<Function> F =
-        std::make_shared<Function>(std::move(type), linkage);
+    std::unique_ptr<FunctionType> type = std::make_unique<FunctionType>(
+        std::move(returnType), std::move(paramTypes), isVarArgs
+    );
+    std::shared_ptr<Function> F = std::make_shared<Function>(std::move(type), linkage);
     F->setName(symbol.name);
     symbolTable_(symbol) = F;
 
@@ -361,8 +361,8 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
             arg.setName(paramName);
         }
 
-        bool completed = false;
-        while (!completed) {
+        for (;;) {
+            bool shouldBreak = false;
             switch (cursor_->kind) {
             case kNoInline:
                 F->setAttr(Attribute::kNoInline);
@@ -380,7 +380,10 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
                 break;
 
             default:
-                completed = true;
+                shouldBreak = true;
+                break;
+            }
+            if (shouldBreak) {
                 break;
             }
         }
@@ -857,8 +860,9 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         paramTypes.push_back(arg->type());
                     }
 
-                    std::unique_ptr<FunctionType> functionType =
-                        std::make_unique<FunctionType>(std::move(returnType), std::move(paramTypes), false);
+                    std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
+                        std::move(returnType), std::move(paramTypes), false
+                    );
 
                     I = std::make_shared<IndirectCall>(std::move(functionType), std::move(callee), std::move(args));
                 }
@@ -908,8 +912,9 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 break;
             }
 
-            default:
+            default: {
                 throw ParseException("expected instruction mnemonic", cursor_);
+            }
         }
 
         I->setName(symbol.name);
@@ -1096,11 +1101,13 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<I8Constant>(value);
             }
-            case kPoison:
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I8>());
-            default:
+            }
+            default: {
                 throw ParseException("expected number or 'poison'", cursor_);
+            }
         }
     }
     if (type == I16()) {
@@ -1110,11 +1117,13 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<I16Constant>(value);
             }
-            case kPoison:
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I16>());
-            default:
+            }
+            default: {
                 throw ParseException("expected number or 'poison'", cursor_);
+            }
         }
     }
     if (type == I32()) {
@@ -1124,11 +1133,13 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<I32Constant>(static_cast<int32_t>(value));
             }
-            case kPoison:
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I32>());
-            default:
+            }
+            default: {
                 throw ParseException("expected number or 'poison'", cursor_);
+            }
         }
     }
     if (type == I64()) {
@@ -1138,11 +1149,13 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<I64Constant>(value);
             }
-            case kPoison:
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<I64>());
-            default:
+            }
+            default: {
                 throw ParseException("expected number or 'poison'", cursor_);
+            }
         }
     }
     if (type == Float()) {
@@ -1152,11 +1165,13 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<FloatConstant>(value);
             }
-            case kPoison:
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<Float>());
-            default:
+            }
+            default: {
                 throw ParseException("expected number or 'poison'", cursor_);
+            }
         }
     }
     if (type == Double()) {
@@ -1166,23 +1181,28 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 ++cursor_;
                 return std::make_unique<DoubleConstant>(value);
             }
-            case kPoison:
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<Double>());
-            default:
+            }
+            default: {
                 throw ParseException("expected number or 'poison'", cursor_);
+            }
         }
     }
     if (type == Ptr()) {
         switch (cursor_->kind) {
-            case kNull:
+            case kNull: {
                 ++cursor_;
                 return std::make_unique<NullPtrConstant>();
-            case kPoison:
+            }
+            case kPoison: {
                 ++cursor_;
                 return std::make_unique<PoisonValue>(std::make_unique<Ptr>());
-            default:
+            }
+            default: {
                 throw ParseException("expected 'null' or 'poison'", cursor_);
+            }
         }
     }
     if (auto *arrayType = dynamic_cast<const ArrayType *>(&type)) {
@@ -1271,7 +1291,9 @@ std::unique_ptr<Type> Parser::parseType() {
             return std::make_unique<ArrayType>(std::move(elementType), numElements);
         }
 
-        default: throw ParseException("expected type", cursor_);
+        default: {
+            throw ParseException("expected type", cursor_);
+        }
     }
 }
 
