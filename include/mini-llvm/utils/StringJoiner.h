@@ -27,7 +27,7 @@ public:
 
     template <typename... Args>
     StringJoiner &addFormat(std::format_string<Args...> fmt, Args &&...args) {
-        return add(std::format(std::move(fmt), std::forward<Args>(args)...));
+        return add(std::vformat(fmt.get(), std::make_format_args(args...)));
     }
 
     std::string toString() const {
