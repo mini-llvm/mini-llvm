@@ -368,3 +368,111 @@ define void @test() {
 
     parseModule(input);
 }
+
+TEST(IRReaderTest, AddDouble) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = add double 0x0000000000000000, 0x0000000000000000
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, ICmpDouble) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = icmp eq double 0x0000000000000000, 0x0000000000000000
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, TruncDoubleToI32) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = trunc double 0x0000000000000000 to i32
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, TruncI64ToFloat) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = trunc i64 0 to float
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, FNegI32) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = fneg i32 0
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, FAddI32) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = fadd i32 0, 0
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, FCmpI32) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = fcmp oeq i32 0, 0
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, FPTruncI64ToFloat) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = fptrunc i64 0 to float
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, FPTruncDoubleToI32) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = fptrunc double 0x0000000000000000 to i32
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}

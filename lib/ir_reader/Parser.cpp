@@ -490,7 +490,11 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         switch (cursor_->kind) {
             case kFNeg: {
                 ++cursor_;
+                Location typeLocation = cursor_;
                 std::unique_ptr<Type> type = parseType();
+                if (!dynamic_cast<const FloatingType *>(&*type)) {
+                    throw ParseException("must be floating point type", typeLocation);
+                }
                 std::shared_ptr<Value> value = parseValue(*type);
                 I = std::make_shared<FNeg>(std::move(value));
                 break;
@@ -544,6 +548,9 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     case kASHR:
                         if (!dynamic_cast<const IntegerType *>(&*type)) {
                             throw ParseException("must be integer type", typeLocation);
+                        }
+                        if (*type == Ptr()) {
+                            throw ParseException("must not be ptr", typeLocation);
                         }
                         break;
 
@@ -605,7 +612,11 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
+                Location typeLocation = cursor_;
                 std::unique_ptr<Type> type = parseType();
+                if (!dynamic_cast<const IntegerType *>(&*type)) {
+                    throw ParseException("must be integer type", typeLocation);
+                }
                 std::shared_ptr<Value> lhs = parseValue(*type);
                 if (cursor_->kind != kComma) {
                     throw ParseException("expected ','", cursor_);
@@ -632,7 +643,11 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
+                Location typeLocation = cursor_;
                 std::unique_ptr<Type> type = parseType();
+                if (!dynamic_cast<const FloatingType *>(&*type)) {
+                    throw ParseException("must be floating point type", typeLocation);
+                }
                 std::shared_ptr<Value> lhs = parseValue(*type);
                 if (cursor_->kind != kComma) {
                     throw ParseException("expected ','", cursor_);
@@ -661,6 +676,29 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
                 Location type1Location = cursor_;
                 std::unique_ptr<Type> type1 = parseType();
+                if (mnemonic == kTrunc
+                        || mnemonic == kSExt
+                        || mnemonic == kZExt
+                        || mnemonic == kSIToFP
+                        || mnemonic == kUIToFP
+                        || mnemonic == kIntToPtr) {
+                    if (!dynamic_cast<const IntegerType *>(&*type1)) {
+                        throw ParseException("must be integer type", type1Location);
+                    }
+                    if (*type1 == Ptr()) {
+                        throw ParseException("must not be ptr", type1Location);
+                    }
+                }
+                if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
+                    if (!dynamic_cast<const FloatingType *>(&*type1)) {
+                        throw ParseException("must be floating point type", type1Location);
+                    }
+                }
+                if (mnemonic == kPtrToInt) {
+                    if (*type1 != Ptr()) {
+                        throw ParseException("must be ptr", type1Location);
+                    }
+                }
                 std::shared_ptr<Value> value = parseValue(*type1);
 
                 if (cursor_->kind != kTo) {
@@ -674,6 +712,9 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 if (mnemonic == kTrunc || mnemonic == kSExt || mnemonic == kZExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
                         throw ParseException("must be integer type", type2Location);
+                    }
+                    if (*type2 == Ptr()) {
+                        throw ParseException("must not be ptr", type2Location);
                     }
 
                     std::unique_ptr<IntegerType> integerType2 = cast<IntegerType>(std::move(type2));
@@ -701,17 +742,14 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         default: abort();
                     }
                 } else if (mnemonic == kPtrToInt) {
-                    if (*type1 != Ptr()) {
-                        throw ParseException("must be ptr", type1Location);
-                    }
                     if (!dynamic_cast<const IntegerType *>(&*type2)) {
                         throw ParseException("must be integer type", type2Location);
                     }
+                    if (*type2 == Ptr()) {
+                        throw ParseException("must not be ptr", type2Location);
+                    }
                     I = std::make_shared<PtrToInt>(std::move(value), cast<IntegerType>(std::move(type2)));
                 } else if (mnemonic == kIntToPtr) {
-                    if (!dynamic_cast<const IntegerType *>(&*type1)) {
-                        throw ParseException("must be integer type", type1Location);
-                    }
                     if (*type2 != Ptr()) {
                         throw ParseException("must be ptr", type2Location);
                     }
@@ -794,7 +832,11 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             case kGetElementPtr: {
                 ++cursor_;
 
+                Location sourceTypeLocation = cursor_;
                 std::unique_ptr<Type> sourceType = parseType();
+                if (*sourceType == Void() || *sourceType == BasicBlockType()) {
+                    throw ParseException("invalid source type", sourceTypeLocation);
+                }
 
                 if (cursor_->kind != kComma) {
                     throw ParseException("expected ','", cursor_);
@@ -822,6 +864,9 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 if (!dynamic_cast<const IntegerType *>(&*idxType)) {
                     throw ParseException("must be integer type", idxTypeLocation);
                 }
+                if (*idxType == Ptr()) {
+                    throw ParseException("must not be ptr", idxTypeLocation);
+                }
                 indices.push_back(parseValue(*idxType));
                 while (cursor_->kind == kComma) {
                     ++cursor_;
@@ -829,6 +874,9 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     idxType = parseType();
                     if (!dynamic_cast<const IntegerType *>(&*idxType)) {
                         throw ParseException("must be integer type", idxTypeLocation);
+                    }
+                    if (*idxType == Ptr()) {
+                        throw ParseException("must not be ptr", idxTypeLocation);
                     }
                     indices.push_back(parseValue(*idxType));
                 }
