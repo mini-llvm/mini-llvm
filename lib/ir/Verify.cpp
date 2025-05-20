@@ -12,6 +12,8 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"
 #include "mini-llvm/ir/Instruction/FPExt.h"
 #include "mini-llvm/ir/Instruction/FPTrunc.h"
+#include "mini-llvm/ir/Instruction/GetElementPtr.h"
+#include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Instruction/Select.h"
@@ -20,8 +22,10 @@
 #include "mini-llvm/ir/Instruction/Trunc.h"
 #include "mini-llvm/ir/Instruction/ZExt.h"
 #include "mini-llvm/ir/Module.h"
+#include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
+#include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
@@ -88,7 +92,7 @@ bool ir::verifyFunction(const Function &F) {
                 if (*op->lhs()->type() != *op->rhs()->type()) {
                     return false;
                 }
-                if (*op->lhs()->type() == Ptr()) {
+                if (!dynamic_cast<const ICmp *>(&I) && *op->lhs()->type() == Ptr()) {
                     return false;
                 }
             }
@@ -145,6 +149,11 @@ bool ir::verifyFunction(const Function &F) {
             }
             if (auto *select = dynamic_cast<const Select *>(&I)) {
                 if (*select->trueValue()->type() != *select->falseValue()->type()) {
+                    return false;
+                }
+            }
+            if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
+                if (*gep->sourceType() == Void() || *gep->sourceType() == BasicBlockType()) {
                     return false;
                 }
             }
