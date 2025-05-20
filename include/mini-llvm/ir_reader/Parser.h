@@ -48,9 +48,9 @@ public:
     explicit Parser(std::vector<Token>::const_iterator cursor) : cursor_(cursor) {}
 
     Module parseModule();
-    std::shared_ptr<GlobalVar> parseGlobalVarHeader(bool &hasInitializer);
+    std::shared_ptr<GlobalVar> parseGlobalVarHeader(bool &isDeclaration);
     void parseGlobalVarInitializer(GlobalVar &G);
-    std::shared_ptr<Function> parseFunctionHeader(bool &hasBody);
+    std::shared_ptr<Function> parseFunctionHeader(bool &isDeclaration);
     void parseFunctionBody(Function &F);
     void parseBasicBlock(BasicBlock &B);
     std::shared_ptr<Instruction> parseInstruction();

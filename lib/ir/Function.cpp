@@ -74,7 +74,7 @@ void Function::clear() {
 
 std::string Function::format() const {
     StringJoiner formatted(" ");
-    if (!empty()) {
+    if (!isDeclaration()) {
         formatted.add("define");
     } else {
         formatted.add("declare");
@@ -87,7 +87,7 @@ std::string Function::format() const {
     }
     StringJoiner formattedArgs(", ", "(", ")");
     for (const Argument &arg : args(*this)) {
-        if (empty()) {
+        if (isDeclaration()) {
             formattedArgs.addFormat("{}", *arg.type());
         } else {
             formattedArgs.addFormat("{} {:o}", *arg.type(), arg);
@@ -100,7 +100,7 @@ std::string Function::format() const {
     for (Attribute attr : attrs(*this)) {
         formatted.add(specifier(attr));
     }
-    if (!empty()) {
+    if (!isDeclaration()) {
         StringJoiner formattedBody("\n\n", "{\n", "\n}");
         for (const BasicBlock &B : *this) {
             formattedBody.addFormat("{}", B);

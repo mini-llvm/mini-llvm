@@ -92,7 +92,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
     std::unordered_set<int> impure;
     for (const Function &F : functions(M)) {
         if (!F.hasAttr(Attribute::kReadNone)) {
-            if (!F.empty()) {
+            if (!F.isDeclaration()) {
                 bool isImpure = false;
                 for (const BasicBlock &B : F) {
                     for (const Instruction &I : B) {

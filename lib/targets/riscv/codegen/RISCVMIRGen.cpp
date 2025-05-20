@@ -1232,7 +1232,7 @@ void RISCVMIRGen::emit() {
         functionMap_(&IF) = &MF;
     }
     for (auto &[IG, MG] : globalVarMap_) {
-        if (IG->hasInitializer()) {
+        if (!IG->isDeclaration()) {
             emitGlobalVar(*IG, *MG);
         }
     }

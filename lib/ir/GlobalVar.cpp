@@ -45,11 +45,11 @@ std::string GlobalVar::format() const {
     if (linkage() == Linkage::kPrivate) {
         formatted.add("private");
     }
-    if (!hasInitializer()) {
+    if (isDeclaration()) {
         formatted.add("external");
     }
     formatted.addFormat("global {}", *valueType());
-    if (hasInitializer()) {
+    if (!isDeclaration()) {
         formatted.addFormat("{:o}", initializer());
     }
     return formatted.toString();

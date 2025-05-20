@@ -27,15 +27,15 @@ public:
         return linkage_;
     }
 
-    bool hasInitializer() const {
-        return static_cast<bool>(initializer_);
-    }
-
     Constant &initializer() const {
         return **initializer_;
     }
 
     void setInitializer(std::optional<std::shared_ptr<Constant>> initializer);
+
+    bool isDeclaration() const override {
+        return !initializer_;
+    }
 
     void accept(ConstantVisitor &visitor) override {
         visitor.visitGlobalVar(*this);

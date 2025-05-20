@@ -146,10 +146,10 @@ Module Parser::parseModule() {
 
     while (cursor_->kind != kEOF) {
         if (cursor_->kind == kAt) {
-            bool hasInitializer;
-            std::shared_ptr<GlobalVar> G = parseGlobalVarHeader(hasInitializer);
+            bool isDeclaration;
+            std::shared_ptr<GlobalVar> G = parseGlobalVarHeader(isDeclaration);
             M.appendGlobalVar(G);
-            if (hasInitializer) {
+            if (!isDeclaration) {
                 globalVars.emplace_back(&*G, cursor_);
                 int count = 0;
                 do {
@@ -185,10 +185,10 @@ Module Parser::parseModule() {
                 } while (count > 0);
             }
         } else if (cursor_->kind == kDefine || cursor_->kind == kDeclare) {
-            bool hasBody;
-            std::shared_ptr<Function> F = parseFunctionHeader(hasBody);
+            bool isDeclaration;
+            std::shared_ptr<Function> F = parseFunctionHeader(isDeclaration);
             M.appendFunction(F);
-            if (hasBody) {
+            if (!isDeclaration) {
                 functions.emplace_back(&*F, cursor_);
                 if (cursor_->kind != kLeftBrace) {
                     throw ParseException("expected '{'", cursor_);
@@ -218,7 +218,7 @@ Module Parser::parseModule() {
     return M;
 }
 
-std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
+std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &isDeclaration) {
     Location symbolLocation = cursor_;
     Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
     if (symbolTable_.contains(symbol)) {
@@ -230,21 +230,21 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &hasInitializer) {
     }
     ++cursor_;
 
-    hasInitializer = true;
+    isDeclaration = false;
     if (cursor_->kind == kExternal) {
-        hasInitializer = false;
+        isDeclaration = true;
         ++cursor_;
     }
 
     Linkage linkage = Linkage::kExternal;
     if (cursor_->kind == kInternal) {
-        if (!hasInitializer) {
+        if (isDeclaration) {
             throw ParseException("invalid linkage", cursor_);
         }
         linkage = Linkage::kInternal;
         ++cursor_;
     } else if (cursor_->kind == kPrivate) {
-        if (!hasInitializer) {
+        if (isDeclaration) {
             throw ParseException("invalid linkage", cursor_);
         }
         linkage = Linkage::kPrivate;
@@ -268,23 +268,23 @@ void Parser::parseGlobalVarInitializer(GlobalVar &G) {
     G.setInitializer(cast<Constant>(parseValue(*G.valueType())));
 }
 
-std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
+std::shared_ptr<Function> Parser::parseFunctionHeader(bool &isDeclaration) {
     switch (cursor_->kind) {
-        case kDefine: hasBody = true; break;
-        case kDeclare: hasBody = false; break;
+        case kDefine: isDeclaration = false; break;
+        case kDeclare: isDeclaration = true; break;
         default: throw ParseException("expected 'define' or 'declare'", cursor_);
     }
     ++cursor_;
 
     Linkage linkage = Linkage::kExternal;
     if (cursor_->kind == kInternal) {
-        if (!hasBody) {
+        if (isDeclaration) {
             throw ParseException("invalid linkage", cursor_);
         }
         linkage = Linkage::kInternal;
         ++cursor_;
     } else if (cursor_->kind == kPrivate) {
-        if (!hasBody) {
+        if (isDeclaration) {
             throw ParseException("invalid linkage", cursor_);
         }
         linkage = Linkage::kPrivate;
@@ -324,7 +324,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
                 throw ParseException("invalid parameter type", typeLocation);
             }
             paramTypes.push_back(std::move(type));
-            if (hasBody) {
+            if (!isDeclaration) {
                 Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
                 paramNames.push_back(std::move(symbol.name));
             }
@@ -341,7 +341,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
                     throw ParseException("invalid parameter type", typeLocation);
                 }
                 paramTypes.push_back(std::move(type));
-                if (hasBody) {
+                if (!isDeclaration) {
                     Location symbolLocation = cursor_;
                     Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
                     if (std::ranges::find(paramNames, symbol.name) != paramNames.end()) {
@@ -364,7 +364,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &hasBody) {
     F->setName(symbol.name);
     symbolTable_(symbol) = F;
 
-    if (hasBody) {
+    if (!isDeclaration) {
         for (auto [arg, paramName] : std::views::zip(args(*F), paramNames)) {
             arg.setName(paramName);
         }
@@ -434,7 +434,7 @@ void Parser::parseFunctionBody(Function &F) {
         parseBasicBlock(*block);
         F.append(std::move(block));
     }
-    if (F.empty()) {
+    if (F.isDeclaration()) {
         throw ParseException("function body cannot be empty", cursor_);
     }
     ++cursor_;

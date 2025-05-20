@@ -207,7 +207,7 @@ bool ir::verifyFunction(const Function &F) {
 
 bool ir::verifyModule(const Module &M) {
     for (const Function &F : functions(M)) {
-        if (!F.empty()) {
+        if (!F.isDeclaration()) {
             if (!verifyFunction(F)) {
                 return false;
             }

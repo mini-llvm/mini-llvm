@@ -178,6 +178,10 @@ public:
 
     void clear();
 
+    bool isDeclaration() const override {
+        return empty();
+    }
+
     void accept(ConstantVisitor &visitor) override {
         visitor.visitFunction(*this);
     }

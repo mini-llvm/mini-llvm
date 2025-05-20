@@ -16,6 +16,8 @@ public:
         return std::make_unique<Ptr>();
     }
 
+    virtual bool isDeclaration() const = 0;
+
     std::string formatAsOperand() const override;
 
     std::unique_ptr<Value> clone() const override {
