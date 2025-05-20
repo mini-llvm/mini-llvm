@@ -104,6 +104,10 @@ public:
         return front();
     }
 
+    bool isDeclaration() const {
+        return empty();
+    }
+
     BasicBlock &add(const_iterator pos, std::unique_ptr<BasicBlock> block);
 
     BasicBlock &add(const_iterator pos) {

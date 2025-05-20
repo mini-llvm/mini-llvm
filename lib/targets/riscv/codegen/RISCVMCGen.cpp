@@ -814,7 +814,7 @@ private:
 
 void RISCVMCGen::emit() {
     for (const mir::GlobalVar &G : globalVars(*MM_)) {
-        if (G.hasInitializer()) {
+        if (!G.isDeclaration()) {
             Section section;
             if (dynamic_cast<const mir::ZeroConstant *>(&G.initializer())) {
                 section = Section::kBSS;
@@ -833,7 +833,7 @@ void RISCVMCGen::emit() {
     }
 
     for (const mir::Function &F : functions(*MM_)) {
-        if (!F.empty()) {
+        if (!F.isDeclaration()) {
             Section section = Section::kText;
             bool isGlobal = (F.linkage() == Linkage::kExternal);
             std::string name = emitName(F);

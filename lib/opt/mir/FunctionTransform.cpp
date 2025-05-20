@@ -8,7 +8,7 @@ using namespace mini_llvm::mir;
 bool FunctionTransform::runOnModule(Module &M) {
     bool changed = false;
     for (Function &F : functions(M)) {
-        if (!F.empty()) {
+        if (!F.isDeclaration()) {
             changed |= runOnFunction(F);
         }
     }

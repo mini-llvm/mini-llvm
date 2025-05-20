@@ -30,8 +30,8 @@ public:
         return linkage_;
     }
 
-    bool hasInitializer() const {
-        return static_cast<bool>(initializer_);
+    bool isDeclaration() const {
+        return !initializer_;
     }
 
     Constant &initializer() {

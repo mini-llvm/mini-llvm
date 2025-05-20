@@ -11,7 +11,7 @@
 using namespace mini_llvm::mir;
 
 std::string GlobalVar::format() const {
-    if (!hasInitializer()) {
+    if (isDeclaration()) {
         return std::format("undef {:o}", *this);
     }
     StringJoiner formatted(" ");

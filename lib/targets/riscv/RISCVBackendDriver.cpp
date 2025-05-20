@@ -71,7 +71,7 @@ void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Program 
         using namespace mir::riscv;
 
         for (Function &F : functions(MM)) {
-            if (!F.empty()) {
+            if (!F.isDeclaration()) {
                 for (RegisterClass Class : {RegisterClass::kGPR, RegisterClass::kFPR}) {
                     std::unordered_set<VirtualRegister *> virtRegs;
                     for (const BasicBlock &B : F) {

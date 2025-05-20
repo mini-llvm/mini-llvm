@@ -24,7 +24,7 @@ std::unique_ptr<BasicBlock> Function::remove(const_iterator pos) {
 }
 
 std::string Function::format() const {
-    if (empty()) {
+    if (isDeclaration()) {
         return std::format("undefined {}", formatAsOperand());
     }
     StringJoiner formattedHeader(" ");
