@@ -13,6 +13,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/Call.h"
+#include "mini-llvm/ir/Instruction/IndirectCall.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/Store.h"
 #include "mini-llvm/ir/Module.h"
@@ -101,6 +102,10 @@ bool AttributeDeduction::runOnModule(Module &M) {
                             break;
                         }
                         if (auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
+                            isImpure = true;
+                            break;
+                        }
+                        if (dynamic_cast<const IndirectCall *>(&I)) {
                             isImpure = true;
                             break;
                         }
