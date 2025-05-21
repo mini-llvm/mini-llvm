@@ -30,21 +30,37 @@ namespace {
 
 // Held-Karp algorithm
 
+constexpr bool test(size_t x, size_t i) {
+    return (x >> i) & 1;
+}
+
+constexpr size_t clear(size_t x, size_t i) {
+    return x & ~(static_cast<size_t>(1) << i);
+}
+
+constexpr size_t clear(size_t x, size_t i, size_t j) {
+    return x & ~(static_cast<size_t>(1) << i) & ~(static_cast<size_t>(1) << j);
+}
+
+constexpr size_t full(size_t n) {
+    return (static_cast<size_t>(1) << n) - 1;
+}
+
 std::vector<size_t> dp(size_t n, const Matrix<double> &D, size_t s) {
     assert(n > 2);
-    Matrix<double> f(1zu << n, n);
+    Matrix<double> f(full(n) + 1, n);
     for (size_t v = 0; v < n; ++v) {
         if (v != s) {
             f[0, v] = D[s, v];
         }
     }
-    for (size_t S = 1; S < (1zu << n); ++S) {
+    for (size_t S = 1; S <= full(n); ++S) {
         for (size_t v = 0; v < n; ++v) {
-            if (v != s && !((S >> s) & 1) && !((S >> v) & 1)) {
+            if (v != s && !test(S, s) && !test(S, v)) {
                 f[S, v] = std::numeric_limits<double>::infinity();
                 for (size_t u = 0; u < n; ++u) {
-                    if ((S >> u) & 1) {
-                        f[S, v] = std::min(f[S, v], f[S & ~(1zu << u), u] + D[u, v]);
+                    if (test(S, u)) {
+                        f[S, v] = std::min(f[S, v], f[clear(S, u), u] + D[u, v]);
                     }
                 }
             }
@@ -53,25 +69,25 @@ std::vector<size_t> dp(size_t n, const Matrix<double> &D, size_t s) {
     size_t t;
     double min = std::numeric_limits<double>::infinity();
     for (size_t v = 0; v < n; ++v) {
-        if (v != s && f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v), v] < min) {
+        if (v != s && f[clear(full(n), s, v), v] < min) {
             t = v;
-            min = f[((1zu << n) - 1) & ~(1zu << s) & ~(1zu << v), v];
+            min = f[clear(full(n), s, v), v];
         }
     }
-    size_t S = ((1zu << n) - 1) & ~(1zu << s) & ~(1zu << t);
+    size_t S = clear(full(n), s, t);
     std::vector<size_t> path;
     path.push_back(t);
     for (size_t i = 1; i < n - 1; ++i) {
         size_t v;
         double min = std::numeric_limits<double>::infinity();
         for (size_t u = 0; u < n; ++u) {
-            if (u != t && ((S >> u) & 1) && f[S & ~(1zu << u), u] + D[u, t] < min) {
+            if (u != t && test(S, u) && f[clear(S, u), u] + D[u, t] < min) {
                 v = u;
-                min = f[S & ~(1zu << u), u] + D[u, t];
+                min = f[clear(S, u), u] + D[u, t];
             }
         }
         t = v;
-        S &= ~(1zu << v);
+        S = clear(S, v);
         path.push_back(t);
     }
     path.push_back(s);
