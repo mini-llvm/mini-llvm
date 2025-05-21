@@ -31,19 +31,19 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-void computeDomTreeDepths(const DominatorTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
+void findDepths(const DominatorTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
     depths(node->block) = depth;
     for (const DominatorTreeNode *child : node->children) {
-        computeDomTreeDepths(child, depth + 1, depths);
+        findDepths(child, depth + 1, depths);
     }
 }
 
-void computeLoopTreeDepths(const LoopTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
+void findDepths(const LoopTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
     for (const BasicBlock *B : node->loop->blocks) {
         depths(B) = depth;
     }
     for (const LoopTreeNode *child : node->children) {
-        computeLoopTreeDepths(child, depth + 1, depths);
+        findDepths(child, depth + 1, depths);
     }
 }
 
@@ -143,7 +143,9 @@ void scheduleLate(
                 if (loopTreeDepths[current] < loopTreeDepths[best]) {
                     best = current;
                 }
-                if (current == blocks[&I]) break;
+                if (current == blocks[&I]) {
+                    break;
+                }
                 current = domTreeParents[current];
             }
             blocks[&I] = best;
@@ -174,7 +176,7 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
     domTree.runOnFunction(F);
 
     HashMap<const BasicBlock *, int> domTreeDepths;
-    computeDomTreeDepths(domTree.node(F.entry()), 0, domTreeDepths);
+    findDepths(domTree.node(F.entry()), 0, domTreeDepths);
 
     HashMap<const BasicBlock *, const BasicBlock *> domTreeParents;
     for (const BasicBlock &B : F) {
@@ -191,7 +193,7 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
         loopTreeDepths(&B) = 0;
     }
     for (const LoopTreeNode *node : loopTree.rootNode()->children) {
-        computeLoopTreeDepths(node, 1, loopTreeDepths);
+        findDepths(node, 1, loopTreeDepths);
     }
 
     HashMap<const Instruction *, const BasicBlock *> blocks;
