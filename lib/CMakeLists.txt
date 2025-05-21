@@ -67,7 +67,6 @@ add_library(mini-llvm
     opt/ir/passes/BranchSimplification.cpp
     opt/ir/passes/ConstantFolding.cpp
     opt/ir/passes/DeadCodeElimination.cpp
-    opt/ir/passes/DeadStoreElimination.cpp
     opt/ir/passes/DominatorTreeAnalysis.cpp
     opt/ir/passes/FunctionInlining.cpp
     opt/ir/passes/GlobalCodeMotion.cpp
