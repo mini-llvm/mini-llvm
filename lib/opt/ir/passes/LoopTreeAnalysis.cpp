@@ -17,7 +17,7 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-bool check(const Loop &loop, const DominatorTreeAnalysis &domTree) {
+bool isNaturalLoop(const Loop &loop, const DominatorTreeAnalysis &domTree) {
     for (const BasicBlock *B : loop.blocks) {
         if (!domTree.dominates(*loop.header, *B)) {
             return false;
@@ -55,7 +55,7 @@ public:
 
                     Loop loop(std::move(S), v);
 
-                    if (check(loop, domTree)) {
+                    if (isNaturalLoop(loop, domTree)) {
                         loops_.emplace_back(std::move(loop));
                     }
                 }
