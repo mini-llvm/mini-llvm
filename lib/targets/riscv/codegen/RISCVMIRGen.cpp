@@ -409,7 +409,7 @@ public:
 
     void visitTrunc(const ir::Trunc &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         int dstBitWidth = I.type()->bitSize(8),
             srcBitWidth = I.value()->type()->bitSize(8);
         assert(dstBitWidth < srcBitWidth);
@@ -425,8 +425,8 @@ public:
     void visitSExt(const ir::SExt &I) override {
         if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
             std::shared_ptr<Register> dst = valueMap_[&I],
-                                      src1 = prepareRegister(*icmp->lhs()),
-                                      src2 = prepareRegister(*icmp->rhs());
+                                      src1 = getRegister(*icmp->lhs()),
+                                      src2 = getRegister(*icmp->rhs());
             switch (icmp->cond()) {
                 case ir::ICmp::Condition::kEQ:
                 case ir::ICmp::Condition::kNE: {
@@ -478,7 +478,7 @@ public:
             }
         } else {
             std::shared_ptr<Register> dst = valueMap_[&I],
-                                      src = prepareRegister(*I.value());
+                                      src = getRegister(*I.value());
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<Neg>(8, dst, src));
             } else {
@@ -499,8 +499,8 @@ public:
     void visitZExt(const ir::ZExt &I) override {
         if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
             std::shared_ptr<Register> dst = valueMap_[&I],
-                                      src1 = prepareRegister(*icmp->lhs()),
-                                      src2 = prepareRegister(*icmp->rhs());
+                                      src1 = getRegister(*icmp->lhs()),
+                                      src2 = getRegister(*icmp->rhs());
             switch (icmp->cond()) {
                 case ir::ICmp::Condition::kEQ:
                 case ir::ICmp::Condition::kNE: {
@@ -550,7 +550,7 @@ public:
             }
         } else {
             std::shared_ptr<Register> dst = valueMap_[&I],
-                                      src = prepareRegister(*I.value());
+                                      src = getRegister(*I.value());
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(1)));
             } else {
@@ -570,8 +570,8 @@ public:
 
     void visitICmp(const ir::ICmp &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src1 = prepareRegister(*I.lhs()),
-                                  src2 = prepareRegister(*I.rhs());
+                                  src1 = getRegister(*I.lhs()),
+                                  src2 = getRegister(*I.rhs());
 
         switch (I.cond()) {
             case ir::ICmp::Condition::kEQ:
@@ -650,7 +650,7 @@ public:
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision(),
                   srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<FCvt>(dstPrecision, srcPrecision, std::move(dst), std::move(src)));
     }
 
@@ -658,7 +658,7 @@ public:
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision(),
                   srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<FCvt>(dstPrecision, srcPrecision, std::move(dst), std::move(src)));
     }
 
@@ -666,7 +666,7 @@ public:
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
         int srcWidth = I.value()->type()->size();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<FCvtFS>(dstPrecision, srcWidth, std::move(dst), std::move(src)));
     }
 
@@ -674,7 +674,7 @@ public:
         Precision dstPrecision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
         int srcWidth = I.value()->type()->size();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<FCvtFU>(dstPrecision, srcWidth, std::move(dst), std::move(src)));
     }
 
@@ -682,7 +682,7 @@ public:
         int dstWidth = I.type()->size();
         Precision srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<FCvtSF>(dstWidth, srcPrecision, std::move(dst), std::move(src)));
     }
 
@@ -690,7 +690,7 @@ public:
         int dstWidth = I.type()->size();
         Precision srcPrecision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<FCvtUF>(dstWidth, srcPrecision, std::move(dst), std::move(src)));
     }
 
@@ -708,8 +708,8 @@ public:
             default: abort();
         }
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src1 = prepareRegister(*I.lhs()),
-                                  src2 = prepareRegister(*I.rhs());
+                                  src1 = getRegister(*I.lhs()),
+                                  src2 = getRegister(*I.rhs());
         builder_.add(std::make_unique<FCmpSet>(8, precision, cond, dst, src1, src2));
         builder_.add(std::make_unique<Neg>(8, dst, dst));
         if (negate) {
@@ -719,7 +719,7 @@ public:
 
     void visitPtrToInt(const ir::PtrToInt &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
         int dstBitWidth = I.type()->bitSize(8);
         if (dstBitWidth < 64) {
@@ -730,7 +730,7 @@ public:
 
     void visitIntToPtr(const ir::IntToPtr &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<Mov>(8, dst, src));
         int srcBitWidth = I.value()->type()->bitSize(8);
         if (srcBitWidth < 64) {
@@ -741,7 +741,7 @@ public:
 
     void visitBitCast(const ir::BitCast &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         if (dynamic_cast<const ir::IntegerType *>(&*I.type()) && dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.type()) && dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
@@ -761,9 +761,9 @@ public:
                    &endBlock = function_.append();
 
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  cond = prepareRegister(*I.cond()),
-                                  src1 = prepareRegister(*I.trueValue()),
-                                  src2 = prepareRegister(*I.falseValue());
+                                  cond = getRegister(*I.cond()),
+                                  src1 = getRegister(*I.trueValue()),
+                                  src2 = getRegister(*I.falseValue());
 
         builder_.add(std::make_unique<CmpZBr>(8, Condition::kNEZ, cond, &trueBlock, &falseBlock));
 
@@ -802,7 +802,7 @@ public:
     }
 
     void visitLoad(const ir::Load &I) override {
-        MemoryOperand src(prepareRegister(*I.ptr()));
+        MemoryOperand src(getRegister(*I.ptr()));
         std::shared_ptr<Register> dst = valueMap_[&I];
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
@@ -818,8 +818,8 @@ public:
     }
 
     void visitStore(const ir::Store &I) override {
-        MemoryOperand dst(prepareRegister(*I.ptr()));
-        std::shared_ptr<Register> src = prepareRegister(*I.value());
+        MemoryOperand dst(getRegister(*I.ptr()));
+        std::shared_ptr<Register> src = getRegister(*I.value());
 
         if (dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
             int width = I.value()->type()->size(8);
@@ -834,7 +834,7 @@ public:
 
     void visitGetElementPtr(const ir::GetElementPtr &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.ptr());
+                                  src = getRegister(*I.ptr());
 
         builder_.add(std::make_unique<Mov>(8, dst, src));
 
@@ -842,11 +842,11 @@ public:
         std::unique_ptr<ir::Type> type = I.sourceType();
 
         if (*type == ir::I8()) {
-            std::shared_ptr<Register> idx = prepareRegister(**i);
+            std::shared_ptr<Register> idx = getRegister(**i);
             builder_.add(std::make_unique<Add>(8, dst, dst, idx));
         } else {
             for (;;) {
-                std::shared_ptr<Register> idx = prepareRegister(**i);
+                std::shared_ptr<Register> idx = getRegister(**i);
                 std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
                 builder_.add(std::make_unique<LI>(8, tmp, std::make_unique<IntegerImmediate>(type->size(8))));
                 builder_.add(std::make_unique<Mul>(8, tmp, idx, tmp));
@@ -869,7 +869,7 @@ public:
             if (I.callee()->functionType()->isVarArgs()) {
                 if (numIntegerArgs < 8) {
                     std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
-                                              src = prepareRegister(*arg);
+                                              src = getRegister(*arg);
                     if (dynamic_cast<const ir::FloatingType *>(&*arg->type())) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
                         std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
@@ -885,7 +885,7 @@ public:
                 if (dynamic_cast<const ir::IntegerType *>(&*arg->type())) {
                     if (numIntegerArgs < 8) {
                         std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
-                                                  src = prepareRegister(*arg);
+                                                  src = getRegister(*arg);
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                         ++numIntegerArgs;
                     } else {
@@ -895,7 +895,7 @@ public:
                     if (numFloatingArgs < 8) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
                         std::shared_ptr<Register> dst = share(*riscvFloatingArgRegs()[numFloatingArgs]),
-                                                  src = prepareRegister(*arg);
+                                                  src = getRegister(*arg);
                         builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
                         ++numFloatingArgs;
                     } else {
@@ -912,7 +912,7 @@ public:
             builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>(-(n * 8 + 15) / 16 * 16)));
             for (int i = 0; i < n; ++i) {
                 MemoryOperand dst(share(*sp()), std::make_unique<IntegerImmediate>(i * 8));
-                std::shared_ptr<Register> src = prepareRegister(*stackArgs[i]);
+                std::shared_ptr<Register> src = getRegister(*stackArgs[i]);
                 if (dynamic_cast<const ir::IntegerType *>(&*stackArgs[i]->type())) {
                     builder_.add(std::make_unique<Store>(8, std::move(dst), std::move(src)));
                 } else if (dynamic_cast<const ir::FloatingType *>(&*stackArgs[i]->type())) {
@@ -963,7 +963,7 @@ public:
             }
             for (const ir::Phi *phi : phis) {
                 std::shared_ptr<Register> dst = tmps[phi],
-                                          src = prepareRegister(*getIncomingValue(*phi, *I.parent()));
+                                          src = getRegister(*getIncomingValue(*phi, *I.parent()));
                 if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
                     builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                 } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
@@ -1012,7 +1012,7 @@ public:
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
-                                              src = prepareRegister(*getIncomingValue(*phi, *I.parent()));
+                                              src = getRegister(*getIncomingValue(*phi, *I.parent()));
                     if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                     } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
@@ -1056,7 +1056,7 @@ public:
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
-                                              src = prepareRegister(*getIncomingValue(*phi, *I.parent()));
+                                              src = getRegister(*getIncomingValue(*phi, *I.parent()));
                     if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                     } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
@@ -1085,8 +1085,8 @@ public:
         }
         if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.cond())) {
             int width = icmp->lhs()->type()->size(8);
-            std::shared_ptr<Register> src1 = prepareRegister(*icmp->lhs()),
-                                      src2 = prepareRegister(*icmp->rhs());
+            std::shared_ptr<Register> src1 = getRegister(*icmp->lhs()),
+                                      src2 = getRegister(*icmp->rhs());
             Condition cond;
             switch (icmp->cond()) {
                 case ir::ICmp::Condition::kEQ: cond = Condition::kEQ; break;
@@ -1103,7 +1103,7 @@ public:
             }
             builder_.add(std::make_unique<CmpBr>(width, cond, std::move(src1), std::move(src2), trueDest, falseDest));
         } else {
-            std::shared_ptr<Register> cond = prepareRegister(*I.cond());
+            std::shared_ptr<Register> cond = getRegister(*I.cond());
             builder_.add(std::make_unique<CmpZBr>(8, Condition::kNEZ, std::move(cond), trueDest, falseDest));
         }
     }
@@ -1111,12 +1111,12 @@ public:
     void visitRet(const ir::Ret &I) override {
         if (dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
             std::shared_ptr<Register> dst = share(*riscvIntegerResultRegs()[0]),
-                                      src = prepareRegister(*I.value());
+                                      src = getRegister(*I.value());
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
             Precision precision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
             std::shared_ptr<Register> dst = share(*riscvFloatingResultRegs()[0]),
-                                      src = prepareRegister(*I.value());
+                                      src = getRegister(*I.value());
             builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
         } else {
             assert(*I.value()->type() == ir::Void());
@@ -1141,8 +1141,8 @@ private:
         int bitWidth = I.type()->bitSize(8);
         ExtensionMode extMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src1 = prepareRegister(*I.lhs()),
-                                  src2 = prepareRegister(*I.rhs());
+                                  src1 = getRegister(*I.lhs()),
+                                  src2 = getRegister(*I.rhs());
 
         if (bitWidth == 32) {
             builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, extMode));
@@ -1159,8 +1159,8 @@ private:
     void visitBinaryIntegerBitwiseOperator(const IInstr &I) {
         int width = 8;
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src1 = prepareRegister(*I.lhs()),
-                                  src2 = prepareRegister(*I.rhs());
+                                  src1 = getRegister(*I.lhs()),
+                                  src2 = getRegister(*I.rhs());
         builder_.add(std::make_unique<MInstr>(width, std::move(dst), std::move(src1), std::move(src2)));
     }
 
@@ -1168,7 +1168,7 @@ private:
     void visitUnaryFloatingArithmeticOperator(const IInstr &I) {
         Precision precision = static_cast<const ir::FloatingType *>(&*I.value()->type())->precision();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src = prepareRegister(*I.value());
+                                  src = getRegister(*I.value());
         builder_.add(std::make_unique<MInstr>(precision, std::move(dst), std::move(src)));
     }
 
@@ -1176,12 +1176,12 @@ private:
     void visitBinaryFloatingArithmeticOperator(const IInstr &I) {
         Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
         std::shared_ptr<Register> dst = valueMap_[&I],
-                                  src1 = prepareRegister(*I.lhs()),
-                                  src2 = prepareRegister(*I.rhs());
+                                  src1 = getRegister(*I.lhs()),
+                                  src2 = getRegister(*I.rhs());
         builder_.add(std::make_unique<MInstr>(precision, std::move(dst), std::move(src1), std::move(src2)));
     }
 
-    std::shared_ptr<Register> prepareRegister(const ir::Value &value) {
+    std::shared_ptr<Register> getRegister(const ir::Value &value) {
         if (dynamic_cast<const ir::Argument *>(&value) || dynamic_cast<const ir::Instruction *>(&value)) {
             return valueMap_[&value];
         }
