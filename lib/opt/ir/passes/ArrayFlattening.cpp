@@ -14,7 +14,6 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/ArrayType.h"
 #include "mini-llvm/ir/Type/I8.h"
-#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 
@@ -32,11 +31,11 @@ bool ArrayFlattening::runOnFunction(Function &F) {
                     type = static_cast<const ArrayType *>(&*type)->elementType();
                 }
                 size_t n = gep->idx_size();
-                if (!(*type == I8() && n == 1) && *type != Ptr()) {
+                if (!(*type == I8() && n == 1)) {
                     std::vector<size_t> sizes;
                     type = gep->sourceType();
                     for (;;) {
-                        sizes.push_back(type->size());
+                        sizes.push_back(type->size(pointerSize_));
                         if (!dynamic_cast<const ArrayType *>(&*type)) {
                             break;
                         }

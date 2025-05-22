@@ -203,7 +203,15 @@ int mainImpl(std::vector<std::string> args) {
         return 1;
     }
 
-    ir::PassManager passManager;
+    int pointerSize;
+
+    switch (*target) {
+    case Target::kRISCV64:
+        pointerSize = 8;
+        break;
+    }
+
+    ir::PassManager passManager(pointerSize);
     passManager.run(*IM);
 
     if (irDumpFile) {

@@ -44,7 +44,7 @@ void PassManager::run(Module &M) const {
         BasicBlockMerging           pass5;
         UnreachableBlockElimination pass6;
         RedundantLoadElimination    pass7;
-        ArrayFlattening             pass8;
+        ArrayFlattening             pass8(pointerSize_);
         InstructionCombining        pass9;
         AlgebraicSimplification     pass10;
         ConstantFolding             pass11;
