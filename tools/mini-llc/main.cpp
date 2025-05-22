@@ -223,9 +223,12 @@ int mainImpl(std::vector<std::string> args) {
     mir::Module MM;
     mc::Program program;
 
-    if (target == Target::kRISCV64) {
-        RISCVBackendDriver backendDriver;
-        backendDriver.run(*IM, MM, program);
+    switch (*target) {
+        case Target::kRISCV64: {
+            RISCVBackendDriver backendDriver;
+            backendDriver.run(*IM, MM, program);
+            break;
+        }
     }
 
     if (mirDumpFile) {
