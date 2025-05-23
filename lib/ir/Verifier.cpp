@@ -32,6 +32,126 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
+namespace {
+
+bool checkOperandTypes(const Instruction &I) {
+    if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
+        if (*op->lhs()->type() != *op->rhs()->type()) {
+            return false;
+        }
+        if (!dynamic_cast<const ICmp *>(&I) && *op->lhs()->type() == Ptr()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *op = dynamic_cast<const BinaryFloatingOperator *>(&I)) {
+        if (*op->lhs()->type() != *op->rhs()->type()) {
+            return false;
+        }
+        if (*op->lhs()->type() == Ptr()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *trunc = dynamic_cast<const Trunc *>(&I)) {
+        if (*trunc->value()->type() == Ptr()) {
+            return false;
+        }
+        if (*trunc->type() == Ptr()) {
+            return false;
+        }
+        if (trunc->type()->bitSize() >= trunc->value()->type()->bitSize()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *sext = dynamic_cast<const SExt *>(&I)) {
+        if (*sext->value()->type() == Ptr()) {
+            return false;
+        }
+        if (*sext->type() == Ptr()) {
+            return false;
+        }
+        if (sext->type()->bitSize() <= sext->value()->type()->bitSize()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *zext = dynamic_cast<const ZExt *>(&I)) {
+        if (*zext->value()->type() == Ptr()) {
+            return false;
+        }
+        if (*zext->type() == Ptr()) {
+            return false;
+        }
+        if (zext->type()->bitSize() <= zext->value()->type()->bitSize()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *fptrunc = dynamic_cast<const FPTrunc *>(&I)) {
+        if (fptrunc->type()->bitSize() >= fptrunc->value()->type()->bitSize()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *fpext = dynamic_cast<const FPExt *>(&I)) {
+        if (fpext->type()->bitSize() <= fpext->value()->type()->bitSize()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *select = dynamic_cast<const Select *>(&I)) {
+        if (*select->trueValue()->type() != *select->falseValue()->type()) {
+            return false;
+        }
+        return true;
+    }
+    if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
+        if (*gep->sourceType() == Void() || *gep->sourceType() == BasicBlockType()) {
+            return false;
+        }
+        return true;
+    }
+    return true;
+}
+
+bool checkDominance(const Function &F) {
+    DominatorTreeAnalysis domTree;
+    domTree.runOnFunction(F);
+
+    std::unordered_set<const BasicBlock *> S;
+    std::queue<const BasicBlock *> Q;
+    S.insert(&F.entry());
+    Q.push(&F.entry());
+    while (!Q.empty()) {
+        const BasicBlock *u = Q.front();
+        Q.pop();
+        for (const BasicBlock *v : successors(*u)) {
+            if (!S.contains(v)) {
+                S.insert(v);
+                Q.push(v);
+            }
+        }
+    }
+
+    for (const BasicBlock *B : S) {
+        for (const Instruction &I : *B) {
+            for (const UseBase &use : uses(I)) {
+                if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                    if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+} // namespace
+
 bool ir::verifyFunction(const Function &F) {
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
@@ -88,118 +208,19 @@ bool ir::verifyFunction(const Function &F) {
                     }
                 }
             }
-            if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
-                if (*op->lhs()->type() != *op->rhs()->type()) {
-                    return false;
-                }
-                if (!dynamic_cast<const ICmp *>(&I) && *op->lhs()->type() == Ptr()) {
-                    return false;
-                }
-            }
-            if (auto *op = dynamic_cast<const BinaryFloatingOperator *>(&I)) {
-                if (*op->lhs()->type() != *op->rhs()->type()) {
-                    return false;
-                }
-                if (*op->lhs()->type() == Ptr()) {
-                    return false;
-                }
-            }
-            if (auto *trunc = dynamic_cast<const Trunc *>(&I)) {
-                if (*trunc->value()->type() == Ptr()) {
-                    return false;
-                }
-                if (*trunc->type() == Ptr()) {
-                    return false;
-                }
-                if (trunc->type()->bitSize() >= trunc->value()->type()->bitSize()) {
-                    return false;
-                }
-            }
-            if (auto *sext = dynamic_cast<const SExt *>(&I)) {
-                if (*sext->value()->type() == Ptr()) {
-                    return false;
-                }
-                if (*sext->type() == Ptr()) {
-                    return false;
-                }
-                if (sext->type()->bitSize() <= sext->value()->type()->bitSize()) {
-                    return false;
-                }
-            }
-            if (auto *zext = dynamic_cast<const ZExt *>(&I)) {
-                if (*zext->value()->type() == Ptr()) {
-                    return false;
-                }
-                if (*zext->type() == Ptr()) {
-                    return false;
-                }
-                if (zext->type()->bitSize() <= zext->value()->type()->bitSize()) {
-                    return false;
-                }
-            }
-            if (auto *fptrunc = dynamic_cast<const FPTrunc *>(&I)) {
-                if (fptrunc->type()->bitSize() >= fptrunc->value()->type()->bitSize()) {
-                    return false;
-                }
-            }
-            if (auto *fpext = dynamic_cast<const FPExt *>(&I)) {
-                if (fpext->type()->bitSize() <= fpext->value()->type()->bitSize()) {
-                    return false;
-                }
-            }
-            if (auto *select = dynamic_cast<const Select *>(&I)) {
-                if (*select->trueValue()->type() != *select->falseValue()->type()) {
-                    return false;
-                }
-            }
-            if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
-                if (*gep->sourceType() == Void() || *gep->sourceType() == BasicBlockType()) {
-                    return false;
-                }
-            }
-        }
-    }
-
-    std::unordered_set<const BasicBlock *> S;
-    std::queue<const BasicBlock *> Q;
-    S.insert(&F.entry());
-    Q.push(&F.entry());
-    while (!Q.empty()) {
-        const BasicBlock *u = Q.front();
-        Q.pop();
-        for (const BasicBlock *v : successors(*u)) {
-            if (!S.contains(v)) {
-                S.insert(v);
-                Q.push(v);
-            }
-        }
-    }
-
-    DominatorTreeAnalysis domTree;
-    domTree.runOnFunction(F);
-
-    for (const BasicBlock *B : S) {
-        for (const Instruction &I : *B) {
-            for (const UseBase &use : uses(I)) {
-                if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                    if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
-                        return false;
-                    }
-                }
-            }
         }
     }
 
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
-            if (!dynamic_cast<const Phi *>(&I)) {
-                for (const UseBase *op : I.operands()) {
-                    if (&**op == &I) {
-                        return false;
-                    }
-                }
+            if (!checkOperandTypes(I)) {
+                return false;
             }
         }
+    }
+
+    if (!checkDominance(F)) {
+        return false;
     }
 
     return true;
