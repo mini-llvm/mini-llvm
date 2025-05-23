@@ -10,7 +10,7 @@
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/common/SourceManger.h"
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir/Verify.h"
+#include "mini-llvm/ir/Verifier.h"
 #include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/mc/Program.h"
 #include "mini-llvm/mir/Module.h"

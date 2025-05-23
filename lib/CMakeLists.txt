@@ -38,7 +38,7 @@ add_library(mini-llvm
     ir/Type/Void.cpp
     ir/Use.cpp
     ir/Value.cpp
-    ir/Verify.cpp
+    ir/Verifier.cpp
     ir_reader/IRReader.cpp
     ir_reader/Lexer.cpp
     ir_reader/Parser.cpp

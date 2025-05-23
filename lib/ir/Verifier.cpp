@@ -1,4 +1,4 @@
-#include "mini-llvm/ir/Verify.h"
+#include "mini-llvm/ir/Verifier.h"
 
 #include <iterator>
 #include <memory>

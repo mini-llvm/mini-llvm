@@ -3,7 +3,7 @@
 #include <cassert>
 
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir/Verify.h"
+#include "mini-llvm/ir/Verifier.h"
 #include "mini-llvm/opt/ir/ModuleTransform.h"
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 #include "mini-llvm/opt/ir/passes/ArrayFlattening.h"

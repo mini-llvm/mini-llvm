@@ -15,7 +15,7 @@
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/ir/Verify.h"
+#include "mini-llvm/ir/Verifier.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
