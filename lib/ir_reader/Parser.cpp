@@ -817,12 +817,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 }
                 ++cursor_;
 
-                Location falseValueTypeLocation = cursor_;
                 std::unique_ptr<Type> falseValueType = parseType();
-                if (*falseValueType != *trueValueType) {
-                    throw ParseException("both values to select must have same type", falseValueTypeLocation);
-                }
-
                 std::shared_ptr<Value> falseValue = parseValue(*trueValueType);
 
                 I = std::make_shared<Select>(std::move(cond), std::move(trueValue), std::move(falseValue));
@@ -920,7 +915,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                     std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
 
                     if (*calleeFunction->functionType()->returnType() != *returnType) {
-                        throw ParseException("inconsistent return type", returnTypeLocation);
+                        throw ParseException("return type mismatch", returnTypeLocation);
                     }
 
                     I =  std::make_shared<Call>(std::move(calleeFunction), std::move(args));
@@ -996,7 +991,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                 throw ParseException("redefinition of local identifier", symbolLocation);
             }
             if (*II->type() != *I->type()) {
-                throw ParseException("inconsistent type", symbolLocation);
+                throw ParseException("type mismatch", symbolLocation);
             }
             replaceAllUsesWith(*II, I);
             symbolTable_[symbol] = I;
@@ -1044,7 +1039,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
         std::shared_ptr<Function> callee = cast<Function>(value);
 
         if (*callee->functionType()->returnType() != *returnType) {
-            throw ParseException("inconsistent return type", symbolLocation);
+            throw ParseException("return type mismatch", symbolLocation);
         }
 
         if (cursor_->kind != kLeftParen) {
@@ -1153,7 +1148,7 @@ std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
     if (symbolTable_.contains(symbol)) {
         std::shared_ptr<Value> value = symbolTable_[symbol];
         if (*value->type() != type) {
-            throw ParseException("inconsistent type", symbolLocation);
+            throw ParseException("type mismatch", symbolLocation);
         }
         return value;
     }
@@ -1307,7 +1302,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 elementTypeLocation = cursor_;
                 elementType = parseType();
                 if (*elementType != *arrayType->elementType()) {
-                    throw ParseException("inconsistent element type", elementTypeLocation);
+                    throw ParseException("element type mismatch", elementTypeLocation);
                 }
                 elements.push_back(parseConstant(*arrayType->elementType()));
                 while (cursor_->kind == kComma) {
@@ -1315,7 +1310,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                     elementTypeLocation = cursor_;
                     elementType = parseType();
                     if (*elementType != *arrayType->elementType()) {
-                        throw ParseException("inconsistent element type", elementTypeLocation);
+                        throw ParseException("element type mismatch", elementTypeLocation);
                     }
                     elements.push_back(parseConstant(*arrayType->elementType()));
                 }
@@ -1325,14 +1320,14 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
             }
             ++cursor_;
             if (elements.size() != arrayType->numElements()) {
-                throw ParseException("inconsistent number of elements", elementsLocation);
+                throw ParseException("mismatch in number of elements", elementsLocation);
             }
         } else if (cursor_->kind == kString) {
             if (ir::I8() != *arrayType->elementType()) {
-                throw ParseException("inconsistent element type", elementsLocation);
+                throw ParseException("element type mismatch", elementsLocation);
             }
             if (std::get<std::vector<int8_t>>(cursor_->value).size() != arrayType->numElements()) {
-                throw ParseException("inconsistent number of elements", elementsLocation);
+                throw ParseException("mismatch in number of elements", elementsLocation);
             }
             for (int8_t element : std::get<std::vector<int8_t>>(cursor_->value)) {
                 elements.push_back(std::make_shared<I8Constant>(element));
