@@ -12,12 +12,7 @@
 namespace mini_llvm {
 
 class CommandLineParser {
-    enum class OptionKind {
-        kNoValue,
-        kOptionalValue,
-        kRequiredValue,
-    };
-
+public:
     class OptionArgument {
     public:
         explicit OptionArgument(std::string name)
@@ -30,16 +25,8 @@ class CommandLineParser {
             return name_;
         }
 
-        bool hasValue() const {
-            return static_cast<bool>(value_);
-        }
-
-        const std::string &value() const {
-            return *value_;
-        }
-
-        std::string valueOr(std::string value) const {
-            return value_.value_or(std::move(value));
+        const std::optional<std::string> &value() const {
+            return value_;
         }
 
     private:
@@ -60,7 +47,6 @@ class CommandLineParser {
         std::string arg_;
     };
 
-public:
     class Argument {
     public:
         explicit Argument(OptionArgument option)
@@ -69,32 +55,12 @@ public:
         explicit Argument(PositionalArgument positionalArg)
             : arg_(std::move(positionalArg)) {}
 
-        bool isOption() const {
-            return std::holds_alternative<OptionArgument>(arg_);
+        const OptionArgument *option() const {
+            return std::get_if<OptionArgument>(&arg_);
         }
 
-        bool isPositional() const {
-            return std::holds_alternative<PositionalArgument>(arg_);
-        }
-
-        const std::string &name() const {
-            return std::get<OptionArgument>(arg_).name();
-        }
-
-        bool hasValue() const {
-            return std::get<OptionArgument>(arg_).hasValue();
-        }
-
-        const std::string &value() const {
-            return std::get<OptionArgument>(arg_).value();
-        }
-
-        std::string valueOr(std::string value) const {
-            return std::get<OptionArgument>(arg_).valueOr(std::move(value));
-        }
-
-        const std::string &arg() const {
-            return std::get<PositionalArgument>(arg_).arg();
+        const PositionalArgument *positional() const {
+            return std::get_if<PositionalArgument>(&arg_);
         }
 
     private:
@@ -129,7 +95,7 @@ public:
 
     void addOption(std::string name);
 
-    Expected<void, Error> parse(const std::vector<std::string> &args);
+    Expected<void, Error> operator()(const std::vector<std::string> &args);
 
     iterator begin() const {
         return args_.begin();
@@ -148,6 +114,12 @@ public:
     }
 
 private:
+    enum class OptionKind {
+        kNoValue,
+        kOptionalValue,
+        kRequiredValue,
+    };
+
     std::unordered_map<std::string, OptionKind> options_;
     std::vector<Argument> args_;
 };

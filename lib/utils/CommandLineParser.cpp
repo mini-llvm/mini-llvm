@@ -22,7 +22,7 @@ void CommandLineParser::addOption(std::string name) {
     options_.emplace(std::move(name), kind);
 }
 
-Expected<void, CommandLineParser::Error> CommandLineParser::parse(const std::vector<std::string> &args) {
+Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std::vector<std::string> &args) {
     bool isPositional = false;
     size_t n = args.size();
     size_t i = 1;

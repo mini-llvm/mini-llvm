@@ -56,7 +56,7 @@ int mainImpl(std::vector<std::string> args) {
     parser.addOption("--dump-ir::");
     parser.addOption("--dump-mir::");
 
-    if (Expected<void, CommandLineParser::Error> result = parser.parse(args); !result) {
+    if (Expected<void, CommandLineParser::Error> result = parser(args); !result) {
         using enum CommandLineParser::ErrorKind;
         switch (result.error().kind()) {
         case kMissingValue:
@@ -80,34 +80,34 @@ int mainImpl(std::vector<std::string> args) {
     std::optional<std::string> irDumpFile;
     std::optional<std::string> mirDumpFile;
 
-    for (const CommandLineParser::Argument &arg : parser) {
-        if (arg.isOption()) {
-            if (arg.name() == "--help") {
+    for (const auto &arg : parser) {
+        if (const auto *option = arg.option()) {
+            if (option->name() == "--help") {
                 std::print(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>\n", args[0]);
                 return 0;
             }
-            if (arg.name() == "--target") {
-                target = toTarget(arg.value());
+            if (option->name() == "--target") {
+                target = toTarget(*option->value());
                 if (!target) {
-                    print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, arg.value());
+                    print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, *option->value());
                     return 1;
                 }
                 continue;
             }
-            if (arg.name() == "-o") {
-                outputFile = arg.value();
+            if (option->name() == "-o") {
+                outputFile = *option->value();
                 continue;
             }
-            if (arg.name() == "--dump-ir") {
-                irDumpFile = arg.valueOr("-");
+            if (option->name() == "--dump-ir") {
+                irDumpFile = option->value().value_or("-");
                 continue;
             }
-            if (arg.name() == "--dump-mir") {
-                mirDumpFile = arg.valueOr("-");
+            if (option->name() == "--dump-mir") {
+                mirDumpFile = option->value().value_or("-");
                 continue;
             }
         }
-        inputFile = arg.arg();
+        inputFile = arg.positional()->arg();
     }
 
     if (!inputFile) {
