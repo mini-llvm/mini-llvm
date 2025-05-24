@@ -112,34 +112,34 @@
 - `BranchSimplification`
 - `ConstantFolding`
 - `DeadCodeElimination`
-- `DominatorTreeAnalysis`
 - `FunctionInlining`
 - `GlobalCodeMotion`
 - `GlobalValueNumbering`
 - `InstructionCombining`
 - `JumpThreading`
-- `LoopTreeAnalysis`
 - `Mem2Reg`
 - `PoisonPropagation`
 - `RedundantLoadElimination`
 - `StrengthReduction`
 - `UnreachableBlockElimination`
+- `DominatorTreeAnalysis`
+- `LoopTreeAnalysis`
 
 ### MIR
 
 - `BasicBlockMerging`
 - `BasicBlockReordering`
-- `BranchPredictionAnalysis`
 - `CopyPropagation`
 - `DeadCodeElimination`
 - `JumpThreading`
-- `LiveVariableAnalysis`
 - `NullOperationElimination`
 - `RegisterReuse`
 - `StackOffsetEvaluation`
 - `TailDuplication`
 - `UnreachableBlockElimination`
 - `ZeroRegisterReplacement`
+- `BranchPredictionAnalysis`
+- `LiveVariableAnalysis`
 - `RISCVConstantPropagation` (`riscv64`)
 
 ### MC
