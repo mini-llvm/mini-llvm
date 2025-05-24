@@ -24,7 +24,6 @@ public:
     using const_element_iterator = IndirectIterator<ElementList::const_iterator, const Use<Constant>>;
 
     ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::shared_ptr<Constant>> elements);
-    ~ArrayConstant() override;
 
     element_iterator element_begin() {
         return element_iterator(elements_.begin());

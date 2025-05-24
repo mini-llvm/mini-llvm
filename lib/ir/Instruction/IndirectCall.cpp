@@ -21,8 +21,6 @@ IndirectCall::IndirectCall(std::unique_ptr<FunctionType> functionType, std::shar
     }
 }
 
-IndirectCall::~IndirectCall() = default;
-
 std::unordered_set<const UseBase *> IndirectCall::operands() const {
     std::unordered_set<const UseBase *> operands;
     operands.insert(&callee());

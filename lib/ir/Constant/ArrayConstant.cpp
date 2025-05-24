@@ -77,8 +77,6 @@ ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::s
     }
 }
 
-ArrayConstant::~ArrayConstant() = default;
-
 std::string ArrayConstant::format() const {
     if (isZeroInitializer(*this)) {
         return "zeroinitializer";

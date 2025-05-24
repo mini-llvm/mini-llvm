@@ -17,7 +17,6 @@ public:
     GlobalVar(std::unique_ptr<Type> valueType,
               Linkage linkage,
               std::optional<std::shared_ptr<Constant>> initializer = std::nullopt);
-    ~GlobalVar() override;
 
     std::unique_ptr<Type> valueType() const {
         return valueType_->clone();

@@ -23,8 +23,6 @@ Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage) 
     }
 }
 
-Function::~Function() = default;
-
 BasicBlock &Function::add(Function::const_iterator pos, std::shared_ptr<BasicBlock> block) {
     assert(block->parent_ == nullptr);
     assert(block->parentIterator_ == std::nullopt);

@@ -27,8 +27,6 @@ public:
 
     IndirectCall(std::unique_ptr<FunctionType> functionType, std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args = {});
 
-    ~IndirectCall() override;
-
     std::unique_ptr<FunctionType> functionType() const {
         return cast<FunctionType>(functionType_->clone());
     }
