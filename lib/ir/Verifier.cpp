@@ -8,6 +8,7 @@
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/BinaryFloatingOperator.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"
 #include "mini-llvm/ir/Instruction/FPExt.h"
@@ -28,13 +29,14 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 namespace {
 
-bool checkOperandTypes(const Instruction &I) {
+bool checkOperands(const Instruction &I) {
     if (auto *op = dynamic_cast<const BinaryIntegerOperator *>(&I)) {
         if (*op->lhs()->type() != *op->rhs()->type()) {
             return false;
@@ -150,6 +152,47 @@ bool checkDominance(const Function &F) {
     return true;
 }
 
+bool checkAlloca(const Function &F) {
+    HashMap<const BasicBlock *, int> in;
+    std::unordered_set<const BasicBlock *> S;
+    std::queue<const BasicBlock *> Q;
+    for (const BasicBlock &v : F) {
+        in(&v) = 0;
+    }
+    for (const BasicBlock &u : F) {
+        for (const BasicBlock *v : successors(u)) {
+            ++in[v];
+        }
+    }
+    for (const BasicBlock &v : F) {
+        if (in[&v] == 0) {
+            S.insert(&v);
+            Q.push(&v);
+        }
+    }
+    while (!Q.empty()) {
+        const BasicBlock *u = Q.front();
+        Q.pop();
+        for (const BasicBlock *v : successors(*u)) {
+            --in[v];
+            if (in[v] == 0) {
+                S.insert(v);
+                Q.push(v);
+            }
+        }
+    }
+    for (const BasicBlock &B : F) {
+        if (!S.contains(&B)) {
+            for (const Instruction &I : B) {
+                if (dynamic_cast<const Alloca *>(&I)) {
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
 } // namespace
 
 bool ir::verifyFunction(const Function &F) {
@@ -213,13 +256,17 @@ bool ir::verifyFunction(const Function &F) {
 
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
-            if (!checkOperandTypes(I)) {
+            if (!checkOperands(I)) {
                 return false;
             }
         }
     }
 
     if (!checkDominance(F)) {
+        return false;
+    }
+
+    if (!checkAlloca(F)) {
         return false;
     }
 
