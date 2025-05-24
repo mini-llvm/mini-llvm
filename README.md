@@ -119,7 +119,6 @@
 - `JumpThreading`
 - `Mem2Reg`
 - `PoisonPropagation`
-- `RedundantLoadElimination`
 - `StrengthReduction`
 - `UnreachableBlockElimination`
 - `DominatorTreeAnalysis`
