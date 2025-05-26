@@ -56,7 +56,7 @@ public:
         std::unordered_set<Edge, EdgeHash> backEdges;
 
         for (const BasicBlock &B : F) {
-            colors(&B) = Color::kWhite;
+            colors.put(&B, Color::kWhite);
         }
 
         for (const BasicBlock &B : F) {

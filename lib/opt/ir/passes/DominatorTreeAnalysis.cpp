@@ -30,8 +30,8 @@ public:
 
     void operator()() {
         for (const BasicBlock &v : F_) {
-            pred_(&v) = {};
-            bucket_(&v) = {};
+            pred_.put(&v, {});
+            bucket_.put(&v, {});
         }
         dfs(&F_.entry());
         for (size_t i = timer_; i >= 2; --i) {
@@ -46,7 +46,7 @@ public:
             link(parent_[w], w);
             for (const BasicBlock *v : bucket_[parent_[w]]) {
                 const BasicBlock *u = eval(v);
-                idom_(v) = semi_[u] < semi_[v] ? u : parent_[w];
+                idom_.put(v, semi_[u] < semi_[v] ? u : parent_[w]);
             }
         }
         for (size_t i = 2; i <= timer_; ++i) {
@@ -67,12 +67,12 @@ private:
     size_t timer_{};
 
     void dfs(const BasicBlock *v) {
-        semi_(v) = ++timer_;
-        vertex_(semi_[v]) = v;
-        label_(v) = v;
+        semi_.put(v, ++timer_);
+        vertex_.put(semi_[v], v);
+        label_.put(v, v);
         for (const BasicBlock *w : successors(*v)) {
             if (!semi_.contains(w)) {
-                parent_(w) = v;
+                parent_.put(w, v);
                 dfs(w);
             }
             pred_[w].push_back(v);
@@ -99,7 +99,7 @@ private:
     }
 
     void link(const BasicBlock *u, const BasicBlock *v) {
-        ancestor_(v) = u;
+        ancestor_.put(v, u);
     }
 };
 
@@ -107,13 +107,13 @@ void dfs(const DominatorTreeNode *u,
          HashMap<const DominatorTreeNode *, size_t> &discover,
          HashMap<const DominatorTreeNode *, size_t> &finish,
          size_t &timer) {
-    discover(u) = ++timer;
+    discover.put(u, ++timer);
     for (const DominatorTreeNode *v : u->children) {
         if (!discover.contains(v)) {
             dfs(v, discover, finish, timer);
         }
     }
-    finish(u) = ++timer;
+    finish.put(u, ++timer);
 }
 
 } // namespace
@@ -140,7 +140,7 @@ public:
         }
 
         for (const BasicBlock *v : S) {
-            node_(v) = {v, nullptr, {}};
+            node_.put(v, {v, nullptr, {}});
         }
         for (const BasicBlock *v : S) {
             if (v != &F.entry()) {
@@ -155,7 +155,7 @@ public:
 
         for (const BasicBlock &B : F) {
             for (auto [idx, I] : std::views::enumerate(B)) {
-                idx_(&I) = idx;
+                idx_.put(&I, idx);
             }
         }
     }

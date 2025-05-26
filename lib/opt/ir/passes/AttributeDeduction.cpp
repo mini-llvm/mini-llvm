@@ -61,7 +61,7 @@ void dfs(
 bool AttributeDeduction::runOnModule(Module &M) {
     HashMap<const Function *, std::unordered_set<const Function *>> callGraph;
     for (const Function &F : functions(M)) {
-        callGraph(&F) = {};
+        callGraph.put(&F, {});
     }
     for (const Function &F : functions(M)) {
         for (const BasicBlock &B : F) {
@@ -79,8 +79,9 @@ bool AttributeDeduction::runOnModule(Module &M) {
     int sccCount;
     std::stack<const Function *> S;
     for (auto v : std::views::keys(callGraph)) {
-        dfn(v) = low(v) = -1;
-        scc(v) = -1;
+        dfn.put(v, -1);
+        low.put(v, -1);
+        scc.put(v, -1);
     }
     timer = 0;
     sccCount = 0;
@@ -122,7 +123,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     HashMap<int, std::unordered_set<int>> sccGraph;
     for (int C = 0; C < sccCount; ++C) {
-        sccGraph(C) = {};
+        sccGraph.put(C, {});
     }
     for (const auto &[u, N] : callGraph) {
         for (auto v : N) {
@@ -134,7 +135,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     HashMap<int, int> in;
     for (auto v : std::views::keys(sccGraph)) {
-        in(v) = 0;
+        in.put(v, 0);
     }
     for (const auto &[u, N] : sccGraph) {
         for (auto v : N) {

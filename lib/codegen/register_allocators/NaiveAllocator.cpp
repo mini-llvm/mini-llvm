@@ -60,7 +60,7 @@ bool NaiveAllocator::allocate(
 
     HashMap<VirtualRegister *, StackSlot *> slots;
     for (VirtualRegister *virtReg : virtRegs) {
-        slots(virtReg) = &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth);
+        slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth));
     }
 
     LiveVariableAnalysis liveVars;
@@ -109,7 +109,7 @@ bool NaiveAllocator::allocate(
                 if (bestPhysReg == nullptr) {
                     return false;
                 }
-                allocation(virtReg) = bestPhysReg;
+                allocation.put(virtReg, bestPhysReg);
                 srcAllocated.insert(bestPhysReg);
                 dstAllocated.insert(bestPhysReg);
             }
@@ -124,7 +124,7 @@ bool NaiveAllocator::allocate(
                 if (bestPhysReg == nullptr) {
                     return false;
                 }
-                allocation(virtReg) = bestPhysReg;
+                allocation.put(virtReg, bestPhysReg);
                 srcAllocated.insert(bestPhysReg);
             }
             for (VirtualRegister *virtReg : dsts - srcs) {
@@ -138,7 +138,7 @@ bool NaiveAllocator::allocate(
                 if (bestPhysReg == nullptr) {
                     return false;
                 }
-                allocation(virtReg) = bestPhysReg;
+                allocation.put(virtReg, bestPhysReg);
                 dstAllocated.insert(bestPhysReg);
             }
             for (VirtualRegister *virtReg : srcs) {

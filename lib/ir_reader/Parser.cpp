@@ -95,6 +95,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/ir_reader/Symbol.h"
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -260,7 +261,7 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &isDeclaration) {
 
     std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), linkage);
     G->setName(symbol.name);
-    symbolTable_(symbol) = G;
+    symbolTable_.put(symbol, G);
     return G;
 }
 
@@ -362,7 +363,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &isDeclaration) {
     );
     std::shared_ptr<Function> F = std::make_shared<Function>(std::move(type), linkage);
     F->setName(symbol.name);
-    symbolTable_(symbol) = F;
+    symbolTable_.put(symbol, F);
 
     if (!isDeclaration) {
         for (auto [arg, paramName] : std::views::zip(args(*F), paramNames)) {
@@ -403,7 +404,7 @@ std::shared_ptr<Function> Parser::parseFunctionHeader(bool &isDeclaration) {
 void Parser::parseFunctionBody(Function &F) {
     for (Argument &arg : args(F)) {
         Symbol symbol{Symbol::Scope::kLocal, arg.name()};
-        symbolTable_(symbol) = share(arg);
+        symbolTable_.put(symbol, share(arg));
     }
 
     if (cursor_->kind != kLeftBrace) {
@@ -419,7 +420,7 @@ void Parser::parseFunctionBody(Function &F) {
             if (symbolTable_.contains(symbol)) {
                 throw ParseException("redefinition of label", symbolLocation);
             }
-            symbolTable_(symbol) = std::make_shared<BasicBlock>();
+            symbolTable_.put(symbol, std::make_shared<BasicBlock>());
         }
         ++cursor_;
     }
@@ -996,7 +997,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
             replaceAllUsesWith(*II, I);
             symbolTable_[symbol] = I;
         } else {
-            symbolTable_(symbol) = I;
+            symbolTable_.put(symbol, I);
         }
     } else if (cursor_->kind == kStore) {
         ++cursor_;
@@ -1159,7 +1160,7 @@ std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
         throw ParseException("undefined label", symbolLocation);
     }
     std::shared_ptr<Value> undefined = std::make_shared<Undefined>(type.clone(), symbolLocation);
-    symbolTable_(symbol) = undefined;
+    symbolTable_.put(symbol, undefined);
     return undefined;
 }
 

@@ -32,7 +32,7 @@ using namespace mini_llvm::ir;
 namespace {
 
 void findDepths(const DominatorTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
-    depths(node->block) = depth;
+    depths.put(node->block, depth);
     for (const DominatorTreeNode *child : node->children) {
         findDepths(child, depth + 1, depths);
     }
@@ -40,7 +40,7 @@ void findDepths(const DominatorTreeNode *node, int depth, HashMap<const BasicBlo
 
 void findDepths(const LoopTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
     for (const BasicBlock *B : node->loop->blocks) {
-        depths(B) = depth;
+        depths.put(B, depth);
     }
     for (const LoopTreeNode *child : node->children) {
         findDepths(child, depth + 1, depths);
@@ -93,7 +93,7 @@ void scheduleEarly(
 ) {
     for (const Instruction &I : *node->block) {
         if (!isPinned(I)) {
-            blocks(&I) = &I.parent()->parent()->entry();
+            blocks.put(&I, &I.parent()->parent()->entry());
             for (const UseBase *op : I.operands()) {
                 if (auto *II = dynamic_cast<const Instruction *>(&**op)) {
                     if (domTreeDepths[blocks[II]] > domTreeDepths[blocks[&I]]) {
@@ -181,7 +181,7 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
     HashMap<const BasicBlock *, const BasicBlock *> domTreeParents;
     for (const BasicBlock &B : F) {
         if (&B != &F.entry()) {
-            domTreeParents(&B) = domTree.node(B)->parent->block;
+            domTreeParents.put(&B, domTree.node(B)->parent->block);
         }
     }
 
@@ -190,7 +190,7 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
 
     HashMap<const BasicBlock *, int> loopTreeDepths;
     for (const BasicBlock &B : F) {
-        loopTreeDepths(&B) = 0;
+        loopTreeDepths.put(&B, 0);
     }
     for (const LoopTreeNode *node : loopTree.rootNode()->children) {
         findDepths(node, 1, loopTreeDepths);
@@ -199,7 +199,7 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
     HashMap<const Instruction *, const BasicBlock *> blocks;
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
-            blocks(&I) = I.parent();
+            blocks.put(&I, I.parent());
         }
     }
 

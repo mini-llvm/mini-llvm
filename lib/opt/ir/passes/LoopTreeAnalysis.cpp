@@ -63,7 +63,7 @@ public:
         }
 
         for (const Loop &loop : loops_) {
-            nodes_(&loop) = LoopTreeNode(&loop, nullptr, {});
+            nodes_.put(&loop, LoopTreeNode(&loop, nullptr, {}));
         }
 
         std::vector<LoopTreeNode *> nodes;

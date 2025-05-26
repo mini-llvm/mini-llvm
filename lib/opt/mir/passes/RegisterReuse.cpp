@@ -75,9 +75,9 @@ bool RegisterReuse::runOnBasicBlock(BasicBlock &B) {
             }
         }
         if (auto *li = dynamic_cast<const LI *>(&I)) {
-            imms(&*li->dst()) = &*li->src();
+            imms.put(&*li->dst(), &*li->src());
             if (!regs.contains(&*li->src())) {
-                regs(&*li->src()) = {};
+                regs.put(&*li->src(), {});
             }
             regs[&*li->src()].push_back(&*li->dst());
         }

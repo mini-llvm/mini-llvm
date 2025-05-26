@@ -52,7 +52,7 @@ public:
 
     void operator()() {
         for (const Alloca *v : vars_) {
-            defs_(v) = nullptr;
+            defs_.put(v, nullptr);
         }
         dfs(root_);
     }
@@ -69,13 +69,13 @@ private:
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (phis_.contains(phi)) {
                     const Alloca *v = phis_[phi];
-                    defs_(v) = phi;
+                    defs_.put(v, phi);
                 }
             }
             if (auto *store = dynamic_cast<const Store *>(&I)) {
                 if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars_.contains(v)) {
-                        defs_(v) = &*store->value();
+                        defs_.put(v, &*store->value());
                     }
                 }
             }
@@ -134,7 +134,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
 
     HashMap<const BasicBlock *, std::vector<const BasicBlock *>> DF;
     for (const BasicBlock &B : F) {
-        DF(&B) = {};
+        DF.put(&B, {});
     }
     for (const BasicBlock &X : F) {
         for (const BasicBlock *Y : successors(X)) {
@@ -176,7 +176,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
         }
         for (const BasicBlock *B : S) {
             const Phi &phi = const_cast<BasicBlock *>(B)->prepend(std::make_shared<Phi>(v->allocatedType()));
-            phis(&phi) = v;
+            phis.put(&phi, v);
         }
     }
 

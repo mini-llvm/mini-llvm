@@ -175,7 +175,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
 
     HashMap<const BasicBlock *, size_t> indices;
     for (auto [i, B] : std::views::enumerate(F)) {
-        indices(&B) = i;
+        indices.put(&B, i);
     }
 
     Matrix<double> D(n, n, 1e+10);

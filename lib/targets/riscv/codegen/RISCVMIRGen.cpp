@@ -959,7 +959,7 @@ public:
             builder_.setPos(&middle);
             HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
             for (const ir::Phi *phi : phis) {
-                tmps(phi) = std::make_shared<VirtualRegister>();
+                tmps.put(phi, std::make_shared<VirtualRegister>());
             }
             for (const ir::Phi *phi : phis) {
                 std::shared_ptr<Register> dst = tmps[phi],
@@ -1008,7 +1008,7 @@ public:
                 builder_.setPos(&middle);
                 HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
                 for (const ir::Phi *phi : phis) {
-                    tmps(phi) = std::make_shared<VirtualRegister>();
+                    tmps.put(phi, std::make_shared<VirtualRegister>());
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
@@ -1052,7 +1052,7 @@ public:
                 builder_.setPos(&middle);
                 HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
                 for (const ir::Phi *phi : phis) {
-                    tmps(phi) = std::make_shared<VirtualRegister>();
+                    tmps.put(phi, std::make_shared<VirtualRegister>());
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
@@ -1225,11 +1225,11 @@ private:
 void RISCVMIRGen::emit() {
     for (const ir::GlobalVar &IG : globalVars(*IM_)) {
         GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage()));
-        globalVarMap_(&IG) = &MG;
+        globalVarMap_.put(&IG, &MG);
     }
     for (const ir::Function &IF : functions(*IM_)) {
         Function &MF = MM_->appendFunction(std::make_unique<Function>(IF.name(), IF.linkage()));
-        functionMap_(&IF) = &MF;
+        functionMap_.put(&IF, &MF);
     }
     for (auto &[IG, MG] : globalVarMap_) {
         if (!IG->isDeclaration()) {
@@ -1253,7 +1253,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
 
     HashMap<const ir::BasicBlock *, BasicBlock *> blockMap;
     for (const ir::BasicBlock &IB : IF) {
-        blockMap(&IB) = &MF.append();
+        blockMap.put(&IB, &MF.append());
     }
 
     BasicBlock &epilogueBlock = MF.append();
@@ -1274,7 +1274,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
             if (auto *alloca = dynamic_cast<const ir::Alloca *>(&II)) {
                 int size = alloca->allocatedType()->size(8);
                 int alignment = alloca->allocatedType()->alignment(8);
-                memoryMap(alloca) = &MF.stackFrame().append(size, alignment);
+                memoryMap.put(alloca, &MF.stackFrame().append(size, alignment));
             }
         }
     }
@@ -1334,13 +1334,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
                                           src = share(*riscvIntegerArgRegs()[numIntegerArgs]);
                 blockMap[&IF.entry()]->append(std::make_unique<Mov>(8, dst, src));
-                valueMap(&arg) = dst;
+                valueMap.put(&arg, dst);
                 ++numIntegerArgs;
             } else {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
                 MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                 blockMap[&IF.entry()]->append(std::make_unique<Load>(8, dst, std::move(src)));
-                valueMap(&arg) = dst;
+                valueMap.put(&arg, dst);
                 ++numStackArgs;
             }
         } else if (dynamic_cast<const ir::FloatingType *>(&*arg.type())) {
@@ -1349,13 +1349,13 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
                                           src = share(*riscvFloatingArgRegs()[numFloatingArgs]);
                 blockMap[&IF.entry()]->append(std::make_unique<FMov>(precision, dst, src));
-                valueMap(&arg) = dst;
+                valueMap.put(&arg, dst);
                 ++numFloatingArgs;
             } else {
                 std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
                 MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                 blockMap[&IF.entry()]->append(std::make_unique<FLoad>(precision, dst, std::move(src)));
-                valueMap(&arg) = dst;
+                valueMap.put(&arg, dst);
                 ++numStackArgs;
             }
         } else {
@@ -1365,7 +1365,7 @@ void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
     for (const ir::BasicBlock &IB : IF) {
         for (const ir::Instruction &II : IB) {
             if (*II.type() != ir::Void()) {
-                valueMap(&II) = std::make_shared<VirtualRegister>();
+                valueMap.put(&II, std::make_shared<VirtualRegister>());
             }
         }
     }

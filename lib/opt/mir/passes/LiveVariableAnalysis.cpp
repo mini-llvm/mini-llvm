@@ -19,12 +19,12 @@ public:
     void runOnFunction(const Function &F) {
         HashMap<const BasicBlock *, std::unordered_set<Register *>> Use, Def;
         for (const BasicBlock &B : F) {
-            Use(&B) = use(B);
-            Def(&B) = def(B);
+            Use.put(&B, use(B));
+            Def.put(&B, def(B));
         }
         for (const BasicBlock &B : F) {
-            liveIn_(&B) = Use[&B];
-            liveOut_(&B) = {};
+            liveIn_.put(&B, Use[&B]);
+            liveOut_.put(&B, {});
         }
 
         bool changed;
@@ -46,9 +46,9 @@ public:
         for (const BasicBlock &B : F) {
             std::unordered_set<Register *> live(liveOut_[&B]);
             for (const Instruction &I : std::views::reverse(B)) {
-                liveOut2_(&I) = live;
+                liveOut2_.put(&I, live);
                 live = (live - def(I)) | use(I);
-                liveIn2_(&I) = live;
+                liveIn2_.put(&I, live);
             }
         }
     }

@@ -45,7 +45,7 @@ bool BasicBlockMerging::runOnFunction(Function &F) {
 
     HashMap<const BasicBlock *, int> numPredecessors;
     for (const BasicBlock &B : F) {
-        numPredecessors(&B) = 0;
+        numPredecessors.put(&B, 0);
     }
     for (const BasicBlock &B : F) {
         for (const BasicBlock *succ : successors(B)) {

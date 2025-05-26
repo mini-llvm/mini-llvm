@@ -23,7 +23,7 @@ bool TailDuplication::runOnFunction(Function &F) {
         HashMap<BasicBlock *, std::vector<BasicBlock *>> predecessors;
 
         for (BasicBlock &B : F) {
-            predecessors(&B) = {};
+            predecessors.put(&B, {});
         }
         for (BasicBlock &B : F) {
             for (BasicBlock *succ : successors(B)) {

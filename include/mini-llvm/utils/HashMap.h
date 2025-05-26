@@ -7,36 +7,13 @@
 
 namespace mini_llvm {
 
-template <typename K,
-          typename V,
-          typename Hash = std::hash<K>,
-          typename Equal = std::equal_to<K>,
-          typename Allocator = std::allocator<std::pair<const K, V>>>
-class HashMap : private std::unordered_map<K, V, Hash, Equal, Allocator> {
-    using Base = std::unordered_map<K, V, Hash, Equal, Allocator>;
-
-    template <typename T>
-    class [[nodiscard]] Proxy {
-    public:
-        Proxy(const Proxy &) = delete;
-        Proxy(Proxy &&) = delete;
-
-        Proxy &operator=(const Proxy &) = delete;
-        Proxy &operator=(Proxy &&) = delete;
-
-        template <typename U = V>
-        V &operator=(U &&value) && {
-            return parent_.insert_or_assign(std::forward<T>(key_), std::forward<U>(value)).first->second;
-        }
-
-    private:
-        HashMap &parent_;
-        T &&key_;
-
-        Proxy(HashMap &parent, T &&key) : parent_(parent), key_(std::forward<T>(key)) {}
-
-        friend class HashMap;
-    };
+template <typename Key,
+          typename Value,
+          typename Hash = std::hash<Key>,
+          typename Equal = std::equal_to<Key>,
+          typename Allocator = std::allocator<std::pair<const Key, Value>>>
+class HashMap : private std::unordered_map<Key, Value, Hash, Equal, Allocator> {
+    using Base = std::unordered_map<Key, Value, Hash, Equal, Allocator>;
 
 public:
     using typename Base::key_type;
@@ -94,23 +71,32 @@ public:
     using Base::key_eq;
     using Base::get_allocator;
 
-    template <typename T = K>
-    V &operator[](const T &key) {
+    template <typename Key2 = Key>
+    Value &operator[](const Key2 &key) {
         auto i = find(key);
         assert(i != end());
         return i->second;
     }
 
-    template <typename T = K>
-    const V &operator[](const T &key) const {
+    template <typename Key2 = Key>
+    const Value &operator[](const Key2 &key) const {
         auto i = find(key);
         assert(i != end());
         return i->second;
     }
 
-    template <typename T = K>
-    Proxy<T> operator()(T &&key) {
-        return Proxy<T>(*this, std::forward<T>(key));
+    template <typename Key2 = Key, typename Value2 = Value>
+    Value get(const Key2 &key, Value2 &&defaultValue) const {
+        auto i = find(key);
+        if (i != end()) {
+            return i->second;
+        }
+        return static_cast<Value>(std::forward<Value2>(defaultValue));
+    }
+
+    template <typename Key2 = Key, typename Value2 = Value>
+    std::pair<iterator, bool> put(Key2 &&key, Value2 &&value) {
+        return insert_or_assign(std::forward<Key2>(key), std::forward<Value2>(value));
     }
 };
 

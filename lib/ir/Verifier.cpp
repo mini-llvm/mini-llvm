@@ -157,7 +157,7 @@ bool checkAlloca(const Function &F) {
     std::unordered_set<const BasicBlock *> S;
     std::queue<const BasicBlock *> Q;
     for (const BasicBlock &v : F) {
-        in(&v) = 0;
+        in.put(&v, 0);
     }
     for (const BasicBlock &u : F) {
         for (const BasicBlock *v : successors(u)) {

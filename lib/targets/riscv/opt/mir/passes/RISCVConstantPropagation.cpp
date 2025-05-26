@@ -273,7 +273,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
     for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
         if (auto *li = dynamic_cast<const LI *>(&*i)) {
             if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*li->src())) {
-                values(&*li->dst()) = imm->value();
+                values.put(&*li->dst(), imm->value());
                 continue;
             }
         }
@@ -291,7 +291,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
         if (auto *addi = dynamic_cast<const AddI *>(&I)) {
             if (&*addi->dst() != &*addi->src1()) {
                 if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*addi->src2())) {
-                    sums(&*addi->dst()) = {&*addi->src1(), imm->value()};
+                    sums.put(&*addi->dst(), {&*addi->src1(), imm->value()});
                     continue;
                 }
             }

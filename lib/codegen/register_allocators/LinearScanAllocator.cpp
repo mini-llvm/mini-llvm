@@ -185,7 +185,7 @@ bool LinearScanAllocator::allocate(
         for (Register *reg : liveVars.liveOut(*I) | def(*I)) {
             if (auto *virtReg = dynamic_cast<VirtualRegister *>(reg); virtReg && virtRegs.contains(virtReg)) {
                 if (!endpoints.contains(virtReg)) {
-                    endpoints(virtReg) = {i, i};
+                    endpoints.put(virtReg, {i, i});
                 } else {
                     endpoints[virtReg].first = std::min(endpoints[virtReg].first, (size_t)i);
                     endpoints[virtReg].second = std::max(endpoints[virtReg].second, (size_t)i);
@@ -202,7 +202,7 @@ bool LinearScanAllocator::allocate(
 
     HashMap<VirtualRegister *, std::unordered_set<PhysicalRegister *>> allocatable;
     for (VirtualRegister *virtReg : virtRegs) {
-        allocatable(virtReg) = physRegs - reserved;
+        allocatable.put(virtReg, physRegs - reserved);
         auto [start, end] = endpoints[virtReg];
         for (Register *reg : liveVars.liveOut(*seq[start])) {
             if (auto *physReg = dynamic_cast<PhysicalRegister *>(reg); physReg && physRegs.contains(physReg)) {
@@ -244,7 +244,7 @@ bool LinearScanAllocator::allocate(
         }
         if (bestPhysReg != nullptr) {
             free.erase(bestPhysReg);
-            allocation(I.virtReg) = bestPhysReg;
+            allocation.put(I.virtReg, bestPhysReg);
             active.insert(&I);
         } else {
             spilled.insert(I.virtReg);
@@ -263,7 +263,7 @@ bool LinearScanAllocator::allocate(
 
     HashMap<VirtualRegister *, StackSlot *> slots;
     for (VirtualRegister *virtReg : spilled) {
-        slots(virtReg) = &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth);
+        slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth));
     }
 
     for (BasicBlock &B : F) {
@@ -293,7 +293,7 @@ bool LinearScanAllocator::allocate(
                         bestPhysReg = physReg;
                     }
                 }
-                allocation(virtReg) = bestPhysReg;
+                allocation.put(virtReg, bestPhysReg);
                 srcAllocated.insert(bestPhysReg);
                 dstAllocated.insert(bestPhysReg);
             }
@@ -304,7 +304,7 @@ bool LinearScanAllocator::allocate(
                         bestPhysReg = physReg;
                     }
                 }
-                allocation(virtReg) = bestPhysReg;
+                allocation.put(virtReg, bestPhysReg);
                 srcAllocated.insert(bestPhysReg);
             }
             for (VirtualRegister *virtReg : dsts - srcs) {
@@ -314,7 +314,7 @@ bool LinearScanAllocator::allocate(
                         bestPhysReg = physReg;
                     }
                 }
-                allocation(virtReg) = bestPhysReg;
+                allocation.put(virtReg, bestPhysReg);
                 dstAllocated.insert(bestPhysReg);
             }
             for (VirtualRegister *virtReg : srcs) {

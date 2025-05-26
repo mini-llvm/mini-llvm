@@ -40,10 +40,10 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
             }
         }
         if (auto *mov = dynamic_cast<const Mov *>(&I)) {
-            copies(&*mov->dst()) = &*mov->src();
+            copies.put(&*mov->dst(), &*mov->src());
         }
         if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
-            copies(&*fmov->dst()) = &*fmov->src();
+            copies.put(&*fmov->dst(), &*fmov->src());
         }
     }
 
