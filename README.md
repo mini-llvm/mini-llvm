@@ -112,6 +112,7 @@
 - `BranchSimplification`
 - `ConstantFolding`
 - `DeadCodeElimination`
+- `DeadStoreElimination`
 - `FunctionInlining`
 - `GlobalCodeMotion`
 - `GlobalValueNumbering`

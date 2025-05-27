@@ -10,6 +10,11 @@ tests=(
     phi_lost_copy
     phi_swap
     impure
+    alias_args
+    alias_gep
+    alias_inttoptr
+    escape_arg
+    escape_global
     many_args
     many_regs
     many_regs_large_stack_frame
