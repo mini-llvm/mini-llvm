@@ -60,6 +60,7 @@ add_library(mini-llvm
     mir/StackSlot.cpp
     mir/VirtualRegister.cpp
     opt/ir/FunctionTransform.cpp
+    opt/ir/passes/AliasAnalysis.cpp
     opt/ir/passes/AlgebraicSimplification.cpp
     opt/ir/passes/ArrayFlattening.cpp
     opt/ir/passes/AttributeDeduction.cpp

@@ -121,6 +121,7 @@
 - `PoisonPropagation`
 - `StrengthReduction`
 - `UnreachableBlockElimination`
+- `AliasAnalysis`
 - `DominatorTreeAnalysis`
 - `LoopTreeAnalysis`
 
