@@ -9,6 +9,7 @@ tests=(
     self_referential_phi
     phi_lost_copy
     phi_swap
+    impure
     many_args
     many_regs
     many_regs_large_stack_frame
