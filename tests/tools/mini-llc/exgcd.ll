@@ -1,4 +1,4 @@
-@format = private global [10 x i8] c"%d %d %d\0A\00"
+@format = private constant [10 x i8] c"%d %d %d\0A\00"
 
 declare i32 @printf(ptr, ...)
 

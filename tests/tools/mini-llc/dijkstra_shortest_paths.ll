@@ -8,7 +8,7 @@
 @heap_size = global i32 0
 @heap_idx = global ptr null
 @dist = global ptr null
-@format = private global [16 x i8] c"%d %d %d %d %d\0A\00"
+@format = private constant [16 x i8] c"%d %d %d %d %d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)

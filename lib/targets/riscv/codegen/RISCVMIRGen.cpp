@@ -1224,7 +1224,7 @@ private:
 
 void RISCVMIRGen::emit() {
     for (const ir::GlobalVar &IG : globalVars(*IM_)) {
-        GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage()));
+        GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.isConstant(), IG.linkage()));
         globalVarMap_.put(&IG, &MG);
     }
     for (const ir::Function &IF : functions(*IM_)) {

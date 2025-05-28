@@ -1,8 +1,8 @@
-@str1 = private global [7 x i8] c"kitten\00"
-@str2 = private global [8 x i8] c"sitting\00"
-@str3 = private global [10 x i8] c"intention\00"
-@str4 = private global [10 x i8] c"execution\00"
-@format = private global [4 x i8] c"%d\0A\00"
+@str1 = private constant [7 x i8] c"kitten\00"
+@str2 = private constant [8 x i8] c"sitting\00"
+@str3 = private constant [10 x i8] c"intention\00"
+@str4 = private constant [10 x i8] c"execution\00"
+@format = private constant [4 x i8] c"%d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)

@@ -1,6 +1,6 @@
-@A = private global [6 x i32] [i32 3, i32 8, i32 2, i32 0, i32 4, i32 7]
-@B = private global [12 x i32] [i32 6, i32 5, i32 2, i32 3, i32 1, i32 1, i32 7, i32 0, i32 7, i32 0, i32 8, i32 3]
-@format = private global [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
+@A = private constant [6 x i32] [i32 3, i32 8, i32 2, i32 0, i32 4, i32 7]
+@B = private constant [12 x i32] [i32 6, i32 5, i32 2, i32 3, i32 1, i32 1, i32 7, i32 0, i32 7, i32 0, i32 8, i32 3]
+@format = private constant [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)

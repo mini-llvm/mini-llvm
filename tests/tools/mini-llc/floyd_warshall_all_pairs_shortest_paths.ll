@@ -1,4 +1,4 @@
-@dist = private global [25 x i32] [
+@dist = private constant [25 x i32] [
   i32 0, i32 3, i32 8, i32 999, i32 -4,
   i32 999, i32 0, i32 999, i32 1, i32 7,
   i32 999, i32 4, i32 0, i32 999, i32 999,
@@ -6,7 +6,7 @@
   i32 999, i32 999, i32 999, i32 6, i32 0
 ]
 
-@format = private global [16 x i8] c"%d %d %d %d %d\0A\00"
+@format = private constant [16 x i8] c"%d %d %d %d %d\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)

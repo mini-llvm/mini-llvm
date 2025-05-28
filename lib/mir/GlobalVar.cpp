@@ -12,7 +12,7 @@ using namespace mini_llvm::mir;
 
 std::string GlobalVar::format() const {
     if (isDeclaration()) {
-        return std::format("undef {:o}", *this);
+        return std::format("undefined {:o}", *this);
     }
     StringJoiner formatted(" ");
     if (linkage() == Linkage::kInternal) {
@@ -20,6 +20,9 @@ std::string GlobalVar::format() const {
     }
     if (linkage() == Linkage::kPrivate) {
         formatted.add("private");
+    }
+    if (isConstant()) {
+        formatted.add("constant");
     }
     formatted.addFormat("{:o} = {}", *this, initializer());
     return formatted.toString();

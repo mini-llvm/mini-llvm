@@ -188,6 +188,7 @@ Token Lexer::nextTokenImpl() {
             {"define", kDefine},
             {"declare", kDeclare},
             {"global", kGlobal},
+            {"constant", kConstant},
             {"private", kPrivate},
             {"internal", kInternal},
             {"external", kExternal},

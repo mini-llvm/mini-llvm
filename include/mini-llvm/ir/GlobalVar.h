@@ -15,11 +15,16 @@ namespace mini_llvm::ir {
 class GlobalVar final : public GlobalValue {
 public:
     GlobalVar(std::unique_ptr<Type> valueType,
+              bool isConstant,
               Linkage linkage,
               std::optional<std::shared_ptr<Constant>> initializer = std::nullopt);
 
     std::unique_ptr<Type> valueType() const {
         return valueType_->clone();
+    }
+
+    bool isConstant() const {
+        return isConstant_;
     }
 
     Linkage linkage() const {
@@ -48,6 +53,7 @@ public:
 
 private:
     std::unique_ptr<Type> valueType_;
+    bool isConstant_;
     Linkage linkage_;
     std::optional<Use<Constant>> initializer_;
 };

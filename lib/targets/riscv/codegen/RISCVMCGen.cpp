@@ -818,6 +818,8 @@ void RISCVMCGen::emit() {
             Section section;
             if (dynamic_cast<const mir::ZeroConstant *>(&G.initializer())) {
                 section = Section::kBSS;
+            } else if (G.isConstant()) {
+                section = Section::kROData;
             } else {
                 section = Section::kData;
             }

@@ -1,5 +1,5 @@
-@a = private global [8 x i32] [i32 5, i32 4, i32 1, i32 3, i32 8, i32 7, i32 6, i32 2]
-@format = private global [4 x i8] c"%d\0A\00"
+@a = private constant [8 x i32] [i32 5, i32 4, i32 1, i32 3, i32 8, i32 7, i32 6, i32 2]
+@format = private constant [4 x i8] c"%d\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)

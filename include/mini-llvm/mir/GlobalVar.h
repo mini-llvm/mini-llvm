@@ -14,8 +14,14 @@ namespace mini_llvm::mir {
 
 class GlobalVar {
 public:
-    GlobalVar(std::string name, Linkage linkage, std::optional<std::unique_ptr<Constant>> initializer = std::nullopt)
-        : name_(std::move(name)), linkage_(linkage), initializer_(std::move(initializer)) {}
+    GlobalVar(std::string name,
+              bool isConstant,
+              Linkage linkage,
+              std::optional<std::unique_ptr<Constant>> initializer = std::nullopt)
+        : name_(std::move(name)),
+          isConstant_(isConstant),
+          linkage_(linkage),
+          initializer_(std::move(initializer)) {}
 
     GlobalVar(const GlobalVar &&) = delete;
     GlobalVar(GlobalVar &&) = delete;
@@ -24,6 +30,10 @@ public:
 
     const std::string &name() const {
         return name_;
+    }
+
+    bool isConstant() const {
+        return isConstant_;
     }
 
     Linkage linkage() const {
@@ -51,6 +61,7 @@ public:
 
 private:
     std::string name_;
+    bool isConstant_;
     Linkage linkage_;
     std::optional<std::unique_ptr<Constant>> initializer_;
 };

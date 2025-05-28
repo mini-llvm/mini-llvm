@@ -252,14 +252,19 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &isDeclaration) {
         ++cursor_;
     }
 
-    if (cursor_->kind != kGlobal) {
-        throw ParseException("expected 'global'", cursor_);
+    bool isConstant;
+    if (cursor_->kind == kGlobal) {
+        isConstant = false;
+    } else if (cursor_->kind == kConstant) {
+        isConstant = true;
+    } else {
+        throw ParseException("expected 'global' or 'constant'", cursor_);
     }
     ++cursor_;
 
     std::unique_ptr<Type> valueType = parseType();
 
-    std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), linkage);
+    std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), isConstant, linkage);
     G->setName(symbol.name);
     symbolTable_.put(symbol, G);
     return G;

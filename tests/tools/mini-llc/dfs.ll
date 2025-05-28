@@ -4,7 +4,7 @@
 @target = global ptr null
 @next = global ptr null
 @visited = global ptr null
-@format = private global [4 x i8] c"%d\0A\00"
+@format = private constant [4 x i8] c"%d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)

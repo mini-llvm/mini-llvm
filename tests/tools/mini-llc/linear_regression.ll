@@ -1,4 +1,4 @@
-@x = private global [10 x double] [
+@x = private constant [10 x double] [
   double 0x3ffe672f7f9ffd14,
   double 0x4006f0a4b41926ec,
   double 0x3fcf8c2266fcb900,
@@ -11,7 +11,7 @@
   double 0xbfc5c1a186cef500
 ]
 
-@y = private global [10 x double] [
+@y = private constant [10 x double] [
   double 0x401311029dfa37df,
   double 0x401ab46e298cc8f8,
   double 0x3ff9f779b05b3bf0,
@@ -24,7 +24,7 @@
   double 0x3fe7a039f0884e0b
 ]
 
-@format = private global [13 x i8] c"%.17g %.17g\0A\00"
+@format = private constant [13 x i8] c"%.17g %.17g\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64)
 declare i32 @printf(ptr, ...)

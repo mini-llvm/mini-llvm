@@ -1,4 +1,4 @@
-@A = private global [12 x double] [
+@A = private constant [12 x double] [
   double 0x4000000000000000,
   double 0x3ff0000000000000,
   double 0xbff0000000000000,
@@ -12,7 +12,7 @@
   double 0x4000000000000000,
   double 0xc008000000000000
 ]
-@format = private global [19 x i8] c"%.17g %.17g %.17g\0A\00"
+@format = private constant [19 x i8] c"%.17g %.17g %.17g\0A\00"
 
 declare double @fabs(double)
 declare ptr @memcpy(ptr, ptr, i64)

@@ -10,7 +10,7 @@
 @scc_cnt = global i32 0
 @stack = global ptr null
 @top = global i32 0
-@format = private global [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
+@format = private constant [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
 declare ptr @malloc(i64)
 declare void @free(ptr)

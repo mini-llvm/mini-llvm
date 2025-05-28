@@ -1,5 +1,5 @@
 @counter = global i32 0
-@format = private global [4 x i8] c"%d\0A\00"
+@format = private constant [4 x i8] c"%d\0A\00"
 
 declare i32 @printf(ptr, ...)
 
