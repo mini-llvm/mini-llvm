@@ -113,6 +113,11 @@ bool checkOperands(const Instruction &I) {
         if (*gep->sourceType() == Void() || *gep->sourceType() == BasicBlockType()) {
             return false;
         }
+        for (const UseBase &idx : indices(*gep)) {
+            if (*idx->type() == Ptr()) {
+                return false;
+            }
+        }
         return true;
     }
     return true;
