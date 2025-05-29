@@ -16,7 +16,6 @@
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
-#include "mini-llvm/utils/Colors.h"
 #include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
@@ -27,8 +26,6 @@
 #endif
 
 using namespace mini_llvm;
-
-using enum Color;
 
 namespace {
 
@@ -46,8 +43,6 @@ std::optional<Target> toTarget(std::string_view targetName) {
 } // namespace
 
 int mainImpl(std::vector<std::string> args) {
-    bool showColor = supportsColor(stderr);
-
     CommandLineParser parser;
 
     parser.addOption("--help");
@@ -60,15 +55,15 @@ int mainImpl(std::vector<std::string> args) {
         using enum CommandLineParser::ErrorKind;
         switch (result.error().kind()) {
         case kMissingValue:
-            print(stderr, showColor, "{}: {}error: {}missing value to '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
+            std::print(stderr, "{}: error: missing value to '{}'\n", args[0], result.error().optionName());
             break;
 
         case kUnexpectedValue:
-            print(stderr, showColor, "{}: {}error: {}unexpected value to '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
+            std::print(stderr, "{}: error: unexpected value to '{}'\n", args[0], result.error().optionName());
             break;
 
         case kUnrecognizedOption:
-            print(stderr, showColor, "{}: {}error: {}unrecognized option '{}'\n", args[0], kBold + kRed, kReset, result.error().optionName());
+            std::print(stderr, "{}: error: unrecognized option '{}'\n", args[0], result.error().optionName());
             break;
         }
         return 1;
@@ -89,7 +84,7 @@ int mainImpl(std::vector<std::string> args) {
             if (option->name() == "--target") {
                 target = toTarget(*option->value());
                 if (!target) {
-                    print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, *option->value());
+                    std::print(stderr, "{}: error: unsupported target '{}'\n", args[0], *option->value());
                     return 1;
                 }
                 continue;
@@ -148,7 +143,7 @@ int mainImpl(std::vector<std::string> args) {
 #endif
         target = toTarget(targetName);
         if (!target) {
-            print(stderr, showColor, "{}: {}error: {}unsupported target '{}'\n", args[0], kBold + kRed, kReset, targetName);
+            std::print(stderr, "{}: error: unsupported target '{}'\n", args[0], targetName);
             return 1;
         }
     }
@@ -160,7 +155,7 @@ int mainImpl(std::vector<std::string> args) {
         source = readAll(*inputFile);
     }
     if (!source) {
-        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *inputFile, strerror(source.error()));
+        std::print(stderr, "{}: error: {}: {}\n", args[0], *inputFile, strerror(source.error()));
         return 1;
     }
     if (!source->empty() && source->back() != '\n') {
@@ -176,22 +171,10 @@ int mainImpl(std::vector<std::string> args) {
     }
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
-        print(stderr, showColor, "{}:{}:{}: ", *inputFile, line + 1, column + 1);
-        switch (diag.level) {
-        case Diagnostic::Level::kNote:
-            print(stderr, showColor, "{}note: {}", kBold + kCyan, kReset);
-            break;
-        case Diagnostic::Level::kWarning:
-            print(stderr, showColor, "{}warning: {}", kBold + kMagenta, kReset);
-            break;
-        case Diagnostic::Level::kError:
-            print(stderr, showColor, "{}error: {}", kBold + kRed, kReset);
-            break;
-        }
-        print(stderr, showColor, "{}\n", diag.message);
+        std::print(stderr, "{}:{}:{}: {}: {}\n", *inputFile, line + 1, column + 1, name(diag.level), diag.message);
         if (line < sourceManager.lineCount()) {
-            print(stderr, showColor, "{}", sourceManager.line(line));
-            print(stderr, showColor, "{}{}^{}\n", std::string(column, ' '), kBold + kGreen, kReset);
+            std::print(stderr, "{}", sourceManager.line(line));
+            std::print(stderr, "{}^\n", std::string(column, ' '));
         }
     }
     if (!IM) {
@@ -199,7 +182,7 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (!ir::verifyModule(*IM)) {
-        print(stderr, showColor, "{}: {}error: {}invalid module\n", args[0], kBold + kRed, kReset);
+        std::print(stderr, "{}: error: invalid module\n", args[0]);
         return 1;
     }
 
@@ -223,7 +206,7 @@ int mainImpl(std::vector<std::string> args) {
             result = writeAll(*irDumpFile, output.data(), output.size());
         }
         if (!result) {
-            print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *irDumpFile, strerror(result.error()));
+            std::print(stderr, "{}: error: {}: {}\n", args[0], *irDumpFile, strerror(result.error()));
             return 1;
         }
     }
@@ -248,7 +231,7 @@ int mainImpl(std::vector<std::string> args) {
             result = writeAll(*mirDumpFile, output.data(), output.size());
         }
         if (!result) {
-            print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *mirDumpFile, strerror(result.error()));
+            std::print(stderr, "{}: error: {}: {}\n", args[0], *mirDumpFile, strerror(result.error()));
             return 1;
         }
     }
@@ -261,7 +244,7 @@ int mainImpl(std::vector<std::string> args) {
         result = writeAll(*outputFile, output.data(), output.size());
     }
     if (!result) {
-        print(stderr, showColor, "{}: {}error: {}{}: {}\n", args[0], kBold + kRed, kReset, *outputFile, strerror(result.error()));
+        std::print(stderr, "{}: error: {}: {}\n", args[0], *outputFile, strerror(result.error()));
         return 1;
     }
 
