@@ -136,20 +136,20 @@ public:
         return incoming_iterator(incomings_.end());
     }
 
-    bool incoming_empty() const {
-        return incomings_.empty();
-    }
-
-    size_t incoming_size() const {
-        return incomings_.size();
-    }
-
     const_incoming_iterator incoming_begin() const {
         return const_incoming_iterator(incomings_.begin());
     }
 
     const_incoming_iterator incoming_end() const {
         return const_incoming_iterator(incomings_.end());
+    }
+
+    bool incoming_empty() const {
+        return incomings_.empty();
+    }
+
+    size_t incoming_size() const {
+        return incomings_.size();
     }
 
     incoming_iterator findIncoming(const BasicBlock &B);
