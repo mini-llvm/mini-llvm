@@ -25,7 +25,7 @@ bool JumpThreading::runOnFunction(Function &F) {
                             if (!successors(*pred).contains(succ)) {
                                 for (Instruction &I : *succ) {
                                     if (auto *phi = dynamic_cast<Phi *>(&I)) {
-                                        phi->putIncoming(*pred, share(*getIncomingValue(*phi, B)));
+                                        phi->addIncoming(*pred, share(*getIncomingValue(*phi, B)));
                                         changed2 = true;
                                     }
                                 }

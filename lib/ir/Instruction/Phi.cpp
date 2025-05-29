@@ -28,14 +28,10 @@ Phi::const_incoming_iterator Phi::findIncoming(const BasicBlock &B) const {
     });
 }
 
-void Phi::putIncoming(const BasicBlock &B, std::shared_ptr<Value> value) {
+void Phi::addIncoming(const BasicBlock &B, std::shared_ptr<Value> value) {
     assert(*value->type() == *type());
-    if (auto i = findIncoming(B); i != incoming_end()) {
-        i->value.set(std::move(value));
-    } else {
-        incomings_.emplace_back(std::make_unique<Use<BasicBlock>>(this, weaken(const_cast<BasicBlock &>(B))),
-                                std::make_unique<Use<Value>>(this, std::move(value)));
-    }
+    incomings_.emplace_back(std::make_unique<Use<BasicBlock>>(this, weaken(const_cast<BasicBlock &>(B))),
+                            std::make_unique<Use<Value>>(this, std::move(value)));
 }
 
 void Phi::removeIncoming(Phi::const_incoming_iterator i) {
@@ -67,7 +63,7 @@ std::string Phi::format() const {
 std::unique_ptr<Value> Phi::clone() const {
     std::unique_ptr<Phi> cloned = std::make_unique<Phi>(type());
     for (ConstIncoming incoming : incomings(*this)) {
-        cloned->putIncoming(*incoming.block, share(*incoming.value));
+        cloned->addIncoming(*incoming.block, share(*incoming.value));
     }
     return cloned;
 }

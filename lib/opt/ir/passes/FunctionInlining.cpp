@@ -71,7 +71,7 @@ BasicBlock *splitBefore(BasicBlock::const_iterator i) {
                 if (auto j = phi->findIncoming(*B); j != phi->incoming_end()) {
                     std::shared_ptr<Value> value = share(*j->value);
                     phi->removeIncoming(j);
-                    phi->putIncoming(*B2, std::move(value));
+                    phi->addIncoming(*B2, std::move(value));
                 }
             }
         }
@@ -149,7 +149,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
                             if (auto j = valueMap.find(value); j != valueMap.end()) {
                                 value = j->second;
                             }
-                            static_cast<Phi *>(&B2->front())->putIncoming(*caller_B, share(*value));
+                            static_cast<Phi *>(&B2->front())->addIncoming(*caller_B, share(*value));
                         }
                     }
 

@@ -966,7 +966,7 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
                         throw ParseException("duplicate incoming block", blockLocation);
                     }
 
-                    phi.putIncoming(*block, value);
+                    phi.addIncoming(*block, value);
                 };
 
                 parseIncoming(*phi);

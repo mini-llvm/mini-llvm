@@ -96,9 +96,9 @@ private:
                         const Alloca *v = phis_[phi];
                         const Value *value = defs_[v];
                         if (value != nullptr) {
-                            phi->putIncoming(*node->block, share(*const_cast<Value *>(value)));
+                            phi->addIncoming(*node->block, share(*const_cast<Value *>(value)));
                         } else {
-                            phi->putIncoming(*node->block, std::make_shared<PoisonValue>(v->allocatedType()));
+                            phi->addIncoming(*node->block, std::make_shared<PoisonValue>(v->allocatedType()));
                         }
                     }
                 }
