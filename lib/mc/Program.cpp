@@ -24,25 +24,25 @@ std::string Program::format() const {
     if (!data.empty()) {
         formatted.add("  .data");
         for (const Fragment *fragment : data) {
-            formatted.addFormat("{}", *fragment);
+            formatted.add("{}", *fragment);
         }
     }
     if (!rodata.empty()) {
         formatted.add("  .section .rodata");
         for (const Fragment *fragment : rodata) {
-            formatted.addFormat("{}", *fragment);
+            formatted.add("{}", *fragment);
         }
     }
     if (!bss.empty()) {
         formatted.add("  .bss");
         for (const Fragment *fragment : bss) {
-            formatted.addFormat("{}", *fragment);
+            formatted.add("{}", *fragment);
         }
     }
     if (!text.empty()) {
         formatted.add("  .text");
         for (const Fragment *fragment : text) {
-            formatted.addFormat("{}", *fragment);
+            formatted.add("{}", *fragment);
         }
     }
     return formatted.toString();

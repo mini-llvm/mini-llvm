@@ -12,18 +12,18 @@ using namespace mini_llvm::mc;
 std::string Fragment::format() const {
     StringJoiner formatted("\n");
     if (isGlobal()) {
-        formatted.addFormat("  .globl {}", name());
+        formatted.add("  .globl {}", name());
     }
-    formatted.addFormat("{}:", name());
+    formatted.add("{}:", name());
     for (const Line &line : *this) {
         if (dynamic_cast<const Instruction *>(&line)) {
-            formatted.addFormat("  {}", line);
+            formatted.add("  {}", line);
         }
         if (dynamic_cast<const Directive *>(&line)) {
-            formatted.addFormat("  {}", line);
+            formatted.add("  {}", line);
         }
         if (dynamic_cast<const Label *>(&line)) {
-            formatted.addFormat("{}", line);
+            formatted.add("{}", line);
         }
     }
     return formatted.toString();

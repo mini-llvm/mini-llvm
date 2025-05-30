@@ -10,7 +10,7 @@ using namespace mini_llvm::mir;
 std::string I64ArrayConstant::format() const {
     StringJoiner formatted("\n", "i64 [\n", "\n]");
     for (int64_t element : elements()) {
-        formatted.addFormat("  {}", element);
+        formatted.add("  {}", element);
     }
     return formatted.toString();
 }

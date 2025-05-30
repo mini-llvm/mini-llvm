@@ -49,13 +49,13 @@ std::unordered_set<const UseBase *> Phi::operands() const {
 
 std::string Phi::format() const {
     StringJoiner formatted(" ");
-    formatted.addFormat("{:o} = phi {}", *this, *type());
+    formatted.add("{:o} = phi {}", *this, *type());
     if (!incoming_empty()) {
         StringJoiner formattedIncomings(", ");
         for (ConstIncoming incoming : incomings(*this)) {
-            formattedIncomings.addFormat("[ {:o}, {:o} ]", *incoming.value, *incoming.block);
+            formattedIncomings.add("[ {:o}, {:o} ]", *incoming.value, *incoming.block);
         }
-        formatted.addFormat("{}", formattedIncomings);
+        formatted.add("{}", formattedIncomings);
     }
     return formatted.toString();
 }

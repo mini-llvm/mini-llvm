@@ -40,9 +40,9 @@ std::string formatAsString(const ArrayConstant &C) {
         if (value == static_cast<int8_t>('\\')) {
             formatted.add("\\\\");
         } else if (0x20 <= value && value <= 0x7e) {
-            formatted.addFormat("{:c}", value);
+            formatted.add("{:c}", value);
         } else {
-            formatted.addFormat("\\{:02X}", value);
+            formatted.add("\\{:02X}", value);
         }
     }
     return formatted.toString();
@@ -51,7 +51,7 @@ std::string formatAsString(const ArrayConstant &C) {
 std::string formatAsArray(const ArrayConstant &C) {
     StringJoiner formatted(", ", "[", "]");
     for (const Use<Constant> &element : elements(C)) {
-        formatted.addFormat("{} {}", *element->type(), *element);
+        formatted.add("{} {}", *element->type(), *element);
     }
     return formatted.toString();
 }

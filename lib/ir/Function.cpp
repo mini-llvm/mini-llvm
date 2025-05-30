@@ -86,24 +86,24 @@ std::string Function::format() const {
     StringJoiner formattedArgs(", ", "(", ")");
     for (const Argument &arg : args(*this)) {
         if (isDeclaration()) {
-            formattedArgs.addFormat("{}", *arg.type());
+            formattedArgs.add("{}", *arg.type());
         } else {
-            formattedArgs.addFormat("{} {:o}", *arg.type(), arg);
+            formattedArgs.add("{} {:o}", *arg.type(), arg);
         }
     }
     if (functionType()->isVarArgs()) {
         formattedArgs.add("...");
     }
-    formatted.addFormat("{} {:o}{}", *functionType()->returnType(), *this, formattedArgs);
+    formatted.add("{} {:o}{}", *functionType()->returnType(), *this, formattedArgs);
     for (Attribute attr : attrs(*this)) {
         formatted.add(specifier(attr));
     }
     if (!isDeclaration()) {
         StringJoiner formattedBody("\n\n", "{\n", "\n}");
         for (const BasicBlock &B : *this) {
-            formattedBody.addFormat("{}", B);
+            formattedBody.add("{}", B);
         }
-        formatted.addFormat("{}", formattedBody);
+        formatted.add("{}", formattedBody);
     }
     return formatted.toString();
 }

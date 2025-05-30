@@ -13,9 +13,9 @@ std::string Instruction::format() const {
     if (!operand_empty()) {
         StringJoiner formattedOperands(", ");
         for (const Operand &operand : operands(*this)) {
-            formattedOperands.addFormat("{}", operand);
+            formattedOperands.add("{}", operand);
         }
-        formatted.addFormat("{}", formattedOperands);
+        formatted.add("{}", formattedOperands);
     }
     return formatted.toString();
 }

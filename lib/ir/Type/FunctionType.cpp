@@ -14,15 +14,15 @@ using namespace mini_llvm::ir;
 
 std::string FunctionType::format() const {
     StringJoiner formatted(" ");
-    formatted.addFormat("{}", *returnType());
+    formatted.add("{}", *returnType());
     StringJoiner formattedParamTypes(", ", "(", ")");
     for (const Type &paramType : paramTypes(*this)) {
-        formattedParamTypes.addFormat("{}", paramType);
+        formattedParamTypes.add("{}", paramType);
     }
     if (isVarArgs()) {
         formatted.add("...");
     }
-    formatted.addFormat("{}", formattedParamTypes);
+    formatted.add("{}", formattedParamTypes);
     return formatted.toString();
 }
 

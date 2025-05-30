@@ -36,15 +36,15 @@ std::unordered_set<const UseBase *> Call::operands() const {
 std::string Call::format() const {
     StringJoiner formattedArgs(", ");
     for (const Use<Value> &arg : args(*this)) {
-        formattedArgs.addFormat("{} {:o}", *arg->type(), *arg);
+        formattedArgs.add("{} {:o}", *arg->type(), *arg);
     }
     StringJoiner formatted(" ");
     if (*type() != Void()) {
-        formatted.addFormat("{:o} =", *this);
+        formatted.add("{:o} =", *this);
     }
     formatted.add("call");
-    formatted.addFormat("{}", *type());
-    formatted.addFormat("{:o}({})", *callee(), formattedArgs);
+    formatted.add("{}", *type());
+    formatted.add("{:o}({})", *callee(), formattedArgs);
     return formatted.toString();
 }
 

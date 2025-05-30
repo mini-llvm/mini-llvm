@@ -39,7 +39,7 @@ void GlobalVar::setInitializer(std::optional<std::shared_ptr<Constant>> initiali
 
 std::string GlobalVar::format() const {
     StringJoiner formatted(" ");
-    formatted.addFormat("{} =", formatAsOperand());
+    formatted.add("{} =", formatAsOperand());
     if (linkage() == Linkage::kInternal) {
         formatted.add("internal");
     } else if (linkage() == Linkage::kPrivate) {
@@ -53,9 +53,9 @@ std::string GlobalVar::format() const {
     } else {
         formatted.add("global");
     }
-    formatted.addFormat("{}", *valueType());
+    formatted.add("{}", *valueType());
     if (!isDeclaration()) {
-        formatted.addFormat("{:o}", initializer());
+        formatted.add("{:o}", initializer());
     }
     return formatted.toString();
 }

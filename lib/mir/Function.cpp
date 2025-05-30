@@ -34,10 +34,10 @@ std::string Function::format() const {
     if (linkage() == Linkage::kPrivate) {
         formattedHeader.add("private");
     }
-    formattedHeader.addFormat("{:o}:", *this);
+    formattedHeader.add("{:o}:", *this);
     StringJoiner formattedBody("\n\n");
     for (const BasicBlock &B : *this) {
-        formattedBody.addFormat("{}", B);
+        formattedBody.add("{}", B);
     }
     return std::format("{}\n{}", formattedHeader, formattedBody);
 }

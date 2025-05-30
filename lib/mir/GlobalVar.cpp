@@ -24,7 +24,7 @@ std::string GlobalVar::format() const {
     if (isConstant()) {
         formatted.add("constant");
     }
-    formatted.addFormat("{:o} = {}", *this, initializer());
+    formatted.add("{:o} = {}", *this, initializer());
     return formatted.toString();
 }
 

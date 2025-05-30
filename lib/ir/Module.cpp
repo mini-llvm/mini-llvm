@@ -37,10 +37,10 @@ void Module::clearFunctions() {
 std::string Module::format() const {
     StringJoiner formatted("\n\n");
     for (const GlobalVar &G : globalVars(*this)) {
-        formatted.addFormat("{}", G);
+        formatted.add("{}", G);
     }
     for (const Function &F : functions(*this)) {
-        formatted.addFormat("{}", F);
+        formatted.add("{}", F);
     }
     return formatted.toString();
 }

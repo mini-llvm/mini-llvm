@@ -37,7 +37,7 @@ std::unordered_set<const UseBase *> GetElementPtr::operands() const {
 std::string GetElementPtr::format() const {
     StringJoiner formattedIndices(", ");
     for (const Use<Value, IntegerType> &idx : indices(*this)) {
-        formattedIndices.addFormat("{} {:o}", *idx->type(), *idx);
+        formattedIndices.add("{} {:o}", *idx->type(), *idx);
     }
     return std::format(
         "{:o} = getelementptr {}, {} {:o}, {}",

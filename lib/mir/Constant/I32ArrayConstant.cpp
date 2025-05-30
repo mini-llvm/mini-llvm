@@ -10,7 +10,7 @@ using namespace mini_llvm::mir;
 std::string I32ArrayConstant::format() const {
     StringJoiner formatted("\n", "i32 [\n", "\n]");
     for (int32_t element : elements()) {
-        formatted.addFormat("  {}", element);
+        formatted.add("  {}", element);
     }
     return formatted.toString();
 }

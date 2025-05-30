@@ -40,7 +40,7 @@ std::string BasicBlock::format() const {
     StringJoiner formatted("\n");
     formatted.add(formatAsLabel());
     for (const Instruction &I : *this) {
-        formatted.addFormat("  {}", I);
+        formatted.add("  {}", I);
     }
     return formatted.toString();
 }
