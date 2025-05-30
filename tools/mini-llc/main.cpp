@@ -40,8 +40,6 @@ std::optional<Target> toTarget(std::string_view targetName) {
     return std::nullopt;
 }
 
-} // namespace
-
 int mainImpl(std::vector<std::string> args) {
     CommandLineParser parser;
 
@@ -250,6 +248,8 @@ int mainImpl(std::vector<std::string> args) {
 
     return 0;
 }
+
+} // namespace
 
 #ifdef _WIN32
 
