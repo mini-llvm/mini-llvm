@@ -40,5 +40,5 @@ TEST_F(GetElementPtrTest, clone) {
     EXPECT_EQ(*cloned->type(), *getelememtptr_->type());
     EXPECT_EQ(&*cloned->ptr(), &*getelememtptr_->ptr());
     EXPECT_EQ(cloned->idx_size(), getelememtptr_->idx_size());
-    EXPECT_EQ(&*cloned->idx_begin()[0], &*getelememtptr_->idx_begin()[0]);
+    EXPECT_EQ(&*cloned->idx(0), &*getelememtptr_->idx(0));
 }

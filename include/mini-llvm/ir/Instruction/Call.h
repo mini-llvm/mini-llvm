@@ -59,6 +59,14 @@ public:
         return args_.size();
     }
 
+    Use<Value> &arg(size_t i) {
+        return *args_[i];
+    }
+
+    const Use<Value> &arg(size_t i) const {
+        return *args_[i];
+    }
+
     void addArg(const_arg_iterator pos, std::unique_ptr<Value> arg) {
         args_.insert(pos.base(), std::make_unique<Use<Value>>(this, std::move(arg)));
     }

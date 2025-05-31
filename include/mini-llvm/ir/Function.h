@@ -70,6 +70,14 @@ public:
         return args_.size();
     }
 
+    Argument &arg(size_t i) {
+        return *args_[i];
+    }
+
+    const Argument &arg(size_t i) const {
+        return *args_[i];
+    }
+
     attr_iterator attr_begin() const {
         return attrs_.begin();
     }
@@ -84,6 +92,10 @@ public:
 
     size_t attr_size() const {
         return attrs_.size();
+    }
+
+    Attribute attr(size_t i) const {
+        return attrs_[i];
     }
 
     bool hasAttr(Attribute attr) const {

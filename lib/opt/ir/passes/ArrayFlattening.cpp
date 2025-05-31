@@ -40,7 +40,7 @@ bool ArrayFlattening::runOnFunction(Function &F) {
                     std::vector<std::shared_ptr<Value>> terms;
                     for (size_t j = 0; j < n; ++j) {
                         std::shared_ptr<Instruction> mul = std::make_shared<Mul>(
-                            share(*gep->idx_begin()[j]), gep->idx_begin()[j]->type()->constant(sizes[j])
+                            share(*gep->idx(j)), gep->idx(j)->type()->constant(sizes[j])
                         );
                         addToParent(*gep, mul);
                         terms.push_back(mul);

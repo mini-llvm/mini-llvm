@@ -53,6 +53,14 @@ public:
         return operands_.size();
     }
 
+    Operand &operand(size_t i) {
+        return *operands_[i];
+    }
+
+    const Operand &operand(size_t i) const {
+        return *operands_[i];
+    }
+
     void setOperands(std::vector<std::unique_ptr<Operand>> operands) {
         operands_ = std::move(operands);
     }

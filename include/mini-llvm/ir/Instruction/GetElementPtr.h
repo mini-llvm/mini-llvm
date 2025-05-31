@@ -60,6 +60,14 @@ public:
         return indices_.size();
     }
 
+    Use<Value, IntegerType> &idx(size_t i) {
+        return *indices_[i];
+    }
+
+    const Use<Value, IntegerType> &idx(size_t i) const {
+        return *indices_[i];
+    }
+
     std::unordered_set<const UseBase *> operands() const override;
 
     void accept(InstructionVisitor &visitor) override {

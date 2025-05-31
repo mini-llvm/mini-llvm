@@ -49,6 +49,14 @@ public:
         return elements_.size();
     }
 
+    Use<Constant> &element(size_t i) {
+        return *elements_[i];
+    }
+
+    const Use<Constant> &element(size_t i) const {
+        return *elements_[i];
+    }
+
     void accept(ConstantVisitor &visitor) override {
         visitor.visitArrayConstant(*this);
     }
