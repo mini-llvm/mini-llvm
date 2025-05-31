@@ -51,7 +51,7 @@ std::string formatAsString(const ArrayConstant &C) {
 std::string formatAsArray(const ArrayConstant &C) {
     StringJoiner formatted(", ", "[", "]");
     for (const Use<Constant> &element : elements(C)) {
-        formatted.add("{} {}", *element->type(), *element);
+        formatted.add("{} {:o}", *element->type(), *element);
     }
     return formatted.toString();
 }
