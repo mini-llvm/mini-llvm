@@ -129,7 +129,46 @@ TEST(IRReaderTest, ElementTypeLabel) {
 
 TEST(IRReaderTest, GlobalVarUseBeforeDeclaration) {
     const char *input = R"(
-define i32 @test1() {
+@test1 = global ptr @test2
+@test2 = global i32 42
+)";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
+TEST(IRReaderTest, GlobalVarSelfReference) {
+    const char *input = "@test = global ptr @test";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
+TEST(IRReaderTest, GlobalVarSelfReferenceArrayConstant) {
+    const char *input = "@test = global [2 x ptr] [ptr @test, ptr @test]";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
+TEST(IRReaderTest, GlobalVarCircularReference) {
+    const char *input = R"(
+@test1 = global ptr @test2
+@test2 = global ptr @test1
+)";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
+TEST(IRReaderTest, GlobalVarCircularReferenceArrayConstant) {
+    const char *input = R"(
+@test1 = global [2 x ptr] [ptr @test2, ptr @test2]
+@test2 = global [2 x ptr] [ptr @test1, ptr @test1]
+)";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
+TEST(IRReaderTest, LocalIdentifierUseBeforeDeclaration) {
+    const char *input = R"(
+define i32 @test() {
 0:
     br label %2
 
@@ -137,12 +176,9 @@ define i32 @test1() {
     ret i32 %3
 
 2:
-    %3 = load i32, ptr @test2
+    %3 = load i32, ptr @test
     br label %1
 }
-
-@test2 = global ptr @test3
-@test3 = global i32 42
 )";
 
     EXPECT_TRUE(parseModule(input));

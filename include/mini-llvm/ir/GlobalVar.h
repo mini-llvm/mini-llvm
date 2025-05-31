@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cassert>
 #include <memory>
 #include <optional>
+#include <typeinfo>
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Constant.h"
@@ -15,20 +17,20 @@ namespace mini_llvm::ir {
 class GlobalVar final : public GlobalValue {
 public:
     GlobalVar(std::unique_ptr<Type> valueType,
-              bool isConstant,
               Linkage linkage,
+              bool isConstant,
               std::optional<std::shared_ptr<Constant>> initializer = std::nullopt);
 
     std::unique_ptr<Type> valueType() const {
         return valueType_->clone();
     }
 
-    bool isConstant() const {
-        return isConstant_;
-    }
-
     Linkage linkage() const {
         return linkage_;
+    }
+
+    bool isConstant() const {
+        return isConstant_;
     }
 
     Constant &initializer() const {
@@ -51,10 +53,16 @@ public:
 
     std::string format() const override;
 
+protected:
+    bool equals(const Constant &other) const override {
+        assert(typeid(*this) != typeid(other));
+        return false;
+    }
+
 private:
     std::unique_ptr<Type> valueType_;
-    bool isConstant_;
     Linkage linkage_;
+    bool isConstant_;
     std::optional<Use<Constant>> initializer_;
 };
 

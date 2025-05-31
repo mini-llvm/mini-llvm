@@ -50,7 +50,10 @@ add_library(mini-llvm
     mir/Constant/I32ArrayConstant.cpp
     mir/Constant/I64ArrayConstant.cpp
     mir/Constant/I8ArrayConstant.cpp
+    mir/Constant/PtrArrayConstant.cpp
+    mir/Constant/PtrConstant.cpp
     mir/Function.cpp
+    mir/GlobalValue.cpp
     mir/GlobalVar.cpp
     mir/Instruction.cpp
     mir/Instruction/Terminator.cpp

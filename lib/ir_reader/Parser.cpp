@@ -264,7 +264,7 @@ std::shared_ptr<GlobalVar> Parser::parseGlobalVarHeader(bool &isDeclaration) {
 
     std::unique_ptr<Type> valueType = parseType();
 
-    std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), isConstant, linkage);
+    std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), linkage, isConstant);
     G->setName(symbol.name);
     symbolTable_.put(symbol, G);
     return G;
@@ -1129,10 +1129,10 @@ std::shared_ptr<Instruction> Parser::parseInstruction() {
 
 std::shared_ptr<Value> Parser::parseValue(const Type &type) {
     switch (current_->kind) {
-        case kAt:
         case kPercent:
             return parseIdentifier(type);
 
+        case kAt:
         case kNumber:
         case kTrue:
         case kFalse:
@@ -1169,7 +1169,7 @@ std::shared_ptr<Value> Parser::parseIdentifier(const Type &type) {
     return undefined;
 }
 
-std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
+std::shared_ptr<Constant> Parser::parseConstant(const Type &type) {
     if (type == I1()) {
         switch (current_->kind) {
             case kTrue: ++current_; return std::make_unique<I1Constant>(true);
@@ -1276,6 +1276,9 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
     }
     if (type == Ptr()) {
         switch (current_->kind) {
+            case kAt: {
+                return cast<Constant>(parseIdentifier(type));
+            }
             case kNull: {
                 ++current_;
                 return std::make_unique<NullPtrConstant>();
@@ -1285,7 +1288,7 @@ std::unique_ptr<Constant> Parser::parseConstant(const Type &type) {
                 return std::make_unique<PoisonValue>(std::make_unique<Ptr>());
             }
             default: {
-                throw ParseException("expected 'null' or 'poison'", current_);
+                throw ParseException("expected '@', 'null' or 'poison'", current_);
             }
         }
     }

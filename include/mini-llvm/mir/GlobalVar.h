@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cassert>
-#include <format>
 #include <memory>
 #include <optional>
 #include <string>
@@ -9,18 +8,19 @@
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/mir/Constant.h"
+#include "mini-llvm/mir/GlobalValue.h"
 
 namespace mini_llvm::mir {
 
-class GlobalVar {
+class GlobalVar final : public GlobalValue {
 public:
     GlobalVar(std::string name,
-              bool isConstant,
               Linkage linkage,
+              bool isConstant,
               std::optional<std::unique_ptr<Constant>> initializer = std::nullopt)
         : name_(std::move(name)),
-          isConstant_(isConstant),
           linkage_(linkage),
+          isConstant_(isConstant),
           initializer_(std::move(initializer)) {}
 
     GlobalVar(const GlobalVar &&) = delete;
@@ -28,16 +28,16 @@ public:
     GlobalVar &operator=(const GlobalVar &&) = delete;
     GlobalVar &operator=(GlobalVar &&) = delete;
 
-    const std::string &name() const {
+    std::string name() const override {
         return name_;
+    }
+
+    Linkage linkage() const override {
+        return linkage_;
     }
 
     bool isConstant() const {
         return isConstant_;
-    }
-
-    Linkage linkage() const {
-        return linkage_;
     }
 
     bool isDeclaration() const {
@@ -56,36 +56,13 @@ public:
         initializer_ = std::move(data);
     }
 
-    std::string format() const;
-    std::string formatAsOperand() const;
+    std::string format() const override;
 
 private:
     std::string name_;
-    bool isConstant_;
     Linkage linkage_;
+    bool isConstant_;
     std::optional<std::unique_ptr<Constant>> initializer_;
 };
 
 } // namespace mini_llvm::mir
-
-template <>
-struct std::formatter<mini_llvm::mir::GlobalVar> {
-    constexpr auto parse(std::format_parse_context &ctx) {
-        if (*ctx.begin() == 'o') {
-            asOperand_ = true;
-            return std::next(ctx.begin());
-        }
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto format(const mini_llvm::mir::GlobalVar &G, FormatContext &ctx) const {
-        if (asOperand_) {
-            return std::format_to(ctx.out(), "{}", G.formatAsOperand());
-        }
-        return std::format_to(ctx.out(), "{}", G.format());
-    }
-
-private:
-    bool asOperand_ = false;
-};

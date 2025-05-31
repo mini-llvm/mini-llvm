@@ -13,12 +13,12 @@
 using namespace mini_llvm::ir;
 
 GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
-                     bool isConstant,
                      Linkage linkage,
+                     bool isConstant,
                      std::optional<std::shared_ptr<Constant>> initializer)
         : valueType_(std::move(valueType)),
-          isConstant_(isConstant),
-          linkage_(linkage) {
+          linkage_(linkage),
+          isConstant_(isConstant) {
     if (initializer) {
         assert(*(*initializer_)->type() == *valueType_);
         initializer_.emplace(this, std::move(*initializer));

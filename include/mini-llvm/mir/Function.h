@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstddef>
-#include <format>
 #include <iterator>
 #include <list>
 #include <memory>
@@ -11,12 +10,13 @@
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/GlobalValue.h"
 #include "mini-llvm/mir/StackFrame.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mir {
 
-class Function {
+class Function final : public GlobalValue {
     using BasicBlockList = std::list<std::unique_ptr<BasicBlock>>;
 
 public:
@@ -32,11 +32,11 @@ public:
     Function &operator=(const Function &&) = delete;
     Function &operator=(Function &&) = delete;
 
-    const std::string &name() const {
+    std::string name() const override {
         return name_;
     }
 
-    Linkage linkage() const {
+    Linkage linkage() const override {
         return linkage_;
     }
 
@@ -154,8 +154,7 @@ public:
         return stackFrame_;
     }
 
-    std::string format() const;
-    std::string formatAsOperand() const;
+    std::string format() const override;
 
 private:
     std::string name_;
@@ -165,25 +164,3 @@ private:
 };
 
 } // namespace mini_llvm::mir
-
-template <>
-struct std::formatter<mini_llvm::mir::Function> {
-    constexpr auto parse(std::format_parse_context &ctx) {
-        if (*ctx.begin() == 'o') {
-            asOperand_ = true;
-            return std::next(ctx.begin());
-        }
-        return ctx.begin();
-    }
-
-    template <typename FormatContext>
-    auto format(const mini_llvm::mir::Function &F, FormatContext &ctx) const {
-        if (asOperand_) {
-            return std::format_to(ctx.out(), "{}", F.formatAsOperand());
-        }
-        return std::format_to(ctx.out(), "{}", F.format());
-    }
-
-private:
-    bool asOperand_ = false;
-};

@@ -3,6 +3,7 @@
 set -e
 
 tests=(
+    globals
     self_loop
     irreducible_cfg
     self_referential

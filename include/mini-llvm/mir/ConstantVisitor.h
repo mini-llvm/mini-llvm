@@ -13,6 +13,7 @@ class I64ArrayConstant;
 class I64Constant;
 class I8ArrayConstant;
 class I8Constant;
+class PtrArrayConstant;
 class PtrConstant;
 class ZeroConstant;
 
@@ -28,6 +29,7 @@ public:
     virtual void visitI64Constant(I64Constant &C) { visitI64Constant(std::as_const(C)); }
     virtual void visitI8ArrayConstant(I8ArrayConstant &C) { visitI8ArrayConstant(std::as_const(C)); }
     virtual void visitI8Constant(I8Constant &C) { visitI8Constant(std::as_const(C)); }
+    virtual void visitPtrArrayConstant(PtrArrayConstant &C) { visitPtrArrayConstant(std::as_const(C)); }
     virtual void visitPtrConstant(PtrConstant &C) { visitPtrConstant(std::as_const(C)); }
     virtual void visitZeroConstant(ZeroConstant &C) { visitZeroConstant(std::as_const(C)); }
 
@@ -39,6 +41,7 @@ public:
     virtual void visitI64Constant(const I64Constant &) { abort(); }
     virtual void visitI8ArrayConstant(const I8ArrayConstant &) { abort(); }
     virtual void visitI8Constant(const I8Constant &) { abort(); }
+    virtual void visitPtrArrayConstant(const PtrArrayConstant &) { abort(); }
     virtual void visitPtrConstant(const PtrConstant &) { abort(); }
     virtual void visitZeroConstant(const ZeroConstant &) { abort(); }
 };

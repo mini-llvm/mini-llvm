@@ -107,10 +107,12 @@
 #include "mini-llvm/mir/Constant/I8ArrayConstant.h"
 #include "mini-llvm/mir/Constant/I8Constant.h"
 #include "mini-llvm/mir/Constant/I8Constant.h"
+#include "mini-llvm/mir/Constant/PtrArrayConstant.h"
 #include "mini-llvm/mir/Constant/PtrConstant.h"
 #include "mini-llvm/mir/Constant/ZeroConstant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
 #include "mini-llvm/mir/Function.h"
+#include "mini-llvm/mir/GlobalValue.h"
 #include "mini-llvm/mir/GlobalVar.h"
 #include "mini-llvm/mir/Immediate.h"
 #include "mini-llvm/mir/Instruction/Add.h"
@@ -193,8 +195,10 @@ void flatten(const ir::Constant &C, std::vector<const ir::Constant *> &flattened
 class TypeVisitorImpl final : public ir::TypeVisitor {
 public:
     explicit TypeVisitorImpl(GlobalVar &globalVar,
-                             const std::vector<const ir::Constant *> &flattened)
-        : globalVar_(globalVar), flattened_(flattened) {}
+                             const std::vector<const ir::Constant *> &flattened,
+                             const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
+                             const HashMap<const ir::Function *, Function *> &functionMap)
+        : globalVar_(globalVar), flattened_(flattened), globalVarMap_(globalVarMap), functionMap_(functionMap) {}
 
     void visitI1(const ir::I1 &) override {
         visitIntegerType<ir::I1Constant, I8ArrayConstant, int8_t>();
@@ -224,9 +228,27 @@ public:
         visitFloatingType<ir::DoubleConstant, I64ArrayConstant, int64_t>();
     }
 
+    void visitPtr(const ir::Ptr &) override {
+        std::vector<GlobalValue *> elements;
+        for (const ir::Constant *element : flattened_) {
+            if (dynamic_cast<const ir::NullPtrConstant *>(element)) {
+                elements.push_back(nullptr);
+            } else if (auto *G = dynamic_cast<const ir::GlobalVar *>(element)) {
+                elements.push_back(globalVarMap_[G]);
+            } else if (auto *F = dynamic_cast<const ir::Function *>(element)) {
+                elements.push_back(functionMap_[F]);
+            } else {
+                abort();
+            }
+        }
+        globalVar_.setInitializer(std::make_unique<PtrArrayConstant>(8, std::move(elements)));
+    }
+
 private:
     GlobalVar &globalVar_;
     const std::vector<const ir::Constant *> &flattened_;
+    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
+    const HashMap<const ir::Function *, Function *> &functionMap_;
 
     template <typename IConst, typename MConst, typename Integer>
     void visitIntegerType() {
@@ -240,7 +262,7 @@ private:
     template <typename IConst, typename MConst, typename Integer>
     void visitFloatingType() {
         std::vector<Integer> elements;
-        for (const auto &element : flattened_) {
+        for (const ir::Constant *element : flattened_) {
             elements.push_back(std::bit_cast<Integer>(static_cast<const IConst *>(element)->value()));
         }
         globalVar_.setInitializer(std::make_unique<MConst>(std::move(elements)));
@@ -250,8 +272,9 @@ private:
 class ConstantVisitorImpl final : public ir::ConstantVisitor {
 public:
     explicit ConstantVisitorImpl(GlobalVar &globalVar,
-                                 const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap)
-        : globalVar_(globalVar), globalVarMap_(globalVarMap) {}
+                                 const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
+                                 const HashMap<const ir::Function *, Function *> &functionMap)
+        : globalVar_(globalVar), globalVarMap_(globalVarMap), functionMap_(functionMap) {}
 
     void visitI1Constant(const ir::I1Constant &C) override {
         visitIntegerConstant<ir::I1Constant, I8Constant, int8_t>(C);
@@ -282,11 +305,16 @@ public:
     }
 
     void visitNullPtrConstant(const ir::NullPtrConstant &) override {
-        globalVar_.setInitializer(std::make_unique<ZeroConstant>(8));
+        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, nullptr));
     }
 
     void visitGlobalVar(const ir::GlobalVar &G) override {
-        GlobalVar *ptr = globalVarMap_[&G];
+        GlobalValue *ptr = globalVarMap_[&G];
+        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr));
+    }
+
+    void visitFunction(const ir::Function &F) override {
+        GlobalValue *ptr = functionMap_[&F];
         globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr));
     }
 
@@ -302,7 +330,7 @@ public:
                 type = static_cast<const ir::ArrayType *>(&*type)->elementType();
             }
 
-            TypeVisitorImpl visitor(globalVar_, flattened);
+            TypeVisitorImpl visitor(globalVar_, flattened, globalVarMap_, functionMap_);
             type->accept(visitor);
         }
     }
@@ -310,6 +338,7 @@ public:
 private:
     GlobalVar &globalVar_;
     const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
+    const HashMap<const ir::Function *, Function *> &functionMap_;
 
     template <typename IConst, typename MConst, typename Integer>
     void visitIntegerConstant(const IConst &C) {
@@ -1191,6 +1220,12 @@ private:
             builder_.add(std::make_unique<LA>(8, reg, ptr));
             return reg;
         }
+        if (auto *F = dynamic_cast<const ir::Function *>(&value)) {
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
+            Function *ptr = functionMap_[F];
+            builder_.add(std::make_unique<LA>(8, reg, ptr));
+            return reg;
+        }
         if (auto *C = dynamic_cast<const ir::IntegerConstant *>(&value)) {
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(C->signExtendedValue());
@@ -1224,7 +1259,7 @@ private:
 
 void RISCVMIRGen::emit() {
     for (const ir::GlobalVar &IG : globalVars(*IM_)) {
-        GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.isConstant(), IG.linkage()));
+        GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant()));
         globalVarMap_.put(&IG, &MG);
     }
     for (const ir::Function &IF : functions(*IM_)) {
@@ -1244,7 +1279,7 @@ void RISCVMIRGen::emit() {
 }
 
 void RISCVMIRGen::emitGlobalVar(const ir::GlobalVar &IG, GlobalVar &MG) {
-    ConstantVisitorImpl visitor(MG, globalVarMap_);
+    ConstantVisitorImpl visitor(MG, globalVarMap_, functionMap_);
     IG.initializer().accept(visitor);
 }
 

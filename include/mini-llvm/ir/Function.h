@@ -1,16 +1,19 @@
 #pragma once
 
 #include <algorithm>
+#include <cassert>
 #include <cstddef>
 #include <list>
 #include <memory>
 #include <ranges>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Argument.h"
 #include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/utils/IndirectIterator.h"
@@ -202,6 +205,12 @@ public:
     }
 
     std::string format() const override;
+
+protected:
+    bool equals(const Constant &other) const override {
+        assert(typeid(*this) != typeid(other));
+        return false;
+    }
 
 private:
     std::unique_ptr<FunctionType> functionType_;

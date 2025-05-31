@@ -29,13 +29,15 @@
 #include "mini-llvm/mir/Constant/I64Constant.h"
 #include "mini-llvm/mir/Constant/I8ArrayConstant.h"
 #include "mini-llvm/mir/Constant/I8Constant.h"
+#include "mini-llvm/mir/Constant/PtrArrayConstant.h"
 #include "mini-llvm/mir/Constant/PtrConstant.h"
 #include "mini-llvm/mir/Constant/ZeroConstant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/FunctionOperand.h"
+#include "mini-llvm/mir/GlobalValue.h"
+#include "mini-llvm/mir/GlobalValueOperand.h"
 #include "mini-llvm/mir/GlobalVar.h"
-#include "mini-llvm/mir/GlobalVarOperand.h"
 #include "mini-llvm/mir/Immediate.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
@@ -114,19 +116,11 @@ using namespace mini_llvm::mc;
 
 namespace {
 
-std::string emitName(const mir::GlobalVar &G) {
-    if (G.linkage() == Linkage::kPrivate) {
-        return ".L" + G.name();
+std::string emitName(const mir::GlobalValue &value) {
+    if (value.linkage() == Linkage::kPrivate) {
+        return ".L" + value.name();
     } else {
-        return G.name();
-    }
-}
-
-std::string emitName(const mir::Function &F) {
-    if (F.linkage() == Linkage::kPrivate) {
-        return ".L" + F.name();
-    } else {
-        return F.name();
+        return value.name();
     }
 }
 
@@ -181,7 +175,21 @@ public:
     }
 
     void visitPtrConstant(const mir::PtrConstant &C) override {
-        builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*C.ptr())));
+        if (C.ptr() == nullptr) {
+            builder_.add(std::make_unique<RISCVZeroDirective>(C.ptrSize()));
+        } else {
+            builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*C.ptr())));
+        }
+    }
+
+    void visitPtrArrayConstant(const mir::PtrArrayConstant &C) override {
+        for (mir::GlobalValue *element : C.elements()) {
+            if (element == nullptr) {
+                builder_.add(std::make_unique<RISCVZeroDirective>(8));
+            } else {
+                builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*element)));
+            }
+        }
     }
 
 private:
@@ -788,7 +796,7 @@ private:
         return std::make_unique<LabelOperand>(emitName(*op));
     }
 
-    static std::unique_ptr<LabelOperand> makeOperand(const mir::GlobalVarOperand &op) {
+    static std::unique_ptr<LabelOperand> makeOperand(const mir::GlobalValueOperand &op) {
         return std::make_unique<LabelOperand>(emitName(*op));
     }
 

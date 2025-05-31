@@ -23,11 +23,6 @@ public:
     std::unique_ptr<Value> clone() const override {
         abort();
     }
-
-protected:
-    bool equals(const Constant &) const override {
-        abort();
-    }
 };
 
 } // namespace mini_llvm::ir

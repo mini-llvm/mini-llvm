@@ -56,7 +56,7 @@ public:
     std::shared_ptr<Instruction> parseInstruction();
     std::shared_ptr<Value> parseValue(const Type &type);
     std::shared_ptr<Value> parseIdentifier(const Type &type);
-    std::unique_ptr<Constant> parseConstant(const Type &type);
+    std::shared_ptr<Constant> parseConstant(const Type &type);
     std::unique_ptr<Type> parseType();
     Symbol parseSymbol(std::optional<Symbol::Scope> scope = std::nullopt);
 

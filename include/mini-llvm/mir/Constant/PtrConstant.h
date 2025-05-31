@@ -1,33 +1,35 @@
 #pragma once
 
-#include <format>
 #include <string>
 
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
-#include "mini-llvm/mir/GlobalVar.h"
+#include "mini-llvm/mir/GlobalValue.h"
 
 namespace mini_llvm::mir {
 
 class PtrConstant final : public Constant {
 public:
-    PtrConstant(int size, GlobalVar *ptr) : size_(size), ptr_(ptr) {}
+    PtrConstant(int ptrSize, GlobalValue *ptr)
+        : ptrSize_(ptrSize), ptr_(ptr) {}
 
-    GlobalVar *ptr() const {
+    int ptrSize() const {
+        return ptrSize_;
+    }
+
+    GlobalValue *ptr() const {
         return ptr_;
     }
 
-    void setGlobalVar(GlobalVar *ptr) {
+    void setPtr(GlobalValue *ptr) {
         ptr_ = ptr;
     }
 
     int size() const override {
-        return size_;
+        return ptrSize_;
     }
 
-    std::string format() const override {
-        return std::format("ptr({}) {:o}", size(), *ptr());
-    }
+    std::string format() const override;
 
     void accept(ConstantVisitor &visitor) override {
         visitor.visitPtrConstant(*this);
@@ -38,8 +40,8 @@ public:
     }
 
 private:
-    int size_;
-    GlobalVar *ptr_;
+    int ptrSize_;
+    GlobalValue *ptr_;
 };
 
 } // namespace mini_llvm::mir

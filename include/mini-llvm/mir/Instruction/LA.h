@@ -6,7 +6,8 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/mir/GlobalVarOperand.h"
+#include "mini-llvm/mir/GlobalValue.h"
+#include "mini-llvm/mir/GlobalValueOperand.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
@@ -20,7 +21,7 @@ namespace mini_llvm::mir {
 
 class LA : public Instruction {
 public:
-    LA(int width, std::shared_ptr<Register> dst, GlobalVar *src)
+    LA(int width, std::shared_ptr<Register> dst, GlobalValue *src)
         : width_(width), dst_(RegisterClass::kGPR, std::move(dst)), src_(src) {}
 
     int width() const {
@@ -80,7 +81,7 @@ public:
 private:
     int width_;
     RegisterOperand dst_;
-    GlobalVarOperand src_;
+    GlobalValueOperand src_;
 };
 
 } // namespace mini_llvm::mir
