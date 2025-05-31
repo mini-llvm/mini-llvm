@@ -2,15 +2,14 @@
 
 #include <cassert>
 #include <memory>
-#include <optional>
 #include <typeinfo>
+#include <variant>
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Use.h"
 
 namespace mini_llvm::ir {
 
@@ -19,7 +18,7 @@ public:
     GlobalVar(std::unique_ptr<Type> valueType,
               Linkage linkage,
               bool isConstant,
-              std::optional<std::shared_ptr<Constant>> initializer = std::nullopt);
+              std::shared_ptr<Constant> initializer = nullptr);
 
     std::unique_ptr<Type> valueType() const {
         return valueType_->clone();
@@ -33,15 +32,12 @@ public:
         return isConstant_;
     }
 
-    Constant &initializer() const {
-        return **initializer_;
-    }
+    Constant &initializer();
+    const Constant &initializer() const;
 
-    void setInitializer(std::optional<std::shared_ptr<Constant>> initializer);
+    void setInitializer(std::shared_ptr<Constant> initializer);
 
-    bool isDeclaration() const override {
-        return !initializer_;
-    }
+    bool isDeclaration() const override;
 
     void accept(ConstantVisitor &visitor) override {
         visitor.visitGlobalVar(*this);
@@ -63,7 +59,7 @@ private:
     std::unique_ptr<Type> valueType_;
     Linkage linkage_;
     bool isConstant_;
-    std::optional<Use<Constant>> initializer_;
+    std::variant<std::monostate, std::shared_ptr<Constant>, std::weak_ptr<Constant>> initializer_;
 };
 
 } // namespace mini_llvm::ir

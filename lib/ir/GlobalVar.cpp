@@ -2,12 +2,13 @@
 
 #include <cassert>
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::ir;
@@ -15,26 +16,44 @@ using namespace mini_llvm::ir;
 GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
                      Linkage linkage,
                      bool isConstant,
-                     std::optional<std::shared_ptr<Constant>> initializer)
+                     std::shared_ptr<Constant> initializer)
         : valueType_(std::move(valueType)),
           linkage_(linkage),
           isConstant_(isConstant) {
-    if (initializer) {
-        assert(*(*initializer_)->type() == *valueType_);
-        initializer_.emplace(this, std::move(*initializer));
+    setInitializer(std::move(initializer));
+}
+
+Constant &GlobalVar::initializer() {
+    if (auto *initializer = std::get_if<std::weak_ptr<Constant>>(&initializer_)) {
+        return *initializer->lock();
+    } else {
+        return *std::get<std::shared_ptr<Constant>>(initializer_);
     }
 }
 
-void GlobalVar::setInitializer(std::optional<std::shared_ptr<Constant>> initializer) {
+const Constant &GlobalVar::initializer() const {
+    if (auto *initializer = std::get_if<std::weak_ptr<Constant>>(&initializer_)) {
+        return *initializer->lock();
+    } else {
+        return *std::get<std::shared_ptr<Constant>>(initializer_);
+    }
+}
+
+void GlobalVar::setInitializer(std::shared_ptr<Constant> initializer) {
     if (initializer) {
-        if (initializer_) {
-            initializer_->set(std::move(*initializer));
+        assert(*initializer->type() == *valueType_);
+        if (dynamic_cast<const GlobalValue *>(&*initializer)) {
+            initializer_ = std::weak_ptr<Constant>(initializer);
         } else {
-            initializer_.emplace(this, std::move(*initializer));
+            initializer_ = std::move(initializer);
         }
     } else {
-        initializer_.reset();
+        initializer_ = std::monostate{};
     }
+}
+
+bool GlobalVar::isDeclaration() const {
+    return std::holds_alternative<std::monostate>(initializer_);
 }
 
 std::string GlobalVar::format() const {
