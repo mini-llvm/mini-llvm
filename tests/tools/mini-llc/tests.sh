@@ -3,18 +3,18 @@
 set -e
 
 tests=(
-    circular_call
-    irreducible_cfg
     self_loop
-    self_referential_phi
-    phi_lost_copy
-    phi_swap
-    impure
+    irreducible_cfg
+    self_referential
+    lost_copy
+    swap
     alias_args
     alias_gep
     alias_inttoptr
     escape_arg
     escape_global
+    impure
+    circular_call
     many_args
     many_regs
     many_regs_large_stack_frame
