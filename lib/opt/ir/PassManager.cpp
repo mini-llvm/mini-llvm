@@ -15,6 +15,7 @@
 #include "mini-llvm/opt/ir/passes/DeadStoreElimination.h"
 #include "mini-llvm/opt/ir/passes/FunctionInlining.h"
 #include "mini-llvm/opt/ir/passes/GlobalCodeMotion.h"
+#include "mini-llvm/opt/ir/passes/GlobalDeadCodeElimination.h"
 #include "mini-llvm/opt/ir/passes/GlobalValueNumbering.h"
 #include "mini-llvm/opt/ir/passes/InstructionCombining.h"
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
@@ -55,6 +56,7 @@ void PassManager::run(Module &M) const {
         GlobalValueNumbering        pass15;
         StrengthReduction           pass16(3, 20, 20);
         FunctionInlining            pass17;
+        GlobalDeadCodeElimination   pass18;
 
         ModuleTransform *passes[] = {
             &pass1,
@@ -74,6 +76,7 @@ void PassManager::run(Module &M) const {
             &pass15,
             &pass16,
             &pass17,
+            &pass18,
         };
 
         for (ModuleTransform *pass : passes) {

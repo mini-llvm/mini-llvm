@@ -75,6 +75,7 @@ add_library(mini-llvm
     opt/ir/passes/DominatorTreeAnalysis.cpp
     opt/ir/passes/FunctionInlining.cpp
     opt/ir/passes/GlobalCodeMotion.cpp
+    opt/ir/passes/GlobalDeadCodeElimination.cpp
     opt/ir/passes/GlobalValueNumbering.cpp
     opt/ir/passes/InstructionCombining.cpp
     opt/ir/passes/JumpThreading.cpp
