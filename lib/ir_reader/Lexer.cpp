@@ -28,32 +28,32 @@ Token Lexer::nextToken() {
 }
 
 Token Lexer::nextTokenImpl() {
-    while (*cursor_ != '\0') {
-        if (*cursor_ == ' ' || *cursor_ == '\t' || *cursor_ == '\n') {
-            ++cursor_;
+    while (*current_ != '\0') {
+        if (*current_ == ' ' || *current_ == '\t' || *current_ == '\n') {
+            ++current_;
             continue;
         }
-        if (*cursor_ == ';') {
-            ++cursor_;
-            while (*cursor_ != '\0' && *cursor_ != '\n') ++cursor_;
+        if (*current_ == ';') {
+            ++current_;
+            while (*current_ != '\0' && *current_ != '\n') ++current_;
             continue;
         }
         break;
     }
 
-    if (*cursor_ == '\0') {
-        return {kEOF, {}, cursor_};
+    if (*current_ == '\0') {
+        return {kEOF, {}, current_};
     }
 
     if (lastToken()) {
         Token::Kind kind = lastToken()->kind;
         if (kind == kAt || kind == kPercent) {
-            if (isalpha(*cursor_) || isdigit(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
-                const char *marker = cursor_;
-                while (isalpha(*cursor_) || isdigit(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
-                    ++cursor_;
+            if (isalpha(*current_) || isdigit(*current_) || *current_ == '_' || *current_ == '.') {
+                const char *previous = current_;
+                while (isalpha(*current_) || isdigit(*current_) || *current_ == '_' || *current_ == '.') {
+                    ++current_;
                 }
-                return {kName, std::string(marker, cursor_), marker};
+                return {kName, std::string(previous, current_), previous};
             }
         }
     }
@@ -72,116 +72,116 @@ Token Lexer::nextTokenImpl() {
         {'}', kRightBrace},
     };
 
-    if (auto i = kLUT.find(*cursor_); i != kLUT.end()) {
-        return {i->second, {}, cursor_++};
+    if (auto i = kLUT.find(*current_); i != kLUT.end()) {
+        return {i->second, {}, current_++};
     }
 
-    if (*cursor_ == '0' && (*(cursor_ + 1) == 'X' || *(cursor_ + 1) == 'x')) {
-        const char *marker = cursor_;
-        cursor_ = marker + 2;
-        while (isxdigit(*cursor_)) ++cursor_;
-        if (*cursor_ == ':') {
-            return {kName, std::string(marker, cursor_), marker};
+    if (*current_ == '0' && (*(current_ + 1) == 'X' || *(current_ + 1) == 'x')) {
+        const char *previous = current_;
+        current_ = previous + 2;
+        while (isxdigit(*current_)) ++current_;
+        if (*current_ == ':') {
+            return {kName, std::string(previous, current_), previous};
         }
-        cursor_ = marker + 2;
+        current_ = previous + 2;
         uint64_t value = 0;
-        while (isxdigit(*cursor_)) {
-            value = value * 0x10 + ((isdigit(*cursor_)  ? (*cursor_ - '0') : ((*cursor_ | 0x20) - 'a' + 0xa)));
-            ++cursor_;
+        while (isxdigit(*current_)) {
+            value = value * 0x10 + ((isdigit(*current_)  ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
+            ++current_;
         }
-        return {kNumber, std::bit_cast<int64_t>(value), marker};
+        return {kNumber, std::bit_cast<int64_t>(value), previous};
     }
 
-    if (isdigit(*cursor_)) {
-        const char *marker = cursor_;
+    if (isdigit(*current_)) {
+        const char *previous = current_;
         uint64_t value = 0;
-        while (isdigit(*cursor_)) {
-            value = value * 10 + (*cursor_ - '0');
-            ++cursor_;
+        while (isdigit(*current_)) {
+            value = value * 10 + (*current_ - '0');
+            ++current_;
         }
-        if (*cursor_ == ':') {
-            return {kName, std::to_string(value), marker};
+        if (*current_ == ':') {
+            return {kName, std::to_string(value), previous};
         } else {
-            return {kNumber, std::bit_cast<int64_t>(value), marker};
+            return {kNumber, std::bit_cast<int64_t>(value), previous};
         }
     }
 
-    if (*cursor_ == '-') {
-        const char *marker = cursor_;
-        ++cursor_;
+    if (*current_ == '-') {
+        const char *previous = current_;
+        ++current_;
         uint64_t value = 0;
-        while (isdigit(*cursor_)) {
-            value = value * 10 + (*cursor_ - '0');
-            ++cursor_;
+        while (isdigit(*current_)) {
+            value = value * 10 + (*current_ - '0');
+            ++current_;
         }
         value = -value;
-        return {kNumber, std::bit_cast<int64_t>(value), marker};
+        return {kNumber, std::bit_cast<int64_t>(value), previous};
     }
 
-    if ((*cursor_ == 'c' && *(cursor_ + 1) == '"') || *cursor_ == '"') {
-        const char *marker = cursor_;
-        while (*cursor_ == 'c' || *cursor_ == '"') {
-            ++cursor_;
+    if ((*current_ == 'c' && *(current_ + 1) == '"') || *current_ == '"') {
+        const char *previous = current_;
+        while (*current_ == 'c' || *current_ == '"') {
+            ++current_;
         }
         std::vector<int8_t> elements;
-        while (*cursor_ != '\0' && *cursor_ != '"') {
-            if (*cursor_ == '\\') {
-                ++cursor_;
-                if (*cursor_ == '\\') {
-                    ++cursor_;
+        while (*current_ != '\0' && *current_ != '"') {
+            if (*current_ == '\\') {
+                ++current_;
+                if (*current_ == '\\') {
+                    ++current_;
                     elements.push_back(static_cast<int8_t>('\\'));
                 } else {
                     int8_t element = 0;
                     for (int i = 0; i < 2; ++i) {
-                        char ch = *cursor_;
+                        char ch = *current_;
                         if (ch == 0) {
-                            throw LexException("missing terminating \" character", cursor_);
+                            throw LexException("missing terminating \" character", current_);
                         }
                         if (!isxdigit(ch)) {
                             if (ch == '"') {
-                                throw LexException("incomplete escape sequence", cursor_);
+                                throw LexException("incomplete escape sequence", current_);
                             } else {
-                                throw LexException("invalid character in escape sequence", cursor_);
+                                throw LexException("invalid character in escape sequence", current_);
                             }
                         }
                         element = element * 0xa + static_cast<int8_t>(isdigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
-                        ++cursor_;
+                        ++current_;
                     }
                     elements.push_back(element);
                 }
             } else {
-                char ch = *cursor_;
+                char ch = *current_;
                 if (!(0x20 <= ch && ch <= 0x7e)) {
-                    throw LexException("unescaped non-printable character", cursor_);
+                    throw LexException("unescaped non-printable character", current_);
                 }
                 int8_t element = static_cast<int8_t>(ch);
                 elements.push_back(element);
-                ++cursor_;
+                ++current_;
             }
         }
-        if (*cursor_ == '\0') {
-            throw LexException("missing terminating \" character", cursor_);
+        if (*current_ == '\0') {
+            throw LexException("missing terminating \" character", current_);
         }
-        ++cursor_;
-        if (*marker == 'c') {
-            return {kString, std::move(elements), marker};
+        ++current_;
+        if (*previous == 'c') {
+            return {kString, std::move(elements), previous};
         }
         std::string name;
         for (int8_t element : elements) {
             name.push_back(static_cast<char>(element));
         }
-        return {kName, std::move(name), marker};
+        return {kName, std::move(name), previous};
     }
 
-    if (isalpha(*cursor_) || *cursor_ == '_' || *cursor_ == '.') {
-        const char *marker = cursor_;
-        while (isalpha(*cursor_) || *cursor_ == '_' || *cursor_ == '.' || isdigit(*cursor_)) {
-            ++cursor_;
+    if (isalpha(*current_) || *current_ == '_' || *current_ == '.') {
+        const char *previous = current_;
+        while (isalpha(*current_) || *current_ == '_' || *current_ == '.' || isdigit(*current_)) {
+            ++current_;
         }
-        std::string name(marker, cursor_);
+        std::string name(previous, current_);
 
-        if (*cursor_ == ':') {
-            return {kName, std::move(name), marker};
+        if (*current_ == ':') {
+            return {kName, std::move(name), previous};
         }
 
         static const HashMap<std::string_view, Token::Kind> kLUT{
@@ -283,13 +283,13 @@ Token Lexer::nextTokenImpl() {
         };
 
         if (auto i = kLUT.find(name); i != kLUT.end()) {
-            return {i->second, {}, marker};
+            return {i->second, {}, previous};
         }
 
-        return {kName, std::move(name), marker};
+        return {kName, std::move(name), previous};
     }
 
-    throw LexException("unexpected character", cursor_);
+    throw LexException("unexpected character", current_);
 }
 
 std::vector<Token> ir::lex(const char *source) {

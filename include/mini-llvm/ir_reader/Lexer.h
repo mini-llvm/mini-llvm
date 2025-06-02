@@ -34,12 +34,12 @@ private:
 
 class Lexer {
 public:
-    explicit Lexer(const char *cursor) : cursor_(cursor) {}
+    explicit Lexer(const char *current) : current_(current) {}
     std::optional<Token> lastToken();
     Token nextToken();
 
 private:
-    const char *cursor_;
+    const char *current_;
     std::optional<Token> lastToken_;
 
     Token nextTokenImpl();

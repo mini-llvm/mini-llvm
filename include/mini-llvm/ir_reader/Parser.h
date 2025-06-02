@@ -45,7 +45,7 @@ private:
 
 class Parser {
 public:
-    explicit Parser(std::vector<Token>::const_iterator cursor) : cursor_(cursor) {}
+    explicit Parser(std::vector<Token>::const_iterator current) : current_(current) {}
 
     Module parseModule();
     std::shared_ptr<GlobalVar> parseGlobalVarHeader(bool &isDeclaration);
@@ -61,7 +61,7 @@ public:
     Symbol parseSymbol(std::optional<Symbol::Scope> scope = std::nullopt);
 
 private:
-    std::vector<Token>::const_iterator cursor_;
+    std::vector<Token>::const_iterator current_;
     HashMap<Symbol, std::shared_ptr<Value>> symbolTable_;
 };
 
