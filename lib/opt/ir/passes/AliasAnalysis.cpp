@@ -24,7 +24,7 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-void dfs(const DominatorTreeNode *node, HashMap<const Value *, const Value *> &objects) {
+void dfs(const DTNode *node, HashMap<const Value *, const Value *> &objects) {
     for (const Instruction &I : *node->block) {
         if (objects.find(&I) == objects.end()) {
             if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
@@ -60,7 +60,7 @@ void dfs(const DominatorTreeNode *node, HashMap<const Value *, const Value *> &o
             }
         }
     }
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         dfs(child, objects);
     }
 }

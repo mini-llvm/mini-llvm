@@ -13,10 +13,10 @@ struct Loop {
     const BasicBlock *header;
 };
 
-struct LoopTreeNode {
+struct LTNode {
     const Loop *loop;
-    const LoopTreeNode *parent;
-    std::vector<const LoopTreeNode *> children;
+    const LTNode *parent;
+    std::vector<const LTNode *> children;
 };
 
 class LoopTreeAnalysis final : public FunctionAnalysis {
@@ -25,8 +25,8 @@ public:
     ~LoopTreeAnalysis() override;
     void runOnFunction(const Function &F) override;
     const std::vector<Loop> &loops() const;
-    const LoopTreeNode *node(const Loop &loop) const;
-    const LoopTreeNode *rootNode() const;
+    const LTNode *node(const Loop &loop) const;
+    const LTNode *rootNode() const;
 
     const char *name() const override {
         return "LoopTreeAnalysis";

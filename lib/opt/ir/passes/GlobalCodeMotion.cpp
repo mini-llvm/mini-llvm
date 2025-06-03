@@ -31,18 +31,18 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-void findDepths(const DominatorTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
+void findDepths(const DTNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
     depths.put(node->block, depth);
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         findDepths(child, depth + 1, depths);
     }
 }
 
-void findDepths(const LoopTreeNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
+void findDepths(const LTNode *node, int depth, HashMap<const BasicBlock *, int> &depths) {
     for (const BasicBlock *B : node->loop->blocks) {
         depths.put(B, depth);
     }
-    for (const LoopTreeNode *child : node->children) {
+    for (const LTNode *child : node->children) {
         findDepths(child, depth + 1, depths);
     }
 }
@@ -87,7 +87,7 @@ bool isPinned(const Instruction &I) {
 }
 
 void scheduleEarly(
-    const DominatorTreeNode *node,
+    const DTNode *node,
     const HashMap<const BasicBlock *, int> &domTreeDepths,
     HashMap<const Instruction *, const BasicBlock *> &blocks
 ) {
@@ -103,19 +103,19 @@ void scheduleEarly(
             }
         }
     }
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         scheduleEarly(child, domTreeDepths, blocks);
     }
 }
 
 void scheduleLate(
-    const DominatorTreeNode *node,
+    const DTNode *node,
     const HashMap<const BasicBlock *, int> &domTreeDepths,
     const HashMap<const BasicBlock *, const BasicBlock *> &domTreeParents,
     const HashMap<const BasicBlock *, int> &loopTreeDepths,
     HashMap<const Instruction *, const BasicBlock *> &blocks
 ) {
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         scheduleLate(child, domTreeDepths, domTreeParents, loopTreeDepths, blocks);
     }
     for (const Instruction &I : std::views::reverse(*node->block)) {
@@ -192,7 +192,7 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
     for (const BasicBlock &B : F) {
         loopTreeDepths.put(&B, 0);
     }
-    for (const LoopTreeNode *node : loopTree.rootNode()->children) {
+    for (const LTNode *node : loopTree.rootNode()->children) {
         findDepths(node, 1, loopTreeDepths);
     }
 

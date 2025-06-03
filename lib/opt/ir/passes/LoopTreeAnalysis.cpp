@@ -63,19 +63,19 @@ public:
         }
 
         for (const Loop &loop : loops_) {
-            nodes_.put(&loop, LoopTreeNode(&loop, nullptr, {}));
+            nodes_.put(&loop, LTNode(&loop, nullptr, {}));
         }
 
-        std::vector<LoopTreeNode *> nodes;
-        for (LoopTreeNode &node : std::views::values(nodes_)) {
+        std::vector<LTNode *> nodes;
+        for (LTNode &node : std::views::values(nodes_)) {
             nodes.push_back(&node);
         }
-        std::ranges::sort(nodes, [](LoopTreeNode *lhs, LoopTreeNode *rhs) {
+        std::ranges::sort(nodes, [](LTNode *lhs, LTNode *rhs) {
             return lhs->loop->blocks.size() > rhs->loop->blocks.size();
         });
         for (auto [i, x] : std::views::enumerate(nodes)) {
-            LoopTreeNode *parent = nullptr;
-            for (LoopTreeNode *y : nodes | std::views::take(i) | std::views::reverse) {
+            LTNode *parent = nullptr;
+            for (LTNode *y : nodes | std::views::take(i) | std::views::reverse) {
                 if (y->loop->blocks.contains(*x->loop->blocks.begin())) {
                     parent = y;
                     break;
@@ -94,18 +94,18 @@ public:
         return loops_;
     }
 
-    const LoopTreeNode *node(const Loop &loop) const {
+    const LTNode *node(const Loop &loop) const {
         return &nodes_[&loop];
     }
 
-    const LoopTreeNode *rootNode() const {
+    const LTNode *rootNode() const {
         return &rootNode_;
     }
 
 private:
     std::vector<Loop> loops_;
-    HashMap<const Loop *, LoopTreeNode> nodes_;
-    LoopTreeNode rootNode_{};
+    HashMap<const Loop *, LTNode> nodes_;
+    LTNode rootNode_{};
 };
 
 LoopTreeAnalysis::LoopTreeAnalysis() : impl_(std::make_unique<Impl>()) {}
@@ -120,10 +120,10 @@ const std::vector<Loop> &LoopTreeAnalysis::loops() const {
     return impl_->loops();
 }
 
-const LoopTreeNode *LoopTreeAnalysis::node(const Loop &loop) const {
+const LTNode *LoopTreeAnalysis::node(const Loop &loop) const {
     return impl_->node(loop);
 }
 
-const LoopTreeNode *LoopTreeAnalysis::rootNode() const {
+const LTNode *LoopTreeAnalysis::rootNode() const {
     return impl_->rootNode();
 }

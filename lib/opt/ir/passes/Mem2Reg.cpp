@@ -45,7 +45,7 @@ bool isPromotable(const Alloca &v) {
 
 class Rename {
 public:
-    Rename(const DominatorTreeNode *root,
+    Rename(const DTNode *root,
            const std::unordered_set<const Alloca *> &vars,
            const HashMap<const Phi *, const Alloca *> &phis)
         : root_(root), vars_(vars), phis_(phis) {}
@@ -58,12 +58,12 @@ public:
     }
 
 private:
-    const DominatorTreeNode *root_;
+    const DTNode *root_;
     const std::unordered_set<const Alloca *> &vars_;
     const HashMap<const Phi *, const Alloca *> &phis_;
     HashMap<const Alloca *, const Value *> defs_;
 
-    void dfs(const DominatorTreeNode *node) {
+    void dfs(const DTNode *node) {
         HashMap<const Alloca *, const Value *> oldDefs = defs_;
         for (const Instruction &I : *node->block) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
@@ -104,7 +104,7 @@ private:
                 }
             }
         }
-        for (const DominatorTreeNode *child : node->children) {
+        for (const DTNode *child : node->children) {
             dfs(child);
         }
         defs_ = oldDefs;

@@ -314,7 +314,7 @@ struct std::hash<ValueNumber> {
 
 namespace {
 
-void dfs(const DominatorTreeNode *node, std::unordered_set<ValueNumber> &valueNumbers, bool &changed) {
+void dfs(const DTNode *node, std::unordered_set<ValueNumber> &valueNumbers, bool &changed) {
     std::unordered_set<ValueNumber> newValueNumbers;
 
     for (auto i = node->block->begin(); i != node->block->end();) {
@@ -330,7 +330,7 @@ void dfs(const DominatorTreeNode *node, std::unordered_set<ValueNumber> &valueNu
         }
     }
 
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         dfs(child, valueNumbers, changed);
     }
 

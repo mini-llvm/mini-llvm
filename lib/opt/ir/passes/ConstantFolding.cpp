@@ -9,7 +9,7 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-void dfs(const DominatorTreeNode *node, bool &changed) {
+void dfs(const DTNode *node, bool &changed) {
     for (auto i = node->block->begin(); i != node->block->end();) {
         const Instruction &I = *i++;
         if (I.isFoldable()) {
@@ -19,7 +19,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
         }
     }
 
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         dfs(child, changed);
     }
 }

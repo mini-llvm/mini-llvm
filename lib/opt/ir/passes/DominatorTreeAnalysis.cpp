@@ -103,12 +103,12 @@ private:
     }
 };
 
-void dfs(const DominatorTreeNode *u,
-         HashMap<const DominatorTreeNode *, size_t> &discover,
-         HashMap<const DominatorTreeNode *, size_t> &finish,
+void dfs(const DTNode *u,
+         HashMap<const DTNode *, size_t> &discover,
+         HashMap<const DTNode *, size_t> &finish,
          size_t &timer) {
     discover.put(u, ++timer);
-    for (const DominatorTreeNode *v : u->children) {
+    for (const DTNode *v : u->children) {
         if (!discover.contains(v)) {
             dfs(v, discover, finish, timer);
         }
@@ -160,7 +160,7 @@ public:
         }
     }
 
-    const DominatorTreeNode *node(const BasicBlock &v) const {
+    const DTNode *node(const BasicBlock &v) const {
         return &node_[&v];
     }
 
@@ -177,8 +177,8 @@ public:
     }
 
 private:
-    HashMap<const BasicBlock *, DominatorTreeNode> node_;
-    HashMap<const DominatorTreeNode *, size_t> discover_, finish_;
+    HashMap<const BasicBlock *, DTNode> node_;
+    HashMap<const DTNode *, size_t> discover_, finish_;
     HashMap<const Instruction *, size_t> idx_;
 };
 
@@ -190,7 +190,7 @@ void DominatorTreeAnalysis::runOnFunction(const Function &F) {
     impl_->runOnFunction(F);
 }
 
-const DominatorTreeNode *DominatorTreeAnalysis::node(const BasicBlock &v) const {
+const DTNode *DominatorTreeAnalysis::node(const BasicBlock &v) const {
     return impl_->node(v);
 }
 

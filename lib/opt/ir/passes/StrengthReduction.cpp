@@ -347,7 +347,7 @@ std::vector<std::shared_ptr<Instruction>> replaceSRem(const SRem &I) {
     return replaceSRem(*I.lhs(), d);
 }
 
-void dfs(const DominatorTreeNode *node, bool &changed, size_t mulThreshold, size_t divThreshold, size_t remThreshold) {
+void dfs(const DTNode *node, bool &changed, size_t mulThreshold, size_t divThreshold, size_t remThreshold) {
     for (auto i = node->block->begin(); i != node->block->end();) {
         const Instruction &I = *i++;
 
@@ -397,7 +397,7 @@ void dfs(const DominatorTreeNode *node, bool &changed, size_t mulThreshold, size
         }
     }
 
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         dfs(child, changed, mulThreshold, divThreshold, remThreshold);
     }
 }

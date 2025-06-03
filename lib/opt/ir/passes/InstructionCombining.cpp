@@ -31,7 +31,7 @@ bool isCombinableGep(const Value &value) {
     return false;
 }
 
-void dfs(const DominatorTreeNode *node, bool &changed) {
+void dfs(const DTNode *node, bool &changed) {
     for (auto i = const_cast<BasicBlock *>(node->block)->begin(); i != const_cast<BasicBlock *>(node->block)->end();) {
         Instruction &I = *i++;
         if (dynamic_cast<const Add *>(&I) && dynamic_cast<const Constant *>(&*static_cast<const Add *>(&I)->rhs())) {
@@ -92,7 +92,7 @@ void dfs(const DominatorTreeNode *node, bool &changed) {
         }
     }
 
-    for (const DominatorTreeNode *child : node->children) {
+    for (const DTNode *child : node->children) {
         dfs(child, changed);
     }
 }
