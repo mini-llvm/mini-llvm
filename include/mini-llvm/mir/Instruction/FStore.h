@@ -62,7 +62,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("FSTORE({}) {}, {}", specifier(precision()), dst(), *src());
+        return std::format("FSTORE {} {}, {}", specifier(precision()), dst(), *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {

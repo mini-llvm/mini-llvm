@@ -56,7 +56,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("CMPZ({}) {}", width(), *src());
+        return std::format("CMPZ i{} {}", width() * 8, *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {

@@ -90,8 +90,8 @@ public:
 
     std::string format() const override {
         return std::format(
-            "CMPSET({}, {}) {}, {}, {}, {}",
-            dstWidth(), srcWidth(), specifier(cond()), *dst(), *src1(), *src2());
+            "CMPSET i{} i{} {} {}, {}, {}",
+            dstWidth() * 8, srcWidth() * 8, specifier(cond()), *dst(), *src1(), *src2());
     }
 
     std::unique_ptr<Instruction> clone() const override {

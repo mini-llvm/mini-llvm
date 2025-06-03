@@ -60,7 +60,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("{}({}) {}, {}, {}", mnemonic(), specifier(precision()), *dst(), *src1(), *src2());
+        return std::format("{} {} {}, {}, {}", mnemonic(), specifier(precision()), *dst(), *src1(), *src2());
     }
 
 protected:

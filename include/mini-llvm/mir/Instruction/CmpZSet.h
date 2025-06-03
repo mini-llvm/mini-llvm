@@ -81,7 +81,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("CMPZSET({}, {}) {}, {}, {}", dstWidth(), srcWidth(), specifier(cond()), *dst(), *src());
+        return std::format("CMPZSET i{} i{} {} {}, {}", dstWidth() * 8, srcWidth() * 8, specifier(cond()), *dst(), *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {

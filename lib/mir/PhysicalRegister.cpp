@@ -11,7 +11,7 @@ using namespace mini_llvm::mir;
 
 std::string PhysicalRegister::format() const {
     if (!std::ranges::all_of(name(), [](char ch) { return isalnum(ch) || ch == '_' || ch == '.'; })) {
-        return "%" + quote(name());
+        return "$" + quote(name());
     }
-    return "%" + name();
+    return "$" + name();
 }

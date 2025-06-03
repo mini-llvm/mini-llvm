@@ -63,7 +63,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("CONDSET({}) {}, {}", width(), specifier(cond()), *dst());
+        return std::format("CONDSET i{} {} {}", width() * 8, specifier(cond()), *dst());
     }
 
     std::unique_ptr<Instruction> clone() const override {

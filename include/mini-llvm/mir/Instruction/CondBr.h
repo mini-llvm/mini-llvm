@@ -66,7 +66,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("CONDBR {}, {:o}, {:o}", specifier(cond()), *trueDest(), *falseDest());
+        return std::format("CONDBR {} {:o}, {:o}", specifier(cond()), *trueDest(), *falseDest());
     }
 
     std::unique_ptr<Instruction> clone() const override {

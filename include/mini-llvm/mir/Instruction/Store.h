@@ -60,7 +60,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("STORE({}) {}, {}", width(), dst(), *src());
+        return std::format("STORE i{} {}, {}", width() * 8, dst(), *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {

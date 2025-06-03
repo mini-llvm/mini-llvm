@@ -68,7 +68,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("SEXT({}, {}) {}, {}", dstWidth(), srcWidth(), *dst(), *src());
+        return std::format("SEXT i{} i{} {}, {}", dstWidth() * 8, srcWidth() * 8, *dst(), *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {

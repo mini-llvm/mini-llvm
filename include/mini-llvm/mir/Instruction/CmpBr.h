@@ -93,8 +93,8 @@ public:
 
     std::string format() const override {
         return std::format(
-            "CMPBR({}) {}, {}, {}, {:o}, {:o}",
-            width(), specifier(cond()), *src1(), *src2(), *trueDest(), *falseDest());
+            "CMPBR i{} {} {}, {}, {:o}, {:o}",
+            width() * 8, specifier(cond()), *src1(), *src2(), *trueDest(), *falseDest());
     }
 
     std::unique_ptr<Instruction> clone() const override {

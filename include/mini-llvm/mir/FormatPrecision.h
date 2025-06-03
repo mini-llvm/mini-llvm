@@ -9,8 +9,8 @@ namespace mini_llvm::mir {
 inline constexpr const char *specifier(Precision precision) {
     using enum Precision;
     switch (precision) {
-        case kSingle: return "s";
-        case kDouble: return "d";
+        case kSingle: return "single";
+        case kDouble: return "double";
         default: abort();
     }
 }

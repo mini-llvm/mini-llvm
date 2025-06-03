@@ -74,8 +74,8 @@ public:
 
     std::string format() const override {
         return std::format(
-            "LOAD({}) {}, {}, {}",
-            width(), *dst(), src(), specifier(extMode()));
+            "LOAD i{} {}, {}, {}",
+            width() * 8, *dst(), src(), specifier(extMode()));
     }
 
     std::unique_ptr<Instruction> clone() const override {

@@ -13,10 +13,10 @@ using namespace mini_llvm::mir;
 
 std::string VirtualRegister::format() const {
     if (name().empty()) {
-        return std::format("$_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
+        return std::format("%_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
     }
     if (!std::ranges::all_of(name(), [](char ch) { return isalnum(ch) || ch == '_' || ch == '.'; })) {
-        return "$" + quote(name());
+        return "%" + quote(name());
     }
-    return "$" + name();
+    return "%" + name();
 }

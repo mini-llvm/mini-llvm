@@ -92,8 +92,8 @@ public:
 
     std::string format() const override {
         return std::format(
-            "FCMPSET({}, {}) {}, {}, {}, {}",
-            dstWidth(), specifier(srcPrecision()), specifier(cond()), *dst(), *src1(), *src2());
+            "FCMPSET i{}, {} {} {}, {}, {}",
+            dstWidth() * 8, specifier(srcPrecision()), specifier(cond()), *dst(), *src1(), *src2());
     }
 
     std::unique_ptr<Instruction> clone() const override {

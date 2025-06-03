@@ -64,8 +64,8 @@ public:
 
     std::string format() const override {
         return std::format(
-            "{}({}) {}, {}, {}, {}",
-            mnemonic(), width(), *dst(), *src1(), *src2(), specifier(extMode()));
+            "{} i{} {}, {}, {}, {}",
+            mnemonic(), width() * 8, *dst(), *src1(), *src2(), specifier(extMode()));
     }
 
 protected:

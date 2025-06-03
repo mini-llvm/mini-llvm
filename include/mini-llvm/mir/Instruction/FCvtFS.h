@@ -68,7 +68,7 @@ public:
     }
 
     std::string format() const override {
-        return std::format("FCVTFS({}, {}) {}, {}", specifier(dstPrecision()), srcWidth(), *dst(), *src());
+        return std::format("FCVTFS {} i{} {}, {}", specifier(dstPrecision()), srcWidth() * 8, *dst(), *src());
     }
 
     std::unique_ptr<Instruction> clone() const override {
