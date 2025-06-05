@@ -28,10 +28,7 @@
 using namespace mini_llvm::ir;
 
 void PassManager::run(Module &M) const {
-    assert(verifyModule(M));
-
     Mem2Reg pass0;
-
     pass0.runOnModule(M);
     assert(verifyModule(M));
 

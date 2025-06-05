@@ -1,6 +1,7 @@
 #include "mini-llvm/targets/riscv/opt/mir/RISCVPassManager.h"
 
 #include "mini-llvm/mir/Module.h"
+#include "mini-llvm/opt/mir/ModuleTransform.h"
 #include "mini-llvm/opt/mir/passes/BasicBlockMerging.h"
 #include "mini-llvm/opt/mir/passes/BasicBlockReordering.h"
 #include "mini-llvm/opt/mir/passes/CopyPropagation.h"
@@ -34,16 +35,22 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
         TailDuplication             pass9(8);
         UnreachableBlockElimination pass10;
 
-        changed |= pass1.runOnModule(M);
-        changed |= pass2.runOnModule(M);
-        changed |= pass3.runOnModule(M);
-        changed |= pass4.runOnModule(M);
-        changed |= pass5.runOnModule(M);
-        changed |= pass6.runOnModule(M);
-        changed |= pass7.runOnModule(M);
-        changed |= pass8.runOnModule(M);
-        changed |= pass9.runOnModule(M);
-        changed |= pass10.runOnModule(M);
+        ModuleTransform *passes[] = {
+            &pass1,
+            &pass2,
+            &pass3,
+            &pass4,
+            &pass5,
+            &pass6,
+            &pass7,
+            &pass8,
+            &pass9,
+            &pass10,
+        };
+
+        for (ModuleTransform *pass : passes) {
+            changed |= pass->runOnModule(M);
+        }
     } while (changed);
 }
 
@@ -66,16 +73,22 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
         TailDuplication             pass9(8);
         UnreachableBlockElimination pass10;
 
-        changed |= pass1.runOnModule(M);
-        changed |= pass2.runOnModule(M);
-        changed |= pass3.runOnModule(M);
-        changed |= pass4.runOnModule(M);
-        changed |= pass5.runOnModule(M);
-        changed |= pass6.runOnModule(M);
-        changed |= pass7.runOnModule(M);
-        changed |= pass8.runOnModule(M);
-        changed |= pass9.runOnModule(M);
-        changed |= pass10.runOnModule(M);
+        ModuleTransform *passes[] = {
+            &pass1,
+            &pass2,
+            &pass3,
+            &pass4,
+            &pass5,
+            &pass6,
+            &pass7,
+            &pass8,
+            &pass9,
+            &pass10,
+        };
+
+        for (ModuleTransform *pass : passes) {
+            changed |= pass->runOnModule(M);
+        }
     } while (changed);
 
     BasicBlockReordering pass11;
