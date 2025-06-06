@@ -39,10 +39,10 @@ std::string formatAsString(const ArrayConstant &C) {
         int8_t value = static_cast<const I8Constant *>(&*element)->value();
         if (value == static_cast<int8_t>('\\')) {
             formatted.add("\\\\");
-        } else if (0x20 <= value && value <= 0x7e) {
+        } else if (0x20 <= value && value <= 0x7e && value != static_cast<int8_t>('"')) {
             formatted.add("{:c}", value);
         } else {
-            formatted.add("\\{:02X}", value);
+            formatted.add("\\{:02X}", static_cast<uint8_t>(value));
         }
     }
     return formatted.toString();

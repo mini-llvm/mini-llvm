@@ -1,4 +1,5 @@
 add_executable(tests
+    ir/Constant/ArrayConstantTest.cpp
     ir/Instruction/AddTest.cpp
     ir/Instruction/AllocaTest.cpp
     ir/Instruction/AndTest.cpp
