@@ -28,8 +28,6 @@ public:
 
     explicit Call(std::weak_ptr<Function> callee, std::vector<std::shared_ptr<Value>> args = {});
 
-    ~Call() override;
-
     template <typename Self>
     auto &callee(this Self &&self) {
         return self.callee_;
