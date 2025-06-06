@@ -15,8 +15,8 @@ public:
         return labelName_;
     }
 
-    void setLabelName(std::string name) {
-        labelName_ = std::move(name);
+    void setLabelName(std::string labelName) {
+        labelName_ = std::move(labelName);
     }
 
     std::string format() const override {

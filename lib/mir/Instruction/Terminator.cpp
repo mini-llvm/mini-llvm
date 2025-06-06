@@ -6,9 +6,9 @@
 using namespace mini_llvm::mir;
 
 std::unordered_set<BasicBlockOperand *> Terminator::blockOps() {
-    std::unordered_set<BasicBlockOperand *> successors;
+    std::unordered_set<BasicBlockOperand *> blockOps;
     for (const BasicBlockOperand *op : std::as_const(*this).blockOps()) {
-        successors.insert(const_cast<BasicBlockOperand *>(op));
+        blockOps.insert(const_cast<BasicBlockOperand *>(op));
     }
-    return successors;
+    return blockOps;
 }
