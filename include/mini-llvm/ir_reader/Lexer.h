@@ -1,6 +1,7 @@
 #pragma once
 
 #include <exception>
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -34,15 +35,16 @@ private:
 
 class Lexer {
 public:
-    explicit Lexer(const char *current) : current_(current) {}
+    explicit Lexer(const char *current);
+    ~Lexer();
+
     std::optional<Token> lastToken();
     Token nextToken();
 
 private:
-    const char *current_;
-    std::optional<Token> lastToken_;
+    class Impl;
 
-    Token nextTokenImpl();
+    std::unique_ptr<Impl> impl_;
 };
 
 std::vector<Token> lex(const char *source);

@@ -1257,160 +1257,181 @@ private:
 
 } // namespace
 
-void RISCVMIRGen::emit() {
-    for (const ir::GlobalVar &IG : globalVars(*IM_)) {
-        GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant()));
-        globalVarMap_.put(&IG, &MG);
-    }
-    for (const ir::Function &IF : functions(*IM_)) {
-        Function &MF = MM_->appendFunction(std::make_unique<Function>(IF.name(), IF.linkage()));
-        functionMap_.put(&IF, &MF);
-    }
-    for (auto &[IG, MG] : globalVarMap_) {
-        if (!IG->isDeclaration()) {
-            emitGlobalVar(*IG, *MG);
+class RISCVMIRGen::Impl {
+public:
+    Impl(const ir::Module *IM, Module *MM)
+        : IM_(IM), MM_(MM) {}
+
+    void emit() {
+        for (const ir::GlobalVar &IG : globalVars(*IM_)) {
+            GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant()));
+            globalVarMap_.put(&IG, &MG);
         }
-    }
-    for (auto &[IF, MF] : functionMap_) {
-        if (!IF->empty()) {
-            emitFunction(*IF, *MF);
+        for (const ir::Function &IF : functions(*IM_)) {
+            Function &MF = MM_->appendFunction(std::make_unique<Function>(IF.name(), IF.linkage()));
+            functionMap_.put(&IF, &MF);
         }
-    }
-}
-
-void RISCVMIRGen::emitGlobalVar(const ir::GlobalVar &IG, GlobalVar &MG) {
-    ConstantVisitorImpl visitor(MG, globalVarMap_, functionMap_);
-    IG.initializer().accept(visitor);
-}
-
-void RISCVMIRGen::emitFunction(const ir::Function &IF, Function &MF) {
-    BasicBlock &prologueBlock = MF.append();
-
-    HashMap<const ir::BasicBlock *, BasicBlock *> blockMap;
-    for (const ir::BasicBlock &IB : IF) {
-        blockMap.put(&IB, &MF.append());
-    }
-
-    BasicBlock &epilogueBlock = MF.append();
-
-    //  high +------------+  <-- endSlot
-    //       |            |
-    //       | stackFrame |
-    //       |            |
-    //   low +------------+  <-- startSlot
-
-    StackSlot &startSlot = MF.stackFrame().append(0, 16);
-    StackSlot &raSlot = MF.stackFrame().append(8, 8);
-    StackSlot &fpSlot = MF.stackFrame().append(8, 8);
-
-    HashMap<const ir::Alloca *, StackSlot *> memoryMap;
-    for (const ir::BasicBlock &IB : IF) {
-        for (const ir::Instruction &II : IB) {
-            if (auto *alloca = dynamic_cast<const ir::Alloca *>(&II)) {
-                int size = alloca->allocatedType()->size(8);
-                int alignment = alloca->allocatedType()->alignment(8);
-                memoryMap.put(alloca, &MF.stackFrame().append(size, alignment));
+        for (auto &[IG, MG] : globalVarMap_) {
+            if (!IG->isDeclaration()) {
+                emitGlobalVar(*IG, *MG);
+            }
+        }
+        for (auto &[IF, MF] : functionMap_) {
+            if (!IF->empty()) {
+                emitFunction(*IF, *MF);
             }
         }
     }
 
-    StackSlot &endSlot = MF.stackFrame().append(0, 16);
+private:
+    const ir::Module *IM_;
+    Module *MM_;
+    HashMap<const ir::GlobalVar *, GlobalVar *> globalVarMap_;
+    HashMap<const ir::Function *, Function *> functionMap_;
 
-    prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
-    prologueBlock.append(std::make_unique<Sub>(8, share(*sp()), share(*sp()), share(*t6())));
-
-    prologueBlock.append(std::make_unique<Store>(
-        8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra())
-    ));
-
-    prologueBlock.append(std::make_unique<Store>(
-        8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())
-    ));
-
-    prologueBlock.append(std::make_unique<Marker>(kSave));
-
-    prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
-    prologueBlock.append(std::make_unique<Add>(8, share(*fp()), share(*sp()), share(*t6())));
-
-    prologueBlock.append(std::make_unique<Br>(blockMap[&IF.entry()]));
-
-    epilogueBlock.append(std::make_unique<Load>(
-        8, share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))
-    ));
-
-    epilogueBlock.append(std::make_unique<Load>(
-        8, share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))
-    ));
-
-    epilogueBlock.append(std::make_unique<Marker>(kRestore));
-
-    epilogueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
-    epilogueBlock.append(std::make_unique<Add>(8, share(*sp()), share(*sp()), share(*t6())));
-
-    int numIntegerResults = 0,
-        numFloatingResults = 0;
-    std::unique_ptr<ir::Type> returnType = IF.functionType()->returnType();
-    if (dynamic_cast<const ir::IntegerType *>(&*returnType)) {
-        ++numIntegerResults;
-    } else if (dynamic_cast<const ir::FloatingType *>(&*returnType)) {
-        ++numFloatingResults;
-    } else {
-        assert(*returnType == ir::Void());
+    void emitGlobalVar(const ir::GlobalVar &IG, GlobalVar &MG) {
+        ConstantVisitorImpl visitor(MG, globalVarMap_, functionMap_);
+        IG.initializer().accept(visitor);
     }
-    epilogueBlock.append(std::make_unique<RISCVRet>(numIntegerResults, numFloatingResults));
 
-    HashMap<const ir::Value *, std::shared_ptr<Register>> valueMap;
-    size_t numIntegerArgs = 0,
-           numFloatingArgs = 0,
-           numStackArgs = 0;
-    for (const ir::Argument &arg : args(IF)) {
-        if (dynamic_cast<const ir::IntegerType *>(&*arg.type())) {
-            if (numIntegerArgs < 8) {
-                std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
-                                          src = share(*riscvIntegerArgRegs()[numIntegerArgs]);
-                blockMap[&IF.entry()]->append(std::make_unique<Mov>(8, dst, src));
-                valueMap.put(&arg, dst);
-                ++numIntegerArgs;
-            } else {
-                std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
-                MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
-                blockMap[&IF.entry()]->append(std::make_unique<Load>(8, dst, std::move(src)));
-                valueMap.put(&arg, dst);
-                ++numStackArgs;
+    void emitFunction(const ir::Function &IF, Function &MF) {
+        BasicBlock &prologueBlock = MF.append();
+
+        HashMap<const ir::BasicBlock *, BasicBlock *> blockMap;
+        for (const ir::BasicBlock &IB : IF) {
+            blockMap.put(&IB, &MF.append());
+        }
+
+        BasicBlock &epilogueBlock = MF.append();
+
+        //  high +------------+  <-- endSlot
+        //       |            |
+        //       | stackFrame |
+        //       |            |
+        //   low +------------+  <-- startSlot
+
+        StackSlot &startSlot = MF.stackFrame().append(0, 16);
+        StackSlot &raSlot = MF.stackFrame().append(8, 8);
+        StackSlot &fpSlot = MF.stackFrame().append(8, 8);
+
+        HashMap<const ir::Alloca *, StackSlot *> memoryMap;
+        for (const ir::BasicBlock &IB : IF) {
+            for (const ir::Instruction &II : IB) {
+                if (auto *alloca = dynamic_cast<const ir::Alloca *>(&II)) {
+                    int size = alloca->allocatedType()->size(8);
+                    int alignment = alloca->allocatedType()->alignment(8);
+                    memoryMap.put(alloca, &MF.stackFrame().append(size, alignment));
+                }
             }
-        } else if (dynamic_cast<const ir::FloatingType *>(&*arg.type())) {
-            Precision precision = static_cast<const ir::FloatingType *>(&*arg.type())->precision();
-            if (numFloatingArgs < 8) {
-                std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
-                                          src = share(*riscvFloatingArgRegs()[numFloatingArgs]);
-                blockMap[&IF.entry()]->append(std::make_unique<FMov>(precision, dst, src));
-                valueMap.put(&arg, dst);
-                ++numFloatingArgs;
-            } else {
-                std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
-                MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
-                blockMap[&IF.entry()]->append(std::make_unique<FLoad>(precision, dst, std::move(src)));
-                valueMap.put(&arg, dst);
-                ++numStackArgs;
-            }
+        }
+
+        StackSlot &endSlot = MF.stackFrame().append(0, 16);
+
+        prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
+        prologueBlock.append(std::make_unique<Sub>(8, share(*sp()), share(*sp()), share(*t6())));
+
+        prologueBlock.append(std::make_unique<Store>(
+            8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra())
+        ));
+
+        prologueBlock.append(std::make_unique<Store>(
+            8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())
+        ));
+
+        prologueBlock.append(std::make_unique<Marker>(kSave));
+
+        prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
+        prologueBlock.append(std::make_unique<Add>(8, share(*fp()), share(*sp()), share(*t6())));
+
+        prologueBlock.append(std::make_unique<Br>(blockMap[&IF.entry()]));
+
+        epilogueBlock.append(std::make_unique<Load>(
+            8, share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))
+        ));
+
+        epilogueBlock.append(std::make_unique<Load>(
+            8, share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))
+        ));
+
+        epilogueBlock.append(std::make_unique<Marker>(kRestore));
+
+        epilogueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
+        epilogueBlock.append(std::make_unique<Add>(8, share(*sp()), share(*sp()), share(*t6())));
+
+        int numIntegerResults = 0,
+            numFloatingResults = 0;
+        std::unique_ptr<ir::Type> returnType = IF.functionType()->returnType();
+        if (dynamic_cast<const ir::IntegerType *>(&*returnType)) {
+            ++numIntegerResults;
+        } else if (dynamic_cast<const ir::FloatingType *>(&*returnType)) {
+            ++numFloatingResults;
         } else {
-            abort();
+            assert(*returnType == ir::Void());
         }
-    }
-    for (const ir::BasicBlock &IB : IF) {
-        for (const ir::Instruction &II : IB) {
-            if (*II.type() != ir::Void()) {
-                valueMap.put(&II, std::make_shared<VirtualRegister>());
+        epilogueBlock.append(std::make_unique<RISCVRet>(numIntegerResults, numFloatingResults));
+
+        HashMap<const ir::Value *, std::shared_ptr<Register>> valueMap;
+        size_t numIntegerArgs = 0,
+               numFloatingArgs = 0,
+               numStackArgs = 0;
+        for (const ir::Argument &arg : args(IF)) {
+            if (dynamic_cast<const ir::IntegerType *>(&*arg.type())) {
+                if (numIntegerArgs < 8) {
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
+                                              src = share(*riscvIntegerArgRegs()[numIntegerArgs]);
+                    blockMap[&IF.entry()]->append(std::make_unique<Mov>(8, dst, src));
+                    valueMap.put(&arg, dst);
+                    ++numIntegerArgs;
+                } else {
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
+                    MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
+                    blockMap[&IF.entry()]->append(std::make_unique<Load>(8, dst, std::move(src)));
+                    valueMap.put(&arg, dst);
+                    ++numStackArgs;
+                }
+            } else if (dynamic_cast<const ir::FloatingType *>(&*arg.type())) {
+                Precision precision = static_cast<const ir::FloatingType *>(&*arg.type())->precision();
+                if (numFloatingArgs < 8) {
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
+                                              src = share(*riscvFloatingArgRegs()[numFloatingArgs]);
+                    blockMap[&IF.entry()]->append(std::make_unique<FMov>(precision, dst, src));
+                    valueMap.put(&arg, dst);
+                    ++numFloatingArgs;
+                } else {
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
+                    MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
+                    blockMap[&IF.entry()]->append(std::make_unique<FLoad>(precision, dst, std::move(src)));
+                    valueMap.put(&arg, dst);
+                    ++numStackArgs;
+                }
+            } else {
+                abort();
+            }
+        }
+        for (const ir::BasicBlock &IB : IF) {
+            for (const ir::Instruction &II : IB) {
+                if (*II.type() != ir::Void()) {
+                    valueMap.put(&II, std::make_shared<VirtualRegister>());
+                }
+            }
+        }
+
+        InstructionVisitorImpl visitor(MF, globalVarMap_, functionMap_, blockMap, memoryMap, valueMap, &epilogueBlock);
+        for (const ir::BasicBlock &IB : IF) {
+            BasicBlock *MB = blockMap[&IB];
+            visitor.builder().setPos(MB);
+            for (const ir::Instruction &II : IB) {
+                II.accept(visitor);
             }
         }
     }
+};
 
-    InstructionVisitorImpl visitor(MF, globalVarMap_, functionMap_, blockMap, memoryMap, valueMap, &epilogueBlock);
-    for (const ir::BasicBlock &IB : IF) {
-        BasicBlock *MB = blockMap[&IB];
-        visitor.builder().setPos(MB);
-        for (const ir::Instruction &II : IB) {
-            II.accept(visitor);
-        }
-    }
+RISCVMIRGen::RISCVMIRGen(const ir::Module *IM, Module *MM)
+    : impl_(std::make_unique<Impl>(IM, MM)) {}
+
+RISCVMIRGen::~RISCVMIRGen() = default;
+
+void RISCVMIRGen::emit() {
+    impl_->emit();
 }

@@ -1,25 +1,23 @@
 #pragma once
 
-#include "mini-llvm/mc/Fragment.h"
+#include <memory>
+
 #include "mini-llvm/mc/Program.h"
-#include "mini-llvm/mir/Function.h"
-#include "mini-llvm/mir/GlobalVar.h"
 #include "mini-llvm/mir/Module.h"
 
 namespace mini_llvm {
 
 class RISCVMCGen {
 public:
-    RISCVMCGen(const mir::Module *MM, mc::Program *program) : MM_(MM), program_(program) {}
+    RISCVMCGen(const mir::Module *MM, mc::Program *program);
+    ~RISCVMCGen();
 
     void emit();
 
 private:
-    const mir::Module *MM_;
-    mc::Program *program_;
+    class Impl;
 
-    void emitGlobalVar(const mir::GlobalVar &G, mc::Fragment &fragment);
-    void emitFunction(const mir::Function &F, mc::Fragment &fragment);
+    std::unique_ptr<Impl> impl_;
 };
 
 } // namespace mini_llvm

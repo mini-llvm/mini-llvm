@@ -17,7 +17,6 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/ir_reader/Symbol.h"
 #include "mini-llvm/ir_reader/Token.h"
-#include "mini-llvm/utils/HashMap.h"
 
 namespace mini_llvm::ir {
 
@@ -45,7 +44,8 @@ private:
 
 class Parser {
 public:
-    explicit Parser(std::vector<Token>::const_iterator current) : current_(current) {}
+    explicit Parser(std::vector<Token>::const_iterator current);
+    ~Parser();
 
     Module parseModule();
     std::shared_ptr<GlobalVar> parseGlobalVarHeader(bool &isDeclaration);
@@ -61,8 +61,9 @@ public:
     Symbol parseSymbol(std::optional<Symbol::Scope> scope = std::nullopt);
 
 private:
-    std::vector<Token>::const_iterator current_;
-    HashMap<Symbol, std::shared_ptr<Value>> symbolTable_;
+    class Impl;
+
+    std::unique_ptr<Impl> impl_;
 };
 
 Module parseModule(const std::vector<Token> &tokens);

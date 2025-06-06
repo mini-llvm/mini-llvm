@@ -820,64 +820,83 @@ private:
 
 } // namespace
 
+class RISCVMCGen::Impl {
+public:
+    Impl(const mir::Module *MM, Program *program)
+        : MM_(MM), program_(program) {}
+
+    void emit() {
+        for (const mir::GlobalVar &G : globalVars(*MM_)) {
+            if (!G.isDeclaration()) {
+                Section section;
+                if (dynamic_cast<const mir::ZeroConstant *>(&G.initializer())) {
+                    section = Section::kBSS;
+                } else if (G.isConstant()) {
+                    section = Section::kROData;
+                } else {
+                    section = Section::kData;
+                }
+
+                bool isGlobal = (G.linkage() == Linkage::kExternal);
+                std::string name = emitName(G);
+
+                Fragment fragment(section, isGlobal, std::move(name));
+                emitGlobalVar(G, fragment);
+
+                program_->append(std::move(fragment));
+            }
+        }
+
+        for (const mir::Function &F : functions(*MM_)) {
+            if (!F.isDeclaration()) {
+                Section section = Section::kText;
+                bool isGlobal = (F.linkage() == Linkage::kExternal);
+                std::string name = emitName(F);
+
+                Fragment fragment(section, isGlobal, std::move(name));
+                emitFunction(F, fragment);
+
+                program_->append(std::move(fragment));
+            }
+        }
+    }
+
+private:
+    const mir::Module *MM_;
+    Program *program_;
+
+    void emitGlobalVar(const mir::GlobalVar &G, Fragment &fragment) {
+        ConstantVisitorImpl visitor;
+        visitor.builder().setPos(&fragment);
+        G.initializer().accept(visitor);
+    }
+
+    void emitFunction(const mir::Function &F, Fragment &fragment) {
+        RISCVInstructionVisitorImpl visitor;
+        visitor.builder().setPos(&fragment);
+    #ifndef NDEBUG
+        for (const mir::BasicBlock &B : F) {
+            for (const mir::Instruction &I : B) {
+                for (const mir::RegisterOperand *op : I.regOps()) {
+                    assert(dynamic_cast<const mir::PhysicalRegister *>(&**op));
+                }
+            }
+        }
+    #endif
+        for (const mir::BasicBlock &B : F) {
+            fragment.append(std::make_unique<Label>(emitName(B)));
+            for (const mir::Instruction &I : B) {
+                I.accept(visitor);
+            }
+        }
+    }
+};
+
+RISCVMCGen::RISCVMCGen(const mir::Module *MM, Program *program)
+    : impl_(std::make_unique<Impl>(MM, program)) {}
+
+RISCVMCGen::~RISCVMCGen() = default;
+
 void RISCVMCGen::emit() {
-    for (const mir::GlobalVar &G : globalVars(*MM_)) {
-        if (!G.isDeclaration()) {
-            Section section;
-            if (dynamic_cast<const mir::ZeroConstant *>(&G.initializer())) {
-                section = Section::kBSS;
-            } else if (G.isConstant()) {
-                section = Section::kROData;
-            } else {
-                section = Section::kData;
-            }
-
-            bool isGlobal = (G.linkage() == Linkage::kExternal);
-            std::string name = emitName(G);
-
-            Fragment fragment(section, isGlobal, std::move(name));
-            emitGlobalVar(G, fragment);
-
-            program_->append(std::move(fragment));
-        }
-    }
-
-    for (const mir::Function &F : functions(*MM_)) {
-        if (!F.isDeclaration()) {
-            Section section = Section::kText;
-            bool isGlobal = (F.linkage() == Linkage::kExternal);
-            std::string name = emitName(F);
-
-            Fragment fragment(section, isGlobal, std::move(name));
-            emitFunction(F, fragment);
-
-            program_->append(std::move(fragment));
-        }
-    }
-}
-
-void RISCVMCGen::emitGlobalVar(const mir::GlobalVar &G, Fragment &fragment) {
-    ConstantVisitorImpl visitor;
-    visitor.builder().setPos(&fragment);
-    G.initializer().accept(visitor);
-}
-
-void RISCVMCGen::emitFunction(const mir::Function &F, Fragment &fragment) {
-    RISCVInstructionVisitorImpl visitor;
-    visitor.builder().setPos(&fragment);
-#ifndef NDEBUG
-    for (const mir::BasicBlock &B : F) {
-        for (const mir::Instruction &I : B) {
-            for (const mir::RegisterOperand *op : I.regOps()) {
-                assert(dynamic_cast<const mir::PhysicalRegister *>(&**op));
-            }
-        }
-    }
-#endif
-    for (const mir::BasicBlock &B : F) {
-        fragment.append(std::make_unique<Label>(emitName(B)));
-        for (const mir::Instruction &I : B) {
-            I.accept(visitor);
-        }
-    }
+    impl_->emit();
 }
