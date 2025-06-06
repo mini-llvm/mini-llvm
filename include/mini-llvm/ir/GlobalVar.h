@@ -50,7 +50,7 @@ public:
     std::string format() const override;
 
 protected:
-    bool equals(const Constant &other) const override {
+    bool equals([[maybe_unused]] const Constant &other) const override {
         assert(typeid(*this) != typeid(other));
         return false;
     }
