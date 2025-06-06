@@ -21,7 +21,7 @@ struct Token {
 };
 
 inline bool operator==(const Token &lhs, const Token &rhs) {
-    return lhs.kind == rhs.kind && rhs.value == rhs.value && lhs.location == rhs.location;
+    return lhs.kind == rhs.kind && lhs.value == rhs.value && lhs.location == rhs.location;
 }
 
 inline constexpr const char *name(Token::Kind kind) {
