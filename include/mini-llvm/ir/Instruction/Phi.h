@@ -19,8 +19,7 @@
 namespace mini_llvm::ir {
 
 class Phi final : public Instruction {
-    using IncomingList =
-        std::list<std::pair<std::unique_ptr<Use<BasicBlock>>, std::unique_ptr<Use<Value>>>>;
+    using IncomingList = std::list<std::pair<std::unique_ptr<Use<BasicBlock>>, std::unique_ptr<Use<Value>>>>;
 
 public:
     struct Incoming {

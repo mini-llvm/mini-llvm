@@ -14,8 +14,9 @@ namespace mini_llvm {
 
 class RegisterAllocator {
 public:
-    using PhysicalRegisterAction =
-        FunctionRef<void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)>;
+    using PhysicalRegisterAction = FunctionRef<
+        void (mir::PhysicalRegister *physReg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)
+    >;
 
     virtual ~RegisterAllocator() = default;
 
