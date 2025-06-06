@@ -264,11 +264,11 @@ TEST(LexerTest, LocalIdentifierReserved) {
 }
 
 TEST(LexerTest, String) {
-    const char *input = R"(c"test\\42\0A\00")";
+    const char *input = R"(c" ~AZaz\\09\00\1F\7F\FF")";
 
     std::vector<Token> expectedOutput{
-        {kString, std::vector<int8_t>{0x74, 0x65, 0x73, 0x74, 0x5c, 0x34, 0x32, 0x0a, 0x00}, input + 0},
-        {kEOF, {}, input + 17},
+        {kString, std::vector<int8_t>{32, 126, 65, 90, 97, 122, 92, 48, 57, 0, 31, 127, -1}, input + 0},
+        {kEOF, {}, input + 25},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);

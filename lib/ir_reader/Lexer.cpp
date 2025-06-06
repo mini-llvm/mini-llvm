@@ -144,7 +144,7 @@ Token Lexer::nextTokenImpl() {
                                 throw LexException("invalid character in escape sequence", current_);
                             }
                         }
-                        element = element * 0xa + static_cast<int8_t>(isdigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
+                        element = element * 0x10 + static_cast<int8_t>(isdigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
                         ++current_;
                     }
                     elements.push_back(element);
