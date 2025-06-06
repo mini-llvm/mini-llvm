@@ -21,7 +21,7 @@ TEST(LexerTest, Empty) {
     EXPECT_EQ(lex(input), expectedOutput);
 }
 
-TEST(LexerTest, Comments) {
+TEST(LexerTest, Comment) {
     const char *input = R"(
 ; Comment
 @test = ; Comment
@@ -144,12 +144,12 @@ TEST(LexerTest, HexNumberUnsignedMax) {
 }
 
 TEST(LexerTest, Label) {
-    const char *input = "some_test.42:";
+    const char *input = "AZaz09._:";
 
     std::vector<Token> expectedOutput{
-        {kName,  "some_test.42", input + 0},
-        {kColon, {},             input + 12},
-        {kEOF,   {},             input + 13},
+        {kName,  "AZaz09._", input + 0},
+        {kColon, {},       input + 8},
+        {kEOF,   {},       input + 9},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
@@ -204,12 +204,12 @@ TEST(LexerTest, LabelReserved) {
 }
 
 TEST(LexerTest, LocalIdentifier) {
-    const char *input = "%some_test.42";
+    const char *input = "%AZaz09._";
 
     std::vector<Token> expectedOutput{
-        {kPercent, {},             input + 0},
-        {kName,    "some_test.42", input + 1},
-        {kEOF,     {},             input + 13},
+        {kPercent, {},         input + 0},
+        {kName,    "AZaz09._", input + 1},
+        {kEOF,     {},         input + 9},
     };
 
     EXPECT_EQ(lex(input), expectedOutput);
