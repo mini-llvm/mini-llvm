@@ -11,8 +11,8 @@ using namespace mini_llvm::mir;
 RISCVRegister *RISCVRegister::get(int idx) {
     static HashMap<int, std::shared_ptr<RISCVRegister>> pool;
 
-    if (pool.contains(idx)) {
-        return &*pool[idx];
+    if (auto i = pool.find(idx); i != pool.end()) {
+        return &*i->second;
     }
 
     switch (idx) {
