@@ -180,7 +180,7 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (!ir::verifyModule(*IM)) {
-        std::print(stderr, "{}: error: invalid module\n", args[0]);
+        std::print(stderr, "{}: error: ill-formed module\n", args[0]);
         return 1;
     }
 
