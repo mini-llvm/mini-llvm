@@ -96,10 +96,11 @@
   - `alloca`
   - `load`
   - `store`
-- `getelemenetptr`
-- `select`
-- `call`
-- `phi`
+  - `getelemenetptr`
+- Other
+  - `select`
+  - `call`
+  - `phi`
 
 ## Transform & Analysis Passes (Work in Progress)
 
