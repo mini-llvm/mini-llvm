@@ -901,6 +901,36 @@ public:
                         throw ParseException("must not be void", returnTypeLocation);
                     }
 
+                    bool hasParamTypes = false;
+                    std::vector<std::unique_ptr<Type>> paramTypes;
+                    bool isVarArgs = false;
+
+                    if (current_->kind == kLeftParen) {
+                        hasParamTypes = true;
+                        ++current_;
+                        if (current_->kind != kRightParen) {
+                            if (current_->kind == kEllipsis) {
+                                isVarArgs = true;
+                                ++current_;
+                            } else {
+                                paramTypes.push_back(parseType());
+                            }
+                            while (!isVarArgs && current_->kind == kComma) {
+                                ++current_;
+                                if (current_->kind == kEllipsis) {
+                                    isVarArgs = true;
+                                    ++current_;
+                                } else {
+                                    paramTypes.push_back(parseType());
+                                }
+                            }
+                        }
+                        if (current_->kind != kRightParen) {
+                            throw ParseException("expected ')'", current_);
+                        }
+                        ++current_;
+                    }
+
                     std::shared_ptr<Value> callee = parseValue(Ptr());
 
                     if (current_->kind != kLeftParen) {
@@ -925,19 +955,29 @@ public:
                     if (dynamic_cast<const Function *>(&*callee)) {
                         std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
 
-                        if (*calleeFunction->functionType()->returnType() != *returnType) {
-                            throw ParseException("return type mismatch", returnTypeLocation);
+                        if (hasParamTypes) {
+                            std::unique_ptr<FunctionType> fuunctionType = std::make_unique<FunctionType>(
+                                std::move(returnType), std::move(paramTypes), isVarArgs
+                            );
+                            if (*calleeFunction->functionType() != *fuunctionType) {
+                                throw ParseException("function type mismatch", returnTypeLocation);
+                            }
+                        } else {
+                            if (*calleeFunction->functionType()->returnType() != *returnType) {
+                                throw ParseException("return type mismatch", returnTypeLocation);
+                            }
                         }
 
-                        I =  std::make_shared<Call>(std::move(calleeFunction), std::move(args));
+                        I = std::make_shared<Call>(std::move(calleeFunction), std::move(args));
                     } else {
-                        std::vector<std::unique_ptr<Type>> paramTypes;
-                        for (const auto &arg : args) {
-                            paramTypes.push_back(arg->type());
+                        if (!hasParamTypes) {
+                            for (const auto &arg : args) {
+                                paramTypes.push_back(arg->type());
+                            }
                         }
 
                         std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
-                            std::move(returnType), std::move(paramTypes), false
+                            std::move(returnType), std::move(paramTypes), isVarArgs
                         );
 
                         I = std::make_shared<IndirectCall>(std::move(functionType), std::move(callee), std::move(args));
@@ -1038,20 +1078,37 @@ public:
                 throw ParseException("must be void", returnTypeLocation);
             }
 
-            Location symbolLocation = current_;
-            Symbol symbol = parseSymbol(Symbol::Scope::kGlobal);
-            if (!symbolTable_.contains(symbol)) {
-                throw ParseException("undefined global identifier", symbolLocation);
-            }
-            std::shared_ptr<Value> value = symbolTable_[symbol];
-            if (!dynamic_cast<const Function *>(&*value)) {
-                throw ParseException("identifier must be function", symbolLocation);
-            }
-            std::shared_ptr<Function> callee = cast<Function>(value);
+            bool hasParamTypes = false;
+            std::vector<std::unique_ptr<Type>> paramTypes;
+            bool isVarArgs = false;
 
-            if (*callee->functionType()->returnType() != *returnType) {
-                throw ParseException("return type mismatch", symbolLocation);
+            if (current_->kind == kLeftParen) {
+                hasParamTypes = true;
+                ++current_;
+                if (current_->kind != kRightParen) {
+                    if (current_->kind == kEllipsis) {
+                        isVarArgs = true;
+                        ++current_;
+                    } else {
+                        paramTypes.push_back(parseType());
+                    }
+                    while (!isVarArgs && current_->kind == kComma) {
+                        ++current_;
+                        if (current_->kind == kEllipsis) {
+                            isVarArgs = true;
+                            ++current_;
+                        } else {
+                            paramTypes.push_back(parseType());
+                        }
+                    }
+                }
+                if (current_->kind != kRightParen) {
+                    throw ParseException("expected ')'", current_);
+                }
+                ++current_;
             }
+
+            std::shared_ptr<Value> callee = parseValue(Ptr());
 
             if (current_->kind != kLeftParen) {
                 throw ParseException("expected '('", current_);
@@ -1072,7 +1129,36 @@ public:
             }
             ++current_;
 
-            return std::make_shared<Call>(std::move(callee), std::move(args));
+            if (dynamic_cast<const Function *>(&*callee)) {
+                std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
+
+                if (hasParamTypes) {
+                    std::unique_ptr<FunctionType> fuunctionType = std::make_unique<FunctionType>(
+                        std::move(returnType), std::move(paramTypes), isVarArgs
+                    );
+                    if (*calleeFunction->functionType() != *fuunctionType) {
+                        throw ParseException("function type mismatch", returnTypeLocation);
+                    }
+                } else {
+                    if (*calleeFunction->functionType()->returnType() != *returnType) {
+                        throw ParseException("return type mismatch", returnTypeLocation);
+                    }
+                }
+
+                return std::make_shared<Call>(std::move(calleeFunction), std::move(args));
+            } else {
+                if (!hasParamTypes) {
+                    for (const auto &arg : args) {
+                        paramTypes.push_back(arg->type());
+                    }
+                }
+
+                std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
+                    std::move(returnType), std::move(paramTypes), isVarArgs
+                );
+
+                return std::make_shared<IndirectCall>(std::move(functionType), std::move(callee), std::move(args));
+            }
         } else if (current_->kind == kBr) {
             ++current_;
 

@@ -5,19 +5,19 @@ declare i32 @printf(ptr, ...)
 
 define i32 @source(i32 %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @empty)
+  %2 = call i32 (ptr, ...) @printf(ptr @empty)
   ret i32 %0
 }
 
 define void @sink1(ptr %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @empty)
+  %2 = call i32 (ptr, ...) @printf(ptr @empty)
   ret void
 }
 
 define void @sink2(i32 %0) noinline {
 1:
-  %2 = call i32 @printf(ptr @format, i32 %0)
+  %2 = call i32 (ptr, ...) @printf(ptr @format, i32 %0)
   ret void
 }
 

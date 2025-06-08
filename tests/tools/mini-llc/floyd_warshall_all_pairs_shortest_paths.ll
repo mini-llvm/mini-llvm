@@ -158,7 +158,7 @@ define i32 @main() {
   %11 = load i32, ptr %10
   %12 = getelementptr [25 x i32], ptr %2, i64 0, i64 4
   %13 = load i32, ptr %12
-  %14 = call i32 @printf(ptr @format, i32 %5, i32 %7, i32 %9, i32 %11, i32 %13)
+  %14 = call i32 (ptr, ...) @printf(ptr @format, i32 %5, i32 %7, i32 %9, i32 %11, i32 %13)
   %15 = getelementptr [25 x i32], ptr %2, i64 0, i64 5
   %16 = load i32, ptr %15
   %17 = getelementptr [25 x i32], ptr %2, i64 0, i64 6
@@ -169,7 +169,7 @@ define i32 @main() {
   %22 = load i32, ptr %21
   %23 = getelementptr [25 x i32], ptr %2, i64 0, i64 9
   %24 = load i32, ptr %23
-  %25 = call i32 @printf(ptr @format, i32 %16, i32 %18, i32 %20, i32 %22, i32 %24)
+  %25 = call i32 (ptr, ...) @printf(ptr @format, i32 %16, i32 %18, i32 %20, i32 %22, i32 %24)
   %26 = getelementptr [25 x i32], ptr %2, i64 0, i64 10
   %27 = load i32, ptr %26
   %28 = getelementptr [25 x i32], ptr %2, i64 0, i64 11
@@ -180,7 +180,7 @@ define i32 @main() {
   %33 = load i32, ptr %32
   %34 = getelementptr [25 x i32], ptr %2, i64 0, i64 14
   %35 = load i32, ptr %34
-  %36 = call i32 @printf(ptr @format, i32 %27, i32 %29, i32 %31, i32 %33, i32 %35)
+  %36 = call i32 (ptr, ...) @printf(ptr @format, i32 %27, i32 %29, i32 %31, i32 %33, i32 %35)
   %37 = getelementptr [25 x i32], ptr %2, i64 0, i64 15
   %38 = load i32, ptr %37
   %39 = getelementptr [25 x i32], ptr %2, i64 0, i64 16
@@ -191,7 +191,7 @@ define i32 @main() {
   %44 = load i32, ptr %43
   %45 = getelementptr [25 x i32], ptr %2, i64 0, i64 19
   %46 = load i32, ptr %45
-  %47 = call i32 @printf(ptr @format, i32 %38, i32 %40, i32 %42, i32 %44, i32 %46)
+  %47 = call i32 (ptr, ...) @printf(ptr @format, i32 %38, i32 %40, i32 %42, i32 %44, i32 %46)
   %48 = getelementptr [25 x i32], ptr %2, i64 0, i64 20
   %49 = load i32, ptr %48
   %50 = getelementptr [25 x i32], ptr %2, i64 0, i64 21
@@ -202,6 +202,6 @@ define i32 @main() {
   %55 = load i32, ptr %54
   %56 = getelementptr [25 x i32], ptr %2, i64 0, i64 24
   %57 = load i32, ptr %56
-  %58 = call i32 @printf(ptr @format, i32 %49, i32 %51, i32 %53, i32 %55, i32 %57)
+  %58 = call i32 (ptr, ...) @printf(ptr @format, i32 %49, i32 %51, i32 %53, i32 %55, i32 %57)
   ret i32 0
 }

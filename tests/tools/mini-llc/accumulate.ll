@@ -49,6 +49,6 @@ define i32 @main() {
   %1 = alloca [8 x i32]
   %2 = call ptr @memcpy(ptr %1, ptr @a, i64 32)
   %3 = call i32 @accumulate(ptr %1, i32 8)
-  %4 = call i32 @printf(ptr @format, i32 %3)
+  %4 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
   ret i32 0
 }

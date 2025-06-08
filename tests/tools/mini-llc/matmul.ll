@@ -140,6 +140,6 @@ define i32 @main() {
   %19 = load i32, ptr %11
   %20 = load i32, ptr %12
   %21 = load i32, ptr %13
-  %22 = call i32 @printf(ptr @format, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18, i32 %19, i32 %20, i32 %21)
+  %22 = call i32 (ptr, ...) @printf(ptr @format, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18, i32 %19, i32 %20, i32 %21)
   ret i32 0
 }

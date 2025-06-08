@@ -181,6 +181,6 @@ define i32 @main() {
   call void @linear_regression(ptr %1, ptr %2, i32 10, ptr %3, ptr %4)
   %7 = load double, ptr %3
   %8 = load double, ptr %4
-  %9 = call i32 @printf(ptr @format, double %7, double %8)
+  %9 = call i32 (ptr, ...) @printf(ptr @format, double %7, double %8)
   ret i32 0
 }

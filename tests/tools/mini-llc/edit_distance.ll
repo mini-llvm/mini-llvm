@@ -264,8 +264,8 @@ define i32 @edit_distance(ptr %0, ptr %1, i32 %2, i32 %3) {
 define i32 @main() {
 0:
   %1 = call i32 @edit_distance(ptr @str1, ptr @str2, i32 6, i32 7)
-  %2 = call i32 @printf(ptr @format, i32 %1)
+  %2 = call i32 (ptr, ...) @printf(ptr @format, i32 %1)
   %3 = call i32 @edit_distance(ptr @str3, ptr @str4, i32 9, i32 9)
-  %4 = call i32 @printf(ptr @format, i32 %3)
+  %4 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
   ret i32 0
 }

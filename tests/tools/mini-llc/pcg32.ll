@@ -83,14 +83,14 @@ define i32 @main() {
   call void @pcg32_seed(ptr %1, ptr %2, i64 123456789, i64 1)
   %3 = load i64, ptr %2
   %4 = call i32 @pcg32(ptr %1, i64 %3)
-  %5 = call i32 @printf(ptr @format, i32 %4)
+  %5 = call i32 (ptr, ...) @printf(ptr @format, i32 %4)
   %6 = call i32 @pcg32(ptr %1, i64 %3)
-  %7 = call i32 @printf(ptr @format, i32 %6)
+  %7 = call i32 (ptr, ...) @printf(ptr @format, i32 %6)
   %8 = call i32 @pcg32(ptr %1, i64 %3)
-  %9 = call i32 @printf(ptr @format, i32 %8)
+  %9 = call i32 (ptr, ...) @printf(ptr @format, i32 %8)
   %10 = call i32 @pcg32(ptr %1, i64 %3)
-  %11 = call i32 @printf(ptr @format, i32 %10)
+  %11 = call i32 (ptr, ...) @printf(ptr @format, i32 %10)
   %12 = call i32 @pcg32(ptr %1, i64 %3)
-  %13 = call i32 @printf(ptr @format, i32 %12)
+  %13 = call i32 (ptr, ...) @printf(ptr @format, i32 %12)
   ret i32 0
 }

@@ -13,7 +13,7 @@ define i32 @main() {
   %6 = load i32, ptr %5
   store i32 1, ptr %4
   %7 = load i32, ptr %5
-  %8 = call i32 @printf(ptr @format, i32 %6)
-  %9 = call i32 @printf(ptr @format, i32 %7)
+  %8 = call i32 (ptr, ...) @printf(ptr @format, i32 %6)
+  %9 = call i32 (ptr, ...) @printf(ptr @format, i32 %7)
   ret i32 0
 }

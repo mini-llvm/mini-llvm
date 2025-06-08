@@ -16,8 +16,8 @@ define i32 @main() {
   %1 = call i32 @impure()
   %2 = call i32 @impure()
   %3 = call i32 @impure()
-  %4 = call i32 @printf(ptr @format, i32 %1)
-  %5 = call i32 @printf(ptr @format, i32 %2)
-  %6 = call i32 @printf(ptr @format, i32 %3)
+  %4 = call i32 (ptr, ...) @printf(ptr @format, i32 %1)
+  %5 = call i32 (ptr, ...) @printf(ptr @format, i32 %2)
+  %6 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
   ret i32 0
 }

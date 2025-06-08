@@ -8,8 +8,8 @@ define void @test(ptr %0, ptr %1) noinline {
   %3 = load i32, ptr %1
   store i32 1, ptr %0
   %4 = load i32, ptr %1
-  %5 = call i32 @printf(ptr @format, i32 %3)
-  %6 = call i32 @printf(ptr @format, i32 %4)
+  %5 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
+  %6 = call i32 (ptr, ...) @printf(ptr @format, i32 %4)
   ret void
 }
 

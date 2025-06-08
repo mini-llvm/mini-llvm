@@ -41,7 +41,7 @@ std::string Call::format() const {
         formatted.add("{:o} =", *this);
     }
     formatted.add("call");
-    formatted.add("{}", *type());
+    formatted.add("{}", *callee()->functionType());
     formatted.add("{:o}({})", *callee(), formattedArgs);
     return formatted.toString();
 }

@@ -40,7 +40,7 @@ std::string IndirectCall::format() const {
         formatted.add("{:o} =", *this);
     }
     formatted.add("call");
-    formatted.add("{}", *type());
+    formatted.add("{}", *functionType());
     formatted.add("{:o}({})", *callee(), formattedArgs);
     return formatted.toString();
 }

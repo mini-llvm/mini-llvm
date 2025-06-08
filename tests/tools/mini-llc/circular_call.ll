@@ -52,11 +52,11 @@ define i32 @main() {
   %4 = call i32 @test1(i32 3)
   %5 = call i32 @test1(i32 4)
   %6 = call i32 @test1(i32 5)
-  %7 = call i32 @printf(ptr @format, i32 %1)
-  %8 = call i32 @printf(ptr @format, i32 %2)
-  %9 = call i32 @printf(ptr @format, i32 %3)
-  %10 = call i32 @printf(ptr @format, i32 %4)
-  %11 = call i32 @printf(ptr @format, i32 %5)
-  %12 = call i32 @printf(ptr @format, i32 %6)
+  %7 = call i32 (ptr, ...) @printf(ptr @format, i32 %1)
+  %8 = call i32 (ptr, ...) @printf(ptr @format, i32 %2)
+  %9 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
+  %10 = call i32 (ptr, ...) @printf(ptr @format, i32 %4)
+  %11 = call i32 (ptr, ...) @printf(ptr @format, i32 %5)
+  %12 = call i32 (ptr, ...) @printf(ptr @format, i32 %6)
   ret i32 0
 }

@@ -49,14 +49,14 @@ define i32 @main() {
   %1 = alloca i32
   call void @xorshift32_seed(ptr %1, i32 123456789)
   %2 = call i32 @xorshift32(ptr %1)
-  %3 = call i32 @printf(ptr @format, i32 %2)
+  %3 = call i32 (ptr, ...) @printf(ptr @format, i32 %2)
   %4 = call i32 @xorshift32(ptr %1)
-  %5 = call i32 @printf(ptr @format, i32 %4)
+  %5 = call i32 (ptr, ...) @printf(ptr @format, i32 %4)
   %6 = call i32 @xorshift32(ptr %1)
-  %7 = call i32 @printf(ptr @format, i32 %6)
+  %7 = call i32 (ptr, ...) @printf(ptr @format, i32 %6)
   %8 = call i32 @xorshift32(ptr %1)
-  %9 = call i32 @printf(ptr @format, i32 %8)
+  %9 = call i32 (ptr, ...) @printf(ptr @format, i32 %8)
   %10 = call i32 @xorshift32(ptr %1)
-  %11 = call i32 @printf(ptr @format, i32 %10)
+  %11 = call i32 (ptr, ...) @printf(ptr @format, i32 %10)
   ret i32 0
 }

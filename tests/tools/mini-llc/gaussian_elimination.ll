@@ -333,6 +333,6 @@ define i32 @main() {
   %6 = load double, ptr %5
   %7 = getelementptr [12 x double], ptr %1, i64 0, i64 11
   %8 = load double, ptr %7
-  %9 = call i32 @printf(ptr @format, double %4, double %6, double %8)
+  %9 = call i32 (ptr, ...) @printf(ptr @format, double %4, double %6, double %8)
   ret i32 0
 }

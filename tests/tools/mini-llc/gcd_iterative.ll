@@ -35,10 +35,10 @@ define i32 @gcd(i32 %0, i32 %1) {
 define i32 @main() {
 0:
   %1 = call i32 @gcd(i32 1, i32 0)
-  %2 = call i32 @printf(ptr @format, i32 %1)
+  %2 = call i32 (ptr, ...) @printf(ptr @format, i32 %1)
   %3 = call i32 @gcd(i32 30, i32 42)
-  %4 = call i32 @printf(ptr @format, i32 %3)
+  %4 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
   %5 = call i32 @gcd(i32 2136, i32 3456)
-  %6 = call i32 @printf(ptr @format, i32 %5)
+  %6 = call i32 (ptr, ...) @printf(ptr @format, i32 %5)
   ret i32 0
 }

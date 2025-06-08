@@ -31,10 +31,10 @@ define i32 @sum(i32 %0) {
 define i32 @main() {
 0:
   %1 = call i32 @sum(i32 0)
-  %2 = call i32 @printf(ptr @format, i32 %1)
+  %2 = call i32 (ptr, ...) @printf(ptr @format, i32 %1)
   %3 = call i32 @sum(i32 1)
-  %4 = call i32 @printf(ptr @format, i32 %3)
+  %4 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
   %5 = call i32 @sum(i32 100)
-  %6 = call i32 @printf(ptr @format, i32 %5)
+  %6 = call i32 (ptr, ...) @printf(ptr @format, i32 %5)
   ret i32 0
 }

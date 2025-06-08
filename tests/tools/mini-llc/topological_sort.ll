@@ -318,7 +318,7 @@ define i32 @main() {
   %19 = load i32, ptr %18
   %20 = getelementptr i32, ptr %5, i64 7
   %21 = load i32, ptr %20
-  %22 = call i32 @printf(ptr @format, i32 %7, i32 %9, i32 %11, i32 %13, i32 %15, i32 %17, i32 %19, i32 %21)
+  %22 = call i32 (ptr, ...) @printf(ptr @format, i32 %7, i32 %9, i32 %11, i32 %13, i32 %15, i32 %17, i32 %19, i32 %21)
   call void @free(ptr %5)
   call void @free(ptr %4)
   call void @free(ptr %3)

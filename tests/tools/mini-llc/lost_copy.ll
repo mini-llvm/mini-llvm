@@ -13,6 +13,6 @@ define i32 @main() {
   br i1 %4, label %1, label %5
 
 5:
-  %6 = call i32 @printf(ptr @format, i32 %2)
+  %6 = call i32 (ptr, ...) @printf(ptr @format, i32 %2)
   ret i32 0
 }

@@ -49,7 +49,7 @@ define void @visit(i32 %0) {
   %2 = alloca i32
   store i32 %0, ptr %2
   %3 = load i32, ptr %2
-  %4 = call i32 @printf(ptr @format, i32 %3)
+  %4 = call i32 (ptr, ...) @printf(ptr @format, i32 %3)
   ret void
 }
 

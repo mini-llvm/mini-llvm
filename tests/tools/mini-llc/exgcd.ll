@@ -62,16 +62,16 @@ define i32 @main() {
   %4 = load i32, ptr %1
   %5 = load i32, ptr %2
   %6 = load i32, ptr %3
-  %7 = call i32 @printf(ptr @format, i32 %4, i32 %5, i32 %6)
+  %7 = call i32 (ptr, ...) @printf(ptr @format, i32 %4, i32 %5, i32 %6)
   call void @exgcd(i32 30, i32 12, ptr %1, ptr %2, ptr %3)
   %8 = load i32, ptr %1
   %9 = load i32, ptr %2
   %10 = load i32, ptr %3
-  %11 = call i32 @printf(ptr @format, i32 %8, i32 %9, i32 %10)
+  %11 = call i32 (ptr, ...) @printf(ptr @format, i32 %8, i32 %9, i32 %10)
   call void @exgcd(i32 99, i32 78, ptr %1, ptr %2, ptr %3)
   %12 = load i32, ptr %1
   %13 = load i32, ptr %2
   %14 = load i32, ptr %3
-  %15 = call i32 @printf(ptr @format, i32 %12, i32 %13, i32 %14)
+  %15 = call i32 (ptr, ...) @printf(ptr @format, i32 %12, i32 %13, i32 %14)
   ret i32 0
 }

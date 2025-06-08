@@ -14,8 +14,8 @@ define void @test(i64 %0, i64 %1) noinline {
   %9 = load i32, ptr %8
   store i32 1, ptr %7
   %10 = load i32, ptr %8
-  %11 = call i32 @printf(ptr @format, i32 %9)
-  %12 = call i32 @printf(ptr @format, i32 %10)
+  %11 = call i32 (ptr, ...) @printf(ptr @format, i32 %9)
+  %12 = call i32 (ptr, ...) @printf(ptr @format, i32 %10)
   ret void
 }
 
