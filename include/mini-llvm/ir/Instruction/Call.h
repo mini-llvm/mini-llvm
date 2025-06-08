@@ -13,6 +13,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/IndirectIterator.h"
@@ -106,6 +107,10 @@ private:
     Use<Function> callee_;
     ArgumentList args_;
 };
+
+inline std::unique_ptr<FunctionType> functionType(const Call &I) {
+    return I.callee()->functionType();
+}
 
 inline auto args(Call &I) {
     return std::ranges::subrange(I.arg_begin(), I.arg_end());

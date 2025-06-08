@@ -25,8 +25,9 @@ tests=(
     rem
     relational
     casting
-    select
     getelementptr
+    select
+    indirect_call
     bit
     max
     sum

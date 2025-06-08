@@ -114,4 +114,7 @@ inline std::vector<RISCVRegister *> riscvFloatingArgRegs() {
     };
 }
 
+std::unordered_set<PhysicalRegister *> riscvCallImplicitDsts();
+std::unordered_set<PhysicalRegister *> riscvCallImplicitSrcs(int numIntegerArgs, int numFloatingArgs);
+
 } // namespace mini_llvm::mir

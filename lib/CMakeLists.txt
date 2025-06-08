@@ -106,6 +106,7 @@ add_library(mini-llvm
     targets/riscv/codegen/RISCVMCGen.cpp
     targets/riscv/codegen/RISCVMIRGen.cpp
     targets/riscv/mir/Instruction/RISCVCall.cpp
+    targets/riscv/mir/Instruction/RISCVJALR.cpp
     targets/riscv/mir/Instruction/RISCVRet.cpp
     targets/riscv/mir/RISCVRegister.cpp
     targets/riscv/opt/mc/passes/RISCVFallthrough.cpp

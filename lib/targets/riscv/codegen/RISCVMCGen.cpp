@@ -106,6 +106,7 @@
 #include "mini-llvm/targets/riscv/mc/RISCVRegisterOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVZeroDirective.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
+#include "mini-llvm/targets/riscv/mir/Instruction/RISCVJALR.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
@@ -674,6 +675,13 @@ public:
         int opcode = RISCV_Call;
         std::vector<std::unique_ptr<Operand>> operands;
         operands.push_back(makeOperand(I.callee()));
+        builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
+    }
+
+    void visitRISCVJALR(const mir::RISCVJALR &I) override {
+        int opcode = RISCV_JALR;
+        std::vector<std::unique_ptr<Operand>> operands;
+        operands.push_back(makeOperand(I.src()));
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 

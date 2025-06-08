@@ -115,6 +115,10 @@ private:
     ArgumentList args_;
 };
 
+inline std::unique_ptr<FunctionType> functionType(const IndirectCall &I) {
+    return I.functionType();
+}
+
 inline auto args(IndirectCall &I) {
     return std::ranges::subrange(I.arg_begin(), I.arg_end());
 }

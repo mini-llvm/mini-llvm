@@ -1,4 +1,4 @@
-#include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
+#include "mini-llvm/targets/riscv/mir/Instruction/RISCVJALR.h"
 
 #include <unordered_set>
 
@@ -8,10 +8,10 @@
 using namespace mini_llvm::mir;
 using namespace mini_llvm::mir::riscv;
 
-std::unordered_set<PhysicalRegister *> RISCVCall::implicitDsts() const {
+std::unordered_set<PhysicalRegister *> RISCVJALR::implicitDsts() const {
     return riscvCallImplicitDsts();
 }
 
-std::unordered_set<PhysicalRegister *> RISCVCall::implicitSrcs() const {
+std::unordered_set<PhysicalRegister *> RISCVJALR::implicitSrcs() const {
     return riscvCallImplicitSrcs(numIntegerArgs(), numFloatingArgs());
 }

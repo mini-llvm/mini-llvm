@@ -49,6 +49,7 @@
 #include "mini-llvm/ir/Instruction/FSub.h"
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/ir/Instruction/IndirectCall.h"
 #include "mini-llvm/ir/Instruction/IntToPtr.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/LSHR.h"
@@ -171,6 +172,7 @@
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
+#include "mini-llvm/targets/riscv/mir/Instruction/RISCVJALR.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/utils/HashMap.h"
@@ -894,84 +896,26 @@ public:
         size_t numIntegerArgs = 0,
                numFloatingArgs = 0;
         std::vector<const ir::Value *> stackArgs;
-        for (const ir::Use<ir::Value> &arg : args(I)) {
-            if (I.callee()->functionType()->isVarArgs()) {
-                if (numIntegerArgs < 8) {
-                    std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
-                                              src = getRegister(*arg);
-                    if (dynamic_cast<const ir::FloatingType *>(&*arg->type())) {
-                        Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
-                        std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
-                        builder_.add(std::make_unique<FMovIF>(precision, tmp, src));
-                        src = std::move(tmp);
-                    }
-                    builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
-                    ++numIntegerArgs;
-                } else {
-                    stackArgs.push_back(&*arg);
-                }
-            } else {
-                if (dynamic_cast<const ir::IntegerType *>(&*arg->type())) {
-                    if (numIntegerArgs < 8) {
-                        std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
-                                                  src = getRegister(*arg);
-                        builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
-                        ++numIntegerArgs;
-                    } else {
-                        stackArgs.push_back(&*arg);
-                    }
-                } else if (dynamic_cast<const ir::FloatingType *>(&*arg->type())) {
-                    if (numFloatingArgs < 8) {
-                        Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
-                        std::shared_ptr<Register> dst = share(*riscvFloatingArgRegs()[numFloatingArgs]),
-                                                  src = getRegister(*arg);
-                        builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
-                        ++numFloatingArgs;
-                    } else {
-                        stackArgs.push_back(&*arg);
-                    }
-                } else {
-                    abort();
-                }
-            }
-        }
 
-        if (!stackArgs.empty()) {
-            int n = stackArgs.size();
-            builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>(-(n * 8 + 15) / 16 * 16)));
-            for (int i = 0; i < n; ++i) {
-                MemoryOperand dst(share(*sp()), std::make_unique<IntegerImmediate>(i * 8));
-                std::shared_ptr<Register> src = getRegister(*stackArgs[i]);
-                if (dynamic_cast<const ir::IntegerType *>(&*stackArgs[i]->type())) {
-                    builder_.add(std::make_unique<Store>(8, std::move(dst), std::move(src)));
-                } else if (dynamic_cast<const ir::FloatingType *>(&*stackArgs[i]->type())) {
-                    Precision precision = static_cast<const ir::FloatingType *>(&*stackArgs[i]->type())->precision();
-                    builder_.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
-                } else {
-                    abort();
-                }
-            }
-        }
+        visitCallBefore(I, numIntegerArgs, numFloatingArgs, stackArgs);
 
         builder_.add(std::make_unique<RISCVCall>(callee, numIntegerArgs, numFloatingArgs));
 
-        if (!stackArgs.empty()) {
-            int n = stackArgs.size();
-            builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
-        }
+        visitCallAfter(I, stackArgs);
+    }
 
-        if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
-            std::shared_ptr<Register> dst = valueMap_[&I],
-                                      src = share(*riscvIntegerResultRegs()[0]);
-            builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
-        } else if (dynamic_cast<const ir::FloatingType *>(&*I.type())) {
-            Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
-            std::shared_ptr<Register> dst = valueMap_[&I],
-                                      src = share(*riscvFloatingResultRegs()[0]);
-            builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
-        } else {
-            assert(*I.type() == ir::Void());
-        }
+    void visitIndirectCall(const ir::IndirectCall &I) override {
+        std::shared_ptr<Register> callee = getRegister(*I.callee());
+
+        size_t numIntegerArgs = 0,
+               numFloatingArgs = 0;
+        std::vector<const ir::Value *> stackArgs;
+
+        visitCallBefore(I, numIntegerArgs, numFloatingArgs, stackArgs);
+
+        builder_.add(std::make_unique<RISCVJALR>(callee, numIntegerArgs, numFloatingArgs));
+
+        visitCallAfter(I, stackArgs);
     }
 
     void visitBr(const ir::Br &I) override {
@@ -1208,6 +1152,92 @@ private:
                                   src1 = getRegister(*I.lhs()),
                                   src2 = getRegister(*I.rhs());
         builder_.add(std::make_unique<MInstr>(precision, std::move(dst), std::move(src1), std::move(src2)));
+    }
+
+    template <typename IInstr>
+    void visitCallBefore(const IInstr &I,
+                         size_t &numIntegerArgs,
+                         size_t &numFloatingArgs,
+                         std::vector<const ir::Value *> &stackArgs) {
+        for (const ir::Use<ir::Value> &arg : args(I)) {
+            if (ir::functionType(I)->isVarArgs()) {
+                if (numIntegerArgs < 8) {
+                    std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
+                                              src = getRegister(*arg);
+                    if (dynamic_cast<const ir::FloatingType *>(&*arg->type())) {
+                        Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
+                        std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
+                        builder_.add(std::make_unique<FMovIF>(precision, tmp, src));
+                        src = std::move(tmp);
+                    }
+                    builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
+                    ++numIntegerArgs;
+                } else {
+                    stackArgs.push_back(&*arg);
+                }
+            } else {
+                if (dynamic_cast<const ir::IntegerType *>(&*arg->type())) {
+                    if (numIntegerArgs < 8) {
+                        std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
+                                                  src = getRegister(*arg);
+                        builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
+                        ++numIntegerArgs;
+                    } else {
+                        stackArgs.push_back(&*arg);
+                    }
+                } else if (dynamic_cast<const ir::FloatingType *>(&*arg->type())) {
+                    if (numFloatingArgs < 8) {
+                        Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
+                        std::shared_ptr<Register> dst = share(*riscvFloatingArgRegs()[numFloatingArgs]),
+                                                  src = getRegister(*arg);
+                        builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
+                        ++numFloatingArgs;
+                    } else {
+                        stackArgs.push_back(&*arg);
+                    }
+                } else {
+                    abort();
+                }
+            }
+        }
+
+        if (!stackArgs.empty()) {
+            int n = stackArgs.size();
+            builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>(-(n * 8 + 15) / 16 * 16)));
+            for (int i = 0; i < n; ++i) {
+                MemoryOperand dst(share(*sp()), std::make_unique<IntegerImmediate>(i * 8));
+                std::shared_ptr<Register> src = getRegister(*stackArgs[i]);
+                if (dynamic_cast<const ir::IntegerType *>(&*stackArgs[i]->type())) {
+                    builder_.add(std::make_unique<Store>(8, std::move(dst), std::move(src)));
+                } else if (dynamic_cast<const ir::FloatingType *>(&*stackArgs[i]->type())) {
+                    Precision precision = static_cast<const ir::FloatingType *>(&*stackArgs[i]->type())->precision();
+                    builder_.add(std::make_unique<FStore>(precision, std::move(dst), std::move(src)));
+                } else {
+                    abort();
+                }
+            }
+        }
+    }
+
+    template <typename IInstr>
+    void visitCallAfter(const IInstr &I, const std::vector<const ir::Value *> &stackArgs) {
+        if (!stackArgs.empty()) {
+            int n = stackArgs.size();
+            builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
+        }
+
+        if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
+            std::shared_ptr<Register> dst = valueMap_[&I],
+                                      src = share(*riscvIntegerResultRegs()[0]);
+            builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
+        } else if (dynamic_cast<const ir::FloatingType *>(&*I.type())) {
+            Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
+            std::shared_ptr<Register> dst = valueMap_[&I],
+                                      src = share(*riscvFloatingResultRegs()[0]);
+            builder_.add(std::make_unique<FMov>(precision, std::move(dst), std::move(src)));
+        } else {
+            assert(*I.type() == ir::Void());
+        }
     }
 
     std::shared_ptr<Register> getRegister(const ir::Value &value) {
