@@ -445,7 +445,7 @@ public:
             parseBasicBlock(*block);
             F.append(std::move(block));
         }
-        if (F.isDeclaration()) {
+        if (F.empty()) {
             throw ParseException("function body cannot be empty", current_);
         }
         ++current_;
