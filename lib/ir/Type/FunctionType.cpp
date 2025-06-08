@@ -20,7 +20,7 @@ std::string FunctionType::format() const {
         formattedParamTypes.add("{}", paramType);
     }
     if (isVarArgs()) {
-        formatted.add("...");
+        formattedParamTypes.add("...");
     }
     formatted.add("{}", formattedParamTypes);
     return formatted.toString();
