@@ -50,5 +50,8 @@ bool FunctionType::equals(const Type &other) const {
             return false;
         }
     }
+    if (isVarArgs() != castOther.isVarArgs()) {
+        return false;
+    }
     return true;
 }
