@@ -164,7 +164,7 @@ public:
                             if (count == 0) {
                                 throw ParseException("expected initializer", current_);
                             } else {
-                                throw ParseException("unclosed '['", current_);
+                                throw ParseException("expected ']'", current_);
                             }
 
                         case kLeftBracket:
