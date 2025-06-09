@@ -1,5 +1,6 @@
 #include "mini-llvm/utils/FileSystem.h"
 
+#include <cerrno>
 #include <cstddef>
 #include <cstdio>
 #include <cstring>

@@ -1,7 +1,6 @@
 #include "mini-llvm/ir_reader/Parser.h"
 
 #include <bit>
-#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>

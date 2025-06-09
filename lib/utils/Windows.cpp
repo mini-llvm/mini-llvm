@@ -3,6 +3,7 @@
 #include "mini-llvm/utils/Windows.h"
 
 #include <string>
+#include <vector>
 
 #include <windows.h>
 

@@ -1,6 +1,5 @@
 #include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
 
-#include <cassert>
 #include <memory>
 #include <ranges>
 #include <unordered_set>

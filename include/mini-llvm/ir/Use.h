@@ -3,6 +3,7 @@
 #include <cassert>
 #include <concepts>
 #include <memory>
+#include <utility>
 #include <variant>
 
 #include "mini-llvm/ir/Type.h"

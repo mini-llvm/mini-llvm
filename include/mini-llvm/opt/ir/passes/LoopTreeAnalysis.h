@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <unordered_set>
 #include <vector>
 
 #include "mini-llvm/ir/Function.h"

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
 

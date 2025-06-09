@@ -1,7 +1,9 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "mini-llvm/mc/Instruction.h"
 #include "mini-llvm/mc/Operand.h"

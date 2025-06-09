@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdlib>
 #include <string>
+#include <utility>
 
 namespace mini_llvm {
 

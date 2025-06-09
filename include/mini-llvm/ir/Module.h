@@ -1,11 +1,13 @@
 #pragma once
 
+#include <cstddef>
 #include <format>
 #include <iterator>
 #include <list>
 #include <memory>
 #include <ranges>
 #include <string>
+#include <utility>
 
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/GlobalVar.h"

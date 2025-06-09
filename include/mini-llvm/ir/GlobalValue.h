@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <memory>
+#include <string>
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
