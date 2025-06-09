@@ -47,73 +47,18 @@ private:
 namespace riscv {
 
 #define REGS
-#define X(idx, name, class, isPreserved, isAllocatable) inline RISCVRegister *name() { return RISCVRegister::get(idx); }
+#define X(idx, name, class, isPreserved, isAllocatable) RISCVRegister *name();
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
 
 } // namespace riscv
 
-inline std::unordered_set<RISCVRegister *> riscvRegs() {
-    using namespace riscv;
-
-    return {
-#define REGS
-#define X(idx, name, class, isPreserved, isAllocatable) name(),
-#include "mini-llvm/targets/riscv/target.def"
-#undef X
-#undef REGS
-    };
-}
-
-inline std::vector<RISCVRegister *> riscvIntegerResultRegs() {
-    using namespace riscv;
-
-    return {
-#define INTEGER_RESULT_REGS
-#define X(name) name(),
-#include "mini-llvm/targets/riscv/target.def"
-#undef X
-#undef INTEGER_RESULT_REGS
-    };
-}
-
-inline std::vector<RISCVRegister *> riscvIntegerArgRegs() {
-    using namespace riscv;
-
-    return {
-#define INTEGER_ARG_REGS
-#define X(name) name(),
-#include "mini-llvm/targets/riscv/target.def"
-#undef X
-#undef INTEGER_ARG_REGS
-    };
-}
-
-inline std::vector<RISCVRegister *> riscvFloatingResultRegs() {
-    using namespace riscv;
-
-    return {
-#define FLOATING_RESULT_REGS
-#define X(name) name(),
-#include "mini-llvm/targets/riscv/target.def"
-#undef X
-#undef FLOATING_RESULT_REGS
-    };
-}
-
-inline std::vector<RISCVRegister *> riscvFloatingArgRegs() {
-    using namespace riscv;
-
-    return {
-#define FLOATING_ARG_REGS
-#define X(name) name(),
-#include "mini-llvm/targets/riscv/target.def"
-#undef X
-#undef FLOATING_ARG_REGS
-    };
-}
-
+const std::unordered_set<RISCVRegister *> &riscvRegs();
+const std::vector<RISCVRegister *> &riscvIntegerResultRegs();
+const std::vector<RISCVRegister *> &riscvIntegerArgRegs();
+const std::vector<RISCVRegister *> &riscvFloatingResultRegs();
+const std::vector<RISCVRegister *> &riscvFloatingArgRegs();
 std::unordered_set<PhysicalRegister *> riscvCallImplicitDsts();
 std::unordered_set<PhysicalRegister *> riscvCallImplicitSrcs(int numIntegerArgs, int numFloatingArgs);
 
