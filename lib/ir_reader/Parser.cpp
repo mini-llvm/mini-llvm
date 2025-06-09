@@ -503,7 +503,7 @@ public:
                     Location typeLocation = current_;
                     std::unique_ptr<Type> type = parseType();
                     if (!dynamic_cast<const FloatingType *>(&*type)) {
-                        throw ParseException("must be floating point type", typeLocation);
+                        throw ParseException("must be a floating point type", typeLocation);
                     }
                     std::shared_ptr<Value> value = parseValue(*type);
                     I = std::make_shared<FNeg>(std::move(value));
@@ -557,7 +557,7 @@ public:
                         case kLSHR:
                         case kASHR:
                             if (!dynamic_cast<const IntegerType *>(&*type)) {
-                                throw ParseException("must be integer type", typeLocation);
+                                throw ParseException("must be an integer type", typeLocation);
                             }
                             if (*type == Ptr()) {
                                 throw ParseException("must not be ptr", typeLocation);
@@ -570,7 +570,7 @@ public:
                         case kFDiv:
                         case kFRem:
                             if (!dynamic_cast<const FloatingType *>(&*type)) {
-                                throw ParseException("must be floating point type", typeLocation);
+                                throw ParseException("must be a floating point type", typeLocation);
                             }
                             break;
 
@@ -625,7 +625,7 @@ public:
                     Location typeLocation = current_;
                     std::unique_ptr<Type> type = parseType();
                     if (!dynamic_cast<const IntegerType *>(&*type)) {
-                        throw ParseException("must be integer type", typeLocation);
+                        throw ParseException("must be an integer type", typeLocation);
                     }
                     std::shared_ptr<Value> lhs = parseValue(*type);
                     if (current_->kind != kComma) {
@@ -656,7 +656,7 @@ public:
                     Location typeLocation = current_;
                     std::unique_ptr<Type> type = parseType();
                     if (!dynamic_cast<const FloatingType *>(&*type)) {
-                        throw ParseException("must be floating point type", typeLocation);
+                        throw ParseException("must be a floating point type", typeLocation);
                     }
                     std::shared_ptr<Value> lhs = parseValue(*type);
                     if (current_->kind != kComma) {
@@ -693,7 +693,7 @@ public:
                             || mnemonic == kUIToFP
                             || mnemonic == kIntToPtr) {
                         if (!dynamic_cast<const IntegerType *>(&*type1)) {
-                            throw ParseException("must be integer type", type1Location);
+                            throw ParseException("must be an integer type", type1Location);
                         }
                         if (*type1 == Ptr()) {
                             throw ParseException("must not be ptr", type1Location);
@@ -701,7 +701,7 @@ public:
                     }
                     if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                         if (!dynamic_cast<const FloatingType *>(&*type1)) {
-                            throw ParseException("must be floating point type", type1Location);
+                            throw ParseException("must be a floating point type", type1Location);
                         }
                     }
                     if (mnemonic == kPtrToInt) {
@@ -721,7 +721,7 @@ public:
 
                     if (mnemonic == kTrunc || mnemonic == kSExt || mnemonic == kZExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                         if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                            throw ParseException("must be integer type", type2Location);
+                            throw ParseException("must be an integer type", type2Location);
                         }
                         if (*type2 == Ptr()) {
                             throw ParseException("must not be ptr", type2Location);
@@ -739,7 +739,7 @@ public:
                         }
                     } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kSIToFP || mnemonic == kUIToFP) {
                         if (!dynamic_cast<const FloatingType *>(&*type2)) {
-                            throw ParseException("must be floating point type", type2Location);
+                            throw ParseException("must be a floating point type", type2Location);
                         }
 
                         std::unique_ptr<FloatingType> floatingType2 = cast<FloatingType>(std::move(type2));
@@ -753,7 +753,7 @@ public:
                         }
                     } else if (mnemonic == kPtrToInt) {
                         if (!dynamic_cast<const IntegerType *>(&*type2)) {
-                            throw ParseException("must be integer type", type2Location);
+                            throw ParseException("must be an integer type", type2Location);
                         }
                         if (*type2 == Ptr()) {
                             throw ParseException("must not be ptr", type2Location);
@@ -867,7 +867,7 @@ public:
                     idxTypeLocation = current_;
                     idxType = parseType();
                     if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                        throw ParseException("must be integer type", idxTypeLocation);
+                        throw ParseException("must be an integer type", idxTypeLocation);
                     }
                     if (*idxType == Ptr()) {
                         throw ParseException("must not be ptr", idxTypeLocation);
@@ -878,7 +878,7 @@ public:
                         idxTypeLocation = current_;
                         idxType = parseType();
                         if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                            throw ParseException("must be integer type", idxTypeLocation);
+                            throw ParseException("must be an integer type", idxTypeLocation);
                         }
                         if (*idxType == Ptr()) {
                             throw ParseException("must not be ptr", idxTypeLocation);
