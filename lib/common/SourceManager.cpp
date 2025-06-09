@@ -1,7 +1,6 @@
 #include "mini-llvm/common/SourceManger.h"
 
 #include <algorithm>
-#include <cassert>
 #include <cstddef>
 #include <string>
 #include <string_view>
