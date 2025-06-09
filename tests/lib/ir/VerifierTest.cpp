@@ -21,7 +21,7 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-TEST(VerifyTest, SelfReferentialInstruction) {
+TEST(VerifierTest, SelfReferentialInstruction) {
     std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
     );
