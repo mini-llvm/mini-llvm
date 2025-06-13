@@ -14,6 +14,7 @@
 #include "mini-llvm/ir/Instruction/And.h"
 #include "mini-llvm/ir/Instruction/ASHR.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
+#include "mini-llvm/ir/Instruction/GetElementPtr.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/ir/Instruction/LSHR.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
@@ -71,6 +72,18 @@ bool isPoison(const BinaryIntegerArithmeticOperator &op) {
         || (dynamic_cast<const SHL *>(&op) && rhs >= op.type()->bitSize())
         || (dynamic_cast<const LSHR *>(&op) && rhs >= op.type()->bitSize())
         || (dynamic_cast<const ASHR *>(&op) && rhs >= op.type()->bitSize());
+}
+
+bool isAllZero(const GetElementPtr &gep) {
+    for (const auto &idx : indices(gep)) {
+        if (!dynamic_cast<const IntegerConstant *>(&*idx)) {
+            return false;
+        }
+        if (static_cast<const IntegerConstant *>(&*idx)->signExtendedValue() != 0) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void dfs(const DTNode *node, bool &changed) {
@@ -168,6 +181,17 @@ void dfs(const DTNode *node, bool &changed) {
                 }
                 replaceAllUsesWith(*icmp, std::make_shared<I1Constant>(result));
                 removeFromParent(*icmp);
+                changed = true;
+                continue;
+            }
+
+            continue;
+        }
+
+        if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
+            if (isAllZero(*gep)) {
+                replaceAllUsesWith(*gep, share(*const_cast<Value *>(&*gep->ptr())));
+                removeFromParent(*gep);
                 changed = true;
                 continue;
             }
