@@ -35,13 +35,12 @@ std::unordered_set<const UseBase *> GetElementPtr::operands() const {
 }
 
 std::string GetElementPtr::format() const {
-    StringJoiner formattedIndices(", ");
+    StringJoiner formatted(", ");
+    formatted.add("{:o} = getelementptr {}, {} {:o}", *this, *sourceType(), *ptr()->type(), *ptr());
     for (const Use<Value, IntegerType> &idx : indices(*this)) {
-        formattedIndices.add("{} {:o}", *idx->type(), *idx);
+        formatted.add("{} {:o}", *idx->type(), *idx);
     }
-    return std::format(
-        "{:o} = getelementptr {}, {} {:o}, {}",
-        *this, *sourceType(), *ptr()->type(), *ptr(), formattedIndices);
+    return formatted.toString();
 }
 
 std::unique_ptr<Value> GetElementPtr::clone() const {
