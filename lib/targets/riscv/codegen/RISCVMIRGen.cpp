@@ -869,23 +869,26 @@ public:
 
         builder_.add(std::make_unique<Mov>(8, dst, src));
 
-        auto i = I.idx_begin();
+        auto add = [this](std::shared_ptr<Register> dst, const ir::Value &idx, int size) {
+            std::shared_ptr<Register> idxReg = getRegister(idx);
+            if (size == 1) {
+                builder_.add(std::make_unique<Add>(8, dst, dst, idxReg));
+            } else {
+                std::shared_ptr<Register> sizeReg = std::make_shared<VirtualRegister>();
+                builder_.add(std::make_unique<LI>(8, sizeReg, std::make_unique<IntegerImmediate>(size)));
+                builder_.add(std::make_unique<Mul>(8, idxReg, idxReg, sizeReg));
+                builder_.add(std::make_unique<Add>(8, dst, dst, idxReg));
+            }
+        };
+
+        size_t n = I.idx_size();
         std::unique_ptr<ir::Type> type = I.sourceType();
 
-        if (*type == ir::I8()) {
-            std::shared_ptr<Register> idx = getRegister(**i);
-            builder_.add(std::make_unique<Add>(8, dst, dst, idx));
-        } else {
-            for (;;) {
-                std::shared_ptr<Register> idx = getRegister(**i);
-                std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
-                builder_.add(std::make_unique<LI>(8, tmp, std::make_unique<IntegerImmediate>(type->size(8))));
-                builder_.add(std::make_unique<Mul>(8, tmp, idx, tmp));
-                builder_.add(std::make_unique<Add>(8, dst, dst, tmp));
-
-                ++i;
-                if (i == I.idx_end()) break;
+        if (n > 0) {
+            add(dst, *I.idx(0), type->size(8));
+            for (size_t i = 1; i < n; ++i) {
                 type = static_cast<const ir::ArrayType *>(&*type)->elementType();
+                add(dst, *I.idx(i), type->size(8));
             }
         }
     }

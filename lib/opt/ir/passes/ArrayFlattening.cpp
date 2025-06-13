@@ -36,23 +36,25 @@ bool ArrayFlattening::runOnFunction(Function &F) {
                     type = static_cast<const ArrayType *>(&*type)->elementType();
                 }
                 size_t n = gep->idx_size();
-                if (*type != I8() || n != 1) {
-                    std::vector<std::shared_ptr<Value>> terms;
-                    for (size_t j = 0; j < n; ++j) {
-                        std::shared_ptr<Instruction> mul = std::make_shared<Mul>(
-                            share(*gep->idx(j)), gep->idx(j)->type()->constant(sizes[j])
-                        );
-                        addToParent(*gep, mul);
-                        terms.push_back(mul);
-                    }
-                    std::shared_ptr<Value> sum = terms[0];
-                    for (size_t j = 1; j < n; ++j) {
-                        std::shared_ptr<Instruction> add = std::make_shared<Add>(sum, terms[j]);
-                        addToParent(*gep, add);
-                        sum = add;
-                    }
+                if (*type != I8() || n > 1) {
                     std::vector<std::shared_ptr<Value>> indices;
-                    indices.push_back(sum);
+                    if (n > 0) {
+                        std::vector<std::shared_ptr<Value>> terms;
+                        for (size_t j = 0; j < n; ++j) {
+                            std::shared_ptr<Instruction> mul = std::make_shared<Mul>(
+                                share(*gep->idx(j)), gep->idx(j)->type()->constant(sizes[j])
+                            );
+                            addToParent(*gep, mul);
+                            terms.push_back(mul);
+                        }
+                        std::shared_ptr<Value> sum = terms[0];
+                        for (size_t j = 1; j < n; ++j) {
+                            std::shared_ptr<Instruction> add = std::make_shared<Add>(sum, terms[j]);
+                            addToParent(*gep, add);
+                            sum = add;
+                        }
+                        indices.push_back(sum);
+                    }
                     std::shared_ptr<Instruction> newGep = std::make_shared<GetElementPtr>(
                         std::make_unique<I8>(), share(*gep->ptr()), std::move(indices)
                     );

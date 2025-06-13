@@ -856,23 +856,9 @@ public:
 
                     std::shared_ptr<Value> ptr = parseValue(Ptr());
 
-                    if (current_->kind != kComma) {
-                        throw ParseException("expected ','", current_);
-                    }
-                    ++current_;
-
                     std::vector<std::shared_ptr<Value>> indices;
                     Location idxTypeLocation;
                     std::unique_ptr<Type> idxType;
-                    idxTypeLocation = current_;
-                    idxType = parseType();
-                    if (!dynamic_cast<const IntegerType *>(&*idxType)) {
-                        throw ParseException("must be an integer type", idxTypeLocation);
-                    }
-                    if (*idxType == Ptr()) {
-                        throw ParseException("must not be ptr", idxTypeLocation);
-                    }
-                    indices.push_back(parseValue(*idxType));
                     while (current_->kind == kComma) {
                         ++current_;
                         idxTypeLocation = current_;

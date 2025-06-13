@@ -26,6 +26,7 @@ tests=(
     relational
     casting
     getelementptr
+    getelementptr_0
     select
     indirect_call
     bit
