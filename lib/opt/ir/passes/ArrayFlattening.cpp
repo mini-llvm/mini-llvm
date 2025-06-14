@@ -26,16 +26,16 @@ bool ArrayFlattening::runOnFunction(Function &F) {
         for (auto i = B.begin(); i != B.end();) {
             Instruction &I = *i++;
             if (auto *gep = dynamic_cast<GetElementPtr *>(&I)) {
-                std::vector<int> sizes;
-                std::unique_ptr<Type> type = gep->sourceType();
-                for (;;) {
-                    sizes.push_back(type->size(pointerSize_));
-                    if (!dynamic_cast<const ArrayType *>(&*type)) {
-                        break;
-                    }
-                    type = static_cast<const ArrayType *>(&*type)->elementType();
-                }
                 size_t n = gep->idx_size();
+                std::unique_ptr<Type> type = gep->sourceType();
+                std::vector<int> sizes;
+                if (n > 0) {
+                    sizes.push_back(type->size(pointerSize_));
+                    for (size_t j = 1; j < n; ++j) {
+                        type = static_cast<const ArrayType *>(&*type)->elementType();
+                        sizes.push_back(type->size(pointerSize_));
+                    }
+                }
                 if (*type != I8() || n > 1) {
                     std::vector<std::shared_ptr<Value>> indices;
                     if (n > 0) {
