@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <memory>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -894,31 +895,11 @@ public:
     }
 
     void visitCall(const ir::Call &I) override {
-        Function *callee = functionMap_[&*I.callee()];
-
-        size_t numIntegerArgs = 0,
-               numFloatingArgs = 0;
-        std::vector<const ir::Value *> stackArgs;
-
-        visitCallBefore(I, numIntegerArgs, numFloatingArgs, stackArgs);
-
-        builder_.add(std::make_unique<RISCVCall>(callee, numIntegerArgs, numFloatingArgs));
-
-        visitCallAfter(I, stackArgs);
+        visitCallOrIndirectCall(I);
     }
 
     void visitIndirectCall(const ir::IndirectCall &I) override {
-        std::shared_ptr<Register> callee = getRegister(*I.callee());
-
-        size_t numIntegerArgs = 0,
-               numFloatingArgs = 0;
-        std::vector<const ir::Value *> stackArgs;
-
-        visitCallBefore(I, numIntegerArgs, numFloatingArgs, stackArgs);
-
-        builder_.add(std::make_unique<RISCVJALR>(callee, numIntegerArgs, numFloatingArgs));
-
-        visitCallAfter(I, stackArgs);
+        visitCallOrIndirectCall(I);
     }
 
     void visitBr(const ir::Br &I) override {
@@ -1158,10 +1139,11 @@ private:
     }
 
     template <typename IInstr>
-    void visitCallBefore(const IInstr &I,
-                         size_t &numIntegerArgs,
-                         size_t &numFloatingArgs,
-                         std::vector<const ir::Value *> &stackArgs) {
+    void visitCallOrIndirectCall(const IInstr &I) {
+        size_t numIntegerArgs = 0,
+               numFloatingArgs = 0;
+        std::vector<const ir::Value *> stackArgs;
+
         for (const ir::Use<ir::Value> &arg : args(I)) {
             if (ir::functionType(I)->isVarArgs()) {
                 if (numIntegerArgs < 8) {
@@ -1220,10 +1202,16 @@ private:
                 }
             }
         }
-    }
 
-    template <typename IInstr>
-    void visitCallAfter(const IInstr &I, const std::vector<const ir::Value *> &stackArgs) {
+        if constexpr (std::is_same_v<IInstr, ir::Call>) {
+            Function *callee = functionMap_[&*I.callee()];
+            builder_.add(std::make_unique<RISCVCall>(callee, numIntegerArgs, numFloatingArgs));
+        }
+        if constexpr (std::is_same_v<IInstr, ir::IndirectCall>) {
+            std::shared_ptr<Register> callee = getRegister(*I.callee());
+            builder_.add(std::make_unique<RISCVJALR>(callee, numIntegerArgs, numFloatingArgs));
+        }
+
         if (!stackArgs.empty()) {
             int n = stackArgs.size();
             builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
