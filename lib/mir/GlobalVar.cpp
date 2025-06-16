@@ -22,6 +22,7 @@ std::string GlobalVar::format() const {
     if (isConstant()) {
         formatted.add("constant");
     }
+    formatted.add("align({})", alignment());
     formatted.add("{:o} = {}", *this, initializer());
     return formatted.toString();
 }

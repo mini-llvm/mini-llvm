@@ -846,9 +846,10 @@ public:
                 }
 
                 bool isGlobal = (G.linkage() == Linkage::kExternal);
+                int alignment = G.alignment();
                 std::string name = emitName(G);
 
-                Fragment fragment(section, isGlobal, std::move(name));
+                Fragment fragment(section, isGlobal, alignment, std::move(name));
                 emitGlobalVar(G, fragment);
 
                 program_->append(std::move(fragment));
@@ -861,7 +862,7 @@ public:
                 bool isGlobal = (F.linkage() == Linkage::kExternal);
                 std::string name = emitName(F);
 
-                Fragment fragment(section, isGlobal, std::move(name));
+                Fragment fragment(section, isGlobal, 0, std::move(name));
                 emitFunction(F, fragment);
 
                 program_->append(std::move(fragment));

@@ -1297,7 +1297,7 @@ public:
 
     void emit() {
         for (const ir::GlobalVar &IG : globalVars(*IM_)) {
-            GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant()));
+            GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant(), IG.valueType()->alignment(8)));
             globalVarMap_.put(&IG, &MG);
         }
         for (const ir::Function &IF : functions(*IM_)) {

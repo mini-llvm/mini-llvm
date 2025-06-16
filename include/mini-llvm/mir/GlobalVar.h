@@ -16,10 +16,12 @@ public:
     GlobalVar(std::string name,
               Linkage linkage,
               bool isConstant,
+              int alignment,
               std::optional<std::unique_ptr<Constant>> initializer = std::nullopt)
         : name_(std::move(name)),
           linkage_(linkage),
           isConstant_(isConstant),
+          alignment_(alignment),
           initializer_(std::move(initializer)) {}
 
     GlobalVar(const GlobalVar &&) = delete;
@@ -31,12 +33,32 @@ public:
         return name_;
     }
 
+    void setName(std::string name) {
+        name_ = std::move(name);
+    }
+
     Linkage linkage() const override {
         return linkage_;
     }
 
+    void setLinkage(Linkage linkage) {
+        linkage_ = linkage;
+    }
+
     bool isConstant() const {
         return isConstant_;
+    }
+
+    void setConstant(bool isConstant) {
+        isConstant_ = isConstant;
+    }
+
+    int alignment() const {
+        return alignment_;
+    }
+
+    void setAlignment(int alignment) {
+        alignment_ = alignment;
     }
 
     bool isDeclaration() const {
@@ -61,6 +83,7 @@ private:
     std::string name_;
     Linkage linkage_;
     bool isConstant_;
+    int alignment_;
     std::optional<std::unique_ptr<Constant>> initializer_;
 };
 

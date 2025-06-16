@@ -14,6 +14,9 @@ std::string Fragment::format() const {
     if (isGlobal()) {
         formatted.add("  .globl {}", name());
     }
+    if (alignment()) {
+        formatted.add("  .balign {}", alignment());
+    }
     formatted.add("{}:", name());
     for (const Line &line : *this) {
         if (dynamic_cast<const Instruction *>(&line)) {

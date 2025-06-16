@@ -16,11 +16,11 @@ namespace mini_llvm::ir {
 class I1 final : public IntegerType {
 public:
     int size() const override {
-        abort();
+        return 1;
     }
 
     int alignment() const override {
-        abort();
+        return 1;
     }
 
     int bitSize() const override {
@@ -28,7 +28,7 @@ public:
     }
 
     int bitAlignment() const override {
-        abort();
+        return 1;
     }
 
     std::unique_ptr<Constant> zeroValue() const override;
