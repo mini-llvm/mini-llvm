@@ -17,5 +17,5 @@ std::string PtrArrayConstant::format() const {
             formattedElements.add("  {:o}", *element);
         }
     }
-    return std::format("ptr({}) {}", ptrSize() * 8, formattedElements);
+    return std::format("ptr({}) {}", ptrSize(), formattedElements);
 }

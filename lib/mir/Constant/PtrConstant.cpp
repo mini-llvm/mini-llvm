@@ -9,7 +9,7 @@ using namespace mini_llvm::mir;
 
 std::string PtrConstant::format() const {
     StringJoiner formatted(" ");
-    formatted.add("ptr({})", ptrSize() * 8);
+    formatted.add("ptr({})", ptrSize());
     if (ptr() == nullptr) {
         formatted.add("null");
     } else {
