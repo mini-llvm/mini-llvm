@@ -19,7 +19,9 @@ public:
     GlobalVar(std::unique_ptr<Type> valueType,
               Linkage linkage,
               bool isConstant,
-              std::shared_ptr<Constant> initializer = nullptr);
+              std::shared_ptr<Constant> initializer);
+
+    GlobalVar(std::unique_ptr<Type> valueType, Linkage linkage);
 
     std::unique_ptr<Type> valueType() const {
         return valueType_->clone();

@@ -23,6 +23,13 @@ GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
     setInitializer(std::move(initializer));
 }
 
+GlobalVar::GlobalVar(std::unique_ptr<Type> valueType, Linkage linkage)
+        : valueType_(std::move(valueType)),
+          linkage_(linkage),
+          isConstant_(false) {
+    setInitializer(nullptr);
+}
+
 Constant &GlobalVar::initializer() {
     if (auto *initializer = std::get_if<std::weak_ptr<Constant>>(&initializer_)) {
         return *initializer->lock();

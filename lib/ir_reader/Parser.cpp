@@ -268,7 +268,12 @@ public:
 
         std::unique_ptr<Type> valueType = parseType();
 
-        std::shared_ptr<GlobalVar> G = std::make_shared<GlobalVar>(std::move(valueType), linkage, isConstant);
+        std::shared_ptr<GlobalVar> G;
+        if (isDeclaration) {
+            G = std::make_shared<GlobalVar>(std::move(valueType), linkage);
+        } else {
+            G = std::make_shared<GlobalVar>(std::move(valueType), linkage, isConstant, nullptr);
+        }
         G->setName(symbol.name);
         symbolTable_.put(symbol, G);
         return G;

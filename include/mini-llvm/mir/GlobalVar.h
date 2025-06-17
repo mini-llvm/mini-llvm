@@ -17,12 +17,19 @@ public:
               Linkage linkage,
               bool isConstant,
               int alignment,
-              std::optional<std::unique_ptr<Constant>> initializer = std::nullopt)
+              std::optional<std::unique_ptr<Constant>> initializer)
         : name_(std::move(name)),
           linkage_(linkage),
           isConstant_(isConstant),
           alignment_(alignment),
           initializer_(std::move(initializer)) {}
+
+    GlobalVar(std::string name, Linkage linkage)
+        : name_(std::move(name)),
+          linkage_(linkage),
+          isConstant_(false),
+          alignment_(0),
+          initializer_(std::nullopt) {}
 
     GlobalVar(const GlobalVar &&) = delete;
     GlobalVar(GlobalVar &&) = delete;

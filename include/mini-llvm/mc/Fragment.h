@@ -23,8 +23,19 @@ public:
     using reverse_iterator = IndirectIterator<LineList::reverse_iterator, Line>;
     using const_reverse_iterator = IndirectIterator<LineList::const_reverse_iterator, const Line>;
 
-    Fragment(Section section, bool isGlobal, int alignment, std::string name)
-        : section_(section), isGlobal_(isGlobal), alignment_(alignment), name_(std::move(name)) {}
+    Fragment(std::string name, Section section, bool isGlobal, int alignment)
+        : name_(std::move(name)), section_(section), isGlobal_(isGlobal), alignment_(alignment) {}
+
+    Fragment(std::string name, Section section, bool isGlobal)
+        : name_(std::move(name)), section_(section), isGlobal_(isGlobal), alignment_(0) {}
+
+    const std::string &name() const {
+        return name_;
+    }
+
+    void setName(std::string name) {
+        name_ = std::move(name);
+    }
 
     Section section() const {
         return section_;
@@ -48,14 +59,6 @@ public:
 
     void setAlignment(int alignment) {
         alignment_ = alignment;
-    }
-
-    const std::string &name() const {
-        return name_;
-    }
-
-    void setName(std::string name) {
-        name_ = std::move(name);
     }
 
     iterator begin() {
@@ -145,10 +148,10 @@ public:
     std::string format() const;
 
 private:
+    std::string name_;
     Section section_;
     bool isGlobal_;
     int alignment_;
-    std::string name_;
     LineList lines_;
 };
 
