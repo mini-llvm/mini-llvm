@@ -17,6 +17,18 @@ public:
     FMov(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : FUnaryOperator(precision, std::move(dst), std::move(src)) {}
 
+    bool isCoalescent() const override {
+        return true;
+    }
+
+    Register *coalescenceDst() const override {
+        return &*dst();
+    }
+
+    Register *coalescenceSrc() const override {
+        return &*src();
+    }
+
     bool hasSideEffects() const override {
         return false;
     }

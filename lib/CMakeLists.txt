@@ -1,4 +1,5 @@
 add_library(mini-llvm
+    codegen/register_allocators/GraphColoringAllocator.cpp
     codegen/register_allocators/LinearScanAllocator.cpp
     codegen/register_allocators/NaiveAllocator.cpp
     common/SourceManager.cpp

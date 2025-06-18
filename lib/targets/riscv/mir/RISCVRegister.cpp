@@ -22,9 +22,9 @@ RISCVRegister *RISCVRegister::get(int idx) {
 
     switch (idx) {
 #define REGS
-#define X(idx, name, class, isPreserved, isAllocatable) \
+#define X(idx, name, class, width, isPreserved, isAllocatable) \
     case idx: \
-        return &*pool.put(idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, isPreserved, isAllocatable))).first->second;
+        return &*pool.put(idx, std::shared_ptr<RISCVRegister>(new RISCVRegister(idx, #name, RegisterClass::k##class, width, isPreserved, isAllocatable))).first->second;
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
@@ -34,7 +34,7 @@ RISCVRegister *RISCVRegister::get(int idx) {
 }
 
 #define REGS
-#define X(idx, name, class, isPreserved, isAllocatable) RISCVRegister *riscv::name() { return RISCVRegister::get(idx); }
+#define X(idx, name, class, width, isPreserved, isAllocatable) RISCVRegister *riscv::name() { return RISCVRegister::get(idx); }
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
@@ -44,7 +44,7 @@ const std::unordered_set<RISCVRegister *> &mir::riscvRegs() {
 
     static std::unordered_set<RISCVRegister *> regs{
 #define REGS
-#define X(idx, name, class, isPreserved, isAllocatable) name(),
+#define X(idx, name, class, width, isPreserved, isAllocatable) name(),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS

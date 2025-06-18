@@ -153,10 +153,11 @@
 - `UnusedLabelElimination`
 - `RISCVFallthrough` (`riscv64`)
 
-## Register Allocators (Work in Progress)
+## Register Allocators
 
-- `NaiveAllocator`
+- `GraphColoringAllocator`
 - `LinearScanAllocator`
+- `NaiveAllocator`
 
 ## Usage
 

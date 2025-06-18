@@ -3,7 +3,6 @@
 #include <cassert>
 #include <iterator>
 #include <memory>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -43,15 +42,11 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
 
 bool NaiveAllocator::allocate(
     Function &F,
-    int regWidth,
     const std::unordered_set<VirtualRegister *> &virtRegs,
     const std::unordered_set<PhysicalRegister *> &physRegs,
-    PhysicalRegisterAction load,
-    PhysicalRegisterAction store,
-    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &hints
+    RegisterAction load,
+    RegisterAction store
 ) {
-    (void)hints;
-
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
         assert(physReg->isAllocatable());
@@ -60,7 +55,7 @@ bool NaiveAllocator::allocate(
 
     HashMap<VirtualRegister *, StackSlot *> slots;
     for (VirtualRegister *virtReg : virtRegs) {
-        slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth));
+        slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), virtReg->width(), virtReg->width()));
     }
 
     LiveVariableAnalysis liveVars;

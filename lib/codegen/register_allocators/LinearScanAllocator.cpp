@@ -7,7 +7,6 @@
 #include <memory>
 #include <ranges>
 #include <set>
-#include <unordered_map>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -117,12 +116,10 @@ bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs, const std::unordered
 
 bool LinearScanAllocator::allocate(
     Function &F,
-    int regWidth,
     const std::unordered_set<VirtualRegister *> &virtRegs,
     const std::unordered_set<PhysicalRegister *> &physRegs,
-    PhysicalRegisterAction load,
-    PhysicalRegisterAction store,
-    const std::unordered_multimap<VirtualRegister *, PhysicalRegister *> &hints
+    RegisterAction load,
+    RegisterAction store
 ) {
 #ifndef NDEBUG
     for (PhysicalRegister *physReg : physRegs) {
@@ -218,6 +215,35 @@ bool LinearScanAllocator::allocate(
         }
     }
 
+    HashMap<VirtualRegister *, std::unordered_set<Register *>> coalescence;
+    for (VirtualRegister *virtReg : virtRegs) {
+        coalescence.put(virtReg, {});
+    }
+    for (const BasicBlock &B : F) {
+        for (const Instruction &I : B) {
+            if (I.isCoalescent()) {
+                Register *dst = I.coalescenceDst(),
+                         *src = I.coalescenceSrc();
+                if (auto *virtRegDst = dynamic_cast<VirtualRegister *>(dst); virtRegDst && virtRegs.contains(virtRegDst)) {
+                    if (auto *virtRegSrc = dynamic_cast<VirtualRegister *>(src); virtRegSrc && virtRegs.contains(virtRegSrc)) {
+                        coalescence[virtRegDst].insert(virtRegSrc);
+                    }
+                    if (auto *physRegSrc = dynamic_cast<PhysicalRegister *>(src); physRegSrc && physRegs.contains(physRegSrc)) {
+                        coalescence[virtRegDst].insert(physRegSrc);
+                    }
+                }
+                if (auto *virtRegSrc = dynamic_cast<VirtualRegister *>(src); virtRegSrc && virtRegs.contains(virtRegSrc)) {
+                    if (auto *virtRegDst = dynamic_cast<VirtualRegister *>(dst); virtRegDst && virtRegs.contains(virtRegDst)) {
+                        coalescence[virtRegSrc].insert(virtRegDst);
+                    }
+                    if (auto *physRegDst = dynamic_cast<PhysicalRegister *>(dst); physRegDst && physRegs.contains(physRegDst)) {
+                        coalescence[virtRegSrc].insert(physRegDst);
+                    }
+                }
+            }
+        }
+    }
+
     std::unordered_set<PhysicalRegister *> free = physRegs - reserved;
     std::set<const Interval *, CompareEnd> active;
     HashMap<VirtualRegister *, PhysicalRegister *> allocation;
@@ -233,9 +259,13 @@ bool LinearScanAllocator::allocate(
         }
         PhysicalRegister *bestPhysReg = nullptr;
         std::unordered_set<PhysicalRegister *> preferred;
-        auto [i, j] = hints.equal_range(I.virtReg);
-        for (PhysicalRegister *physReg : std::views::values(std::ranges::subrange(i, j))) {
-            preferred.insert(physReg);
+        for (Register *reg : coalescence[I.virtReg]) {
+            if (auto *physReg = dynamic_cast<PhysicalRegister *>(reg)) {
+                preferred.insert(physReg);
+            }
+            if (auto *virtReg = dynamic_cast<VirtualRegister *>(reg); virtReg && allocation.contains(virtReg)) {
+                preferred.insert(allocation[virtReg]);
+            }
         }
         for (PhysicalRegister *physReg : free) {
             if (allocatable[I.virtReg].contains(physReg) && (bestPhysReg == nullptr || isBetter(physReg, bestPhysReg, preferred))) {
@@ -263,7 +293,7 @@ bool LinearScanAllocator::allocate(
 
     HashMap<VirtualRegister *, StackSlot *> slots;
     for (VirtualRegister *virtReg : spilled) {
-        slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), regWidth, regWidth));
+        slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), virtReg->width(), virtReg->width()));
     }
 
     for (BasicBlock &B : F) {

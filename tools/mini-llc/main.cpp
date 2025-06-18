@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "mini-llvm/codegen/register_allocators/GraphColoringAllocator.h"
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/common/SourceManger.h"
 #include "mini-llvm/ir/Module.h"
@@ -213,9 +214,11 @@ int mainImpl(std::vector<std::string> args) {
     mir::Module MM;
     mc::Module MCM;
 
+    GraphColoringAllocator allocator;
+
     switch (*target) {
         case Target::kRISCV64: {
-            RISCVBackendDriver backendDriver;
+            RISCVBackendDriver backendDriver(&allocator);
             backendDriver.run(*IM, MM, MCM);
             break;
         }

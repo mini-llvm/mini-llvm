@@ -875,7 +875,7 @@ public:
             if (size == 1) {
                 builder_.add(std::make_unique<Add>(8, dst, dst, idxReg));
             } else {
-                std::shared_ptr<Register> sizeReg = std::make_shared<VirtualRegister>();
+                std::shared_ptr<Register> sizeReg = std::make_shared<VirtualRegister>(8);
                 builder_.add(std::make_unique<LI>(8, sizeReg, std::make_unique<IntegerImmediate>(size)));
                 builder_.add(std::make_unique<Mul>(8, idxReg, idxReg, sizeReg));
                 builder_.add(std::make_unique<Add>(8, dst, dst, idxReg));
@@ -916,7 +916,7 @@ public:
             builder_.setPos(&middle);
             HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
             for (const ir::Phi *phi : phis) {
-                tmps.put(phi, std::make_shared<VirtualRegister>());
+                tmps.put(phi, std::make_shared<VirtualRegister>(8));
             }
             for (const ir::Phi *phi : phis) {
                 std::shared_ptr<Register> dst = tmps[phi],
@@ -965,7 +965,7 @@ public:
                 builder_.setPos(&middle);
                 HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
                 for (const ir::Phi *phi : phis) {
-                    tmps.put(phi, std::make_shared<VirtualRegister>());
+                    tmps.put(phi, std::make_shared<VirtualRegister>(8));
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
@@ -1009,7 +1009,7 @@ public:
                 builder_.setPos(&middle);
                 HashMap<const ir::Phi *, std::shared_ptr<Register>> tmps;
                 for (const ir::Phi *phi : phis) {
-                    tmps.put(phi, std::make_shared<VirtualRegister>());
+                    tmps.put(phi, std::make_shared<VirtualRegister>(8));
                 }
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
@@ -1151,7 +1151,7 @@ private:
                                               src = getRegister(*arg);
                     if (dynamic_cast<const ir::FloatingType *>(&*arg->type())) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*arg->type())->precision();
-                        std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>();
+                        std::shared_ptr<Register> tmp = std::make_shared<VirtualRegister>(8);
                         builder_.add(std::make_unique<FMovIF>(precision, tmp, src));
                         src = std::move(tmp);
                     }
@@ -1236,26 +1236,26 @@ private:
             return valueMap_[&value];
         }
         if (auto *G = dynamic_cast<const ir::GlobalVar *>(&value)) {
-            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             GlobalVar *ptr = globalVarMap_[G];
             builder_.add(std::make_unique<LA>(8, reg, ptr));
             return reg;
         }
         if (auto *F = dynamic_cast<const ir::Function *>(&value)) {
-            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             Function *ptr = functionMap_[F];
             builder_.add(std::make_unique<LA>(8, reg, ptr));
             return reg;
         }
         if (auto *C = dynamic_cast<const ir::IntegerConstant *>(&value)) {
-            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(C->signExtendedValue());
             builder_.add(std::make_unique<LI>(8, reg, std::move(imm)));
             return reg;
         }
         if (auto *C = dynamic_cast<const ir::FloatingConstant *>(&value)) {
-            std::shared_ptr<Register> gpr = std::make_shared<VirtualRegister>(),
-                                      fpr = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> gpr = std::make_shared<VirtualRegister>(8),
+                                      fpr = std::make_shared<VirtualRegister>(8);
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(C->bitPattern());
             builder_.add(std::make_unique<LI>(8, gpr, std::move(imm)));
             Precision precision = static_cast<const ir::FloatingType *>(&*C->type())->precision();
@@ -1263,13 +1263,13 @@ private:
             return fpr;
         }
         if (dynamic_cast<const ir::NullPtrConstant *>(&value)) {
-            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(0);
             builder_.add(std::make_unique<LI>(8, reg, std::move(imm)));
             return reg;
         }
         if (dynamic_cast<const ir::PoisonValue *>(&value)) {
-            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>();
+            std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             return reg;
         }
         abort();
@@ -1403,13 +1403,13 @@ private:
         for (const ir::Argument &arg : args(IF)) {
             if (dynamic_cast<const ir::IntegerType *>(&*arg.type())) {
                 if (numIntegerArgs < 8) {
-                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8),
                                               src = share(*riscvIntegerArgRegs()[numIntegerArgs]);
                     blockMap[&IF.entry()]->append(std::make_unique<Mov>(8, dst, src));
                     valueMap.put(&arg, dst);
                     ++numIntegerArgs;
                 } else {
-                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8);
                     MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                     blockMap[&IF.entry()]->append(std::make_unique<Load>(8, dst, std::move(src)));
                     valueMap.put(&arg, dst);
@@ -1418,13 +1418,13 @@ private:
             } else if (dynamic_cast<const ir::FloatingType *>(&*arg.type())) {
                 Precision precision = static_cast<const ir::FloatingType *>(&*arg.type())->precision();
                 if (numFloatingArgs < 8) {
-                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(),
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8),
                                               src = share(*riscvFloatingArgRegs()[numFloatingArgs]);
                     blockMap[&IF.entry()]->append(std::make_unique<FMov>(precision, dst, src));
                     valueMap.put(&arg, dst);
                     ++numFloatingArgs;
                 } else {
-                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>();
+                    std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8);
                     MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                     blockMap[&IF.entry()]->append(std::make_unique<FLoad>(precision, dst, std::move(src)));
                     valueMap.put(&arg, dst);
@@ -1437,7 +1437,7 @@ private:
         for (const ir::BasicBlock &IB : IF) {
             for (const ir::Instruction &II : IB) {
                 if (*II.type() != ir::Void()) {
-                    valueMap.put(&II, std::make_shared<VirtualRegister>());
+                    valueMap.put(&II, std::make_shared<VirtualRegister>(8));
                 }
             }
         }

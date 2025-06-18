@@ -24,7 +24,7 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
     do {
         changed = false;
 
-        NullOperationElimination    pass1(8);
+        NullOperationElimination    pass1;
         RISCVConstantPropagation    pass2;
         CopyPropagation             pass3;
         RegisterReuse               pass4;
@@ -62,7 +62,7 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
     do {
         changed = false;
 
-        NullOperationElimination    pass1(8);
+        NullOperationElimination    pass1;
         RISCVConstantPropagation    pass2;
         CopyPropagation             pass3;
         RegisterReuse               pass4;

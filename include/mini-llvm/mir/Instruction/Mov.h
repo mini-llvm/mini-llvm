@@ -20,6 +20,18 @@ public:
         ExtensionMode extMode = ExtensionMode::kNo)
         : UnaryOperator(width, std::move(dst), std::move(src), extMode) {}
 
+    bool isCoalescent() const override {
+        return true;
+    }
+
+    Register *coalescenceDst() const override {
+        return &*dst();
+    }
+
+    Register *coalescenceSrc() const override {
+        return &*src();
+    }
+
     bool hasSideEffects() const override {
         return false;
     }

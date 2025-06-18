@@ -14,7 +14,7 @@ public:
     virtual RegisterClass Class() const = 0;
     virtual bool isPreserved() const = 0;
     virtual bool isAllocatable() const = 0;
-    std::string format() const override ;
+    std::string format() const override;
 };
 
 } // namespace mini_llvm::mir

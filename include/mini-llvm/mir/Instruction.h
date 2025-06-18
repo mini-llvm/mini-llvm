@@ -35,6 +35,9 @@ public:
     std::unordered_set<ImmediateOperand *> immOps();
     virtual std::unordered_set<const MemoryOperand *> memOps() const = 0;
     std::unordered_set<MemoryOperand *> memOps();
+    virtual bool isCoalescent() const { return false; }
+    virtual Register *coalescenceDst() const { return nullptr; }
+    virtual Register *coalescenceSrc() const { return nullptr; }
     virtual bool hasSideEffects() const = 0;
     virtual std::string format() const = 0;
     virtual std::unique_ptr<Instruction> clone() const = 0;

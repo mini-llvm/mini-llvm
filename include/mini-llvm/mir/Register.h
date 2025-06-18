@@ -16,6 +16,7 @@ public:
     Register &operator=(const Register &) = delete;
     Register &operator=(Register &&) = delete;
 
+    virtual int width() const = 0;
     virtual std::string format() const = 0;
 };
 

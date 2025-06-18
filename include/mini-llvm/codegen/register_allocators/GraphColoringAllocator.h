@@ -9,7 +9,7 @@
 
 namespace mini_llvm {
 
-class LinearScanAllocator : public RegisterAllocator {
+class GraphColoringAllocator : public RegisterAllocator {
 public:
     bool allocate(
         mir::Function &F,

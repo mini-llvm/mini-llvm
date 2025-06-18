@@ -23,6 +23,10 @@ public:
         return class_;
     }
 
+    int width() const override {
+        return width_;
+    }
+
     bool isPreserved() const override {
         return isPreserved_;
     }
@@ -37,17 +41,18 @@ private:
     int idx_;
     const char *name_;
     RegisterClass class_;
+    int width_;
     bool isPreserved_;
     bool isAllocatable_;
 
-    RISCVRegister(int idx, const char *name, RegisterClass Class, bool isPreserved, bool isAllocatable)
-        : idx_(idx), name_(name), class_(Class), isPreserved_(isPreserved), isAllocatable_(isAllocatable) {}
+    RISCVRegister(int idx, const char *name, RegisterClass Class, int width, bool isPreserved, bool isAllocatable)
+        : idx_(idx), name_(name), class_(Class), width_(width), isPreserved_(isPreserved), isAllocatable_(isAllocatable) {}
 };
 
 namespace riscv {
 
 #define REGS
-#define X(idx, name, class, isPreserved, isAllocatable) RISCVRegister *name();
+#define X(idx, name, class, width, isPreserved, isAllocatable) RISCVRegister *name();
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
