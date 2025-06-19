@@ -512,3 +512,21 @@ define void @test() {
 
     EXPECT_FALSE(parseModule(input));
 }
+
+TEST(IRReaderTest, ZeroInitializerGlobalVar) {
+    const char *input = "@test = global i32 zeroinitializer";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
+TEST(IRReaderTest, ZeroInitializerOperand) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = add i32 0, zeroinitializer
+    ret void
+}
+)";
+
+    EXPECT_TRUE(parseModule(input));
+}

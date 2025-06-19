@@ -1251,12 +1251,26 @@ public:
     }
 
     std::shared_ptr<Constant> parseConstant(const Type &type) {
+        if (current_->kind == kZeroInitializer) {
+            ++current_;
+            return type.zeroValue();
+        }
         if (type == I1()) {
             switch (current_->kind) {
-                case kTrue: ++current_; return std::make_unique<I1Constant>(true);
-                case kFalse: ++current_; return std::make_unique<I1Constant>(false);
-                case kPoison: ++current_; return std::make_unique<PoisonValue>(std::make_unique<I1>());
-                default: throw ParseException("expected 'true', 'false' or 'poison'", current_);
+                case kTrue:
+                    ++current_;
+                    return std::make_unique<I1Constant>(true);
+
+                case kFalse:
+                    ++current_;
+                    return std::make_unique<I1Constant>(false);
+
+                case kPoison:
+                    ++current_;
+                    return std::make_unique<PoisonValue>(std::make_unique<I1>());
+
+                default:
+                    throw ParseException("expected 'true', 'false', 'poison' or 'zeroinitializer'", current_);
             }
         }
         if (type == I8()) {
@@ -1271,7 +1285,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<I8>());
                 }
                 default: {
-                    throw ParseException("expected number or 'poison'", current_);
+                    throw ParseException("expected number, 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1287,7 +1301,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<I16>());
                 }
                 default: {
-                    throw ParseException("expected number or 'poison'", current_);
+                    throw ParseException("expected number, 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1303,7 +1317,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<I32>());
                 }
                 default: {
-                    throw ParseException("expected number or 'poison'", current_);
+                    throw ParseException("expected number, 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1319,7 +1333,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<I64>());
                 }
                 default: {
-                    throw ParseException("expected number or 'poison'", current_);
+                    throw ParseException("expected number, 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1335,7 +1349,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<Float>());
                 }
                 default: {
-                    throw ParseException("expected number or 'poison'", current_);
+                    throw ParseException("expected number, 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1351,7 +1365,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<Double>());
                 }
                 default: {
-                    throw ParseException("expected number or 'poison'", current_);
+                    throw ParseException("expected number, 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1369,7 +1383,7 @@ public:
                     return std::make_unique<PoisonValue>(std::make_unique<Ptr>());
                 }
                 default: {
-                    throw ParseException("expected '@', 'null' or 'poison'", current_);
+                    throw ParseException("expected '@', 'null', 'poison' or 'zeroinitializer'", current_);
                 }
             }
         }
@@ -1377,10 +1391,6 @@ public:
             if (current_->kind == kPoison) {
                 ++current_;
                 return std::make_unique<PoisonValue>(arrayType->clone());
-            }
-            if (current_->kind == kZeroInitializer) {
-                ++current_;
-                return arrayType->zeroValue();
             }
             Location elementsLocation = current_;
             std::vector<std::shared_ptr<Constant>> elements;
@@ -1424,7 +1434,7 @@ public:
                 }
                 ++current_;
             } else {
-                throw ParseException("expected '[', 'zeroinitializer', 'poison' or string", current_);
+                throw ParseException("expected '[', string, 'poison' or 'zeroinitializer'", current_);
             }
             return std::make_unique<ArrayConstant>(cast<ArrayType>(arrayType->clone()), std::move(elements));
         }
