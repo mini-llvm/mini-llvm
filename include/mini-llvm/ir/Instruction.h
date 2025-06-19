@@ -33,7 +33,7 @@ public:
         return false;
     }
 
-    virtual std::unique_ptr<Constant> fold() const {
+    virtual std::shared_ptr<Constant> fold() const {
         abort();
     }
 

@@ -28,6 +28,7 @@ tests=(
     getelementptr
     getelementptr_0
     select
+    select_ptr
     indirect_call
     bit
     max

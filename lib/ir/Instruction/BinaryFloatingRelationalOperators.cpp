@@ -27,7 +27,7 @@ class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
 
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -41,20 +41,20 @@ public:
 
 private:
     const Constant &lhs_;
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename Const>
     void visit(const Const &rhs) {
-        result_.emplace(std::make_unique<I1Constant>(Op()(static_cast<const Const &>(lhs_).value(), rhs.value())));
+        result_.emplace(std::make_shared<I1Constant>(Op()(static_cast<const Const &>(lhs_).value(), rhs.value())));
     }
 };
 
 template <typename Op>
-std::unique_ptr<Constant> foldImpl(const BinaryFloatingRelationalOperator &I) {
+std::shared_ptr<Constant> foldImpl(const BinaryFloatingRelationalOperator &I) {
     const Constant &lhs = static_cast<const Constant &>(*I.lhs()),
                    &rhs = static_cast<const Constant &>(*I.rhs());
     if (dynamic_cast<const PoisonValue *>(&lhs) || dynamic_cast<const PoisonValue *>(&rhs)) {
-        return std::make_unique<PoisonValue>(I.type());
+        return std::make_shared<PoisonValue>(I.type());
     }
     ConstantVisitorImpl<Op> visitor(lhs);
     rhs.accept(visitor);
@@ -63,7 +63,7 @@ std::unique_ptr<Constant> foldImpl(const BinaryFloatingRelationalOperator &I) {
 
 } // namespace
 
-std::unique_ptr<Constant> FCmp::fold() const {
+std::shared_ptr<Constant> FCmp::fold() const {
     using enum Condition;
     switch (cond()) {
         case kOEQ: return foldImpl<ops::OEQ>(*this);

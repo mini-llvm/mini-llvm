@@ -9,13 +9,13 @@
 
 using namespace mini_llvm::ir;
 
-std::unique_ptr<Constant> Select::fold() const {
+std::shared_ptr<Constant> Select::fold() const {
     if (dynamic_cast<const PoisonValue *>(&*cond())) {
-        return std::make_unique<PoisonValue>(type());
+        return std::make_shared<PoisonValue>(type());
     }
     if (static_cast<const I1Constant *>(&*cond())->value() == true) {
-        return cast<Constant>(trueValue()->clone());
+        return cast<Constant>(share(*trueValue()));
     } else {
-        return cast<Constant>(falseValue()->clone());
+        return cast<Constant>(share(*falseValue()));
     }
 }

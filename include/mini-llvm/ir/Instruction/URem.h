@@ -26,7 +26,7 @@ public:
         return false;
     }
 
-    std::unique_ptr<Constant> fold() const override;
+    std::shared_ptr<Constant> fold() const override;
 
     void accept(InstructionVisitor &visitor) override {
         visitor.visitURem(*this);

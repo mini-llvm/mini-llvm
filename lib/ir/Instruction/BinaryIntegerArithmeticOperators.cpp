@@ -63,7 +63,7 @@ class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
 
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -89,29 +89,29 @@ public:
 
 private:
     const Constant &lhs_;
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename Const, typename Ty>
     void visit(const Const &rhs) {
         auto opResult = Op()(static_cast<const Const &>(lhs_).value(), rhs.value());
         if constexpr (is_optional_v<decltype(opResult)>) {
             if (opResult) {
-                result_.emplace(std::make_unique<Const>(*opResult));
+                result_.emplace(std::make_shared<Const>(*opResult));
             } else {
-                result_.emplace(std::make_unique<PoisonValue>(std::make_unique<Ty>()));
+                result_.emplace(std::make_shared<PoisonValue>(std::make_unique<Ty>()));
             }
         } else {
-            result_.emplace(std::make_unique<Const>(opResult));
+            result_.emplace(std::make_shared<Const>(opResult));
         }
     }
 };
 
 template <typename Op>
-std::unique_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
+std::shared_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
     const Constant &lhs = static_cast<const Constant &>(*I.lhs()),
                    &rhs = static_cast<const Constant &>(*I.rhs());
     if (dynamic_cast<const PoisonValue *>(&lhs) || dynamic_cast<const PoisonValue *>(&rhs)) {
-        return std::make_unique<PoisonValue>(I.type());
+        return std::make_shared<PoisonValue>(I.type());
     }
     ConstantVisitorImpl<Op> visitor(lhs);
     rhs.accept(visitor);
@@ -120,54 +120,54 @@ std::unique_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
 
 } // namespace
 
-std::unique_ptr<Constant> Add::fold() const {
+std::shared_ptr<Constant> Add::fold() const {
     return foldImpl<ops::Add>(*this);
 }
 
-std::unique_ptr<Constant> Sub::fold() const {
+std::shared_ptr<Constant> Sub::fold() const {
     return foldImpl<ops::Sub>(*this);
 }
 
-std::unique_ptr<Constant> Mul::fold() const {
+std::shared_ptr<Constant> Mul::fold() const {
     return foldImpl<ops::Mul>(*this);
 }
 
-std::unique_ptr<Constant> SDiv::fold() const {
+std::shared_ptr<Constant> SDiv::fold() const {
     return foldImpl<ops::SDiv>(*this);
 }
 
-std::unique_ptr<Constant> UDiv::fold() const {
+std::shared_ptr<Constant> UDiv::fold() const {
     return foldImpl<ops::UDiv>(*this);
 }
 
-std::unique_ptr<Constant> SRem::fold() const {
+std::shared_ptr<Constant> SRem::fold() const {
     return foldImpl<ops::SRem>(*this);
 }
 
-std::unique_ptr<Constant> URem::fold() const {
+std::shared_ptr<Constant> URem::fold() const {
     return foldImpl<ops::URem>(*this);
 }
 
-std::unique_ptr<Constant> And::fold() const {
+std::shared_ptr<Constant> And::fold() const {
     return foldImpl<ops::And>(*this);
 }
 
-std::unique_ptr<Constant> Or::fold() const {
+std::shared_ptr<Constant> Or::fold() const {
     return foldImpl<ops::Or>(*this);
 }
 
-std::unique_ptr<Constant> Xor::fold() const {
+std::shared_ptr<Constant> Xor::fold() const {
     return foldImpl<ops::Xor>(*this);
 }
 
-std::unique_ptr<Constant> SHL::fold() const {
+std::shared_ptr<Constant> SHL::fold() const {
     return foldImpl<ops::SHL>(*this);
 }
 
-std::unique_ptr<Constant> LSHR::fold() const {
+std::shared_ptr<Constant> LSHR::fold() const {
     return foldImpl<ops::LSHR>(*this);
 }
 
-std::unique_ptr<Constant> ASHR::fold() const {
+std::shared_ptr<Constant> ASHR::fold() const {
     return foldImpl<ops::ASHR>(*this);
 }

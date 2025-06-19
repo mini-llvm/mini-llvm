@@ -25,7 +25,7 @@ namespace {
 template <typename Op, typename ToConst, typename ToTy>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -38,11 +38,11 @@ public:
     }
 
 private:
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename FromConst>
     void visit(const FromConst &value) {
-        result_.emplace(std::make_unique<ToConst>(Op()(value.value())));
+        result_.emplace(std::make_shared<ToConst>(Op()(value.value())));
     }
 };
 
@@ -51,7 +51,7 @@ class TypeVisitorImpl : public TypeVisitor {
 public:
     explicit TypeVisitorImpl(const Constant &value) : value_(value) {}
 
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -65,7 +65,7 @@ public:
 
 private:
     const Constant &value_;
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename To, typename ToConst, typename ToTy>
     void visit() {
@@ -76,10 +76,10 @@ private:
 };
 
 template <template <typename To> typename Op>
-std::unique_ptr<Constant> foldImpl(const FloatingCastingOperator &I) {
+std::shared_ptr<Constant> foldImpl(const FloatingCastingOperator &I) {
     const Constant &value = static_cast<const Constant &>(*I.value());
     if (dynamic_cast<const PoisonValue *>(&value)) {
-        return std::make_unique<PoisonValue>(I.type());
+        return std::make_shared<PoisonValue>(I.type());
     }
     TypeVisitorImpl<Op> visitor(value);
     I.type()->accept(visitor);
@@ -88,10 +88,10 @@ std::unique_ptr<Constant> foldImpl(const FloatingCastingOperator &I) {
 
 } // namespace
 
-std::unique_ptr<Constant> FPTrunc::fold() const {
+std::shared_ptr<Constant> FPTrunc::fold() const {
     return foldImpl<ops::FPTrunc>(*this);
 }
 
-std::unique_ptr<Constant> FPExt::fold() const {
+std::shared_ptr<Constant> FPExt::fold() const {
     return foldImpl<ops::FPExt>(*this);
 }

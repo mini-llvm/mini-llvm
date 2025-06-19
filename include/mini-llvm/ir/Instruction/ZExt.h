@@ -27,7 +27,7 @@ public:
         visitor.visitZExt(*this);
     }
 
-    std::unique_ptr<Constant> fold() const override;
+    std::shared_ptr<Constant> fold() const override;
 
     std::string format() const override {
         return std::format("{:o} = zext {} {:o} to {}", *this, *value()->type(), *value(), *type());

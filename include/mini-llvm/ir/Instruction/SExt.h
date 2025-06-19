@@ -27,7 +27,7 @@ public:
         visitor.visitSExt(*this);
     }
 
-    std::unique_ptr<Constant> fold() const override;
+    std::shared_ptr<Constant> fold() const override;
 
     std::string format() const override {
         return std::format("{:o} = sext {} {:o} to {}", *this, *value()->type(), *value(), *type());

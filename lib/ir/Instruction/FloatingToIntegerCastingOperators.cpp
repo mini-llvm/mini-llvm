@@ -34,7 +34,7 @@ namespace {
 template <typename Op, typename ResultConst, typename ResultTy>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -47,15 +47,15 @@ public:
     }
 
 private:
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename Const>
     void visit(const Const &value) {
         auto opResult = Op()(value.value());
         if (opResult) {
-            result_.emplace(std::make_unique<ResultConst>(*opResult));
+            result_.emplace(std::make_shared<ResultConst>(*opResult));
         } else {
-            result_.emplace(std::make_unique<PoisonValue>(std::make_unique<ResultTy>()));
+            result_.emplace(std::make_shared<PoisonValue>(std::make_unique<ResultTy>()));
         }
     }
 };
@@ -65,7 +65,7 @@ class TypeVisitorImpl final : public TypeVisitor {
 public:
     explicit TypeVisitorImpl(const Constant &value) : value_(value) {}
 
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -91,7 +91,7 @@ public:
 
 private:
     const Constant &value_;
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename To, typename ResultConst, typename ResultTy>
     void visit() {
@@ -102,10 +102,10 @@ private:
 };
 
 template <template <typename To> typename Op>
-std::unique_ptr<Constant> foldImpl(const FloatingToIntegerCastingOperator &I) {
+std::shared_ptr<Constant> foldImpl(const FloatingToIntegerCastingOperator &I) {
     const Constant &value = static_cast<const Constant &>(*I.value());
     if (dynamic_cast<const PoisonValue *>(&value)) {
-        return std::make_unique<PoisonValue>(I.type());
+        return std::make_shared<PoisonValue>(I.type());
     }
     TypeVisitorImpl<Op> visitor(value);
     I.type()->accept(visitor);
@@ -114,10 +114,10 @@ std::unique_ptr<Constant> foldImpl(const FloatingToIntegerCastingOperator &I) {
 
 } // namespace
 
-std::unique_ptr<Constant> FPToSI::fold() const {
+std::shared_ptr<Constant> FPToSI::fold() const {
     return foldImpl<ops::FPToSI>(*this);
 }
 
-std::unique_ptr<Constant> FPToUI::fold() const {
+std::shared_ptr<Constant> FPToUI::fold() const {
     return foldImpl<ops::FPToUI>(*this);
 }

@@ -48,7 +48,7 @@ public:
             dynamic_cast<const Constant *>(&*falseValue());
     }
 
-    std::unique_ptr<Constant> fold() const override;
+    std::shared_ptr<Constant> fold() const override;
 
     void accept(InstructionVisitor &visitor) override {
         visitor.visitSelect(*this);

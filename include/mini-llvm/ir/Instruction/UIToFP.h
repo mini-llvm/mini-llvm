@@ -19,7 +19,7 @@ public:
     UIToFP(std::shared_ptr<Value> value, std::unique_ptr<FloatingType> type)
         : IntegerToFloatingCastingOperator(std::move(value), std::move(type)) {}
 
-    std::unique_ptr<Constant> fold() const override;
+    std::shared_ptr<Constant> fold() const override;
 
     void accept(InstructionVisitor &visitor) override {
         visitor.visitUIToFP(*this);

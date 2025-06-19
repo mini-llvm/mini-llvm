@@ -33,7 +33,7 @@ namespace {
 template <typename To, typename ToConst, typename ToTy>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -70,11 +70,11 @@ public:
     }
 
 private:
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename FromConst>
     void visit(const FromConst &value) {
-        result_.emplace(std::make_unique<ToConst>(ops::BitCast<To>()(value.value())));
+        result_.emplace(std::make_shared<ToConst>(ops::BitCast<To>()(value.value())));
     }
 };
 
@@ -82,7 +82,7 @@ class TypeVisitorImpl final : public TypeVisitor {
 public:
     explicit TypeVisitorImpl(const Constant &value) : value_(value) {}
 
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -116,7 +116,7 @@ public:
 
 private:
     const Constant &value_;
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename To, typename ToConst, typename ToTy>
     void visit() {
@@ -126,10 +126,10 @@ private:
     }
 };
 
-std::unique_ptr<Constant> foldImpl(const BitCast &I) {
+std::shared_ptr<Constant> foldImpl(const BitCast &I) {
     const Constant &value = static_cast<const Constant &>(*I.value());
     if (dynamic_cast<const PoisonValue *>(&value)) {
-        return std::make_unique<PoisonValue>(I.type());
+        return std::make_shared<PoisonValue>(I.type());
     }
     TypeVisitorImpl visitor(value);
     I.type()->accept(visitor);
@@ -138,6 +138,6 @@ std::unique_ptr<Constant> foldImpl(const BitCast &I) {
 
 } // namespace
 
-std::unique_ptr<Constant> BitCast::fold() const {
+std::shared_ptr<Constant> BitCast::fold() const {
     return foldImpl(*this);
 }

@@ -18,7 +18,7 @@ namespace {
 template <typename Op>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
-    std::unique_ptr<Constant> takeResult() {
+    std::shared_ptr<Constant> takeResult() {
         return std::move(*result_);
     }
 
@@ -31,19 +31,19 @@ public:
     }
 
 private:
-    std::optional<std::unique_ptr<Constant>> result_;
+    std::optional<std::shared_ptr<Constant>> result_;
 
     template <typename Const>
     void visit(const Const &value) {
-        result_.emplace(std::make_unique<Const>(Op()(value.value())));
+        result_.emplace(std::make_shared<Const>(Op()(value.value())));
     }
 };
 
 template <typename Op>
-std::unique_ptr<Constant> foldImpl(const UnaryFloatingArithmeticOperator &I) {
+std::shared_ptr<Constant> foldImpl(const UnaryFloatingArithmeticOperator &I) {
     const Constant &value = static_cast<const Constant &>(*I.value());
     if (dynamic_cast<const PoisonValue *>(&value)) {
-        return std::make_unique<PoisonValue>(I.type());
+        return std::make_shared<PoisonValue>(I.type());
     }
     ConstantVisitorImpl<Op> visitor;
     value.accept(visitor);
@@ -52,6 +52,6 @@ std::unique_ptr<Constant> foldImpl(const UnaryFloatingArithmeticOperator &I) {
 
 } // namespace
 
-std::unique_ptr<Constant> FNeg::fold() const {
+std::shared_ptr<Constant> FNeg::fold() const {
     return foldImpl<ops::FNeg>(*this);
 }
