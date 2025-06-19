@@ -16,7 +16,7 @@ namespace mini_llvm::ir {
 
 class ICmp final : public BinaryIntegerRelationalOperator {
 public:
-    enum Condition {
+    enum class Condition {
         kEQ,
         kNE,
         kSLT,
