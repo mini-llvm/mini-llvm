@@ -148,7 +148,7 @@
 
 ### MC
 
-- `RedundantLabelElimination`
+- `UnusedLabelElimination`
 - `RISCVFallthrough` (`riscv64`)
 
 ## Register Allocators (Work in Progress)

@@ -87,7 +87,7 @@ add_library(mini-llvm
     opt/ir/passes/UnreachableBlockElimination.cpp
     opt/ir/PassManager.cpp
     opt/mc/FragmentTransform.cpp
-    opt/mc/passes/RedundantLabelElimination.cpp
+    opt/mc/passes/UnusedLabelElimination.cpp
     opt/mir/BasicBlockTransform.cpp
     opt/mir/FunctionTransform.cpp
     opt/mir/passes/BasicBlockMerging.cpp

@@ -5,12 +5,12 @@
 
 namespace mini_llvm::mc {
 
-class RedundantLabelElimination final : public FragmentTransform {
+class UnusedLabelElimination final : public FragmentTransform {
 public:
     bool runOnFragment(Fragment &fragment) override;
 
     const char *name() const override {
-        return "RedundantLabelElimination";
+        return "UnusedLabelElimination";
     }
 };
 

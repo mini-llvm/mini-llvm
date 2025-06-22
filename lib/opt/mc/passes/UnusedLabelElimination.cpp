@@ -1,4 +1,4 @@
-#include "mini-llvm/opt/mc/passes/RedundantLabelElimination.h"
+#include "mini-llvm/opt/mc/passes/UnusedLabelElimination.h"
 
 #include <string>
 #include <unordered_set>
@@ -12,18 +12,18 @@
 
 using namespace mini_llvm::mc;
 
-bool RedundantLabelElimination::runOnFragment(Fragment &fragment) {
+bool UnusedLabelElimination::runOnFragment(Fragment &fragment) {
     if (fragment.section() != Section::kText) {
         return false;
     }
 
-    std::unordered_set<std::string> referenced;
+    std::unordered_set<std::string> used;
 
     for (const Line &line : fragment) {
         if (auto *I = dynamic_cast<const Instruction *>(&line)) {
             for (const Operand &op : operands(*I)) {
                 if (auto *labelOp = dynamic_cast<const LabelOperand *>(&op)) {
-                    referenced.insert(labelOp->labelName());
+                    used.insert(labelOp->labelName());
                 }
             }
         }
@@ -33,7 +33,7 @@ bool RedundantLabelElimination::runOnFragment(Fragment &fragment) {
 
     for (Fragment::const_iterator i = fragment.begin(); i != fragment.end();) {
         if (auto *label = dynamic_cast<const Label *>(&*i)) {
-            if (!referenced.contains(label->labelName())) {
+            if (!used.contains(label->labelName())) {
                 fragment.remove(i++);
                 changed = true;
                 continue;
