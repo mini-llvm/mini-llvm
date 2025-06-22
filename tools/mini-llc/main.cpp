@@ -69,15 +69,15 @@ int mainImpl(std::vector<std::string> args) {
         using enum CommandLineParser::ErrorKind;
         switch (result.error().kind()) {
         case kMissingValue:
-            std::print(stderr, "{}: error: missing value to '{}'\n", args[0], result.error().optionName());
+            std::println(stderr, "{}: error: missing value to '{}'", args[0], result.error().optionName());
             break;
 
         case kUnexpectedValue:
-            std::print(stderr, "{}: error: unexpected value to '{}'\n", args[0], result.error().optionName());
+            std::println(stderr, "{}: error: unexpected value to '{}'", args[0], result.error().optionName());
             break;
 
         case kUnrecognizedOption:
-            std::print(stderr, "{}: error: unrecognized option '{}'\n", args[0], result.error().optionName());
+            std::println(stderr, "{}: error: unrecognized option '{}'", args[0], result.error().optionName());
             break;
         }
         return 1;
@@ -92,13 +92,13 @@ int mainImpl(std::vector<std::string> args) {
     for (const auto &arg : parser) {
         if (const auto *option = arg.option()) {
             if (option->name() == "--help") {
-                std::print(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>\n", args[0]);
+                std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", args[0]);
                 return 0;
             }
             if (option->name() == "--target") {
                 target = toTarget(*option->value());
                 if (!target) {
-                    std::print(stderr, "{}: error: unsupported target '{}'\n", args[0], *option->value());
+                    std::println(stderr, "{}: error: unsupported target '{}'", args[0], *option->value());
                     return 1;
                 }
                 continue;
@@ -157,18 +157,15 @@ int mainImpl(std::vector<std::string> args) {
 #endif
         target = toTarget(targetName);
         if (!target) {
-            std::print(stderr, "{}: error: unsupported target '{}'\n", args[0], targetName);
+            std::println(stderr, "{}: error: unsupported target '{}'", args[0], targetName);
             return 1;
         }
     }
 
     Expected<std::string, int> source = input(*inputFile);
     if (!source) {
-        std::print(stderr, "{}: error: {}: {}\n", args[0], *inputFile, strerror(source.error()));
+        std::println(stderr, "{}: error: {}: {}", args[0], *inputFile, strerror(source.error()));
         return 1;
-    }
-    if (!source->empty() && source->back() != '\n') {
-        source->push_back('\n');
     }
     SourceManager sourceManager;
     sourceManager.setSource(std::move(*source));
@@ -180,10 +177,10 @@ int mainImpl(std::vector<std::string> args) {
     }
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
-        std::print(stderr, "{}:{}:{}: {}: {}\n", *inputFile, line + 1, column + 1, name(diag.level), diag.message);
+        std::println(stderr, "{}:{}:{}: {}: {}", *inputFile, line + 1, column + 1, name(diag.level), diag.message);
         if (line < sourceManager.lineCount()) {
             std::print(stderr, "{}", sourceManager.line(line));
-            std::print(stderr, "{}^\n", std::string(column, ' '));
+            std::println(stderr, "{}^", std::string(column, ' '));
         }
     }
     if (!IM) {
@@ -191,7 +188,7 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (!ir::verifyModule(*IM)) {
-        std::print(stderr, "{}: error: ill-formed module\n", args[0]);
+        std::println(stderr, "{}: error: ill-formed module", args[0]);
         return 1;
     }
 
@@ -208,7 +205,7 @@ int mainImpl(std::vector<std::string> args) {
 
     if (irDumpFile) {
         if (Expected<void, int> result = output(*irDumpFile, IM->format() + '\n'); !result) {
-            std::print(stderr, "{}: error: {}: {}\n", args[0], *irDumpFile, strerror(result.error()));
+            std::println(stderr, "{}: error: {}: {}", args[0], *irDumpFile, strerror(result.error()));
             return 1;
         }
     }
@@ -226,13 +223,13 @@ int mainImpl(std::vector<std::string> args) {
 
     if (mirDumpFile) {
         if (Expected<void, int> result = output(*mirDumpFile, MM.format() + '\n'); !result) {
-            std::print(stderr, "{}: error: {}: {}\n", args[0], *mirDumpFile, strerror(result.error()));
+            std::println(stderr, "{}: error: {}: {}", args[0], *mirDumpFile, strerror(result.error()));
             return 1;
         }
     }
 
     if (Expected<void, int> result = output(*outputFile, MCM.format() + '\n'); !result) {
-        std::print(stderr, "{}: error: {}: {}\n", args[0], *outputFile, strerror(result.error()));
+        std::println(stderr, "{}: error: {}: {}", args[0], *outputFile, strerror(result.error()));
         return 1;
     }
 

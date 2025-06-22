@@ -10,6 +10,9 @@ using namespace mini_llvm;
 
 void SourceManager::setSource(std::string source) {
     source_ = std::move(source);
+    if (!source_.empty() && source_.back() != '\n') {
+        source_.push_back('\n');
+    }
     lines_.clear();
     size_t n = source_.size();
     size_t i = 0;
