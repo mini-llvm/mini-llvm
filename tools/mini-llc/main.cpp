@@ -40,6 +40,22 @@ std::optional<Target> toTarget(std::string_view targetName) {
     return std::nullopt;
 }
 
+Expected<std::string, int> input(const std::string &inputFile) {
+    if (inputFile == "-") {
+        return readAll(stdin);
+    } else {
+        return readAll(inputFile);
+    }
+}
+
+Expected<void, int> output(const std::string &outputFile, const std::string &content) {
+    if (outputFile == "-") {
+        return writeAll(stdout, content.data(), content.size());
+    } else {
+        return writeAll(outputFile, content.data(), content.size());
+    }
+}
+
 int mainImpl(std::vector<std::string> args) {
     CommandLineParser parser;
 
@@ -146,12 +162,7 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
 
-    Expected<std::string, int> source;
-    if (*inputFile == "-") {
-        source = readAll(stdin);
-    } else {
-        source = readAll(*inputFile);
-    }
+    Expected<std::string, int> source = input(*inputFile);
     if (!source) {
         std::print(stderr, "{}: error: {}: {}\n", args[0], *inputFile, strerror(source.error()));
         return 1;
@@ -196,14 +207,7 @@ int mainImpl(std::vector<std::string> args) {
     passManager.run(*IM);
 
     if (irDumpFile) {
-        std::string output = IM->format() + '\n';
-        Expected<void, int> result;
-        if (*irDumpFile == "-") {
-            result = writeAll(stdout, output.data(), output.size());
-        } else {
-            result = writeAll(*irDumpFile, output.data(), output.size());
-        }
-        if (!result) {
+        if (Expected<void, int> result = output(*irDumpFile, IM->format() + '\n'); !result) {
             std::print(stderr, "{}: error: {}: {}\n", args[0], *irDumpFile, strerror(result.error()));
             return 1;
         }
@@ -221,27 +225,13 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (mirDumpFile) {
-        std::string output = MM.format() + '\n';
-        Expected<void, int> result;
-        if (*mirDumpFile == "-") {
-            result = writeAll(stdout, output.data(), output.size());
-        } else {
-            result = writeAll(*mirDumpFile, output.data(), output.size());
-        }
-        if (!result) {
+        if (Expected<void, int> result = output(*mirDumpFile, MM.format() + '\n'); !result) {
             std::print(stderr, "{}: error: {}: {}\n", args[0], *mirDumpFile, strerror(result.error()));
             return 1;
         }
     }
 
-    std::string output = MCM.format() + '\n';
-    Expected<void, int> result;
-    if (*outputFile == "-") {
-        result = writeAll(stdout, output.data(), output.size());
-    } else {
-        result = writeAll(*outputFile, output.data(), output.size());
-    }
-    if (!result) {
+    if (Expected<void, int> result = output(*outputFile, MCM.format() + '\n'); !result) {
         std::print(stderr, "{}: error: {}: {}\n", args[0], *outputFile, strerror(result.error()));
         return 1;
     }
