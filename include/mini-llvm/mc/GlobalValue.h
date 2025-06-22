@@ -8,25 +8,25 @@
 #include <string>
 #include <utility>
 
-#include "mini-llvm/mc/Line.h"
 #include "mini-llvm/mc/Section.h"
+#include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mc {
 
-class Fragment {
-    using LineList = std::list<std::unique_ptr<Line>>;
+class GlobalValue {
+    using StatementList = std::list<std::unique_ptr<Statement>>;
 
 public:
-    using iterator = IndirectIterator<LineList::iterator, Line>;
-    using const_iterator = IndirectIterator<LineList::const_iterator, const Line>;
-    using reverse_iterator = IndirectIterator<LineList::reverse_iterator, Line>;
-    using const_reverse_iterator = IndirectIterator<LineList::const_reverse_iterator, const Line>;
+    using iterator = IndirectIterator<StatementList::iterator, Statement>;
+    using const_iterator = IndirectIterator<StatementList::const_iterator, const Statement>;
+    using reverse_iterator = IndirectIterator<StatementList::reverse_iterator, Statement>;
+    using const_reverse_iterator = IndirectIterator<StatementList::const_reverse_iterator, const Statement>;
 
-    Fragment(std::string name, Section section, bool isGlobal, int alignment)
+    GlobalValue(std::string name, Section section, bool isGlobal, int alignment)
         : name_(std::move(name)), section_(section), isGlobal_(isGlobal), alignment_(alignment) {}
 
-    Fragment(std::string name, Section section, bool isGlobal)
+    GlobalValue(std::string name, Section section, bool isGlobal)
         : name_(std::move(name)), section_(section), isGlobal_(isGlobal), alignment_(0) {}
 
     const std::string &name() const {
@@ -62,75 +62,75 @@ public:
     }
 
     iterator begin() {
-        return iterator(lines_.begin());
+        return iterator(stmts_.begin());
     }
 
     const_iterator begin() const {
-        return const_iterator(lines_.begin());
+        return const_iterator(stmts_.begin());
     }
 
     iterator end() {
-        return iterator(lines_.end());
+        return iterator(stmts_.end());
     }
 
     const_iterator end() const {
-        return const_iterator(lines_.end());
+        return const_iterator(stmts_.end());
     }
 
     reverse_iterator rbegin() {
-        return reverse_iterator(lines_.rbegin());
+        return reverse_iterator(stmts_.rbegin());
     }
 
     const_reverse_iterator rbegin() const {
-        return const_reverse_iterator(lines_.rbegin());
+        return const_reverse_iterator(stmts_.rbegin());
     }
 
     reverse_iterator rend() {
-        return reverse_iterator(lines_.rend());
+        return reverse_iterator(stmts_.rend());
     }
 
     const_reverse_iterator rend() const {
-        return const_reverse_iterator(lines_.rend());
+        return const_reverse_iterator(stmts_.rend());
     }
 
-    Line &front() {
+    Statement &front() {
         return *begin();
     }
 
-    const Line &front() const {
+    const Statement &front() const {
         return *begin();
     }
 
-    Line &back() {
+    Statement &back() {
         return *std::prev(end());
     }
 
-    const Line &back() const {
+    const Statement &back() const {
         return *std::prev(end());
     }
 
     bool empty() const {
-        return lines_.empty();
+        return stmts_.empty();
     }
 
     size_t size() const {
-        return lines_.size();
+        return stmts_.size();
     }
 
-    Line &add(const_iterator pos, std::unique_ptr<Line> line) {
-        return **lines_.insert(pos.base(), std::move(line));
+    Statement &add(const_iterator pos, std::unique_ptr<Statement> stmt) {
+        return **stmts_.insert(pos.base(), std::move(stmt));
     }
 
-    Line &prepend(std::unique_ptr<Line> line) {
-        return add(begin(), std::move(line));
+    Statement &prepend(std::unique_ptr<Statement> stmt) {
+        return add(begin(), std::move(stmt));
     }
 
-    Line &append(std::unique_ptr<Line> line) {
-        return add(end(), std::move(line));
+    Statement &append(std::unique_ptr<Statement> stmt) {
+        return add(end(), std::move(stmt));
     }
 
     void remove(const_iterator pos) {
-        lines_.erase(pos.base());
+        stmts_.erase(pos.base());
     }
 
     void removeFirst() {
@@ -142,7 +142,7 @@ public:
     }
 
     void clear() {
-        lines_.clear();
+        stmts_.clear();
     }
 
     std::string format() const;
@@ -152,20 +152,20 @@ private:
     Section section_;
     bool isGlobal_;
     int alignment_;
-    LineList lines_;
+    StatementList stmts_;
 };
 
 } // namespace mini_llvm::mc
 
-template <typename FragmentT>
-    requires std::derived_from<FragmentT, mini_llvm::mc::Fragment>
-struct std::formatter<FragmentT> {
+template <typename GlobalValueT>
+    requires std::derived_from<GlobalValueT, mini_llvm::mc::GlobalValue>
+struct std::formatter<GlobalValueT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }
 
     template <typename FormatContext>
-    auto format(const FragmentT &fragment, FormatContext &ctx) const {
-        return std::format_to(ctx.out(), "{}", fragment.format());
+    auto format(const GlobalValueT &G, FormatContext &ctx) const {
+        return std::format_to(ctx.out(), "{}", G.format());
     }
 };

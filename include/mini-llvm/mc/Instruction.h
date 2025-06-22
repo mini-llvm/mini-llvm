@@ -7,13 +7,13 @@
 #include <utility>
 #include <vector>
 
-#include "mini-llvm/mc/Line.h"
 #include "mini-llvm/mc/Operand.h"
+#include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mc {
 
-class Instruction : public Line {
+class Instruction : public Statement {
 public:
     using operand_iterator = IndirectIterator<std::vector<std::unique_ptr<Operand>>::iterator, Operand>;
     using const_operand_iterator = IndirectIterator<std::vector<std::unique_ptr<Operand>>::const_iterator, const Operand>;

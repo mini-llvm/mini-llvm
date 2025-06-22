@@ -42,9 +42,9 @@ add_library(mini-llvm
     ir_reader/IRReader.cpp
     ir_reader/Lexer.cpp
     ir_reader/Parser.cpp
-    mc/Fragment.cpp
     mc/Instruction.cpp
-    mc/Program.cpp
+    mc/GlobalValue.cpp
+    mc/Module.cpp
     mir/BasicBlock.cpp
     mir/Constant/I16ArrayConstant.cpp
     mir/Constant/I32ArrayConstant.cpp
@@ -86,7 +86,7 @@ add_library(mini-llvm
     opt/ir/passes/StrengthReduction.cpp
     opt/ir/passes/UnreachableBlockElimination.cpp
     opt/ir/PassManager.cpp
-    opt/mc/FragmentTransform.cpp
+    opt/mc/GlobalValueTransform.cpp
     opt/mc/passes/UnusedLabelElimination.cpp
     opt/mir/BasicBlockTransform.cpp
     opt/mir/FunctionTransform.cpp

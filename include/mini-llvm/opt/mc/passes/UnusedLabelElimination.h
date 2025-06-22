@@ -1,13 +1,13 @@
 #pragma once
 
-#include "mini-llvm/mc/Fragment.h"
-#include "mini-llvm/opt/mc/FragmentTransform.h"
+#include "mini-llvm/mc/GlobalValue.h"
+#include "mini-llvm/opt/mc/GlobalValueTransform.h"
 
 namespace mini_llvm::mc {
 
-class UnusedLabelElimination final : public FragmentTransform {
+class UnusedLabelElimination final : public GlobalValueTransform {
 public:
-    bool runOnFragment(Fragment &fragment) override;
+    bool runOnGlobalValue(GlobalValue &G) override;
 
     const char *name() const override {
         return "UnusedLabelElimination";

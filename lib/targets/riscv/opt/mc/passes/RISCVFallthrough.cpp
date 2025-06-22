@@ -2,7 +2,7 @@
 
 #include <iterator>
 
-#include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/LabelOperand.h"
 #include "mini-llvm/mc/Section.h"
@@ -11,20 +11,20 @@
 
 using namespace mini_llvm::mc;
 
-bool RISCVFallthrough::runOnFragment(Fragment &fragment) {
-    if (fragment.section() != Section::kText) {
+bool RISCVFallthrough::runOnGlobalValue(GlobalValue &G) {
+    if (G.section() != Section::kText) {
         return false;
     }
 
     bool changed = false;
 
-    for (Fragment::const_iterator i = fragment.begin(); std::next(i) != fragment.end();) {
+    for (GlobalValue::const_iterator i = G.begin(); std::next(i) != G.end();) {
         if (auto *I = dynamic_cast<const RISCVInstruction *>(&*i)) {
             if (I->opcode() == RISCV_J) {
                 if (auto *labelOp = dynamic_cast<const LabelOperand *>(&*I->operand_begin())) {
                     if (auto *label = dynamic_cast<const Label *>(&*std::next(i))) {
                         if (labelOp->labelName() == label->labelName()) {
-                            fragment.remove(i++);
+                            G.remove(i++);
                             changed = true;
                             continue;
                         }

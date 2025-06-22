@@ -3,11 +3,11 @@
 #include <string>
 #include <utility>
 
-#include "mini-llvm/mc/Line.h"
+#include "mini-llvm/mc/Statement.h"
 
 namespace mini_llvm::mc {
 
-class Label final : public Line {
+class Label final : public Statement {
 public:
     explicit Label(std::string labelName) : labelName_(std::move(labelName)) {}
 

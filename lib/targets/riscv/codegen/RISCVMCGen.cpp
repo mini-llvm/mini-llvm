@@ -12,8 +12,8 @@
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/common/ops/SExt.h"
 #include "mini-llvm/common/Precision.h"
-#include "mini-llvm/mc/Fragment.h"
-#include "mini-llvm/mc/FragmentBuilder.h"
+#include "mini-llvm/mc/GlobalValue.h"
+#include "mini-llvm/mc/GlobalValueBuilder.h"
 #include "mini-llvm/mc/ImmediateOperand.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/LabelOperand.h"
@@ -131,11 +131,11 @@ std::string emitName(const mir::BasicBlock &B) {
 
 class ConstantVisitorImpl final : public mir::ConstantVisitor {
 public:
-    FragmentBuilder &builder() {
+    GlobalValueBuilder &builder() {
         return builder_;
     }
 
-    const FragmentBuilder &builder() const {
+    const GlobalValueBuilder &builder() const {
         return builder_;
     }
 
@@ -194,7 +194,7 @@ public:
     }
 
 private:
-    FragmentBuilder builder_;
+    GlobalValueBuilder builder_;
 
     template <typename MConst, int Width>
     void visitScalarConstant(const MConst &C) {
@@ -211,11 +211,11 @@ private:
 
 class RISCVInstructionVisitorImpl final : public mir::RISCVInstructionVisitor {
 public:
-    FragmentBuilder &builder() {
+    GlobalValueBuilder &builder() {
         return builder_;
     }
 
-    const FragmentBuilder &builder() const {
+    const GlobalValueBuilder &builder() const {
         return builder_;
     }
 
@@ -690,7 +690,7 @@ public:
     }
 
 private:
-    FragmentBuilder builder_;
+    GlobalValueBuilder builder_;
 
     template <int Opcode64>
     void visitUnaryOperator(const mir::UnaryOperator &I) {
@@ -830,61 +830,61 @@ private:
 
 class RISCVMCGen::Impl {
 public:
-    Impl(const mir::Module *MM, Program *program)
-        : MM_(MM), program_(program) {}
+    Impl(const mir::Module *MM, Module *MCM)
+        : MM_(MM), MCM_(MCM) {}
 
     void emit() {
-        for (const mir::GlobalVar &G : globalVars(*MM_)) {
-            if (!G.isDeclaration()) {
+        for (const mir::GlobalVar &MG : globalVars(*MM_)) {
+            if (!MG.isDeclaration()) {
                 Section section;
-                if (dynamic_cast<const mir::ZeroConstant *>(&G.initializer())) {
+                if (dynamic_cast<const mir::ZeroConstant *>(&MG.initializer())) {
                     section = Section::kBSS;
-                } else if (G.isConstant()) {
+                } else if (MG.isConstant()) {
                     section = Section::kROData;
                 } else {
                     section = Section::kData;
                 }
 
-                bool isGlobal = (G.linkage() == Linkage::kExternal);
-                int alignment = G.alignment();
-                std::string name = emitName(G);
+                bool isGlobal = (MG.linkage() == Linkage::kExternal);
+                int alignment = MG.alignment();
+                std::string name = emitName(MG);
 
-                Fragment fragment(std::move(name), section, isGlobal, alignment);
-                emitGlobalVar(G, fragment);
+                GlobalValue MCG(std::move(name), section, isGlobal, alignment);
+                emitGlobalVar(MG, MCG);
 
-                program_->append(std::move(fragment));
+                MCM_->append(std::move(MCG));
             }
         }
 
-        for (const mir::Function &F : functions(*MM_)) {
-            if (!F.isDeclaration()) {
+        for (const mir::Function &MF : functions(*MM_)) {
+            if (!MF.isDeclaration()) {
                 Section section = Section::kText;
-                bool isGlobal = (F.linkage() == Linkage::kExternal);
-                std::string name = emitName(F);
+                bool isGlobal = (MF.linkage() == Linkage::kExternal);
+                std::string name = emitName(MF);
 
-                Fragment fragment(std::move(name), section, isGlobal);
-                emitFunction(F, fragment);
+                GlobalValue MCG(std::move(name), section, isGlobal);
+                emitFunction(MF, MCG);
 
-                program_->append(std::move(fragment));
+                MCM_->append(std::move(MCG));
             }
         }
     }
 
 private:
     const mir::Module *MM_;
-    Program *program_;
+    Module *MCM_;
 
-    void emitGlobalVar(const mir::GlobalVar &G, Fragment &fragment) {
+    void emitGlobalVar(const mir::GlobalVar &MG, GlobalValue &MCG) {
         ConstantVisitorImpl visitor;
-        visitor.builder().setPos(&fragment);
-        G.initializer().accept(visitor);
+        visitor.builder().setPos(&MCG);
+        MG.initializer().accept(visitor);
     }
 
-    void emitFunction(const mir::Function &F, Fragment &fragment) {
+    void emitFunction(const mir::Function &MF, GlobalValue &MCG) {
         RISCVInstructionVisitorImpl visitor;
-        visitor.builder().setPos(&fragment);
+        visitor.builder().setPos(&MCG);
     #ifndef NDEBUG
-        for (const mir::BasicBlock &B : F) {
+        for (const mir::BasicBlock &B : MF) {
             for (const mir::Instruction &I : B) {
                 for (const mir::RegisterOperand *op : I.regOps()) {
                     assert(dynamic_cast<const mir::PhysicalRegister *>(&**op));
@@ -892,8 +892,8 @@ private:
             }
         }
     #endif
-        for (const mir::BasicBlock &B : F) {
-            fragment.append(std::make_unique<Label>(emitName(B)));
+        for (const mir::BasicBlock &B : MF) {
+            MCG.append(std::make_unique<Label>(emitName(B)));
             for (const mir::Instruction &I : B) {
                 I.accept(visitor);
             }
@@ -901,8 +901,8 @@ private:
     }
 };
 
-RISCVMCGen::RISCVMCGen(const mir::Module *MM, Program *program)
-    : impl_(std::make_unique<Impl>(MM, program)) {}
+RISCVMCGen::RISCVMCGen(const mir::Module *MM, Module *MCM)
+    : impl_(std::make_unique<Impl>(MM, MCM)) {}
 
 RISCVMCGen::~RISCVMCGen() = default;
 

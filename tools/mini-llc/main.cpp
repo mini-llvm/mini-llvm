@@ -12,7 +12,7 @@
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir/Verifier.h"
 #include "mini-llvm/ir_reader/IRReader.h"
-#include "mini-llvm/mc/Program.h"
+#include "mini-llvm/mc/Module.h"
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
@@ -210,12 +210,12 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     mir::Module MM;
-    mc::Program program;
+    mc::Module MCM;
 
     switch (*target) {
         case Target::kRISCV64: {
             RISCVBackendDriver backendDriver;
-            backendDriver.run(*IM, MM, program);
+            backendDriver.run(*IM, MM, MCM);
             break;
         }
     }
@@ -234,7 +234,7 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
 
-    std::string output = program.format() + '\n';
+    std::string output = MCM.format() + '\n';
     Expected<void, int> result;
     if (*outputFile == "-") {
         result = writeAll(stdout, output.data(), output.size());

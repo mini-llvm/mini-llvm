@@ -1,4 +1,4 @@
-#include "mini-llvm/mc/Fragment.h"
+#include "mini-llvm/mc/GlobalValue.h"
 
 #include <string>
 
@@ -9,7 +9,7 @@
 
 using namespace mini_llvm::mc;
 
-std::string Fragment::format() const {
+std::string GlobalValue::format() const {
     StringJoiner formatted("\n");
     if (isGlobal()) {
         formatted.add("  .globl {}", name());
@@ -18,15 +18,15 @@ std::string Fragment::format() const {
         formatted.add("  .balign {}", alignment());
     }
     formatted.add("{}:", name());
-    for (const Line &line : *this) {
-        if (dynamic_cast<const Instruction *>(&line)) {
-            formatted.add("  {}", line);
+    for (const Statement &stmt : *this) {
+        if (dynamic_cast<const Instruction *>(&stmt)) {
+            formatted.add("  {}", stmt);
         }
-        if (dynamic_cast<const Directive *>(&line)) {
-            formatted.add("  {}", line);
+        if (dynamic_cast<const Directive *>(&stmt)) {
+            formatted.add("  {}", stmt);
         }
-        if (dynamic_cast<const Label *>(&line)) {
-            formatted.add("{}", line);
+        if (dynamic_cast<const Label *>(&stmt)) {
+            formatted.add("{}", stmt);
         }
     }
     return formatted.toString();

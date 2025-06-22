@@ -2,14 +2,14 @@
 
 #include <memory>
 
-#include "mini-llvm/mc/Program.h"
+#include "mini-llvm/mc/Module.h"
 #include "mini-llvm/mir/Module.h"
 
 namespace mini_llvm {
 
 class RISCVMCGen {
 public:
-    RISCVMCGen(const mir::Module *MM, mc::Program *program);
+    RISCVMCGen(const mir::Module *MM, mc::Module *MCM);
     ~RISCVMCGen();
 
     void emit();

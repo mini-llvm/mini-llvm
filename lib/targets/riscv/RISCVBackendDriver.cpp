@@ -14,7 +14,7 @@
 #include "mini-llvm/common/ExtensionMode.h"
 #include "mini-llvm/common/Precision.h"
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/mc/Program.h"
+#include "mini-llvm/mc/Module.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockBuilder.h"
 #include "mini-llvm/mir/Function.h"
@@ -47,7 +47,7 @@
 
 using namespace mini_llvm;
 
-void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Program &program) {
+void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Module &MCM) {
     RISCVMIRGen(&IM, &MM).emit();
 
     {
@@ -281,8 +281,8 @@ void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Program 
 
     passManager.runAfterRegisterAllocation(MM);
 
-    RISCVMCGen(&MM, &program).emit();
+    RISCVMCGen(&MM, &MCM).emit();
 
     mc::RISCVPassManager mcPassManager;
-    mcPassManager.run(program);
+    mcPassManager.run(MCM);
 }
