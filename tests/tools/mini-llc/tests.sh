@@ -3,7 +3,7 @@
 set -e
 
 tests=(
-    globals
+    global_values
     self_loop
     irreducible_cfg
     self_referential
