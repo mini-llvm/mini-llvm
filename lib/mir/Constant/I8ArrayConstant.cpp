@@ -1,16 +1,23 @@
 #include "mini-llvm/mir/Constant/I8ArrayConstant.h"
 
 #include <cstdint>
+#include <format>
 #include <string>
-
-#include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mir;
 
 std::string I8ArrayConstant::format() const {
-    StringJoiner formatted("\n", "i8 [\n", "\n]");
+    std::string formatted;
+    formatted += "\"";
     for (int8_t element : elements()) {
-        formatted.add("  {}", element);
+        if (element == '\\') {
+            formatted += "\\\\";
+        } else if (0x20 <= element && element <= 0x7e && element != '"') {
+            formatted += element;
+        } else {
+            formatted += std::format("\\{:02X}", static_cast<uint8_t>(element));
+        }
     }
-    return formatted.toString();
+    formatted += "\"";
+    return formatted;
 }
