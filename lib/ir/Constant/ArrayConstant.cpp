@@ -34,18 +34,20 @@ bool isZeroInitializer(const ArrayConstant &C) {
 }
 
 std::string formatAsString(const ArrayConstant &C) {
-    StringJoiner formatted("", "c\"", "\"");
+    std::string formatted;
+    formatted += "c\"";
     for (const Use<Constant> &element : elements(C)) {
         int8_t value = static_cast<const I8Constant *>(&*element)->value();
         if (value == static_cast<int8_t>('\\')) {
-            formatted.add("\\\\");
+            formatted += "\\\\";
         } else if (0x20 <= value && value <= 0x7e && value != static_cast<int8_t>('"')) {
-            formatted.add("{:c}", value);
+            formatted += value;
         } else {
-            formatted.add("\\{:02X}", static_cast<uint8_t>(value));
+            formatted += std::format("\\{:02X}", static_cast<uint8_t>(value));
         }
     }
-    return formatted.toString();
+    formatted += "\"";
+    return formatted;
 }
 
 std::string formatAsArray(const ArrayConstant &C) {
