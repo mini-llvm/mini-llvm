@@ -9,6 +9,8 @@ namespace mini_llvm::mc {
 
 class ZeroDirective : public Directive {
 public:
+    explicit ZeroDirective(int size) : size_(size) {}
+
     int size() const {
         return size_;
     }
@@ -18,13 +20,8 @@ public:
     }
 
     std::string format() const override {
-        return std::format(".{} {}", directiveName(), size());
+        return std::format(".zero {}", size());
     }
-
-protected:
-    explicit ZeroDirective(int size) : size_(size) {}
-
-    virtual std::string directiveName() const = 0;
 
 private:
     int size_;

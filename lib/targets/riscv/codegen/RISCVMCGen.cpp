@@ -18,6 +18,7 @@
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/LabelOperand.h"
 #include "mini-llvm/mc/Operand.h"
+#include "mini-llvm/mc/ZeroDirective.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/Condition.h"
@@ -104,7 +105,6 @@
 #include "mini-llvm/targets/riscv/mc/RISCVMemoryOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 #include "mini-llvm/targets/riscv/mc/RISCVRegisterOperand.h"
-#include "mini-llvm/targets/riscv/mc/RISCVZeroDirective.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVJALR.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
@@ -172,12 +172,12 @@ public:
     }
 
     void visitZeroConstant(const mir::ZeroConstant &C) override {
-        builder_.add(std::make_unique<RISCVZeroDirective>(C.size()));
+        builder_.add(std::make_unique<ZeroDirective>(C.size()));
     }
 
     void visitPtrConstant(const mir::PtrConstant &C) override {
         if (C.ptr() == nullptr) {
-            builder_.add(std::make_unique<RISCVZeroDirective>(C.ptrSize()));
+            builder_.add(std::make_unique<ZeroDirective>(C.ptrSize()));
         } else {
             builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*C.ptr())));
         }
@@ -186,7 +186,7 @@ public:
     void visitPtrArrayConstant(const mir::PtrArrayConstant &C) override {
         for (mir::GlobalValue *element : C.elements()) {
             if (element == nullptr) {
-                builder_.add(std::make_unique<RISCVZeroDirective>(8));
+                builder_.add(std::make_unique<ZeroDirective>(8));
             } else {
                 builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*element)));
             }
