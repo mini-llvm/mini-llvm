@@ -57,11 +57,11 @@ private:
             Token::Kind kind = lastToken()->kind;
             if (kind == kAt || kind == kPercent) {
                 if (isalpha(*current_) || isdigit(*current_) || *current_ == '_' || *current_ == '.') {
-                    const char *previous = current_;
+                    const char *start = current_;
                     while (isalpha(*current_) || isdigit(*current_) || *current_ == '_' || *current_ == '.') {
                         ++current_;
                     }
-                    return {kName, std::string(previous, current_), previous};
+                    return {kName, std::string(start, current_), start};
                 }
             }
         }
@@ -85,37 +85,33 @@ private:
         }
 
         if (*current_ == '0' && (*(current_ + 1) == 'X' || *(current_ + 1) == 'x')) {
-            const char *previous = current_;
-            current_ = previous + 2;
-            while (isxdigit(*current_)) ++current_;
-            if (*current_ == ':') {
-                return {kName, std::string(previous, current_), previous};
-            }
-            current_ = previous + 2;
+            const char *start = current_;
+            ++current_;
+            ++current_;
             uint64_t value = 0;
             while (isxdigit(*current_)) {
                 value = value * 0x10 + ((isdigit(*current_)  ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
                 ++current_;
             }
-            return {kNumber, std::bit_cast<int64_t>(value), previous};
+            return {kNumber, std::bit_cast<int64_t>(value), start};
         }
 
         if (isdigit(*current_)) {
-            const char *previous = current_;
+            const char *start = current_;
             uint64_t value = 0;
             while (isdigit(*current_)) {
                 value = value * 10 + (*current_ - '0');
                 ++current_;
             }
             if (*current_ == ':') {
-                return {kName, std::to_string(value), previous};
+                return {kName, std::to_string(value), start};
             } else {
-                return {kNumber, std::bit_cast<int64_t>(value), previous};
+                return {kNumber, std::bit_cast<int64_t>(value), start};
             }
         }
 
         if (*current_ == '-') {
-            const char *previous = current_;
+            const char *start = current_;
             ++current_;
             uint64_t value = 0;
             while (isdigit(*current_)) {
@@ -123,11 +119,11 @@ private:
                 ++current_;
             }
             value = -value;
-            return {kNumber, std::bit_cast<int64_t>(value), previous};
+            return {kNumber, std::bit_cast<int64_t>(value), start};
         }
 
         if ((*current_ == 'c' && *(current_ + 1) == '"') || *current_ == '"') {
-            const char *previous = current_;
+            const char *start = current_;
             while (*current_ == 'c' || *current_ == '"') {
                 ++current_;
             }
@@ -171,25 +167,25 @@ private:
                 throw LexException("missing terminating \" character", current_);
             }
             ++current_;
-            if (*previous == 'c') {
-                return {kString, std::move(elements), previous};
+            if (*start == 'c') {
+                return {kString, std::move(elements), start};
             }
             std::string name;
             for (int8_t element : elements) {
                 name.push_back(static_cast<char>(element));
             }
-            return {kName, std::move(name), previous};
+            return {kName, std::move(name), start};
         }
 
         if (isalpha(*current_) || *current_ == '_' || *current_ == '.') {
-            const char *previous = current_;
+            const char *start = current_;
             while (isalpha(*current_) || *current_ == '_' || *current_ == '.' || isdigit(*current_)) {
                 ++current_;
             }
-            std::string name(previous, current_);
+            std::string name(start, current_);
 
             if (*current_ == ':') {
-                return {kName, std::move(name), previous};
+                return {kName, std::move(name), start};
             }
 
             static const HashMap<std::string_view, Token::Kind> kLUT{
@@ -291,10 +287,10 @@ private:
             };
 
             if (auto i = kLUT.find(name); i != kLUT.end()) {
-                return {i->second, {}, previous};
+                return {i->second, {}, start};
             }
 
-            return {kName, std::move(name), previous};
+            return {kName, std::move(name), start};
         }
 
         throw LexException("unexpected character", current_);

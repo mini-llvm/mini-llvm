@@ -426,7 +426,7 @@ public:
         }
         ++current_;
 
-        Location previous = current_;
+        Location current = current_;
         while (current_->kind != kRightBrace) {
             if (current_->kind == kName && std::next(current_)->kind == kColon) {
                 Location symbolLocation = current_;
@@ -438,7 +438,7 @@ public:
             }
             ++current_;
         }
-        current_ = previous;
+        current_ = current;
 
         while (current_->kind != kRightBrace) {
             if (!(current_->kind == kName && std::next(current_)->kind == kColon)) {
