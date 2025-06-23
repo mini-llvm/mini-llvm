@@ -10,7 +10,9 @@ std::string mini_llvm::quote(std::string_view str) {
     std::string quoted;
     quoted += '"';
     for (char ch : str) {
-        if (0x20 <= ch && ch <= 0x7e) {
+        if (ch == '\\') {
+            quoted += "\\\\";
+        } else if (0x20 <= ch && ch <= 0x7e && ch != '"') {
             quoted += ch;
         } else {
             quoted += std::format("\\{:02X}", ch);
