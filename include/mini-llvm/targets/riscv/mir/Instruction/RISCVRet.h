@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -73,9 +72,7 @@ public:
         static_cast<RISCVInstructionVisitor &>(visitor).visitRISCVRet(*this);
     }
 
-    std::string format() const override {
-        return std::format("RET {}, {}", numIntegerResults(), numFloatingResults());
-    }
+    std::string format() const override;
 
     std::unique_ptr<Instruction> clone() const override {
         return std::make_unique<RISCVRet>(numIntegerResults(), numFloatingResults());

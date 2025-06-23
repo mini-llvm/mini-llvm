@@ -5,6 +5,7 @@
 
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mir;
 using namespace mini_llvm::mir::riscv;
@@ -18,4 +19,15 @@ std::unordered_set<PhysicalRegister *> RISCVRet::implicitSrcs() const {
         implicitSrcs.insert(physReg);
     }
     return implicitSrcs;
+}
+
+std::string RISCVRet::format() const {
+    StringJoiner formattedRegs(", ");
+    for (PhysicalRegister *physReg : std::views::take(riscvIntegerResultRegs(), numIntegerResults())) {
+        formattedRegs.add("{}", *physReg);
+    }
+    for (PhysicalRegister *physReg : std::views::take(riscvFloatingResultRegs(), numFloatingResults())) {
+        formattedRegs.add("{}", *physReg);
+    }
+    return std::format("RET {}", formattedRegs);
 }
