@@ -1,6 +1,5 @@
 #include "mini-llvm/mir/GlobalVar.h"
 
-#include <cctype>
 #include <format>
 #include <string>
 

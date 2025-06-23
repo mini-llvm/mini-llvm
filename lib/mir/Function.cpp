@@ -1,6 +1,5 @@
 #include "mini-llvm/mir/Function.h"
 
-#include <cctype>
 #include <format>
 #include <memory>
 #include <string>
