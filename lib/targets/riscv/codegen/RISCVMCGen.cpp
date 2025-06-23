@@ -18,6 +18,7 @@
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/LabelOperand.h"
 #include "mini-llvm/mc/Operand.h"
+#include "mini-llvm/mc/StringDirective.h"
 #include "mini-llvm/mc/ZeroDirective.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
@@ -156,7 +157,7 @@ public:
     }
 
     void visitI8ArrayConstant(const mir::I8ArrayConstant &C) override {
-        visitAggregateConstant<mir::I8ArrayConstant, 1>(C);
+        builder_.add(std::make_unique<StringDirective>(C.elements()));
     }
 
     void visitI16ArrayConstant(const mir::I16ArrayConstant &C) override {
