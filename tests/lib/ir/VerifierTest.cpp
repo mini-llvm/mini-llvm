@@ -26,7 +26,6 @@ TEST(VerifierTest, SelfReferentialInstruction) {
         std::make_unique<Void>(), std::vector<std::unique_ptr<Type>>(), false
     );
     Function F(std::move(functionType), Linkage::kExternal);
-    F.setName("test");
     BasicBlock &B = F.append();
     std::shared_ptr<Value> op = std::make_shared<I32Constant>(0);
     Add &I = B.append(std::make_shared<Add>(op, op));
