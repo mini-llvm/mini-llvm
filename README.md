@@ -12,7 +12,7 @@
 
 - `riscv64`
 
-## Supported IR Features
+## Supported IR Constructs
 
 ### Types
 
@@ -83,14 +83,14 @@
   - Floating-point
     - `fptrunc`
     - `fpext`
-  - Integer to floating-point
+  - Integer ↔ Floating-point
     - `sitofp`
     - `uitofp`
-  - Floating-point to integer
     - `fptosi`
     - `fptoui`
-  - `ptrtoint`
-  - `inttoptr`
+  - Pointer ↔ Integer
+    - `ptrtoint`
+    - `inttoptr`
   - `bitcast`
 - Memory management
   - `alloca`
@@ -106,28 +106,30 @@
 
 ### IR
 
-- `AlgebraicSimplification`
-- `ArrayFlattening`
-- `AttributeDeduction`
-- `BasicBlockMerging`
-- `BranchSimplification`
-- `ConstantFolding`
-- `DeadCodeElimination`
-- `DeadStoreElimination`
-- `FunctionInlining`
-- `GlobalCodeMotion`
-- `GlobalDeadCodeElimination`
-- `GlobalValueNumbering`
-- `InstructionCombining`
-- `JumpThreading`
-- `Mem2Reg`
-- `PoisonPropagation`
-- `RedundantLoadElimination`
-- `StrengthReduction`
-- `UnreachableBlockElimination`
-- `AliasAnalysis`
-- `DominatorTreeAnalysis`
-- `LoopTreeAnalysis`
+- Transform
+  - `AlgebraicSimplification`
+  - `ArrayFlattening`
+  - `AttributeDeduction`
+  - `BasicBlockMerging`
+  - `BranchSimplification`
+  - `ConstantFolding`
+  - `DeadCodeElimination`
+  - `DeadStoreElimination`
+  - `FunctionInlining`
+  - `GlobalCodeMotion`
+  - `GlobalDeadCodeElimination`
+  - `GlobalValueNumbering`
+  - `InstructionCombining`
+  - `JumpThreading`
+  - `Mem2Reg`
+  - `PoisonPropagation`
+  - `RedundantLoadElimination`
+  - `StrengthReduction`
+  - `UnreachableBlockElimination`
+- Analysis
+  - `AliasAnalysis`
+  - `DominatorTreeAnalysis`
+  - `LoopTreeAnalysis`
 
 ### MIR
 
