@@ -195,8 +195,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
     if (n <= 16) {
         bestPath = dp(n, D, 0);
     } else {
-        std::mt19937 rng(42);
-        bestPath = aco(n, D, 0, 10, 1., 1., 0.1, 1., initialPath, 100, rng);
+        bestPath = aco(n, D, 0, 10, 1., 1., 0.1, 1., initialPath, 100, std::mt19937(42));
     }
 
     bool changed = false;
