@@ -124,9 +124,10 @@ private:
 
         if ((*current_ == 'c' && *(current_ + 1) == '"') || *current_ == '"') {
             const char *start = current_;
-            while (*current_ == 'c' || *current_ == '"') {
+            if (*current_ == 'c') {
                 ++current_;
             }
+            ++current_;
             std::vector<int8_t> elements;
             while (*current_ != '\0' && *current_ != '"') {
                 if (*current_ == '\\') {
