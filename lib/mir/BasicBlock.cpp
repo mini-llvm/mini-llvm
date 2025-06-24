@@ -36,6 +36,12 @@ void BasicBlock::replace(BasicBlock::const_iterator pos, std::unique_ptr<Instruc
     const_cast<std::unique_ptr<Instruction> &>(*pos.base()) = std::move(I);
 }
 
+void BasicBlock::clear() {
+    while (!empty()) {
+        remove(begin());
+    }
+}
+
 std::string BasicBlock::format() const {
     StringJoiner formatted("\n");
     formatted.add("{}:", formatAsOperand());

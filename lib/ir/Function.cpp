@@ -1,5 +1,6 @@
 #include "mini-llvm/ir/Function.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iterator>
 #include <memory>
@@ -22,6 +23,20 @@ Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage)
     for (Type &paramType : paramTypes(*functionType_)) {
         args_.push_back(std::make_shared<Argument>(paramType.clone()));
     }
+}
+
+bool Function::hasAttr(Attribute attr) const {
+    return std::ranges::contains(attrs_, attr);
+}
+
+void Function::setAttr(Attribute attr) {
+    if (!std::ranges::contains(attrs_, attr)) {
+        attrs_.push_back(attr);
+    }
+}
+
+void Function::clearAttr(Attribute attr) {
+    std::erase(attrs_, attr);
 }
 
 BasicBlock &Function::add(Function::const_iterator pos, std::shared_ptr<BasicBlock> block) {

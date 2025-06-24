@@ -125,11 +125,7 @@ public:
         remove(std::prev(end()));
     }
 
-    void clear() {
-        while (!empty()) {
-            removeFirst();
-        }
-    }
+    void clear();
 
     Function *parent() const {
         return parent_;

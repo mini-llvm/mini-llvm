@@ -9,6 +9,18 @@
 
 using namespace mini_llvm::mc;
 
+Statement &GlobalValue::add(const_iterator pos, std::unique_ptr<Statement> stmt) {
+    return **stmts_.insert(pos.base(), std::move(stmt));
+}
+
+void GlobalValue::remove(const_iterator pos) {
+    stmts_.erase(pos.base());
+}
+
+void GlobalValue::clear() {
+    stmts_.clear();
+}
+
 std::string GlobalValue::format() const {
     StringJoiner formatted("\n");
     if (isGlobal()) {

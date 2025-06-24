@@ -9,6 +9,18 @@
 
 using namespace mini_llvm::mc;
 
+GlobalValue &Module::add(const_iterator pos, GlobalValue G) {
+    return *globalValues_.insert(pos, std::move(G));
+}
+
+void Module::remove(const_iterator pos) {
+    globalValues_.erase(pos);
+}
+
+void Module::clear() {
+    globalValues_.clear();
+}
+
 std::string Module::format() const {
     std::vector<const GlobalValue *> data, rodata, bss, text;
     for (const GlobalValue &G : *this) {

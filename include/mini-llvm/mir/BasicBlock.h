@@ -137,11 +137,7 @@ public:
 
     void replace(const_iterator pos, std::unique_ptr<Instruction> I);
 
-    void clear() {
-        while (!empty()) {
-            removeFirst();
-        }
-    }
+    void clear();
 
     template <typename I>
         requires std::input_iterator<I>

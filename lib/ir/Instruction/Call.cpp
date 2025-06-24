@@ -22,6 +22,18 @@ Call::Call(std::weak_ptr<Function> callee, std::vector<std::shared_ptr<Value>> a
     }
 }
 
+void Call::addArg(const_arg_iterator pos, std::unique_ptr<Value> arg) {
+    args_.insert(pos.base(), std::make_unique<Use<Value>>(this, std::move(arg)));
+}
+
+void Call::removeArg(const_arg_iterator pos) {
+    args_.erase(pos.base());
+}
+
+void Call::clearArgs() {
+    args_.clear();
+}
+
 std::unordered_set<const UseBase *> Call::operands() const {
     std::unordered_set<const UseBase *> operands;
     operands.insert(&callee());

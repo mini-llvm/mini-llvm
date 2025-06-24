@@ -20,6 +20,12 @@ std::unique_ptr<BasicBlock> Function::remove(const_iterator pos) {
     return block;
 }
 
+void Function::clear() {
+    while (!empty()) {
+        removeFirst();
+    }
+}
+
 std::string Function::format() const {
     if (isDeclaration()) {
         return std::format("undefined {}", formatAsOperand());

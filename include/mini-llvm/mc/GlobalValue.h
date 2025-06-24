@@ -117,9 +117,7 @@ public:
         return stmts_.size();
     }
 
-    Statement &add(const_iterator pos, std::unique_ptr<Statement> stmt) {
-        return **stmts_.insert(pos.base(), std::move(stmt));
-    }
+    Statement &add(const_iterator pos, std::unique_ptr<Statement> stmt);
 
     Statement &prepend(std::unique_ptr<Statement> stmt) {
         return add(begin(), std::move(stmt));
@@ -129,9 +127,7 @@ public:
         return add(end(), std::move(stmt));
     }
 
-    void remove(const_iterator pos) {
-        stmts_.erase(pos.base());
-    }
+    void remove(const_iterator pos);
 
     void removeFirst() {
         remove(begin());
@@ -141,9 +137,7 @@ public:
         remove(std::prev(end()));
     }
 
-    void clear() {
-        stmts_.clear();
-    }
+    void clear();
 
     std::string format() const;
 

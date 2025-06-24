@@ -66,25 +66,19 @@ public:
         return *args_[i];
     }
 
-    void addArg(const_arg_iterator pos, std::unique_ptr<Value> arg) {
-        args_.insert(pos.base(), std::make_unique<Use<Value>>(this, std::move(arg)));
-    }
+    void addArg(const_arg_iterator pos, std::unique_ptr<Value> arg);
 
     void appendArg(std::unique_ptr<Value> arg) {
         addArg(arg_end(), std::move(arg));
     }
 
-    void removeArg(const_arg_iterator pos) {
-        args_.erase(pos.base());
-    }
+    void removeArg(const_arg_iterator pos);
 
     void removeLastArg() {
         removeArg(std::prev(arg_end()));
     }
 
-    void clearArgs() {
-        args_.clear();
-    }
+    void clearArgs();
 
     std::unordered_set<const UseBase *> operands() const override;
 

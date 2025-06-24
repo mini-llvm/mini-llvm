@@ -36,6 +36,12 @@ void BasicBlock::remove(BasicBlock::const_iterator pos) {
     insts_.erase(pos.base());
 }
 
+void BasicBlock::clear() {
+    while (!empty()) {
+        remove(begin());
+    }
+}
+
 std::string BasicBlock::format() const {
     StringJoiner formatted("\n");
     formatted.add(formatAsLabel());

@@ -24,6 +24,18 @@ IndirectCall::IndirectCall(std::unique_ptr<FunctionType> functionType,
     }
 }
 
+void IndirectCall::addArg(const_arg_iterator pos, std::unique_ptr<Value> arg) {
+    args_.insert(pos.base(), std::make_unique<Use<Value>>(this, std::move(arg)));
+}
+
+void IndirectCall::removeArg(const_arg_iterator pos) {
+    args_.erase(pos.base());
+}
+
+void IndirectCall::clearArgs() {
+    args_.clear();
+}
+
 std::unordered_set<const UseBase *> IndirectCall::operands() const {
     std::unordered_set<const UseBase *> operands;
     operands.insert(&callee());

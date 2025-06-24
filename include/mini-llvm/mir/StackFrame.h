@@ -114,11 +114,7 @@ public:
         return remove(std::prev(end()));
     }
 
-    void clear() {
-        while (!empty()) {
-            removeFirst();
-        }
-    }
+    void clear();
 
 private:
     StackSlotList slots_;

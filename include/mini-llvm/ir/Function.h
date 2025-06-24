@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <list>
@@ -101,19 +100,9 @@ public:
         return attrs_[i];
     }
 
-    bool hasAttr(Attribute attr) const {
-        return std::ranges::contains(attrs_, attr);
-    }
-
-    void setAttr(Attribute attr) {
-        if (!std::ranges::contains(attrs_, attr)) {
-            attrs_.push_back(attr);
-        }
-    }
-
-    void clearAttr(Attribute attr) {
-        std::erase(attrs_, attr);
-    }
+    bool hasAttr(Attribute attr) const;
+    void setAttr(Attribute attr);
+    void clearAttr(Attribute attr);
 
     iterator begin() {
         return iterator(blocks_.begin());

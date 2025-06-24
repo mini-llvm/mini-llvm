@@ -20,6 +20,12 @@ std::unique_ptr<StackSlot> StackFrame::remove(StackFrame::iterator pos) {
     return removedArea;
 }
 
+void StackFrame::clear() {
+    while (!empty()) {
+        removeFirst();
+    }
+}
+
 void StackFrame::computeOffsets() {
     if (offsetsUpToDate_ || slots_.empty())
         return;

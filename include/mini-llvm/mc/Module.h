@@ -51,9 +51,7 @@ public:
         return globalValues_.rend();
     }
 
-    GlobalValue &add(const_iterator pos, GlobalValue G) {
-        return *globalValues_.insert(pos, std::move(G));
-    }
+    GlobalValue &add(const_iterator pos, GlobalValue G);
 
     GlobalValue &prepend(GlobalValue G) {
         return add(begin(), std::move(G));
@@ -63,9 +61,7 @@ public:
         return add(end(), std::move(G));
     }
 
-    void remove(const_iterator pos) {
-        globalValues_.erase(pos);
-    }
+    void remove(const_iterator pos);
 
     void removeFirst() {
         remove(begin());
@@ -75,9 +71,7 @@ public:
         remove(std::prev(end()));
     }
 
-    void clear() {
-        globalValues_.clear();
-    }
+    void clear();
 
     std::string format() const;
 
