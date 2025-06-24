@@ -17,7 +17,8 @@
 
 using namespace mini_llvm::ir;
 
-Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage) : functionType_(std::move(functionType)), linkage_(linkage) {
+Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage)
+        : functionType_(std::move(functionType)), linkage_(linkage) {
     for (Type &paramType : paramTypes(*functionType_)) {
         args_.push_back(std::make_shared<Argument>(paramType.clone()));
     }
