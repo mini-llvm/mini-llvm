@@ -14,8 +14,11 @@
 
 using namespace mini_llvm::ir;
 
-IndirectCall::IndirectCall(std::unique_ptr<FunctionType> functionType, std::shared_ptr<Value> callee, std::vector<std::shared_ptr<Value>> args)
-        : functionType_(std::move(functionType)), callee_(this, std::move(callee)) {
+IndirectCall::IndirectCall(std::unique_ptr<FunctionType> functionType,
+                           std::shared_ptr<Value> callee,
+                           std::vector<std::shared_ptr<Value>> args)
+        : functionType_(std::move(functionType)),
+          callee_(this, std::move(callee)) {
     for (auto &arg : args) {
         args_.push_back(std::make_unique<Use<Value>>(this, std::move(arg)));
     }
