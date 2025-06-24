@@ -4,6 +4,8 @@
 #include <format>
 #include <string>
 
+#include "mini-llvm/utils/Chars.h"
+
 using namespace mini_llvm::mc;
 
 std::string StringDirective::format() const {
@@ -33,7 +35,7 @@ std::string StringDirective::format() const {
                 formatted += "\\\"";
                 break;
             default:
-                if (0x20 <= element && element <= 0x7e) {
+                if (isPrintable(element)) {
                     formatted += element;
                 } else {
                     formatted += std::format("\\{:03o}", static_cast<uint8_t>(element));

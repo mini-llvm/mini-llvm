@@ -1,7 +1,6 @@
 #include "mini-llvm/ir_reader/Lexer.h"
 
 #include <bit>
-#include <cctype>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -10,6 +9,7 @@
 #include <vector>
 
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/Chars.h"
 #include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm;
@@ -56,9 +56,9 @@ private:
         if (lastToken()) {
             Token::Kind kind = lastToken()->kind;
             if (kind == kAt || kind == kPercent) {
-                if (isalpha(*current_) || isdigit(*current_) || *current_ == '_' || *current_ == '.') {
+                if (isLetter(*current_) || isDigit(*current_) || *current_ == '_' || *current_ == '.') {
                     const char *start = current_;
-                    while (isalpha(*current_) || isdigit(*current_) || *current_ == '_' || *current_ == '.') {
+                    while (isLetter(*current_) || isDigit(*current_) || *current_ == '_' || *current_ == '.') {
                         ++current_;
                     }
                     return {kName, std::string(start, current_), start};
@@ -89,17 +89,17 @@ private:
             ++current_;
             ++current_;
             uint64_t value = 0;
-            while (isxdigit(*current_)) {
-                value = value * 0x10 + ((isdigit(*current_)  ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
+            while (isHexDigit(*current_)) {
+                value = value * 0x10 + ((isDigit(*current_)  ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
                 ++current_;
             }
             return {kNumber, std::bit_cast<int64_t>(value), start};
         }
 
-        if (isdigit(*current_)) {
+        if (isDigit(*current_)) {
             const char *start = current_;
             uint64_t value = 0;
-            while (isdigit(*current_)) {
+            while (isDigit(*current_)) {
                 value = value * 10 + (*current_ - '0');
                 ++current_;
             }
@@ -114,7 +114,7 @@ private:
             const char *start = current_;
             ++current_;
             uint64_t value = 0;
-            while (isdigit(*current_)) {
+            while (isDigit(*current_)) {
                 value = value * 10 + (*current_ - '0');
                 ++current_;
             }
@@ -142,21 +142,21 @@ private:
                             if (ch == 0) {
                                 throw LexException("missing terminating \" character", current_);
                             }
-                            if (!isxdigit(ch)) {
+                            if (!isHexDigit(ch)) {
                                 if (ch == '"') {
                                     throw LexException("incomplete escape sequence", current_);
                                 } else {
                                     throw LexException("invalid character in escape sequence", current_);
                                 }
                             }
-                            element = element * 0x10 + static_cast<int8_t>(isdigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
+                            element = element * 0x10 + static_cast<int8_t>(isDigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
                             ++current_;
                         }
                         elements.push_back(element);
                     }
                 } else {
                     char ch = *current_;
-                    if (!(0x20 <= ch && ch <= 0x7e)) {
+                    if (!isPrintable(ch)) {
                         throw LexException("unescaped non-printable character", current_);
                     }
                     int8_t element = static_cast<int8_t>(ch);
@@ -178,9 +178,9 @@ private:
             return {kName, std::move(name), start};
         }
 
-        if (isalpha(*current_) || *current_ == '_' || *current_ == '.') {
+        if (isLetter(*current_) || *current_ == '_' || *current_ == '.') {
             const char *start = current_;
-            while (isalpha(*current_) || *current_ == '_' || *current_ == '.' || isdigit(*current_)) {
+            while (isLetter(*current_) || *current_ == '_' || *current_ == '.' || isDigit(*current_)) {
                 ++current_;
             }
             std::string name(start, current_);
