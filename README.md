@@ -106,30 +106,28 @@
 
 ### IR
 
-- Transform
-  - `AlgebraicSimplification`
-  - `ArrayFlattening`
-  - `AttributeDeduction`
-  - `BasicBlockMerging`
-  - `BranchSimplification`
-  - `ConstantFolding`
-  - `DeadCodeElimination`
-  - `DeadStoreElimination`
-  - `FunctionInlining`
-  - `GlobalCodeMotion`
-  - `GlobalDeadCodeElimination`
-  - `GlobalValueNumbering`
-  - `InstructionCombining`
-  - `JumpThreading`
-  - `Mem2Reg`
-  - `PoisonPropagation`
-  - `RedundantLoadElimination`
-  - `StrengthReduction`
-  - `UnreachableBlockElimination`
-- Analysis
-  - `AliasAnalysis`
-  - `DominatorTreeAnalysis`
-  - `LoopTreeAnalysis`
+- `AlgebraicSimplification`
+- `ArrayFlattening`
+- `AttributeDeduction`
+- `BasicBlockMerging`
+- `BranchSimplification`
+- `ConstantFolding`
+- `DeadCodeElimination`
+- `DeadStoreElimination`
+- `FunctionInlining`
+- `GlobalCodeMotion`
+- `GlobalDeadCodeElimination`
+- `GlobalValueNumbering`
+- `InstructionCombining`
+- `JumpThreading`
+- `Mem2Reg`
+- `PoisonPropagation`
+- `RedundantLoadElimination`
+- `StrengthReduction`
+- `UnreachableBlockElimination`
+- `AliasAnalysis`
+- `DominatorTreeAnalysis`
+- `LoopTreeAnalysis`
 
 ### MIR
 
