@@ -12,6 +12,7 @@
 #include "mini-llvm/ir_reader/Token.h"
 #include "mini-llvm/utils/ASCII.h"
 #include "mini-llvm/utils/HashMap.h"
+#include "mini-llvm/utils/Unicode.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -156,13 +157,16 @@ private:
                         elements.push_back(element);
                     }
                 } else {
-                    char ch = *current_;
-                    if (!isPrintable(ch)) {
-                        throw LexException("unescaped non-printable character", current_);
+                    const char *next = current_;
+                    std::optional<char32_t> cp = decodeUtf8(next);
+                    if (!cp) {
+                        throw LexException("invalid UTF-8 character", current_);
                     }
-                    int8_t element = static_cast<int8_t>(ch);
-                    elements.push_back(element);
-                    ++current_;
+                    while (current_ < next) {
+                        int8_t element = static_cast<int8_t>(*current_);
+                        elements.push_back(element);
+                        ++current_;
+                    }
                 }
             }
             if (*current_ == '\0') {

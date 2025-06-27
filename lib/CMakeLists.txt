@@ -117,6 +117,7 @@ add_library(mini-llvm
     utils/CommandLineParser.cpp
     utils/FileHandle.cpp
     utils/FileSystem.cpp
+    utils/Unicode.cpp
     utils/Windows.cpp
 )
 target_compile_features(mini-llvm PUBLIC cxx_std_23)

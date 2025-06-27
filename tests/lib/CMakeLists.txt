@@ -39,6 +39,7 @@ add_executable(tests
     ir_reader/IRReaderTest.cpp
     ir_reader/LexerTest.cpp
     ir_reader/ParserTest.cpp
+    utils/UnicodeTest.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_23)
 target_link_libraries(tests PRIVATE mini-llvm GTest::gtest GTest::gmock GTest::gtest_main GTest::gmock_main)
