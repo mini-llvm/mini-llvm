@@ -31,11 +31,15 @@ std::string Function::format() const {
         return std::format("undefined {}", formatAsOperand());
     }
     StringJoiner formattedHeader(" ");
-    if (linkage() == Linkage::kInternal) {
+    switch (linkage()) {
+    case Linkage::kInternal:
         formattedHeader.add("internal");
-    }
-    if (linkage() == Linkage::kPrivate) {
+        break;
+    case Linkage::kPrivate:
         formattedHeader.add("private");
+        break;
+    case Linkage::kExternal:
+        break;
     }
     formattedHeader.add("{:o}:", *this);
     StringJoiner formattedBody("\n\n");

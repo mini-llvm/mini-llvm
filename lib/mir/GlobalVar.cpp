@@ -12,11 +12,15 @@ std::string GlobalVar::format() const {
         return std::format("undefined {:o}", *this);
     }
     StringJoiner formatted(" ");
-    if (linkage() == Linkage::kInternal) {
+    switch (linkage()) {
+    case Linkage::kInternal:
         formatted.add("internal");
-    }
-    if (linkage() == Linkage::kPrivate) {
+        break;
+    case Linkage::kPrivate:
         formatted.add("private");
+        break;
+    case Linkage::kExternal:
+        break;
     }
     if (isConstant()) {
         formatted.add("constant");

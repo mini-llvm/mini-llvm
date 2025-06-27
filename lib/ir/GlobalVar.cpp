@@ -66,10 +66,15 @@ bool GlobalVar::isDeclaration() const {
 std::string GlobalVar::format() const {
     StringJoiner formatted(" ");
     formatted.add("{} =", formatAsOperand());
-    if (linkage() == Linkage::kInternal) {
+    switch (linkage()) {
+    case Linkage::kInternal:
         formatted.add("internal");
-    } else if (linkage() == Linkage::kPrivate) {
+        break;
+    case Linkage::kPrivate:
         formatted.add("private");
+        break;
+    case Linkage::kExternal:
+        break;
     }
     if (isDeclaration()) {
         formatted.add("external");

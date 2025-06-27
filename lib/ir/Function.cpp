@@ -93,11 +93,15 @@ std::string Function::format() const {
     } else {
         formatted.add("declare");
     }
-    if (linkage() == Linkage::kInternal) {
+    switch (linkage()) {
+    case Linkage::kInternal:
         formatted.add("internal");
-    }
-    if (linkage() == Linkage::kPrivate) {
+        break;
+    case Linkage::kPrivate:
         formatted.add("private");
+        break;
+    case Linkage::kExternal:
+        break;
     }
     StringJoiner formattedArgs(", ", "(", ")");
     for (const Argument &arg : args(*this)) {
