@@ -12,12 +12,34 @@ std::string I8ArrayConstant::format() const {
     std::string formatted;
     formatted += "\"";
     for (int8_t element : elements()) {
-        if (element == '\\') {
+        switch (element) {
+        case '\b':
+            formatted += "\\b";
+            break;
+        case '\f':
+            formatted += "\\f";
+            break;
+        case '\n':
+            formatted += "\\n";
+            break;
+        case '\r':
+            formatted += "\\r";
+            break;
+        case '\t':
+            formatted += "\\t";
+            break;
+        case '\\':
             formatted += "\\\\";
-        } else if (isPrintable(element) && element != '"') {
-            formatted += element;
-        } else {
-            formatted += std::format("\\{:02X}", static_cast<uint8_t>(element));
+            break;
+        case '\"':
+            formatted += "\\\"";
+            break;
+        default:
+            if (isPrintable(element)) {
+                formatted += element;
+            } else {
+                formatted += std::format("\\{:03o}", static_cast<uint8_t>(element));
+            }
         }
     }
     formatted += "\"";

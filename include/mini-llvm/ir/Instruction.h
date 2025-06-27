@@ -40,7 +40,9 @@ public:
     virtual void accept(InstructionVisitor &visitor) = 0;
     virtual void accept(InstructionVisitor &visitor) const = 0;
 
-    std::string formatAsOperand() const override;
+    std::string formatAsOperand() const override {
+        return "%" + formatName();
+    }
 
 private:
     mutable BasicBlock *parent_ = nullptr;

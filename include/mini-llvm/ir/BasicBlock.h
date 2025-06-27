@@ -140,8 +140,14 @@ public:
     }
 
     std::string format() const override;
-    std::string formatAsOperand() const override;
-    std::string formatAsLabel() const;
+
+    std::string formatAsOperand() const override {
+        return "%" + formatName();
+    }
+
+    std::string formatAsLabel() const {
+        return formatName() + ":";
+    }
 
     std::unique_ptr<Value> clone() const override {
         abort();

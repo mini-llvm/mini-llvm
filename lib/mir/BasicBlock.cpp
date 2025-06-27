@@ -1,6 +1,5 @@
 #include "mini-llvm/mir/BasicBlock.h"
 
-#include <algorithm>
 #include <cassert>
 #include <cstdint>
 #include <format>
@@ -13,7 +12,6 @@
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
-#include "mini-llvm/utils/Chars.h"
 #include "mini-llvm/utils/SetOps.h"
 #include "mini-llvm/utils/StringJoiner.h"
 #include "mini-llvm/utils/Strings.h"
@@ -55,10 +53,7 @@ std::string BasicBlock::formatAsOperand() const {
     if (name().empty()) {
         return std::format("#_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
     }
-    if (!std::ranges::all_of(name(), [](char ch) { return isLetterOrDigit(ch) || ch == '_' || ch == '.'; })) {
-        return std::format("#{}", quote(name()));
-    }
-    return std::format("#{}", name());
+    return "#" + name();
 }
 
 std::unordered_set<BasicBlock *> mir::successors(const BasicBlock &B) {

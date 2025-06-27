@@ -22,7 +22,9 @@ public:
         abort();
     }
 
-    std::string formatAsOperand() const override;
+    std::string formatAsOperand() const override {
+        return "%" + formatName();
+    }
 
     std::unique_ptr<Value> clone() const override {
         abort();

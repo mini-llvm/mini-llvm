@@ -38,6 +38,8 @@ public:
         name_ = std::move(name);
     }
 
+    std::string formatName() const;
+
     use_iterator use_begin() const {
         return use_iterator(uses_.begin());
     }
