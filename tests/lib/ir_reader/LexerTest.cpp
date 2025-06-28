@@ -252,6 +252,66 @@ TEST(LexerTest, LocalIdentifierDot) {
 }
 
 TEST(LexerTest, LocalIdentifierReserved) {
+    const char *input = "%define";
+
+    std::vector<Token> expectedOutput{
+        {kPercent, {},       input + 0},
+        {kName,    "define", input + 1},
+        {kEOF,     {},       input + 7},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, GlobalIdentifier) {
+    const char *input = "@AZaz09._";
+
+    std::vector<Token> expectedOutput{
+        {kAt,   {},         input + 0},
+        {kName, "AZaz09._", input + 1},
+        {kEOF,  {},         input + 9},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, GlobalIdentifierNumber) {
+    const char *input = "@42";
+
+    std::vector<Token> expectedOutput{
+        {kAt,   {},   input + 0},
+        {kName, "42", input + 1},
+        {kEOF,  {},   input + 3},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, GlobalIdentifierUnderscore) {
+    const char *input = "@_";
+
+    std::vector<Token> expectedOutput{
+        {kAt,   {},  input + 0},
+        {kName, "_", input + 1},
+        {kEOF,  {},  input + 2},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, GlobalIdentifierDot) {
+    const char *input = "@.";
+
+    std::vector<Token> expectedOutput{
+        {kAt,   {},  input + 0},
+        {kName, ".", input + 1},
+        {kEOF,  {},  input + 2},
+    };
+
+    EXPECT_EQ(lex(input), expectedOutput);
+}
+
+TEST(LexerTest, GlobalIdentifierReserved) {
     const char *input = "@define";
 
     std::vector<Token> expectedOutput{
