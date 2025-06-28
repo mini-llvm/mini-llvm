@@ -17,7 +17,7 @@ namespace {
 
 bool shouldQuote(std::string_view str) {
     for (char ch : str) {
-        if (!isLetterOrDigit(ch) && ch != '_' && ch != '.') {
+        if (!isLetterOrDigit(ch) && ch != '$' && ch != '.' && ch != '_') {
             return true;
         }
     }

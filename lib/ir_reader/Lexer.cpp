@@ -58,9 +58,9 @@ private:
         if (lastToken()) {
             Token::Kind kind = lastToken()->kind;
             if (kind == kAt || kind == kPercent) {
-                if (isLetter(*current_) || isDigit(*current_) || *current_ == '_' || *current_ == '.') {
+                if (isLetter(*current_) || isDigit(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
                     const char *start = current_;
-                    while (isLetter(*current_) || isDigit(*current_) || *current_ == '_' || *current_ == '.') {
+                    while (isLetter(*current_) || isDigit(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
                         ++current_;
                     }
                     return {kName, std::string(start, current_), start};
@@ -183,9 +183,9 @@ private:
             return {kName, std::move(name), start};
         }
 
-        if (isLetter(*current_) || *current_ == '_' || *current_ == '.') {
+        if (isLetter(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
             const char *start = current_;
-            while (isLetter(*current_) || *current_ == '_' || *current_ == '.' || isDigit(*current_)) {
+            while (isLetter(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_' || isDigit(*current_)) {
                 ++current_;
             }
             std::string name(start, current_);
