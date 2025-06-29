@@ -39,7 +39,7 @@ public:
         return std::addressof(error_);
     }
 
-    constexpr E &errro() {
+    constexpr E &error() {
         return error_;
     }
 

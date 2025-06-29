@@ -1,4 +1,4 @@
-#include "mini-llvm/common/SourceManger.h"
+#include "mini-llvm/common/SourceManager.h"
 
 #include <algorithm>
 #include <cstddef>

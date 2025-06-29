@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -90,7 +91,7 @@ private:
             ++current_;
             uint64_t value = 0;
             while (isHexDigit(*current_)) {
-                value = value * 0x10 + ((isDigit(*current_)  ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
+                value = value * 0x10 + ((isDigit(*current_) ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
                 ++current_;
             }
             return {kNumber, std::bit_cast<int64_t>(value), start};

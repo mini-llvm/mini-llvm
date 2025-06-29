@@ -74,9 +74,9 @@ public:
         return *args_[i];
     }
 
-    void addArg(const_arg_iterator pos, std::unique_ptr<Value> arg);
+    void addArg(const_arg_iterator pos, std::shared_ptr<Value> arg);
 
-    void appendArg(std::unique_ptr<Value> arg) {
+    void appendArg(std::shared_ptr<Value> arg) {
         addArg(arg_end(), std::move(arg));
     }
 

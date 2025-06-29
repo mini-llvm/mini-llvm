@@ -18,7 +18,7 @@ std::unique_ptr<Constant> I16::zeroValue() const {
 }
 
 std::unique_ptr<Constant> I16::constant(int64_t value) const {
-    return std::make_unique<I16Constant>(ops::Trunc<int64_t>()(value));
+    return std::make_unique<I16Constant>(ops::Trunc<int16_t>()(value));
 }
 
 std::unique_ptr<Type> I16::promoted() const {

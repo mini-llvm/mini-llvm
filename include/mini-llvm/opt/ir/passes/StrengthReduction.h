@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/opt/ir/FunctionTransform.h"
 

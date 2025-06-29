@@ -1,5 +1,6 @@
 #include "mini-llvm/mc/GlobalValue.h"
 
+#include <memory>
 #include <string>
 
 #include "mini-llvm/mc/Directive.h"

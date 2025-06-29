@@ -22,7 +22,7 @@ Call::Call(std::weak_ptr<Function> callee, std::vector<std::shared_ptr<Value>> a
     }
 }
 
-void Call::addArg(const_arg_iterator pos, std::unique_ptr<Value> arg) {
+void Call::addArg(const_arg_iterator pos, std::shared_ptr<Value> arg) {
     args_.insert(pos.base(), std::make_unique<Use<Value>>(this, std::move(arg)));
 }
 

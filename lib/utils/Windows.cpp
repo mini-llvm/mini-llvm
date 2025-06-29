@@ -12,7 +12,7 @@ std::wstring mini_llvm::windows::widen(const char *str) {
         return {};
     }
     int size = MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
-    std::wstring wstr(size, '\0');
+    std::wstring wstr(size, L'\0');
     MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr.data(), size);
     wstr.pop_back();
     return wstr;
@@ -23,7 +23,7 @@ std::string mini_llvm::windows::narrow(const wchar_t *wstr) {
         return {};
     }
     int size = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, nullptr, 0, nullptr, nullptr);
-    std::string str(size, L'\0');
+    std::string str(size, '\0');
     WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str.data(), size, nullptr, nullptr);
     str.pop_back();
     return str;

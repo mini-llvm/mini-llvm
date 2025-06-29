@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-import re
 import sys
-
-
-def convert_line_endings(source):
-    return source.replace('\r\n', '\n').replace('\r', '\n')
 
 
 def expand_tabs(source):
@@ -13,18 +8,19 @@ def expand_tabs(source):
 
 
 def trim_trailing_whitespaces(source):
-    return '\n'.join([line.rstrip(' ') for line in source.split('\n')])
+    return ''.join([line.rstrip(' ') + '\n' for line in source.splitlines()])
 
 
 def trim_final_newlines(source):
-    return source.rstrip('\n') + '\n'
+    lines = source.splitlines()
+    while lines and lines[-1] == '':
+        lines.pop()
+    return ''.join([line + '\n' for line in lines])
 
 
 def sort_includes(source):
-    def key(line):
-        return re.search(r'<(.*)>|"(.*)"', line).group().lower()
-
-    lines = source.split('\n')
+    result_lines = []
+    lines = source.splitlines()
     n = len(lines)
     i = 0
     while i < n:
@@ -32,14 +28,15 @@ def sort_includes(source):
             j = i
             while j + 1 < n and lines[j + 1].startswith('#include'):
                 j += 1
-            lines[i : j + 1] = sorted(lines[i : j + 1], key=key)
-            i = j
-        i += 1
-    return '\n'.join(lines)
+            result_lines.extend(sorted(set(lines[i : j + 1]), key=str.lower))
+            i = j + 1
+        else:
+            result_lines.append(lines[i])
+            i += 1
+    return ''.join([line + '\n' for line in result_lines])
 
 
 def reformat(source):
-    source = convert_line_endings(source)
     source = expand_tabs(source)
     source = trim_trailing_whitespaces(source)
     source = trim_final_newlines(source)
@@ -56,16 +53,16 @@ def main():
     exit_code = 0
 
     for path in args.input:
-        with open(path, mode='r', encoding='utf-8') as file:
-            source = file.read()
+        with open(path, mode='r', encoding='utf-8') as f:
+            source = f.read()
         reformatted_source = reformat(source)
         if reformatted_source != source:
             if args.check:
                 print(f'{path}: not properly formatted', file=sys.stderr)
                 exit_code = 1
             else:
-                with open(path, mode='w', encoding='utf-8') as file:
-                    file.write(reformatted_source)
+                with open(path, mode='w', encoding='utf-8') as f:
+                    f.write(reformatted_source)
                 print(f'{path}: reformatted')
 
     return exit_code

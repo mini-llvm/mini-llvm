@@ -24,7 +24,7 @@ IndirectCall::IndirectCall(std::unique_ptr<FunctionType> functionType,
     }
 }
 
-void IndirectCall::addArg(const_arg_iterator pos, std::unique_ptr<Value> arg) {
+void IndirectCall::addArg(const_arg_iterator pos, std::shared_ptr<Value> arg) {
     args_.insert(pos.base(), std::make_unique<Use<Value>>(this, std::move(arg)));
 }
 

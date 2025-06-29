@@ -13,33 +13,33 @@ std::string StringDirective::format() const {
     formatted += ".ascii \"";
     for (int8_t element : elements_) {
         switch (element) {
-            case '\b':
-                formatted += "\\b";
-                break;
-            case '\f':
-                formatted += "\\f";
-                break;
-            case '\n':
-                formatted += "\\n";
-                break;
-            case '\r':
-                formatted += "\\r";
-                break;
-            case '\t':
-                formatted += "\\t";
-                break;
-            case '\\':
-                formatted += "\\\\";
-                break;
-            case '\"':
-                formatted += "\\\"";
-                break;
-            default:
-                if (isPrintable(element)) {
-                    formatted += element;
-                } else {
-                    formatted += std::format("\\{:03o}", static_cast<uint8_t>(element));
-                }
+        case '\b':
+            formatted += "\\b";
+            break;
+        case '\f':
+            formatted += "\\f";
+            break;
+        case '\n':
+            formatted += "\\n";
+            break;
+        case '\r':
+            formatted += "\\r";
+            break;
+        case '\t':
+            formatted += "\\t";
+            break;
+        case '\\':
+            formatted += "\\\\";
+            break;
+        case '\"':
+            formatted += "\\\"";
+            break;
+        default:
+            if (isPrintable(element)) {
+                formatted += element;
+            } else {
+                formatted += std::format("\\{:03o}", static_cast<uint8_t>(element));
+            }
         }
     }
     formatted += "\"";

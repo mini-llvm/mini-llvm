@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <optional>
@@ -9,7 +10,7 @@
 
 #include "mini-llvm/codegen/register_allocators/GraphColoringAllocator.h"
 #include "mini-llvm/common/Diagnostic.h"
-#include "mini-llvm/common/SourceManger.h"
+#include "mini-llvm/common/SourceManager.h"
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir/Verifier.h"
 #include "mini-llvm/ir_reader/IRReader.h"

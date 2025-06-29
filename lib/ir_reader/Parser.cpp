@@ -768,7 +768,7 @@ public:
                         if (*type2 != Ptr()) {
                             throw ParseException("must be ptr", type2Location);
                         }
-                        I = std::make_unique<IntToPtr>(std::move(value));
+                        I = std::make_shared<IntToPtr>(std::move(value));
                     } else if (mnemonic == kBitCast) {
                         I = std::make_shared<BitCast>(std::move(value), std::move(type2));
                     } else {
@@ -946,10 +946,10 @@ public:
                         std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
 
                         if (hasParamTypes) {
-                            std::unique_ptr<FunctionType> fuunctionType = std::make_unique<FunctionType>(
+                            std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
                                 std::move(returnType), std::move(paramTypes), isVarArgs
                             );
-                            if (*calleeFunction->functionType() != *fuunctionType) {
+                            if (*calleeFunction->functionType() != *functionType) {
                                 throw ParseException("function type mismatch", returnTypeLocation);
                             }
                         } else {
@@ -1123,10 +1123,10 @@ public:
                 std::shared_ptr<Function> calleeFunction = cast<Function>(callee);
 
                 if (hasParamTypes) {
-                    std::unique_ptr<FunctionType> fuunctionType = std::make_unique<FunctionType>(
+                    std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
                         std::move(returnType), std::move(paramTypes), isVarArgs
                     );
-                    if (*calleeFunction->functionType() != *fuunctionType) {
+                    if (*calleeFunction->functionType() != *functionType) {
                         throw ParseException("function type mismatch", returnTypeLocation);
                     }
                 } else {
