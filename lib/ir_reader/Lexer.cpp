@@ -39,13 +39,21 @@ private:
 
     Token nextTokenImpl() {
         while (*current_ != '\0') {
-            if (*current_ == ' ' || *current_ == '\t' || *current_ == '\n') {
+            switch (*current_) {
+            case ' ':
+            case '\t':
+            case '\v':
+            case '\f':
+            case '\n':
+            case '\r':
                 ++current_;
                 continue;
-            }
-            if (*current_ == ';') {
+
+            case ';':
                 ++current_;
-                while (*current_ != '\0' && *current_ != '\n') ++current_;
+                while (*current_ != '\0' && *current_ != '\n') {
+                    ++current_;
+                }
                 continue;
             }
             break;
