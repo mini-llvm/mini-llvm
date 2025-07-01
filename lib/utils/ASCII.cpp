@@ -1,4 +1,4 @@
-#include "mini-llvm/utils/Chars.h"
+#include "mini-llvm/utils/ASCII.h"
 
 bool mini_llvm::isPrintable(char ch) {
     return ch >= 0x20 && ch <= 0x7e;

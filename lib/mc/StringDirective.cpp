@@ -4,7 +4,7 @@
 #include <format>
 #include <string>
 
-#include "mini-llvm/utils/Chars.h"
+#include "mini-llvm/utils/ASCII.h"
 
 using namespace mini_llvm::mc;
 

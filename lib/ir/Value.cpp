@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "mini-llvm/ir/Use.h"
-#include "mini-llvm/utils/Chars.h"
+#include "mini-llvm/utils/ASCII.h"
 #include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;

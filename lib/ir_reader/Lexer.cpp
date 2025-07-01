@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "mini-llvm/ir_reader/Token.h"
-#include "mini-llvm/utils/Chars.h"
+#include "mini-llvm/utils/ASCII.h"
 #include "mini-llvm/utils/HashMap.h"
 
 using namespace mini_llvm;

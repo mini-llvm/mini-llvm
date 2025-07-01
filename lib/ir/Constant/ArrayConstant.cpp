@@ -16,7 +16,7 @@
 #include "mini-llvm/ir/Type/I8.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Chars.h"
+#include "mini-llvm/utils/ASCII.h"
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
