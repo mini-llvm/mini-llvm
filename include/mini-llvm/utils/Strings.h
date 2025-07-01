@@ -6,6 +6,8 @@
 
 namespace mini_llvm {
 
+void normalizeLineEndings(std::string &str);
+
 template <typename T>
     requires std::is_integral_v<T>
 std::string toString(T value, int base = 10) {

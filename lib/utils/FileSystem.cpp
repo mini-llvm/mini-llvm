@@ -28,7 +28,7 @@ Expected<std::string, int> mini_llvm::readAll(FILE *stream) {
 }
 
 Expected<std::string, int> mini_llvm::readAll(const char *path) {
-    FileHandle handle(path, "r");
+    FileHandle handle(path, "rb");
     if (!handle) {
         return Unexpected(errno);
     }
@@ -43,7 +43,7 @@ Expected<void, int> mini_llvm::writeAll(FILE *stream, const char *data, size_t s
 }
 
 Expected<void, int> mini_llvm::writeAll(const char *path, const char *data, size_t size) {
-    FileHandle handle(path, "w");
+    FileHandle handle(path, "wb");
     if (!handle) {
         return Unexpected(errno);
     }

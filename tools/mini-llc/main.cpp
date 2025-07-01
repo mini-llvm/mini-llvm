@@ -22,6 +22,7 @@
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
+#include "mini-llvm/utils/Strings.h"
 
 #ifdef _WIN32
     #include "mini-llvm/utils/Windows.h"
@@ -169,6 +170,7 @@ int mainImpl(std::vector<std::string> args) {
         std::println(stderr, "{}: error: {}: {}", args[0], *inputFile, strerror(source.error()));
         return 1;
     }
+    normalizeLineEndings(*source);
     SourceManager sourceManager;
     sourceManager.setSource(std::move(*source));
 
