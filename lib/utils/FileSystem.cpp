@@ -8,6 +8,7 @@
 
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileHandle.h"
+#include "mini-llvm/utils/Path.h"
 
 using namespace mini_llvm;
 
@@ -27,7 +28,7 @@ Expected<std::string, int> mini_llvm::readAll(FILE *stream) {
     return content;
 }
 
-Expected<std::string, int> mini_llvm::readAll(const char *path) {
+Expected<std::string, int> mini_llvm::readAll(const Path &path) {
     FileHandle handle(path, "rb");
     if (!handle) {
         return Unexpected(errno);
@@ -42,7 +43,7 @@ Expected<void, int> mini_llvm::writeAll(FILE *stream, const char *data, size_t s
     return {};
 }
 
-Expected<void, int> mini_llvm::writeAll(const char *path, const char *data, size_t size) {
+Expected<void, int> mini_llvm::writeAll(const Path &path, const char *data, size_t size) {
     FileHandle handle(path, "wb");
     if (!handle) {
         return Unexpected(errno);

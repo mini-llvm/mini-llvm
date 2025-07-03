@@ -1,8 +1,10 @@
 #pragma once
 
 #include <cstdio>
-#include <string>
 #include <utility>
+
+#include "mini-llvm/utils/Path.h"
+#include "mini-llvm/utils/SystemString.h"
 
 namespace mini_llvm {
 
@@ -12,16 +14,7 @@ public:
 
     explicit FileHandle(FILE *handle) : handle_(handle) {}
 
-    FileHandle(const char *path, const char *mode);
-
-    FileHandle(const std::string &path, const char *mode)
-        : FileHandle(path.c_str(), mode) {}
-
-    FileHandle(const char *path, const std::string &mode)
-        : FileHandle(path, mode.c_str()) {}
-
-    FileHandle(const std::string &path, const std::string &mode)
-        : FileHandle(path.c_str(), mode.c_str()) {}
+    FileHandle(const Path &path, const SystemString &mode);
 
     ~FileHandle();
 
@@ -48,19 +41,7 @@ public:
         return handle_;
     }
 
-    void open(const char *path, const char *mode);
-
-    void open(const std::string &path, const char *mode) {
-        open(path.c_str(), mode);
-    }
-
-    void open(const char *path, const std::string &mode) {
-        open(path, mode.c_str());
-    }
-
-    void open(const std::string &path, const std::string &mode) {
-        open(path.c_str(), mode.c_str());
-    }
+    void open(const Path &path, const SystemString &mode);
 
     void close();
 

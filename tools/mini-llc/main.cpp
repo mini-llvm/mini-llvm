@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <cstdio>
 #include <cstring>
 #include <optional>
@@ -21,6 +20,7 @@
 #include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileSystem.h"
+#include "mini-llvm/utils/Path.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 #include "mini-llvm/utils/Strings.h"
 
@@ -43,7 +43,7 @@ std::optional<Target> toTarget(std::string_view targetName) {
     return std::nullopt;
 }
 
-Expected<std::string, int> input(const std::string &inputFile) {
+Expected<std::string, int> input(const Path &inputFile) {
     if (inputFile == "-") {
         return readAll(stdin);
     } else {
@@ -51,7 +51,7 @@ Expected<std::string, int> input(const std::string &inputFile) {
     }
 }
 
-Expected<void, int> output(const std::string &outputFile, const std::string &content) {
+Expected<void, int> output(const Path &outputFile, const std::string &content) {
     if (outputFile == "-") {
         return writeAll(stdout, content.data(), content.size());
     } else {
@@ -87,10 +87,10 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     std::optional<Target> target;
-    std::optional<std::string> inputFile;
-    std::optional<std::string> outputFile;
-    std::optional<std::string> irDumpFile;
-    std::optional<std::string> mirDumpFile;
+    std::optional<Path> inputFile;
+    std::optional<Path> outputFile;
+    std::optional<Path> irDumpFile;
+    std::optional<Path> mirDumpFile;
 
     for (const auto &arg : parser) {
         if (const auto *option = arg.option()) {
@@ -129,11 +129,7 @@ int mainImpl(std::vector<std::string> args) {
     if (!outputFile) {
         outputFile = *inputFile;
         if (*outputFile != "-") {
-            size_t i = outputFile->rfind('.');
-            if (i != std::string::npos) {
-                outputFile->erase(i);
-            }
-            outputFile->append(".s");
+            outputFile->replace_extension(".s");
         }
     }
 
