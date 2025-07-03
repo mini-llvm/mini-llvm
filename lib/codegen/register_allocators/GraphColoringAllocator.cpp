@@ -174,22 +174,22 @@ bool GraphColoringAllocator::allocate(
 
                     regs.erase(u);
 
-                    for (Register *w : auto(interference[u])) {
+                    for (Register *w : std::unordered_set(interference[u])) {
                         if (w != v) {
                             addEdge(interference, v, w);
                             removeEdge(coalescence, v, w);
                         }
                     }
-                    for (Register *w : auto(interference[u])) {
+                    for (Register *w : std::unordered_set(interference[u])) {
                         removeEdge(interference, u, w);
                     }
 
-                    for (Register *w : auto(coalescence[u])) {
+                    for (Register *w : std::unordered_set(coalescence[u])) {
                         if (w != v && !hasEdge(interference, v, w)) {
                             addEdge(coalescence, v, w);
                         }
                     }
-                    for (Register *w : auto(coalescence[u])) {
+                    for (Register *w : std::unordered_set(coalescence[u])) {
                         removeEdge(coalescence, u, w);
                     }
 
