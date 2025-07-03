@@ -12,7 +12,6 @@ namespace mini_llvm::windows {
 
 std::wstring widen(std::string_view str);
 std::string narrow(std::wstring_view wstr);
-std::vector<std::string> narrowArgs(int argc, wchar_t *wargv[]);
 
 } // namespace mini_llvm::windows
 

@@ -247,7 +247,12 @@ int mainImpl(std::vector<std::string> args) {
 #ifdef _WIN32
 
 int wmain(int argc, wchar_t *wargv[]) {
-    return mainImpl(windows::narrowArgs(argc, wargv));
+    std::vector<std::string> args;
+    args.reserve(argc);
+    for (int i = 0; i < argc; ++i) {
+        args.push_back(windows::narrow(wargv[i]));
+    }
+    return mainImpl(std::move(args));
 }
 
 #else

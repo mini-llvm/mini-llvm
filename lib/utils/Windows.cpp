@@ -4,7 +4,6 @@
 
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include <windows.h>
 
@@ -20,15 +19,6 @@ std::string mini_llvm::windows::narrow(std::wstring_view wstr) {
     std::string str(size, '\0');
     WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), str.data(), size, nullptr, nullptr);
     return str;
-}
-
-std::vector<std::string> mini_llvm::windows::narrowArgs(int argc, wchar_t *wargv[]) {
-    std::vector<std::string> args;
-    args.reserve(argc);
-    for (int i = 0; i < argc; ++i) {
-        args.emplace_back(narrow(wargv[i]));
-    }
-    return args;
 }
 
 #endif // _WIN32
