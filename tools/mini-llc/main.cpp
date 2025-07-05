@@ -23,6 +23,7 @@
 #include "mini-llvm/utils/Path.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 #include "mini-llvm/utils/Strings.h"
+#include "mini-llvm/utils/SystemError.h"
 
 #ifdef _WIN32
     #include "mini-llvm/utils/Windows.h"
@@ -43,7 +44,7 @@ std::optional<Target> toTarget(std::string_view targetName) {
     return std::nullopt;
 }
 
-Expected<std::string, int> input(const Path &inputFile) {
+Expected<std::string, SystemError> input(const Path &inputFile) {
     if (inputFile == "-") {
         return readAll(stdin);
     } else {
@@ -51,7 +52,7 @@ Expected<std::string, int> input(const Path &inputFile) {
     }
 }
 
-Expected<void, int> output(const Path &outputFile, const std::string &content) {
+Expected<void, SystemError> output(const Path &outputFile, const std::string &content) {
     if (outputFile == "-") {
         return writeAll(stdout, content.data(), content.size());
     } else {
@@ -161,9 +162,9 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
 
-    Expected<std::string, int> source = input(*inputFile);
+    Expected<std::string, SystemError> source = input(*inputFile);
     if (!source) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *inputFile, strerror(source.error()));
+        std::println(stderr, "{}: error: {}: {}", args[0], *inputFile, strerror(source.error().code()));
         return 1;
     }
     normalizeLineEndings(*source);
@@ -204,8 +205,8 @@ int mainImpl(std::vector<std::string> args) {
     passManager.run(*IM);
 
     if (irDumpFile) {
-        if (Expected<void, int> result = output(*irDumpFile, IM->format() + '\n'); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *irDumpFile, strerror(result.error()));
+        if (Expected<void, SystemError> result = output(*irDumpFile, IM->format() + '\n'); !result) {
+            std::println(stderr, "{}: error: {}: {}", args[0], *irDumpFile, strerror(result.error().code()));
             return 1;
         }
     }
@@ -224,14 +225,14 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (mirDumpFile) {
-        if (Expected<void, int> result = output(*mirDumpFile, MM.format() + '\n'); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *mirDumpFile, strerror(result.error()));
+        if (Expected<void, SystemError> result = output(*mirDumpFile, MM.format() + '\n'); !result) {
+            std::println(stderr, "{}: error: {}: {}", args[0], *mirDumpFile, strerror(result.error().code()));
             return 1;
         }
     }
 
-    if (Expected<void, int> result = output(*outputFile, MCM.format() + '\n'); !result) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *outputFile, strerror(result.error()));
+    if (Expected<void, SystemError> result = output(*outputFile, MCM.format() + '\n'); !result) {
+        std::println(stderr, "{}: error: {}: {}", args[0], *outputFile, strerror(result.error().code()));
         return 1;
     }
 

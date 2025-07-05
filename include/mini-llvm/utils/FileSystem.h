@@ -6,13 +6,14 @@
 
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/Path.h"
+#include "mini-llvm/utils/SystemError.h"
 
 namespace mini_llvm {
 
-Expected<std::string, int> readAll(FILE *stream);
-Expected<std::string, int> readAll(const Path &path);
+Expected<std::string, SystemError> readAll(FILE *stream);
+Expected<std::string, SystemError> readAll(const Path &path);
 
-Expected<void, int> writeAll(FILE *stream, const char *data, size_t size);
-Expected<void, int> writeAll(const Path &path, const char *data, size_t size);
+Expected<void, SystemError> writeAll(FILE *stream, const char *data, size_t size);
+Expected<void, SystemError> writeAll(const Path &path, const char *data, size_t size);
 
 } // namespace mini_llvm

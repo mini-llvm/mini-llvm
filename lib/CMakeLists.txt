@@ -118,6 +118,7 @@ add_library(mini-llvm
     utils/FileHandle.cpp
     utils/FileSystem.cpp
     utils/Strings.cpp
+    utils/SystemError.cpp
     utils/Unicode.cpp
     utils/Windows.cpp
 )
