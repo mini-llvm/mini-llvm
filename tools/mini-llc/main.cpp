@@ -19,7 +19,7 @@
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/Expected.h"
-#include "mini-llvm/utils/FileSystem.h"
+#include "mini-llvm/utils/IO.h"
 #include "mini-llvm/utils/Path.h"
 #include "mini-llvm/utils/ProcessorDetection.h"
 #include "mini-llvm/utils/Strings.h"

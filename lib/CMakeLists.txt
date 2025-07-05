@@ -116,7 +116,7 @@ add_library(mini-llvm
     utils/ASCII.cpp
     utils/CommandLineParser.cpp
     utils/FileHandle.cpp
-    utils/FileSystem.cpp
+    utils/IO.cpp
     utils/Strings.cpp
     utils/SystemError.cpp
     utils/Unicode.cpp
