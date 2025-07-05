@@ -22,9 +22,6 @@ void SourceManager::setSource(std::string source) {
             i = j + 1;
         }
     }
-    if (i < n) {
-        lines_.emplace_back(source_.data() + i, source_.data() + n);
-    }
     sums_.clear();
     size_t sum = 0;
     for (std::string_view line : lines_) {
