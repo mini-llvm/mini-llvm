@@ -22,7 +22,7 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-bool isCombinableGep(const Value &value) {
+bool isCombinableGEP(const Value &value) {
     if (auto *gep = dynamic_cast<const GetElementPtr *>(&value)) {
         if (gep->idx_size() == 1 && dynamic_cast<const Constant *>(&**gep->idx_begin())) {
             return true;
@@ -70,11 +70,11 @@ void dfs(const DTNode *node, bool &changed) {
             }
             continue;
         }
-        if (isCombinableGep(I)) {
+        if (isCombinableGEP(I)) {
             GetElementPtr *gep = static_cast<GetElementPtr *>(&I);
             std::shared_ptr<Value> ptr = share(*gep->ptr()),
                                    idx = share(**gep->idx_begin());
-            while (isCombinableGep(*ptr) && *static_cast<const GetElementPtr *>(&*ptr)->sourceType() == *gep->sourceType()) {
+            while (isCombinableGEP(*ptr) && *static_cast<const GetElementPtr *>(&*ptr)->sourceType() == *gep->sourceType()) {
                 GetElementPtr *gep2 = static_cast<GetElementPtr *>(&*ptr);
                 ptr = share(*gep2->ptr());
                 idx = Add(idx, share(**gep2->idx_begin())).fold();
