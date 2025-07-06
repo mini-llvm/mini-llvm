@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -15,6 +16,18 @@ std::unordered_set<UseBase *> Instruction::operands() {
         operands.insert(const_cast<UseBase *>(operand));
     }
     return operands;
+}
+
+bool Instruction::isWellFormed() const {
+    if (!Value::isWellFormed()) {
+        return false;
+    }
+    for (const UseBase *op : operands()) {
+        if (op->expired()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 Instruction &ir::addToParent(const Instruction &before, std::shared_ptr<Instruction> I) {

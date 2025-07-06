@@ -1,13 +1,11 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
 
 #include "mini-llvm/common/ExtensionMode.h"
-#include "mini-llvm/mir/FormatExtensionMode.h"
 #include "mini-llvm/mir/Immediate.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
@@ -62,11 +60,7 @@ public:
         return {};
     }
 
-    std::string format() const override {
-        return std::format(
-            "{} i{} {}, {}, {}, {}",
-            mnemonic(), width() * 8, *dst(), *src1(), *src2(), specifier(extMode()));
-    }
+    std::string format() const override;
 
 protected:
     BinaryOperatorI(int width,

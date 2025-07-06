@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Type/BasicBlockType.h"
+#include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
@@ -45,6 +47,21 @@ std::unordered_set<const UseBase *> Phi::operands() const {
         operands.insert(&incoming.value);
     }
     return operands;
+}
+
+bool Phi::isWellFormed() const {
+    if (!Instruction::isWellFormed()) {
+        return false;
+    }
+    if (*type() == Void() || *type() == BasicBlockType()) {
+        return false;
+    }
+    for (ConstIncoming incoming : incomings(*this)) {
+        if (*incoming.value->type() != *type()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::string Phi::format() const {

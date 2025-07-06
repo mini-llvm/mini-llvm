@@ -7,13 +7,12 @@
 #include "mini-llvm/mc/Instruction.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/LabelOperand.h"
-#include "mini-llvm/mc/Section.h"
 #include "mini-llvm/mc/Statement.h"
 
 using namespace mini_llvm::mc;
 
 bool UnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
-    if (G.section() != Section::kText) {
+    if (G.section() != ".text") {
         return false;
     }
 

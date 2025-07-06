@@ -6,7 +6,6 @@
 #include <utility>
 #include <variant>
 
-#include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -33,19 +32,15 @@ private:
     std::variant<std::monostate, std::shared_ptr<Value>, std::weak_ptr<Value>> value_;
 };
 
-template <typename ValueT = Value, typename TypeT = Type>
-    requires std::derived_from<ValueT, Value> && std::derived_from<TypeT, Type>
+template <typename ValueT = Value>
+    requires std::derived_from<ValueT, Value>
 class Use final : public UseBase {
 public:
     Use(Value *user, std::shared_ptr<ValueT> value)
-        : UseBase(user,
-                  (assert(dynamic_cast<ValueT *>(&*value) && dynamic_cast<TypeT *>(&*value->type())),
-                      cast<Value>(std::move(value)))) {}
+        : UseBase(user, (assert(dynamic_cast<ValueT *>(&*value)), cast<Value>(std::move(value)))) {}
 
     Use(Value *user, std::weak_ptr<ValueT> value)
-        : UseBase(user,
-                  (assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock()) && dynamic_cast<TypeT *>(&*value.lock()->type())),
-                      cast<Value>(std::move(value)))) {}
+        : UseBase(user, (assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock())), cast<Value>(std::move(value)))) {}
 
     ValueT &operator*() const override {
         return static_cast<ValueT &>(UseBase::operator*());
@@ -56,29 +51,25 @@ public:
     }
 
     void set(std::shared_ptr<Value> value) override {
-        assert(dynamic_cast<ValueT *>(&*value) && dynamic_cast<TypeT *>(&*value->type()));
+        assert(dynamic_cast<ValueT *>(&*value));
         UseBase::set(std::move(value));
     }
 
     void set(std::weak_ptr<Value> value) override {
-        assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock()) && dynamic_cast<TypeT *>(&*value.lock()->type()));
+        assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock()));
         UseBase::set(std::move(value));
     }
 };
 
-template <typename ValueT, typename TypeT>
-    requires std::derived_from<ValueT, Value> && std::derived_from<TypeT, Type> && (!std::same_as<ValueT, Value>)
-class Use<ValueT, TypeT> final : public UseBase {
+template <typename ValueT>
+    requires std::derived_from<ValueT, Value> && (!std::same_as<ValueT, Value>)
+class Use<ValueT> final : public UseBase {
 public:
     Use(Value *user, std::shared_ptr<ValueT> value)
-        : UseBase(user,
-                  (assert(dynamic_cast<ValueT *>(&*value) && dynamic_cast<TypeT *>(&*value->type())),
-                      cast<Value>(std::move(value)))) {}
+        : UseBase(user, (assert(dynamic_cast<ValueT *>(&*value)), cast<Value>(std::move(value)))) {}
 
     Use(Value *user, std::weak_ptr<ValueT> value)
-        : UseBase(user,
-                  (assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock()) && dynamic_cast<TypeT *>(&*value.lock()->type())),
-                      cast<Value>(std::move(value)))) {}
+        : UseBase(user, (assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock())), cast<Value>(std::move(value)))) {}
 
     ValueT &operator*() const override {
         return static_cast<ValueT &>(UseBase::operator*());
@@ -89,12 +80,12 @@ public:
     }
 
     void set(std::shared_ptr<Value> value) override {
-        assert(dynamic_cast<ValueT *>(&*value) && dynamic_cast<TypeT *>(&*value->type()));
+        assert(dynamic_cast<ValueT *>(&*value));
         UseBase::set(std::move(value));
     }
 
     void set(std::weak_ptr<Value> value) override {
-        assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock()) && dynamic_cast<TypeT *>(&*value.lock()->type()));
+        assert(!value.expired() && dynamic_cast<ValueT *>(&*value.lock()));
         UseBase::set(std::move(value));
     }
 

@@ -118,6 +118,8 @@ public:
 
     void clearFunctions();
 
+    bool isWellFormed() const;
+
     std::string format() const;
 
 private:

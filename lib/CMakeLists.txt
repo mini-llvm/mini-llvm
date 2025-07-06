@@ -8,21 +8,37 @@ add_library(mini-llvm
     ir/Function.cpp
     ir/GlobalVar.cpp
     ir/Instruction.cpp
+    ir/Instruction/Alloca.cpp
     ir/Instruction/BinaryFloatingArithmeticOperators.cpp
+    ir/Instruction/BinaryFloatingOperator.cpp
     ir/Instruction/BinaryFloatingRelationalOperators.cpp
+    ir/Instruction/BinaryIntegerArithmeticOperator.cpp
     ir/Instruction/BinaryIntegerArithmeticOperators.cpp
+    ir/Instruction/BinaryIntegerOperator.cpp
     ir/Instruction/BinaryIntegerRelationalOperators.cpp
     ir/Instruction/BitCast.cpp
+    ir/Instruction/Br.cpp
     ir/Instruction/Call.cpp
+    ir/Instruction/CondBr.cpp
+    ir/Instruction/FloatingCastingOperator.cpp
     ir/Instruction/FloatingCastingOperators.cpp
+    ir/Instruction/FloatingToIntegerCastingOperator.cpp
     ir/Instruction/FloatingToIntegerCastingOperators.cpp
     ir/Instruction/GetElementPtr.cpp
     ir/Instruction/IndirectCall.cpp
+    ir/Instruction/IntegerCastingOperator.cpp
     ir/Instruction/IntegerCastingOperators.cpp
+    ir/Instruction/IntegerToFloatingCastingOperator.cpp
     ir/Instruction/IntegerToFloatingCastingOperators.cpp
+    ir/Instruction/IntToPtr.cpp
+    ir/Instruction/Load.cpp
     ir/Instruction/Phi.cpp
+    ir/Instruction/PtrToInt.cpp
+    ir/Instruction/Ret.cpp
     ir/Instruction/Select.cpp
+    ir/Instruction/Store.cpp
     ir/Instruction/UnaryFloatingArithmeticOperators.cpp
+    ir/Instruction/UnaryFloatingOperator.cpp
     ir/Module.cpp
     ir/Type/ArrayType.cpp
     ir/Type/Double.cpp
@@ -37,7 +53,6 @@ add_library(mini-llvm
     ir/Type/Void.cpp
     ir/Use.cpp
     ir/Value.cpp
-    ir/Verifier.cpp
     ir_reader/IRReader.cpp
     ir_reader/Lexer.cpp
     ir_reader/Parser.cpp
@@ -56,7 +71,11 @@ add_library(mini-llvm
     mir/GlobalValue.cpp
     mir/GlobalVar.cpp
     mir/Instruction.cpp
+    mir/Instruction/BinaryOperator.cpp
+    mir/Instruction/BinaryOperatorI.cpp
+    mir/Instruction/Load.cpp
     mir/Instruction/Terminator.cpp
+    mir/Instruction/UnaryOperator.cpp
     mir/Module.cpp
     mir/StackFrame.cpp
     mir/StackSlot.cpp

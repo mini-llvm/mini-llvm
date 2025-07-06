@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -9,10 +8,8 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -42,12 +39,7 @@ public:
         return {&cond(), &trueValue(), &falseValue()};
     }
 
-    bool isFoldable() const override {
-        return dynamic_cast<const Constant *>(&*cond()) &&
-            dynamic_cast<const Constant *>(&*trueValue()) &&
-            dynamic_cast<const Constant *>(&*falseValue());
-    }
-
+    bool isFoldable() const override;
     std::shared_ptr<Constant> fold() const override;
 
     void accept(InstructionVisitor &visitor) override {
@@ -58,22 +50,17 @@ public:
         visitor.visitSelect(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return trueValue()->type();
     }
 
-    std::string format() const override {
-        return std::format(
-            "{:o} = select {} {:o}, {} {:o}, {} {:o}",
-            *this, *cond()->type(), *cond(), *trueValue()->type(), *trueValue(), *falseValue()->type(), *falseValue());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<Select>(share(*cond()), share(*trueValue()), share(*falseValue()));
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 
 private:
-    Use<Value, I1> cond_;
+    Use<Value> cond_;
     Use<Value> trueValue_, falseValue_;
 };
 

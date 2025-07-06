@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <bit>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
@@ -435,5 +436,6 @@ bool StrengthReduction::runOnFunction(Function &F) {
         changed |= changed2;
     } while (changed2);
 
+    assert(F.isWellFormed());
     return changed;
 }

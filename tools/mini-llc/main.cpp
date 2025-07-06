@@ -11,7 +11,6 @@
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/common/SourceManager.h"
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir/Verifier.h"
 #include "mini-llvm/ir_reader/IRReader.h"
 #include "mini-llvm/mc/Module.h"
 #include "mini-llvm/mir/Module.h"
@@ -172,7 +171,7 @@ int mainImpl(std::vector<std::string> args) {
         return 1;
     }
 
-    if (!ir::verifyModule(*IM)) {
+    if (!IM->isWellFormed()) {
         std::println(stderr, "{}: error: ill-formed module", args[0]);
         return 1;
     }

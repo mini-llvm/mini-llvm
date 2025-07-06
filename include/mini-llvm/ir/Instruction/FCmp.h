@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <format>
 #include <memory>
 #include <string>
 #include <utility>
@@ -10,7 +9,6 @@
 #include "mini-llvm/ir/Instruction/BinaryFloatingRelationalOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -47,10 +45,7 @@ public:
     }
 
     std::string format() const override;
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<FCmp>(cond(), share(*lhs()), share(*rhs()));
-    }
+    std::unique_ptr<Value> clone() const override;
 
 private:
     Condition cond_;
@@ -67,10 +62,6 @@ inline constexpr const char *specifier(FCmp::Condition cond) {
         case kOGE: return "oge";
         default: abort();
     }
-}
-
-inline std::string FCmp::format() const {
-    return std::format("{:o} = fcmp {} {} {:o}, {:o}", *this, specifier(cond()), *lhs()->type(), *lhs(), *rhs());
 }
 
 } // namespace mini_llvm::ir

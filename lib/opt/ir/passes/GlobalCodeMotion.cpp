@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/GlobalCodeMotion.h"
 
+#include <cassert>
 #include <iterator>
 #include <memory>
 #include <ranges>
@@ -221,5 +222,6 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

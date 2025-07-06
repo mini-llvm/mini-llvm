@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "mini-llvm/mc/Section.h"
 #include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
@@ -23,11 +22,11 @@ public:
     using reverse_iterator = IndirectIterator<StatementList::reverse_iterator, Statement>;
     using const_reverse_iterator = IndirectIterator<StatementList::const_reverse_iterator, const Statement>;
 
-    GlobalValue(std::string name, Section section, bool isGlobal, int alignment)
-        : name_(std::move(name)), section_(section), isGlobal_(isGlobal), alignment_(alignment) {}
+    GlobalValue(std::string name, std::string section, bool isGlobal, int alignment)
+        : name_(std::move(name)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(alignment) {}
 
-    GlobalValue(std::string name, Section section, bool isGlobal)
-        : name_(std::move(name)), section_(section), isGlobal_(isGlobal), alignment_(0) {}
+    GlobalValue(std::string name, std::string section, bool isGlobal)
+        : name_(std::move(name)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(0) {}
 
     const std::string &name() const {
         return name_;
@@ -37,12 +36,12 @@ public:
         name_ = std::move(name);
     }
 
-    Section section() const {
+    const std::string &section() const {
         return section_;
     }
 
-    void setSection(Section section) {
-        section_ = section;
+    void setSection(std::string section) {
+        section_ = std::move(section);
     }
 
     bool isGlobal() const {
@@ -143,7 +142,7 @@ public:
 
 private:
     std::string name_;
-    Section section_;
+    std::string section_;
     bool isGlobal_;
     int alignment_;
     StatementList stmts_;

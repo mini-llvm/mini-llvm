@@ -1,6 +1,8 @@
 #include <cstdlib>
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/OEQ.h"
@@ -17,6 +19,7 @@
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Instruction/BinaryFloatingRelationalOperator.h"
 #include "mini-llvm/ir/Instruction/FCmp.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm::ir;
 
@@ -74,4 +77,12 @@ std::shared_ptr<Constant> FCmp::fold() const {
         case kOGE: return foldImpl<ops::OGE>(*this);
         default: abort();
     }
+}
+
+std::string FCmp::format() const {
+    return std::format("{:o} = fcmp {} {} {:o}, {:o}", *this, specifier(cond()), *lhs()->type(), *lhs(), *rhs());
+}
+
+std::unique_ptr<Value> FCmp::clone() const {
+    return std::make_unique<FCmp>(cond(), share(*lhs()), share(*rhs()));
 }

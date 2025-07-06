@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/GlobalDeadCodeElimination.h"
 
+#include <cassert>
 #include <queue>
 #include <unordered_set>
 
@@ -95,5 +96,6 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
         ++i;
     }
 
+    assert(M.isWellFormed());
     return changed;
 }

@@ -34,6 +34,20 @@ void Module::clearFunctions() {
     functions_.clear();
 }
 
+bool Module::isWellFormed() const {
+    for (const GlobalVar &G : globalVars(*this)) {
+        if (!G.isWellFormed()) {
+            return false;
+        }
+    }
+    for (const Function &F : functions(*this)) {
+        if (!F.isWellFormed()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::string Module::format() const {
     StringJoiner formatted("\n\n");
     for (const GlobalVar &G : globalVars(*this)) {

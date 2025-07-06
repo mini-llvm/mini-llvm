@@ -1,3 +1,4 @@
+#include <format>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -10,6 +11,7 @@
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Instruction/FNeg.h"
 #include "mini-llvm/ir/Instruction/UnaryFloatingArithmeticOperator.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm::ir;
 
@@ -54,4 +56,12 @@ std::shared_ptr<Constant> foldImpl(const UnaryFloatingArithmeticOperator &I) {
 
 std::shared_ptr<Constant> FNeg::fold() const {
     return foldImpl<ops::FNeg>(*this);
+}
+
+std::string FNeg::format() const {
+    return std::format("{:o} = fneg {} {:o}", *this, *value()->type(), *value());
+}
+
+std::unique_ptr<Value> FNeg::clone() const {
+    return std::make_unique<FNeg>(share(*value()));
 }

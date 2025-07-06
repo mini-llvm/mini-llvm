@@ -1,5 +1,7 @@
 #include "mini-llvm/opt/ir/passes/ConstantFolding.h"
 
+#include <cassert>
+
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Value.h"
@@ -34,5 +36,6 @@ bool ConstantFolding::runOnFunction(Function &F) {
 
     dfs(domTree.node(F.entry()), changed);
 
+    assert(F.isWellFormed());
     return changed;
 }

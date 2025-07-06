@@ -5,14 +5,13 @@
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/LabelOperand.h"
-#include "mini-llvm/mc/Section.h"
 #include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 
 using namespace mini_llvm::mc;
 
 bool RISCVFallthrough::runOnGlobalValue(GlobalValue &G) {
-    if (G.section() != Section::kText) {
+    if (G.section() != ".text") {
         return false;
     }
 

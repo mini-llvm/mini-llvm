@@ -1,12 +1,15 @@
 #include "mini-llvm/ir/Instruction/Call.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
 #include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
@@ -41,6 +44,25 @@ std::unordered_set<const UseBase *> Call::operands() const {
         operands.insert(&arg);
     }
     return operands;
+}
+
+bool Call::isWellFormed() const {
+    if (!Instruction::isWellFormed()) {
+        return false;
+    }
+    std::unique_ptr<FunctionType> functionType = callee()->functionType();
+    if (arg_size() < functionType->param_type_size()) {
+        return false;
+    }
+    if (!functionType->isVarArgs() && arg_size() > functionType->param_type_size()) {
+        return false;
+    }
+    for (auto [arg, paramType] : std::views::zip(args(*this), paramTypes(*functionType))) {
+        if (*arg->type() != paramType) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::string Call::format() const {

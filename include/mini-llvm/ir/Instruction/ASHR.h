@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <utility>
@@ -8,7 +7,6 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -35,13 +33,8 @@ public:
         visitor.visitASHR(*this);
     }
 
-    std::string format() const override {
-        return std::format("{:o} = ashr {} {:o}, {:o}", *this, *lhs()->type(), *lhs(), *rhs());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<ASHR>(share(*lhs()), share(*rhs()));
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 };
 
 } // namespace mini_llvm::ir

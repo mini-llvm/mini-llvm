@@ -80,5 +80,6 @@ bool BasicBlockMerging::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

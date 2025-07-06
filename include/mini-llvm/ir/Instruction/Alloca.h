@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -34,17 +33,14 @@ public:
         visitor.visitAlloca(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return std::make_unique<Ptr>();
     }
 
-    std::string format() const override {
-        return std::format("{:o} = alloca {}", *this, *allocatedType());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<Alloca>(allocatedType());
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 
 private:
     std::unique_ptr<Type> allocatedType_;

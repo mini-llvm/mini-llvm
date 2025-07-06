@@ -4,11 +4,9 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 
@@ -29,16 +27,15 @@ public:
         return {&value()};
     }
 
-    bool isFoldable() const override {
-        return dynamic_cast<const Constant *>(&*value());
-    }
+    bool isFoldable() const override;
+    bool isWellFormed() const override;
 
 protected:
     IntegerToFloatingCastingOperator(std::shared_ptr<Value> value, std::unique_ptr<FloatingType> type)
         : value_(this, std::move(value)), type_(std::move(type)) {}
 
 private:
-    Use<Value, IntegerType> value_;
+    Use<Value> value_;
     std::unique_ptr<FloatingType> type_;
 };
 

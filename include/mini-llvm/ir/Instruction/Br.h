@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -13,7 +12,6 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -46,13 +44,8 @@ public:
         return std::make_unique<Void>();
     }
 
-    std::string format() const override {
-        return std::format("br {} {:o}", *dest()->type(), *dest());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<Br>(weaken(*dest()));
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 
 private:
     Use<BasicBlock> dest_;

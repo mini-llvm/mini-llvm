@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "mini-llvm/mc/GlobalValue.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mc;
@@ -22,38 +23,21 @@ void Module::clear() {
 }
 
 std::string Module::format() const {
-    std::vector<const GlobalValue *> data, rodata, bss, text;
+    HashMap<std::string, std::vector<const GlobalValue *>> sections;
     for (const GlobalValue &G : *this) {
-        switch (G.section()) {
-            case Section::kData: data.push_back(&G); break;
-            case Section::kROData: rodata.push_back(&G); break;
-            case Section::kBSS: bss.push_back(&G); break;
-            case Section::kText: text.push_back(&G); break;
-            default: abort();
-        }
+        sections.put(G.section(), {});
+    }
+    for (const GlobalValue &G : *this) {
+        sections[G.section()].push_back(&G);
     }
     StringJoiner formatted("\n");
-    if (!data.empty()) {
-        formatted.add("  .data");
-        for (const GlobalValue *G : data) {
-            formatted.add("{}", *G);
+    for (const auto &[section, globalValues] : sections) {
+        if (section == ".text" || section == ".data" || section == ".bss") {
+            formatted.add("  {}", section);
+        } else {
+            formatted.add("  .section {}", section);
         }
-    }
-    if (!rodata.empty()) {
-        formatted.add("  .section .rodata");
-        for (const GlobalValue *G : rodata) {
-            formatted.add("{}", *G);
-        }
-    }
-    if (!bss.empty()) {
-        formatted.add("  .bss");
-        for (const GlobalValue *G : bss) {
-            formatted.add("{}", *G);
-        }
-    }
-    if (!text.empty()) {
-        formatted.add("  .text");
-        for (const GlobalValue *G : text) {
+        for (const GlobalValue *G : globalValues) {
             formatted.add("{}", *G);
         }
     }

@@ -5,15 +5,24 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Argument.h"
 #include "mini-llvm/ir/Attribute.h"
 #include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/GlobalValue.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
+#include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
+#include "mini-llvm/ir/Use.h"
+#include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::ir;
@@ -84,6 +93,112 @@ void Function::removeLast() {
 
 void Function::clear() {
     blocks_.clear();
+}
+
+bool Function::isWellFormed() const {
+    if (!GlobalValue::isWellFormed()) {
+        return false;
+    }
+    if (isDeclaration()) {
+        return true;
+    }
+    for (const BasicBlock &B : *this) {
+        if (!B.isWellFormed()) {
+            return false;
+        }
+    }
+    for (const BasicBlock &B : *this) {
+        for (const Instruction &I : B) {
+            if (auto *ret = dynamic_cast<const Ret *>(&I)) {
+                if (*ret->value()->type() != *functionType()->returnType()) {
+                    return false;
+                }
+            }
+        }
+    }
+    if (!hasNPredecessors(entry(), 0)) {
+        return false;
+    }
+    for (const BasicBlock &B : *this) {
+        for (const Instruction &I : B) {
+            if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+                if (incomingBlocks(*phi) != predecessors(B)) {
+                    return false;
+                }
+            }
+        }
+    }
+    {
+        DominatorTreeAnalysis domTree;
+        domTree.runOnFunction(*this);
+
+        std::unordered_set<const BasicBlock *> S;
+        std::queue<const BasicBlock *> Q;
+        S.insert(&entry());
+        Q.push(&entry());
+        while (!Q.empty()) {
+            const BasicBlock *u = Q.front();
+            Q.pop();
+            for (const BasicBlock *v : successors(*u)) {
+                if (!S.contains(v)) {
+                    S.insert(v);
+                    Q.push(v);
+                }
+            }
+        }
+
+        for (const BasicBlock *B : S) {
+            for (const Instruction &I : *B) {
+                for (const UseBase &use : uses(I)) {
+                    if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                        if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    {
+        HashMap<const BasicBlock *, int> in;
+        std::unordered_set<const BasicBlock *> S;
+        std::queue<const BasicBlock *> Q;
+        for (const BasicBlock &v : *this) {
+            in.put(&v, 0);
+        }
+        for (const BasicBlock &u : *this) {
+            for (const BasicBlock *v : successors(u)) {
+                ++in[v];
+            }
+        }
+        for (const BasicBlock &v : *this) {
+            if (in[&v] == 0) {
+                S.insert(&v);
+                Q.push(&v);
+            }
+        }
+        while (!Q.empty()) {
+            const BasicBlock *u = Q.front();
+            Q.pop();
+            for (const BasicBlock *v : successors(*u)) {
+                --in[v];
+                if (in[v] == 0) {
+                    S.insert(v);
+                    Q.push(v);
+                }
+            }
+        }
+        for (const BasicBlock &B : *this) {
+            if (!S.contains(&B)) {
+                for (const Instruction &I : B) {
+                    if (dynamic_cast<const Alloca *>(&I)) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+    return true;
 }
 
 std::string Function::format() const {

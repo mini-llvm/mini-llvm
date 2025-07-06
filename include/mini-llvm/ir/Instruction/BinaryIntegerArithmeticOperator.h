@@ -21,6 +21,8 @@ public:
     // (x op y) op z == x op (y op z)
     virtual bool isAssociative() const = 0;
 
+    bool isWellFormed() const override;
+
 protected:
     BinaryIntegerArithmeticOperator(std::shared_ptr<Value> lhs, std::shared_ptr<Value> rhs)
         : BinaryIntegerOperator(std::move(lhs), std::move(rhs)) {}

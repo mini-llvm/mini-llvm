@@ -1,13 +1,11 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
 
 #include "mini-llvm/common/ExtensionMode.h"
-#include "mini-llvm/mir/FormatExtensionMode.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
@@ -72,11 +70,7 @@ public:
         return true;
     }
 
-    std::string format() const override {
-        return std::format(
-            "LOAD i{} {}, {}, {}",
-            width() * 8, *dst(), src(), specifier(extMode()));
-    }
+    std::string format() const override;
 
     std::unique_ptr<Instruction> clone() const override {
         return std::make_unique<Load>(width(), share(*dst()), src().clone(), extMode());

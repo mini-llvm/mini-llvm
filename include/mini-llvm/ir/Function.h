@@ -185,6 +185,8 @@ public:
         return empty();
     }
 
+    bool isWellFormed() const override;
+
     void accept(ConstantVisitor &visitor) override {
         visitor.visitFunction(*this);
     }

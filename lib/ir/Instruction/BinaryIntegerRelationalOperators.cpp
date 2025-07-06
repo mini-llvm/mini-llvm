@@ -1,7 +1,9 @@
 #include <cassert>
 #include <cstdlib>
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/EQ.h"
@@ -25,6 +27,7 @@
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerRelationalOperator.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm::ir;
 
@@ -103,4 +106,12 @@ std::shared_ptr<Constant> ICmp::fold() const {
         case kUGE: return foldImpl<ops::UGE>(*this);
         default: abort();
     }
+}
+
+std::string ICmp::format() const {
+    return std::format("{:o} = icmp {} {} {:o}, {:o}", *this, specifier(cond()), *lhs()->type(), *lhs(), *rhs());
+}
+
+std::unique_ptr<Value> ICmp::clone() const {
+    return std::make_unique<ICmp>(cond(), share(*lhs()), share(*rhs()));
 }

@@ -837,20 +837,20 @@ public:
     void emit() {
         for (const mir::GlobalVar &MG : globalVars(*MM_)) {
             if (!MG.isDeclaration()) {
-                Section section;
+                std::string section;
                 if (dynamic_cast<const mir::ZeroConstant *>(&MG.initializer())) {
-                    section = Section::kBSS;
+                    section = ".bss";
                 } else if (MG.isConstant()) {
-                    section = Section::kROData;
+                    section = ".rodata";
                 } else {
-                    section = Section::kData;
+                    section = ".data";
                 }
 
                 bool isGlobal = (MG.linkage() == Linkage::kExternal);
                 int alignment = MG.alignment();
                 std::string name = emitName(MG);
 
-                GlobalValue MCG(std::move(name), section, isGlobal, alignment);
+                GlobalValue MCG(std::move(name), std::move(section), isGlobal, alignment);
                 emitGlobalVar(MG, MCG);
 
                 MCM_->append(std::move(MCG));
@@ -859,11 +859,11 @@ public:
 
         for (const mir::Function &MF : functions(*MM_)) {
             if (!MF.isDeclaration()) {
-                Section section = Section::kText;
+                std::string section = ".text";
                 bool isGlobal = (MF.linkage() == Linkage::kExternal);
                 std::string name = emitName(MF);
 
-                GlobalValue MCG(std::move(name), section, isGlobal);
+                GlobalValue MCG(std::move(name), std::move(section), isGlobal);
                 emitFunction(MF, MCG);
 
                 MCM_->append(std::move(MCG));

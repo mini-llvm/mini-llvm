@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <utility>
@@ -10,7 +9,6 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -18,6 +16,8 @@ class SExt final : public IntegerCastingOperator {
 public:
     SExt(std::shared_ptr<Value> value, std::unique_ptr<IntegerType> type)
         : IntegerCastingOperator(std::move(value), std::move(type)) {}
+
+    std::shared_ptr<Constant> fold() const override;
 
     void accept(InstructionVisitor &visitor) override {
         visitor.visitSExt(*this);
@@ -27,15 +27,9 @@ public:
         visitor.visitSExt(*this);
     }
 
-    std::shared_ptr<Constant> fold() const override;
-
-    std::string format() const override {
-        return std::format("{:o} = sext {} {:o} to {}", *this, *value()->type(), *value(), *type());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<SExt>(share(*value()), cast<IntegerType>(type()));
-    }
+    bool isWellFormed() const override;
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 };
 
 } // namespace mini_llvm::ir

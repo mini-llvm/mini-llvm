@@ -1,5 +1,7 @@
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <type_traits>
 #include <utility>
 
@@ -43,6 +45,8 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -118,6 +122,15 @@ std::shared_ptr<Constant> foldImpl(const BinaryIntegerArithmeticOperator &I) {
     return visitor.takeResult();
 }
 
+std::string formatImpl(const BinaryIntegerArithmeticOperator &I, const char *mnemonic) {
+    return std::format("{:o} = {} {} {:o}, {:o}", I, mnemonic, *I.lhs()->type(), *I.lhs(), *I.rhs());
+}
+
+template <typename T>
+std::unique_ptr<Value> cloneImpl(const BinaryIntegerArithmeticOperator &I) {
+    return std::make_unique<T>(share(*I.lhs()), share(*I.rhs()));
+}
+
 } // namespace
 
 std::shared_ptr<Constant> Add::fold() const {
@@ -170,4 +183,108 @@ std::shared_ptr<Constant> LSHR::fold() const {
 
 std::shared_ptr<Constant> ASHR::fold() const {
     return foldImpl<ops::ASHR>(*this);
+}
+
+std::string Add::format() const {
+    return formatImpl(*this, "add");
+}
+
+std::string Sub::format() const {
+    return formatImpl(*this, "sub");
+}
+
+std::string Mul::format() const {
+    return formatImpl(*this, "mul");
+}
+
+std::string SDiv::format() const {
+    return formatImpl(*this, "sdiv");
+}
+
+std::string UDiv::format() const {
+    return formatImpl(*this, "udiv");
+}
+
+std::string SRem::format() const {
+    return formatImpl(*this, "srem");
+}
+
+std::string URem::format() const {
+    return formatImpl(*this, "urem");
+}
+
+std::string And::format() const {
+    return formatImpl(*this, "and");
+}
+
+std::string Or::format() const {
+    return formatImpl(*this, "or");
+}
+
+std::string Xor::format() const {
+    return formatImpl(*this, "xor");
+}
+
+std::string SHL::format() const {
+    return formatImpl(*this, "shl");
+}
+
+std::string LSHR::format() const {
+    return formatImpl(*this, "lshr");
+}
+
+std::string ASHR::format() const {
+    return formatImpl(*this, "ashr");
+}
+
+std::unique_ptr<Value> Add::clone() const {
+    return cloneImpl<Add>(*this);
+}
+
+std::unique_ptr<Value> Sub::clone() const {
+    return cloneImpl<Sub>(*this);
+}
+
+std::unique_ptr<Value> Mul::clone() const {
+    return cloneImpl<Mul>(*this);
+}
+
+std::unique_ptr<Value> SDiv::clone() const {
+    return cloneImpl<SDiv>(*this);
+}
+
+std::unique_ptr<Value> UDiv::clone() const {
+    return cloneImpl<UDiv>(*this);
+}
+
+std::unique_ptr<Value> SRem::clone() const {
+    return cloneImpl<SRem>(*this);
+}
+
+std::unique_ptr<Value> URem::clone() const {
+    return cloneImpl<URem>(*this);
+}
+
+std::unique_ptr<Value> And::clone() const {
+    return cloneImpl<And>(*this);
+}
+
+std::unique_ptr<Value> Or::clone() const {
+    return cloneImpl<Or>(*this);
+}
+
+std::unique_ptr<Value> Xor::clone() const {
+    return cloneImpl<Xor>(*this);
+}
+
+std::unique_ptr<Value> SHL::clone() const {
+    return cloneImpl<SHL>(*this);
+}
+
+std::unique_ptr<Value> LSHR::clone() const {
+    return cloneImpl<LSHR>(*this);
+}
+
+std::unique_ptr<Value> ASHR::clone() const {
+    return cloneImpl<ASHR>(*this);
 }

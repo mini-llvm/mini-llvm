@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -9,11 +8,9 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -38,20 +35,17 @@ public:
         visitor.visitIntToPtr(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return std::make_unique<Ptr>();
     }
 
-    std::string format() const override {
-        return std::format("{:o} = inttoptr {} {:o} to {}", *this, *value()->type(), *value(), *type());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<IntToPtr>(share(*value()));
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 
 private:
-    Use<Value, IntegerType> value_;
+    Use<Value> value_;
 };
 
 } // namespace mini_llvm::ir

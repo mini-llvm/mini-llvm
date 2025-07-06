@@ -1,6 +1,8 @@
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/FPToSI.h"
@@ -25,6 +27,7 @@
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -112,6 +115,15 @@ std::shared_ptr<Constant> foldImpl(const FloatingToIntegerCastingOperator &I) {
     return visitor.takeResult();
 }
 
+std::string formatImpl(const FloatingToIntegerCastingOperator &I, const char *mnemonic) {
+    return std::format("{:o} = {} {} {:o} to {}", I, mnemonic, *I.value()->type(), *I.value(), *I.type());
+}
+
+template <typename T>
+std::unique_ptr<Value> cloneImpl(const FloatingToIntegerCastingOperator &I) {
+    return std::make_unique<T>(share(*I.value()), cast<IntegerType>(I.type()));
+}
+
 } // namespace
 
 std::shared_ptr<Constant> FPToSI::fold() const {
@@ -120,4 +132,20 @@ std::shared_ptr<Constant> FPToSI::fold() const {
 
 std::shared_ptr<Constant> FPToUI::fold() const {
     return foldImpl<ops::FPToUI>(*this);
+}
+
+std::string FPToSI::format() const {
+    return formatImpl(*this, "fptosi");
+}
+
+std::string FPToUI::format() const {
+    return formatImpl(*this, "fptoui");
+}
+
+std::unique_ptr<Value> FPToSI::clone() const {
+    return cloneImpl<FPToSI>(*this);
+}
+
+std::unique_ptr<Value> FPToUI::clone() const {
+    return cloneImpl<FPToUI>(*this);
 }

@@ -207,5 +207,6 @@ bool Mem2Reg::runOnFunction(Function &F) {
         removeFromParent(*v);
     }
 
+    assert(F.isWellFormed());
     return true;
 }

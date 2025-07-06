@@ -1,24 +1,17 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
 
 #include "mini-llvm/ir/Constant.h"
-#include "mini-llvm/ir/Constant/FloatingConstant.h"
-#include "mini-llvm/ir/Constant/IntegerConstant.h"
-#include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/FloatingType.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -36,12 +29,7 @@ public:
         return {&value()};
     }
 
-    bool isFoldable() const override {
-        return ((dynamic_cast<const IntegerConstant *>(&*value()) || dynamic_cast<const FloatingConstant *>(&*value()))
-                    && (dynamic_cast<const IntegerType *>(&*type()) || dynamic_cast<const FloatingType *>(&*type()))
-                    && *type() != Ptr())
-            || dynamic_cast<const PoisonValue *>(&*value());
-    }
+    bool isFoldable() const override;
 
     std::shared_ptr<Constant> fold() const override;
 
@@ -53,17 +41,14 @@ public:
         visitor.visitBitCast(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return type_->clone();
     }
 
-    std::string format() const override {
-        return std::format("{:o} = bitcast {} {:o} to {}", *this, *value()->type(), *value(), *type());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<BitCast>(share(*value()), type());
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 
 private:
     Use<Value> value_;

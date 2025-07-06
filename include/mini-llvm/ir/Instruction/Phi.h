@@ -166,6 +166,8 @@ public:
         visitor.visitPhi(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return type_->clone();
     }

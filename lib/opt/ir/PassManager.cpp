@@ -3,8 +3,6 @@
 #include <cassert>
 
 #include "mini-llvm/ir/Module.h"
-#include "mini-llvm/ir/Verifier.h"
-#include "mini-llvm/opt/ir/ModuleTransform.h"
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 #include "mini-llvm/opt/ir/passes/ArrayFlattening.h"
 #include "mini-llvm/opt/ir/passes/AttributeDeduction.h"
@@ -28,57 +26,29 @@
 using namespace mini_llvm::ir;
 
 void PassManager::run(Module &M) const {
-    Mem2Reg pass0;
-    pass0.runOnModule(M);
-    assert(verifyModule(M));
+    Mem2Reg().runOnModule(M);
 
     bool changed;
     do {
         changed = false;
 
-        AttributeDeduction          pass1;
-        DeadCodeElimination         pass2;
-        BranchSimplification        pass3;
-        JumpThreading               pass4;
-        BasicBlockMerging           pass5;
-        UnreachableBlockElimination pass6;
-        DeadStoreElimination        pass7(pointerSize_);
-        RedundantLoadElimination    pass8(pointerSize_);
-        ArrayFlattening             pass9(pointerSize_);
-        InstructionCombining        pass10;
-        AlgebraicSimplification     pass11;
-        ConstantFolding             pass12;
-        PoisonPropagation           pass13;
-        GlobalCodeMotion            pass14;
-        GlobalValueNumbering        pass15;
-        StrengthReduction           pass16(3, 20, 20);
-        FunctionInlining            pass17;
-        GlobalDeadCodeElimination   pass18;
-
-        ModuleTransform *passes[] = {
-            &pass1,
-            &pass2,
-            &pass3,
-            &pass4,
-            &pass5,
-            &pass6,
-            &pass7,
-            &pass8,
-            &pass9,
-            &pass10,
-            &pass11,
-            &pass12,
-            &pass13,
-            &pass14,
-            &pass15,
-            &pass16,
-            &pass17,
-            &pass18,
-        };
-
-        for (ModuleTransform *pass : passes) {
-            changed |= pass->runOnModule(M);
-            assert(verifyModule(M));
-        }
+        changed |= AttributeDeduction().runOnModule(M);
+        changed |= DeadCodeElimination().runOnModule(M);
+        changed |= BranchSimplification().runOnModule(M);
+        changed |= JumpThreading().runOnModule(M);
+        changed |= BasicBlockMerging().runOnModule(M);
+        changed |= UnreachableBlockElimination().runOnModule(M);
+        changed |= DeadStoreElimination(pointerSize_).runOnModule(M);
+        changed |= RedundantLoadElimination(pointerSize_).runOnModule(M);
+        changed |= ArrayFlattening(pointerSize_).runOnModule(M);
+        changed |= InstructionCombining().runOnModule(M);
+        changed |= AlgebraicSimplification().runOnModule(M);
+        changed |= ConstantFolding().runOnModule(M);
+        changed |= PoisonPropagation().runOnModule(M);
+        changed |= GlobalCodeMotion().runOnModule(M);
+        changed |= GlobalValueNumbering().runOnModule(M);
+        changed |= StrengthReduction(3, 20, 20).runOnModule(M);
+        changed |= FunctionInlining().runOnModule(M);
+        changed |= GlobalDeadCodeElimination().runOnModule(M);
     } while (changed);
 }

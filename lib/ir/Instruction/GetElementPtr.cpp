@@ -7,8 +7,12 @@
 #include <utility>
 #include <vector>
 
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Type/Ptr.h"
+#include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
@@ -21,7 +25,7 @@ GetElementPtr::GetElementPtr(std::unique_ptr<Type> sourceType,
                              std::vector<std::shared_ptr<Value>> indices)
         : sourceType_(std::move(sourceType)), ptr_(this, std::move(ptr)) {
     for (auto &idx : indices) {
-        indices_.push_back(std::make_unique<Use<Value, IntegerType>>(this, std::move(idx)));
+        indices_.push_back(std::make_unique<Use<Value>>(this, std::move(idx)));
     }
 }
 
@@ -34,10 +38,37 @@ std::unordered_set<const UseBase *> GetElementPtr::operands() const {
     return operands;
 }
 
+bool GetElementPtr::isWellFormed() const {
+    if (!Instruction::isWellFormed()) {
+        return false;
+    }
+    if (*sourceType() == Void() || *sourceType() == BasicBlockType()) {
+        return false;
+    }
+    if (&*ptr() == this) {
+        return false;
+    }
+    if (*ptr()->type() != Ptr()) {
+        return false;
+    }
+    for (const Use<Value> &idx : indices(*this)) {
+        if (&*idx == this) {
+            return false;
+        }
+        if (!dynamic_cast<const IntegerType *>(&*idx->type())) {
+            return false;
+        }
+        if (*idx->type() == Ptr()) {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::string GetElementPtr::format() const {
     StringJoiner formatted(", ");
     formatted.add("{:o} = getelementptr {}, {} {:o}", *this, *sourceType(), *ptr()->type(), *ptr());
-    for (const Use<Value, IntegerType> &idx : indices(*this)) {
+    for (const Use<Value> &idx : indices(*this)) {
         formatted.add("{} {:o}", *idx->type(), *idx);
     }
     return formatted.toString();
@@ -45,7 +76,7 @@ std::string GetElementPtr::format() const {
 
 std::unique_ptr<Value> GetElementPtr::clone() const {
     std::vector<std::shared_ptr<Value>> clonedIndices;
-    for (const Use<Value, IntegerType> &idx : indices(*this)) {
+    for (const Use<Value> &idx : indices(*this)) {
         clonedIndices.push_back(share(*idx));
     }
     return std::make_unique<GetElementPtr>(sourceType(), share(*ptr()), std::move(clonedIndices));

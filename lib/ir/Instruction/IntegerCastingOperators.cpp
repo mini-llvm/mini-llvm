@@ -1,6 +1,8 @@
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/SExt.h"
@@ -24,7 +26,9 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -119,6 +123,15 @@ std::shared_ptr<Constant> foldImpl(const IntegerCastingOperator &I) {
     return visitor.takeResult();
 }
 
+std::string formatImpl(const IntegerCastingOperator &I, const char *mnemonic) {
+    return std::format("{:o} = {} {} {:o} to {}", I, mnemonic, *I.value()->type(), *I.value(), *I.type());
+}
+
+template <typename T>
+std::unique_ptr<Value> cloneImpl(const IntegerCastingOperator &I) {
+    return std::make_unique<T>(share(*I.value()), cast<IntegerType>(I.type()));
+}
+
 } // namespace
 
 std::shared_ptr<Constant> Trunc::fold() const {
@@ -131,4 +144,76 @@ std::shared_ptr<Constant> SExt::fold() const {
 
 std::shared_ptr<Constant> ZExt::fold() const {
     return foldImpl<ops::ZExt>(*this);
+}
+
+std::string Trunc::format() const {
+    return formatImpl(*this, "trunc");
+}
+
+std::string SExt::format() const {
+    return formatImpl(*this, "sext");
+}
+
+std::string ZExt::format() const {
+    return formatImpl(*this, "zext");
+}
+
+std::unique_ptr<Value> Trunc::clone() const {
+    return cloneImpl<Trunc>(*this);
+}
+
+std::unique_ptr<Value> SExt::clone() const {
+    return cloneImpl<SExt>(*this);
+}
+
+std::unique_ptr<Value> ZExt::clone() const {
+    return cloneImpl<ZExt>(*this);
+}
+
+bool Trunc::isWellFormed() const {
+    if (!IntegerCastingOperator::isWellFormed()) {
+        return false;
+    }
+    if (*value()->type() == Ptr()) {
+        return false;
+    }
+    if (*type() == Ptr()) {
+        return false;
+    }
+    if (type()->bitSize() >= value()->type()->bitSize()) {
+        return false;
+    }
+    return true;
+}
+
+bool SExt::isWellFormed() const {
+    if (!IntegerCastingOperator::isWellFormed()) {
+        return false;
+    }
+    if (*value()->type() == Ptr()) {
+        return false;
+    }
+    if (*type() == Ptr()) {
+        return false;
+    }
+    if (type()->bitSize() <= value()->type()->bitSize()) {
+        return false;
+    }
+    return true;
+}
+
+bool ZExt::isWellFormed() const {
+    if (!IntegerCastingOperator::isWellFormed()) {
+        return false;
+    }
+    if (*value()->type() == Ptr()) {
+        return false;
+    }
+    if (*type() == Ptr()) {
+        return false;
+    }
+    if (type()->bitSize() <= value()->type()->bitSize()) {
+        return false;
+    }
+    return true;
 }

@@ -352,5 +352,6 @@ bool GlobalValueNumbering::runOnFunction(Function &F) {
     dfs(domTree.node(F.entry()), valueNumbers, changed);
     assert(valueNumbers.empty());
 
+    assert(F.isWellFormed());
     return changed;
 }

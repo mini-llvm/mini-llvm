@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/DeadCodeElimination.h"
 
+#include <cassert>
 #include <queue>
 #include <unordered_set>
 
@@ -95,5 +96,6 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

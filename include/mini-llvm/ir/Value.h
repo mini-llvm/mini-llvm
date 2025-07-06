@@ -56,6 +56,10 @@ public:
         return uses_.size();
     }
 
+    virtual bool isWellFormed() const {
+        return true;
+    }
+
     virtual std::unique_ptr<Type> type() const = 0;
 
     virtual std::string format() const = 0;

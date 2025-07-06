@@ -256,5 +256,6 @@ bool AlgebraicSimplification::runOnFunction(Function &F) {
 
     dfs(domTree.node(F.entry()), changed);
 
+    assert(F.isWellFormed());
     return changed;
 }

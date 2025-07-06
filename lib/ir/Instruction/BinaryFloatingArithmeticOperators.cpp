@@ -1,5 +1,7 @@
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/FAdd.h"
@@ -18,7 +20,9 @@
 #include "mini-llvm/ir/Instruction/FMul.h"
 #include "mini-llvm/ir/Instruction/FRem.h"
 #include "mini-llvm/ir/Instruction/FSub.h"
+#include "mini-llvm/utils/Memory.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 namespace {
@@ -62,6 +66,15 @@ std::shared_ptr<Constant> foldImpl(const BinaryFloatingArithmeticOperator &I) {
     return visitor.takeResult();
 }
 
+std::string formatImpl(const BinaryFloatingArithmeticOperator &I, const char *mnemonic) {
+    return std::format("{:o} = {} {} {:o}, {:o}", I, mnemonic, *I.lhs()->type(), *I.lhs(), *I.rhs());
+}
+
+template <typename T>
+std::unique_ptr<Value> cloneImpl(const BinaryFloatingArithmeticOperator &I) {
+    return std::make_unique<T>(share(*I.lhs()), share(*I.rhs()));
+}
+
 } // namespace
 
 std::shared_ptr<Constant> FAdd::fold() const {
@@ -82,4 +95,44 @@ std::shared_ptr<Constant> FDiv::fold() const {
 
 std::shared_ptr<Constant> FRem::fold() const {
     return foldImpl<ops::FRem>(*this);
+}
+
+std::string FAdd::format() const {
+    return formatImpl(*this, "fadd");
+}
+
+std::string FSub::format() const {
+    return formatImpl(*this, "fsub");
+}
+
+std::string FMul::format() const {
+    return formatImpl(*this, "fmul");
+}
+
+std::string FDiv::format() const {
+    return formatImpl(*this, "fdiv");
+}
+
+std::string FRem::format() const {
+    return formatImpl(*this, "frem");
+}
+
+std::unique_ptr<Value> FAdd::clone() const {
+    return cloneImpl<FAdd>(*this);
+}
+
+std::unique_ptr<Value> FSub::clone() const {
+    return cloneImpl<FSub>(*this);
+}
+
+std::unique_ptr<Value> FMul::clone() const {
+    return cloneImpl<FMul>(*this);
+}
+
+std::unique_ptr<Value> FDiv::clone() const {
+    return cloneImpl<FDiv>(*this);
+}
+
+std::unique_ptr<Value> FRem::clone() const {
+    return cloneImpl<FRem>(*this);
 }

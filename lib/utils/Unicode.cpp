@@ -2,7 +2,7 @@
 
 #include <optional>
 
-std::optional<char32_t> mini_llvm::decodeUtf8(const char *&ptr) {
+std::optional<char32_t> mini_llvm::decodeUtf8(const char *&ptr) noexcept {
     char8_t first = static_cast<char8_t>(*ptr);
     char32_t cp = 0;
     int n = 0;

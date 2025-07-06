@@ -4,10 +4,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Instruction.h"
-#include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 
@@ -29,16 +26,15 @@ public:
         return {&lhs(), &rhs()};
     }
 
-    bool isFoldable() const override {
-        return dynamic_cast<const Constant *>(&*lhs()) && dynamic_cast<const Constant *>(&*rhs());
-    }
+    bool isFoldable() const override;
+    bool isWellFormed() const override;
 
 protected:
     BinaryIntegerOperator(std::shared_ptr<Value> lhs, std::shared_ptr<Value> rhs)
         : lhs_(this, std::move(lhs)), rhs_(this, std::move(rhs)) {}
 
 private:
-    Use<Value, IntegerType> lhs_, rhs_;
+    Use<Value> lhs_, rhs_;
 };
 
 } // namespace mini_llvm::ir

@@ -80,6 +80,22 @@ ArrayConstant::ArrayConstant(std::unique_ptr<ArrayType> type, std::vector<std::s
     }
 }
 
+bool ArrayConstant::isWellFormed() const {
+    if (!Constant::isWellFormed()) {
+        return false;
+    }
+    if (elements_.size() != type_->numElements()) {
+        return false;
+    }
+    std::unique_ptr<Type> elementType = static_cast<const ArrayType *>(&*type())->elementType();
+    for (const Use<Constant> &element : elements(*this)) {
+        if (*element->type() != *elementType) {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::string ArrayConstant::format() const {
     if (isZeroInitializer(*this)) {
         return "zeroinitializer";

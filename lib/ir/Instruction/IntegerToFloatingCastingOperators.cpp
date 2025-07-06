@@ -1,5 +1,7 @@
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/SIToFP.h"
@@ -21,10 +23,12 @@
 #include "mini-llvm/ir/Type/Double.h"
 #include "mini-llvm/ir/Type/Float.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Memory.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-namespace mini_llvm::ir {
+namespace {
 
 template <typename Op, typename ResultConst>
 class ConstantVisitorImpl : public ConstantVisitor {
@@ -102,7 +106,16 @@ std::shared_ptr<Constant> foldImpl(const IntegerToFloatingCastingOperator &I) {
     return visitor.takeResult();
 }
 
-} // namespace mini_llvm::ir
+std::string formatImpl(const IntegerToFloatingCastingOperator &I, const char *mnemonic) {
+    return std::format("{:o} = {} {} {:o} to {}", I, mnemonic, *I.value()->type(), *I.value(), *I.type());
+}
+
+template <typename T>
+std::unique_ptr<Value> cloneImpl(const IntegerToFloatingCastingOperator &I) {
+    return std::make_unique<T>(share(*I.value()), cast<FloatingType>(I.type()));
+}
+
+} // namespace
 
 std::shared_ptr<Constant> SIToFP::fold() const {
     return foldImpl<ops::SIToFP>(*this);
@@ -110,4 +123,20 @@ std::shared_ptr<Constant> SIToFP::fold() const {
 
 std::shared_ptr<Constant> UIToFP::fold() const {
     return foldImpl<ops::UIToFP>(*this);
+}
+
+std::string SIToFP::format() const {
+    return formatImpl(*this, "sitofp");
+}
+
+std::string UIToFP::format() const {
+    return formatImpl(*this, "uitofp");
+}
+
+std::unique_ptr<Value> SIToFP::clone() const {
+    return cloneImpl<SIToFP>(*this);
+}
+
+std::unique_ptr<Value> UIToFP::clone() const {
+    return cloneImpl<UIToFP>(*this);
 }

@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/RedundantLoadElimination.h"
 
+#include <cassert>
 #include <memory>
 #include <unordered_set>
 
@@ -109,5 +110,6 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

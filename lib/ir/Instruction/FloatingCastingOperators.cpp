@@ -1,5 +1,7 @@
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/FPExt.h"
@@ -16,6 +18,7 @@
 #include "mini-llvm/ir/Type/Double.h"
 #include "mini-llvm/ir/Type/Float.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -86,6 +89,15 @@ std::shared_ptr<Constant> foldImpl(const FloatingCastingOperator &I) {
     return visitor.takeResult();
 }
 
+std::string formatImpl(const FloatingCastingOperator &I, const char *mnemonic) {
+    return std::format("{:o} = {} {} {:o} to {}", I, mnemonic, *I.value()->type(), *I.value(), *I.type());
+}
+
+template <typename T>
+std::unique_ptr<Value> cloneImpl(const FloatingCastingOperator &I) {
+    return std::make_unique<T>(share(*I.value()), cast<FloatingType>(I.type()));
+}
+
 } // namespace
 
 std::shared_ptr<Constant> FPTrunc::fold() const {
@@ -94,4 +106,40 @@ std::shared_ptr<Constant> FPTrunc::fold() const {
 
 std::shared_ptr<Constant> FPExt::fold() const {
     return foldImpl<ops::FPExt>(*this);
+}
+
+std::string FPTrunc::format() const {
+    return formatImpl(*this, "fptrunc");
+}
+
+std::string FPExt::format() const {
+    return formatImpl(*this, "fpext");
+}
+
+std::unique_ptr<Value> FPTrunc::clone() const {
+    return cloneImpl<FPTrunc>(*this);
+}
+
+std::unique_ptr<Value> FPExt::clone() const {
+    return cloneImpl<FPExt>(*this);
+}
+
+bool FPTrunc::isWellFormed() const {
+    if (!FloatingCastingOperator::isWellFormed()) {
+        return false;
+    }
+    if (type()->bitSize() >= value()->type()->bitSize()) {
+        return false;
+    }
+    return true;
+}
+
+bool FPExt::isWellFormed() const {
+    if (!FloatingCastingOperator::isWellFormed()) {
+        return false;
+    }
+    if (type()->bitSize() <= value()->type()->bitSize()) {
+        return false;
+    }
+    return true;
 }

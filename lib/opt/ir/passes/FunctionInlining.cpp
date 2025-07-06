@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/FunctionInlining.h"
 
+#include <cassert>
 #include <cstddef>
 #include <iterator>
 #include <memory>
@@ -162,5 +163,6 @@ bool FunctionInlining::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

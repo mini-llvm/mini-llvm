@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/BranchSimplification.h"
 
+#include <cassert>
 #include <memory>
 
 #include "mini-llvm/ir/BasicBlock.h"
@@ -51,5 +52,6 @@ bool BranchSimplification::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

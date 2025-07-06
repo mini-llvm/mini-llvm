@@ -4,9 +4,7 @@
 #include <unordered_set>
 #include <utility>
 
-#include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Instruction.h"
-#include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 
@@ -23,15 +21,14 @@ public:
         return {&value()};
     }
 
-    bool isFoldable() const override {
-        return dynamic_cast<const Constant *>(&*value());
-    }
+    bool isFoldable() const override;
+    bool isWellFormed() const override;
 
 protected:
     explicit UnaryFloatingOperator(std::shared_ptr<Value> value) : value_(this, std::move(value)) {}
 
 private:
-    Use<Value, FloatingType> value_;
+    Use<Value> value_;
 };
 
 } // namespace mini_llvm::ir

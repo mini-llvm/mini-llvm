@@ -1,8 +1,10 @@
 #include "mini-llvm/ir/Instruction/BitCast.h"
 
 #include <cstdint>
+#include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/BitCast.h"
@@ -14,8 +16,11 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Constant/I64Constant.h"
 #include "mini-llvm/ir/Constant/I8Constant.h"
+#include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/ConstantVisitor.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Double.h"
 #include "mini-llvm/ir/Type/Float.h"
 #include "mini-llvm/ir/Type/I1.h"
@@ -23,7 +28,10 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
@@ -138,6 +146,37 @@ std::shared_ptr<Constant> foldImpl(const BitCast &I) {
 
 } // namespace
 
+bool BitCast::isFoldable() const {
+        return ((dynamic_cast<const IntegerConstant *>(&*value()) || dynamic_cast<const FloatingConstant *>(&*value()))
+                && (dynamic_cast<const IntegerType *>(&*type()) || dynamic_cast<const FloatingType *>(&*type()))
+                && *type() != Ptr())
+        || dynamic_cast<const PoisonValue *>(&*value());
+}
+
 std::shared_ptr<Constant> BitCast::fold() const {
     return foldImpl(*this);
+}
+
+bool BitCast::isWellFormed() const {
+    if (!Instruction::isWellFormed()) {
+        return false;
+    }
+    if (&*value() == this) {
+        return false;
+    }
+    if (*value()->type() == Void() || *value()->type() == BasicBlockType()) {
+        return false;
+    }
+    if (*type() == Void() || *type() == BasicBlockType()) {
+        return false;
+    }
+    return true;
+}
+
+std::string BitCast::format() const {
+    return std::format("{:o} = bitcast {} {:o} to {}", *this, *value()->type(), *value(), *type());
+}
+
+std::unique_ptr<Value> BitCast::clone() const {
+    return std::make_unique<BitCast>(share(*value()), type());
 }

@@ -12,7 +12,6 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
-#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/IndirectIterator.h"
@@ -90,6 +89,12 @@ public:
 
     std::unordered_set<const UseBase *> operands() const override;
 
+    bool isWellFormed() const override;
+
+    std::unique_ptr<Type> type() const override {
+        return functionType_->returnType();
+    }
+
     void accept(InstructionVisitor &visitor) override {
         visitor.visitIndirectCall(*this);
     }
@@ -98,16 +103,12 @@ public:
         visitor.visitIndirectCall(*this);
     }
 
-    std::unique_ptr<Type> type() const override {
-        return functionType_->returnType();
-    }
-
     std::string format() const override;
     std::unique_ptr<Value> clone() const override;
 
 private:
     std::unique_ptr<FunctionType> functionType_;
-    Use<Value, Ptr> callee_;
+    Use<Value> callee_;
     ArgumentList args_;
 };
 

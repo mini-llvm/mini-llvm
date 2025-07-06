@@ -40,6 +40,8 @@ public:
     virtual void accept(InstructionVisitor &visitor) = 0;
     virtual void accept(InstructionVisitor &visitor) const = 0;
 
+    bool isWellFormed() const override;
+
     std::string formatAsOperand() const override {
         return "%" + formatName();
     }

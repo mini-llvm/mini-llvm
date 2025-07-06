@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <utility>
@@ -9,7 +8,6 @@
 #include "mini-llvm/ir/Instruction/UnaryFloatingArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -27,13 +25,8 @@ public:
         visitor.visitFNeg(*this);
     }
 
-    std::string format() const override {
-        return std::format("{:o} = fneg {} {:o}", *this, *value()->type(), *value());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<FNeg>(share(*value()));
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 };
 
 } // namespace mini_llvm::ir

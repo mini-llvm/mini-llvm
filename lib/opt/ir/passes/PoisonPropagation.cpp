@@ -1,6 +1,7 @@
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 
 #include <algorithm>
+#include <cassert>
 #include <memory>
 
 #include "mini-llvm/ir/Constant/PoisonValue.h"
@@ -77,5 +78,6 @@ bool PoisonPropagation::runOnFunction(Function &F) {
 
     dfs(domTree.node(F.entry()), changed);
 
+    assert(F.isWellFormed());
     return changed;
 }

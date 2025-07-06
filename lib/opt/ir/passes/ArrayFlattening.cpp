@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/ArrayFlattening.h"
 
+#include <cassert>
 #include <cstddef>
 #include <memory>
 #include <utility>
@@ -67,5 +68,6 @@ bool ArrayFlattening::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

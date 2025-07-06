@@ -1,12 +1,15 @@
 #include "mini-llvm/ir/Instruction/IndirectCall.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
 
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
+#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
@@ -43,6 +46,30 @@ std::unordered_set<const UseBase *> IndirectCall::operands() const {
         operands.insert(&arg);
     }
     return operands;
+}
+
+bool IndirectCall::isWellFormed() const {
+    if (!Instruction::isWellFormed()) {
+        return false;
+    }
+    if (&*callee() == this) {
+        return false;
+    }
+    if (*callee()->type() != Ptr()) {
+        return false;
+    }
+    if (arg_size() < functionType()->param_type_size()) {
+        return false;
+    }
+    if (!functionType()->isVarArgs() && arg_size() > functionType()->param_type_size()) {
+        return false;
+    }
+    for (auto [arg, paramType] : std::views::zip(args(*this), paramTypes(*functionType()))) {
+        if (*arg->type() != paramType) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::string IndirectCall::format() const {

@@ -1,5 +1,7 @@
 #include "mini-llvm/opt/ir/passes/JumpThreading.h"
 
+#include <cassert>
+
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -45,5 +47,6 @@ bool JumpThreading::runOnFunction(Function &F) {
         changed |= changed2;
     } while (changed2);
 
+    assert(F.isWellFormed());
     return changed;
 }

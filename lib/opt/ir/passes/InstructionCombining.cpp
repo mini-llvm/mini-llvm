@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/InstructionCombining.h"
 
+#include <cassert>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -135,5 +136,6 @@ bool InstructionCombining::runOnFunction(Function &F) {
 
     dfs(domTree.node(F.entry()), changed);
 
+    assert(F.isWellFormed());
     return changed;
 }

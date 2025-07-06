@@ -10,7 +10,6 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
@@ -19,11 +18,11 @@
 namespace mini_llvm::ir {
 
 class GetElementPtr final : public Instruction {
-    using IdxList = std::vector<std::unique_ptr<Use<Value, IntegerType>>>;
+    using IdxList = std::vector<std::unique_ptr<Use<Value>>>;
 
 public:
-    using idx_iterator = IndirectIterator<IdxList::iterator, Use<Value, IntegerType>>;
-    using const_idx_iterator = IndirectIterator<IdxList::const_iterator, const Use<Value, IntegerType>>;
+    using idx_iterator = IndirectIterator<IdxList::iterator, Use<Value>>;
+    using const_idx_iterator = IndirectIterator<IdxList::const_iterator, const Use<Value>>;
 
     GetElementPtr(std::unique_ptr<Type> sourceType, std::shared_ptr<Value> ptr, std::vector<std::shared_ptr<Value>> indices);
 
@@ -60,11 +59,11 @@ public:
         return indices_.size();
     }
 
-    Use<Value, IntegerType> &idx(size_t i) {
+    Use<Value> &idx(size_t i) {
         return *indices_[i];
     }
 
-    const Use<Value, IntegerType> &idx(size_t i) const {
+    const Use<Value> &idx(size_t i) const {
         return *indices_[i];
     }
 
@@ -78,6 +77,8 @@ public:
         visitor.visitGetElementPtr(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return std::make_unique<Ptr>();
     }
@@ -87,7 +88,7 @@ public:
 
 private:
     std::unique_ptr<Type> sourceType_;
-    Use<Value, Ptr> ptr_;
+    Use<Value> ptr_;
     IdxList indices_;
 };
 

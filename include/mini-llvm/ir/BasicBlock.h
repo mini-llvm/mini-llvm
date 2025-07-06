@@ -135,6 +135,8 @@ public:
         return *parentIterator_;
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return std::make_unique<BasicBlockType>();
     }

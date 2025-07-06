@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/DeadStoreElimination.h"
 
+#include <cassert>
 #include <unordered_set>
 
 #include "mini-llvm/ir/Attribute.h"
@@ -76,5 +77,6 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

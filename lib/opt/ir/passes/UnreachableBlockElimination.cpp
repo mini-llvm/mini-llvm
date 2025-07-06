@@ -1,5 +1,6 @@
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 
+#include <cassert>
 #include <queue>
 #include <unordered_set>
 
@@ -50,5 +51,6 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
         }
     }
 
+    assert(F.isWellFormed());
     return changed;
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <format>
 #include <memory>
 #include <string>
 #include <utility>
@@ -10,7 +9,6 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerRelationalOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -51,10 +49,7 @@ public:
     }
 
     std::string format() const override;
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<ICmp>(cond(), share(*lhs()), share(*rhs()));
-    }
+    std::unique_ptr<Value> clone() const override;
 
 private:
     Condition cond_;
@@ -75,10 +70,6 @@ inline constexpr const char *specifier(ICmp::Condition cond) {
         case kUGE: return "uge";
         default: abort();
     }
-}
-
-inline std::string ICmp::format() const {
-    return std::format("{:o} = icmp {} {} {:o}, {:o}", *this, specifier(cond()), *lhs()->type(), *lhs(), *rhs());
 }
 
 } // namespace mini_llvm::ir

@@ -2,12 +2,12 @@
 
 namespace mini_llvm {
 
-bool isPrintable(char ch);
-bool isUpper(char ch);
-bool isLower(char ch);
-bool isLetter(char ch);
-bool isDigit(char ch);
-bool isLetterOrDigit(char ch);
-bool isHexDigit(char ch);
+bool isPrintable(char ch) noexcept;
+bool isUpper(char ch) noexcept;
+bool isLower(char ch) noexcept;
+bool isLetter(char ch) noexcept;
+bool isDigit(char ch) noexcept;
+bool isLetterOrDigit(char ch) noexcept;
+bool isHexDigit(char ch) noexcept;
 
 } // namespace mini_llvm

@@ -1,6 +1,7 @@
 #include "mini-llvm/opt/ir/passes/AttributeDeduction.h"
 
 #include <algorithm>
+#include <cassert>
 #include <queue>
 #include <ranges>
 #include <stack>
@@ -185,5 +186,6 @@ bool AttributeDeduction::runOnModule(Module &M) {
         }
     }
 
+    assert(M.isWellFormed());
     return changed;
 }

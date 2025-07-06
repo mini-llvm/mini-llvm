@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstddef>
 #include <format>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +13,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Terminator.h"
 #include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm;
@@ -36,6 +38,29 @@ void BasicBlock::clear() {
     while (!empty()) {
         remove(begin());
     }
+}
+
+bool BasicBlock::isWellFormed() const {
+    if (!Value::isWellFormed()) {
+        return false;
+    }
+    if (empty()) {
+        return false;
+    }
+    for (const Instruction &I : *this) {
+        if (!I.isWellFormed()) {
+            return false;
+        }
+    }
+    if (!dynamic_cast<const Terminator *>(&back())) {
+        return false;
+    }
+    for (auto i = begin(), e = std::prev(end()); i != e; ++i) {
+        if (dynamic_cast<const Terminator *>(&*i)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::string BasicBlock::format() const {
@@ -87,7 +112,7 @@ std::unordered_set<BasicBlock *> ir::predecessors(const BasicBlock &B) {
 }
 
 std::unordered_set<BasicBlock *> ir::successors(const BasicBlock &B) {
-    return dynamic_cast<const Terminator &>(B.back()).successors();
+    return static_cast<const Terminator &>(B.back()).successors();
 }
 
 void ir::removeFromParent(const BasicBlock &B) {

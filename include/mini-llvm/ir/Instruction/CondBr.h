@@ -1,6 +1,5 @@
 #pragma once
 
-#include <format>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -10,11 +9,9 @@
 #include "mini-llvm/ir/Instruction/Terminator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
@@ -54,23 +51,17 @@ public:
         visitor.visitCondBr(*this);
     }
 
+    bool isWellFormed() const override;
+
     std::unique_ptr<Type> type() const override {
         return std::make_unique<Void>();
     }
 
-    std::string format() const override {
-        return std::format(
-            "br {} {:o}, {} {:o}, {} {:o}",
-            *cond()->type(), *cond(), *trueDest()->type(), *trueDest(), *falseDest()->type(), *falseDest());
-    }
-
-    std::unique_ptr<Value> clone() const override {
-        return std::make_unique<CondBr>(
-            share(*cond()), weaken(*trueDest()), weaken(*falseDest()));
-    }
+    std::string format() const override;
+    std::unique_ptr<Value> clone() const override;
 
 private:
-    Use<Value, I1> cond_;
+    Use<Value> cond_;
     Use<BasicBlock> trueDest_, falseDest_;
 };
 
