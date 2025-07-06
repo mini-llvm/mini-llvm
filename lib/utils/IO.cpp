@@ -36,6 +36,13 @@ Expected<std::string, SystemError> mini_llvm::readAll(const Path &path) {
     return readAll(handle.get());
 }
 
+Expected<std::string, SystemError> mini_llvm::readAll(const Path &path, FILE *stream) {
+    if (path == "-") {
+        return readAll(stream);
+    }
+    return readAll(path);
+}
+
 Expected<void, SystemError> mini_llvm::writeAll(FILE *stream, const char *data, size_t size) {
     if (fwrite(data, 1, size, stream) != size) {
         return Unexpected(SystemError(errno));
@@ -49,4 +56,11 @@ Expected<void, SystemError> mini_llvm::writeAll(const Path &path, const char *da
         return Unexpected(SystemError(errno));
     }
     return writeAll(handle.get(), data, size);
+}
+
+Expected<void, SystemError> mini_llvm::writeAll(const Path &path, FILE *stream, const char *data, size_t size) {
+    if (path == "-") {
+        return writeAll(stream, data, size);
+    }
+    return writeAll(path, data, size);
 }

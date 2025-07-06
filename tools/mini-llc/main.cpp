@@ -44,22 +44,6 @@ std::optional<Target> toTarget(std::string_view targetName) {
     return std::nullopt;
 }
 
-Expected<std::string, SystemError> input(const Path &inputFile) {
-    if (inputFile == "-") {
-        return readAll(stdin);
-    } else {
-        return readAll(inputFile);
-    }
-}
-
-Expected<void, SystemError> output(const Path &outputFile, const std::string &content) {
-    if (outputFile == "-") {
-        return writeAll(stdout, content.data(), content.size());
-    } else {
-        return writeAll(outputFile, content.data(), content.size());
-    }
-}
-
 int mainImpl(std::vector<std::string> args) {
     CommandLineParser parser;
 
@@ -162,7 +146,7 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
 
-    Expected<std::string, SystemError> source = input(*inputFile);
+    Expected<std::string, SystemError> source = readAll(*inputFile, stdin);
     if (!source) {
         std::println(stderr, "{}: error: {}: {}", args[0], *inputFile, strerror(source.error().code()));
         return 1;
@@ -205,7 +189,7 @@ int mainImpl(std::vector<std::string> args) {
     passManager.run(*IM);
 
     if (irDumpFile) {
-        if (Expected<void, SystemError> result = output(*irDumpFile, IM->format() + '\n'); !result) {
+        if (Expected<void, SystemError> result = writeAll(*irDumpFile, stdout, IM->format() + '\n'); !result) {
             std::println(stderr, "{}: error: {}: {}", args[0], *irDumpFile, strerror(result.error().code()));
             return 1;
         }
@@ -225,13 +209,13 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (mirDumpFile) {
-        if (Expected<void, SystemError> result = output(*mirDumpFile, MM.format() + '\n'); !result) {
+        if (Expected<void, SystemError> result = writeAll(*mirDumpFile, stdout, MM.format() + '\n'); !result) {
             std::println(stderr, "{}: error: {}: {}", args[0], *mirDumpFile, strerror(result.error().code()));
             return 1;
         }
     }
 
-    if (Expected<void, SystemError> result = output(*outputFile, MCM.format() + '\n'); !result) {
+    if (Expected<void, SystemError> result = writeAll(*outputFile, stdout, MCM.format() + '\n'); !result) {
         std::println(stderr, "{}: error: {}: {}", args[0], *outputFile, strerror(result.error().code()));
         return 1;
     }
