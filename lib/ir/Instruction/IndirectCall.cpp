@@ -58,13 +58,14 @@ bool IndirectCall::isWellFormed() const {
     if (*callee()->type() != Ptr()) {
         return false;
     }
-    if (arg_size() < functionType()->param_type_size()) {
+    std::unique_ptr<FunctionType> type = functionType();
+    if (arg_size() < type->param_type_size()) {
         return false;
     }
-    if (!functionType()->isVarArgs() && arg_size() > functionType()->param_type_size()) {
+    if (!type->isVarArgs() && arg_size() > type->param_type_size()) {
         return false;
     }
-    for (auto [arg, paramType] : std::views::zip(args(*this), paramTypes(*functionType()))) {
+    for (auto [arg, paramType] : std::views::zip(args(*this), paramTypes(*type))) {
         if (*arg->type() != paramType) {
             return false;
         }
