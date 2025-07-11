@@ -4,15 +4,13 @@
 #include <string>
 #include <utility>
 
-#include "mini-llvm/mc/Statement.h"
+#include "mini-llvm/mc/Directive.h"
 #include "mini-llvm/mc/Symbol.h"
 
 namespace mini_llvm::mc {
 
-class Label final : public Statement {
+class SymbolDirective : public Directive {
 public:
-    explicit Label(Symbol symbol) : symbol_(std::move(symbol)) {}
-
     const Symbol &symbol() const {
         return symbol_;
     }
@@ -22,8 +20,13 @@ public:
     }
 
     std::string format() const override {
-        return std::format("{}:", symbol());
+        return std::format(".{} {}", directiveName(), symbol());
     }
+
+protected:
+    explicit SymbolDirective(Symbol symbol) : symbol_(std::move(symbol)) {}
+
+    virtual std::string directiveName() const = 0;
 
 private:
     Symbol symbol_;

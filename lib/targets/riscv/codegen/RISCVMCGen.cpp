@@ -16,9 +16,10 @@
 #include "mini-llvm/mc/GlobalValueBuilder.h"
 #include "mini-llvm/mc/ImmediateOperand.h"
 #include "mini-llvm/mc/Label.h"
-#include "mini-llvm/mc/LabelOperand.h"
 #include "mini-llvm/mc/Operand.h"
 #include "mini-llvm/mc/StringDirective.h"
+#include "mini-llvm/mc/Symbol.h"
+#include "mini-llvm/mc/SymbolOperand.h"
 #include "mini-llvm/mc/ZeroDirective.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
@@ -102,10 +103,10 @@
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVDataDirective.h"
 #include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
-#include "mini-llvm/targets/riscv/mc/RISCVLabelDirective.h"
 #include "mini-llvm/targets/riscv/mc/RISCVMemoryOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 #include "mini-llvm/targets/riscv/mc/RISCVRegisterOperand.h"
+#include "mini-llvm/targets/riscv/mc/RISCVSymbolDirective.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVJALR.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
@@ -118,16 +119,16 @@ using namespace mini_llvm::mc;
 
 namespace {
 
-std::string emitName(const mir::GlobalValue &value) {
+Symbol emitSymbol(const mir::GlobalValue &value) {
     if (value.linkage() == Linkage::kPrivate) {
-        return ".L" + value.name();
+        return Symbol(".L" + value.name());
     } else {
-        return value.name();
+        return Symbol(value.name());
     }
 }
 
-std::string emitName(const mir::BasicBlock &B) {
-    return ".L" + B.name() + "_" + toString(reinterpret_cast<uintptr_t>(&B), 62);
+Symbol emitSymbol(const mir::BasicBlock &B) {
+    return Symbol(".L" + B.name() + "_" + toString(reinterpret_cast<uintptr_t>(&B), 62));
 }
 
 class ConstantVisitorImpl final : public mir::ConstantVisitor {
@@ -180,7 +181,7 @@ public:
         if (C.ptr() == nullptr) {
             builder_.add(std::make_unique<ZeroDirective>(C.ptrSize()));
         } else {
-            builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*C.ptr())));
+            builder_.add(std::make_unique<RISCVSymbolDirective>(emitSymbol(*C.ptr())));
         }
     }
 
@@ -189,7 +190,7 @@ public:
             if (element == nullptr) {
                 builder_.add(std::make_unique<ZeroDirective>(8));
             } else {
-                builder_.add(std::make_unique<RISCVLabelDirective>(emitName(*element)));
+                builder_.add(std::make_unique<RISCVSymbolDirective>(emitSymbol(*element)));
             }
         }
     }
@@ -801,16 +802,16 @@ private:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    static std::unique_ptr<LabelOperand> makeOperand(const mir::BasicBlockOperand &op) {
-        return std::make_unique<LabelOperand>(emitName(*op));
+    static std::unique_ptr<SymbolOperand> makeOperand(const mir::BasicBlockOperand &op) {
+        return std::make_unique<SymbolOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<LabelOperand> makeOperand(const mir::GlobalValueOperand &op) {
-        return std::make_unique<LabelOperand>(emitName(*op));
+    static std::unique_ptr<SymbolOperand> makeOperand(const mir::GlobalValueOperand &op) {
+        return std::make_unique<SymbolOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<LabelOperand> makeOperand(const mir::FunctionOperand &op) {
-        return std::make_unique<LabelOperand>(emitName(*op));
+    static std::unique_ptr<SymbolOperand> makeOperand(const mir::FunctionOperand &op) {
+        return std::make_unique<SymbolOperand>(emitSymbol(*op));
     }
 
     static std::unique_ptr<ImmediateOperand> makeOperand(const mir::ImmediateOperand &op) {
@@ -848,9 +849,9 @@ public:
 
                 bool isGlobal = (MG.linkage() == Linkage::kExternal);
                 int alignment = MG.alignment();
-                std::string name = emitName(MG);
+                Symbol symbol = emitSymbol(MG);
 
-                GlobalValue MCG(std::move(name), std::move(section), isGlobal, alignment);
+                GlobalValue MCG(std::move(symbol), std::move(section), isGlobal, alignment);
                 emitGlobalVar(MG, MCG);
 
                 MCM_->append(std::move(MCG));
@@ -861,9 +862,9 @@ public:
             if (!MF.isDeclaration()) {
                 std::string section = ".text";
                 bool isGlobal = (MF.linkage() == Linkage::kExternal);
-                std::string name = emitName(MF);
+                Symbol symbol = emitSymbol(MF);
 
-                GlobalValue MCG(std::move(name), std::move(section), isGlobal);
+                GlobalValue MCG(std::move(symbol), std::move(section), isGlobal);
                 emitFunction(MF, MCG);
 
                 MCM_->append(std::move(MCG));
@@ -894,7 +895,7 @@ private:
         }
     #endif
         for (const mir::BasicBlock &B : MF) {
-            MCG.append(std::make_unique<Label>(emitName(B)));
+            MCG.append(std::make_unique<Label>(emitSymbol(B)));
             for (const mir::Instruction &I : B) {
                 I.accept(visitor);
             }

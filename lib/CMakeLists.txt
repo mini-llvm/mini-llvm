@@ -60,6 +60,7 @@ add_library(mini-llvm
     mc/GlobalValue.cpp
     mc/Module.cpp
     mc/StringDirective.cpp
+    mc/Symbol.cpp
     mir/BasicBlock.cpp
     mir/Constant/I16ArrayConstant.cpp
     mir/Constant/I32ArrayConstant.cpp

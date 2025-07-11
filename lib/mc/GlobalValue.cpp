@@ -25,12 +25,12 @@ void GlobalValue::clear() {
 std::string GlobalValue::format() const {
     StringJoiner formatted("\n");
     if (isGlobal()) {
-        formatted.add("  .globl {}", name());
+        formatted.add("  .globl {}", symbol());
     }
     if (alignment()) {
         formatted.add("  .balign {}", alignment());
     }
-    formatted.add("{}:", name());
+    formatted.add("{}:", symbol());
     for (const Statement &stmt : *this) {
         if (dynamic_cast<const Instruction *>(&stmt)) {
             formatted.add("  {}", stmt);

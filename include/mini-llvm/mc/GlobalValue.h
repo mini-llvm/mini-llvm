@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "mini-llvm/mc/Statement.h"
+#include "mini-llvm/mc/Symbol.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mc {
@@ -22,18 +23,18 @@ public:
     using reverse_iterator = IndirectIterator<StatementList::reverse_iterator, Statement>;
     using const_reverse_iterator = IndirectIterator<StatementList::const_reverse_iterator, const Statement>;
 
-    GlobalValue(std::string name, std::string section, bool isGlobal, int alignment)
-        : name_(std::move(name)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(alignment) {}
+    GlobalValue(Symbol symbol, std::string section, bool isGlobal, int alignment)
+        : symbol_(std::move(symbol)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(alignment) {}
 
-    GlobalValue(std::string name, std::string section, bool isGlobal)
-        : name_(std::move(name)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(0) {}
+    GlobalValue(Symbol symbol, std::string section, bool isGlobal)
+        : symbol_(std::move(symbol)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(0) {}
 
-    const std::string &name() const {
-        return name_;
+    const Symbol &symbol() const {
+        return symbol_;
     }
 
-    void setName(std::string name) {
-        name_ = std::move(name);
+    void setSymbol(Symbol symbol) {
+        symbol_ = std::move(symbol);
     }
 
     const std::string &section() const {
@@ -141,7 +142,7 @@ public:
     std::string format() const;
 
 private:
-    std::string name_;
+    Symbol symbol_;
     std::string section_;
     bool isGlobal_;
     int alignment_;
