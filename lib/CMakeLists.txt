@@ -56,8 +56,8 @@ add_library(mini-llvm
     ir_reader/IRReader.cpp
     ir_reader/Lexer.cpp
     ir_reader/Parser.cpp
-    mc/Instruction.cpp
     mc/GlobalValue.cpp
+    mc/Instruction.cpp
     mc/Module.cpp
     mc/StringDirective.cpp
     mc/Symbol.cpp
@@ -82,8 +82,8 @@ add_library(mini-llvm
     mir/StackSlot.cpp
     mir/VirtualRegister.cpp
     opt/ir/FunctionTransform.cpp
-    opt/ir/passes/AliasAnalysis.cpp
     opt/ir/passes/AlgebraicSimplification.cpp
+    opt/ir/passes/AliasAnalysis.cpp
     opt/ir/passes/ArrayFlattening.cpp
     opt/ir/passes/AttributeDeduction.cpp
     opt/ir/passes/BasicBlockMerging.cpp
