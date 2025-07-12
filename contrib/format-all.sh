@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 
-script_dir="$(cd -- "$(dirname -- "$0")" && pwd -P)"
-"$script_dir/sources.sh" | xargs "$script_dir/format.py" "$@"
+set -e
+
+git ls-files --cached --others --exclude-standard | grep -v '^third_party/' | grep -E '\.c$|\.cpp$|\.h$' | xargs "$(dirname "$0")/format.py" "$@"
