@@ -174,12 +174,6 @@ bool Trunc::isWellFormed() const {
     if (!IntegerCastingOperator::isWellFormed()) {
         return false;
     }
-    if (*value()->type() == Ptr()) {
-        return false;
-    }
-    if (*type() == Ptr()) {
-        return false;
-    }
     if (type()->bitSize() >= value()->type()->bitSize()) {
         return false;
     }
@@ -190,12 +184,6 @@ bool SExt::isWellFormed() const {
     if (!IntegerCastingOperator::isWellFormed()) {
         return false;
     }
-    if (*value()->type() == Ptr()) {
-        return false;
-    }
-    if (*type() == Ptr()) {
-        return false;
-    }
     if (type()->bitSize() <= value()->type()->bitSize()) {
         return false;
     }
@@ -204,12 +192,6 @@ bool SExt::isWellFormed() const {
 
 bool ZExt::isWellFormed() const {
     if (!IntegerCastingOperator::isWellFormed()) {
-        return false;
-    }
-    if (*value()->type() == Ptr()) {
-        return false;
-    }
-    if (*type() == Ptr()) {
         return false;
     }
     if (type()->bitSize() <= value()->type()->bitSize()) {

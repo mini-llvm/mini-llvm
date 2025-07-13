@@ -21,9 +21,6 @@ bool PtrToInt::isWellFormed() const {
     if (*value()->type() != Ptr()) {
         return false;
     }
-    if (*type() == Ptr()) {
-        return false;
-    }
     return true;
 }
 

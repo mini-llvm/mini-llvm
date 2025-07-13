@@ -88,6 +88,7 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
@@ -564,9 +565,6 @@ public:
                             if (!dynamic_cast<const IntegerType *>(&*type)) {
                                 throw ParseException("must be an integer type", typeLocation);
                             }
-                            if (*type == Ptr()) {
-                                throw ParseException("must not be ptr", typeLocation);
-                            }
                             break;
 
                         case kFAdd:
@@ -629,8 +627,8 @@ public:
 
                     Location typeLocation = current_;
                     std::unique_ptr<Type> type = parseType();
-                    if (!dynamic_cast<const IntegerType *>(&*type)) {
-                        throw ParseException("must be an integer type", typeLocation);
+                    if (!dynamic_cast<const IntegerOrPointerType *>(&*type)) {
+                        throw ParseException("must be an integer type or ptr", typeLocation);
                     }
                     std::shared_ptr<Value> lhs = parseValue(*type);
                     if (current_->kind != kComma) {
@@ -700,9 +698,6 @@ public:
                         if (!dynamic_cast<const IntegerType *>(&*type1)) {
                             throw ParseException("must be an integer type", type1Location);
                         }
-                        if (*type1 == Ptr()) {
-                            throw ParseException("must not be ptr", type1Location);
-                        }
                     }
                     if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                         if (!dynamic_cast<const FloatingType *>(&*type1)) {
@@ -727,9 +722,6 @@ public:
                     if (mnemonic == kTrunc || mnemonic == kSExt || mnemonic == kZExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                         if (!dynamic_cast<const IntegerType *>(&*type2)) {
                             throw ParseException("must be an integer type", type2Location);
-                        }
-                        if (*type2 == Ptr()) {
-                            throw ParseException("must not be ptr", type2Location);
                         }
 
                         std::unique_ptr<IntegerType> integerType2 = cast<IntegerType>(std::move(type2));
@@ -759,9 +751,6 @@ public:
                     } else if (mnemonic == kPtrToInt) {
                         if (!dynamic_cast<const IntegerType *>(&*type2)) {
                             throw ParseException("must be an integer type", type2Location);
-                        }
-                        if (*type2 == Ptr()) {
-                            throw ParseException("must not be ptr", type2Location);
                         }
                         I = std::make_shared<PtrToInt>(std::move(value), cast<IntegerType>(std::move(type2)));
                     } else if (mnemonic == kIntToPtr) {
@@ -870,9 +859,6 @@ public:
                         idxType = parseType();
                         if (!dynamic_cast<const IntegerType *>(&*idxType)) {
                             throw ParseException("must be an integer type", idxTypeLocation);
-                        }
-                        if (*idxType == Ptr()) {
-                            throw ParseException("must not be ptr", idxTypeLocation);
                         }
                         indices.push_back(parseValue(*idxType));
                     }

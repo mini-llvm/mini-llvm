@@ -6,7 +6,6 @@
 
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
-#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm;
@@ -20,9 +19,6 @@ bool IntToPtr::isWellFormed() const {
         return false;
     }
     if (!dynamic_cast<const IntegerType *>(&*value()->type())) {
-        return false;
-    }
-    if (*value()->type() == Ptr()) {
         return false;
     }
     return true;

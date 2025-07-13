@@ -2,7 +2,7 @@
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Instruction.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 
 using namespace mini_llvm::ir;
 
@@ -20,7 +20,7 @@ bool BinaryIntegerOperator::isWellFormed() const {
     if (*lhs()->type() != *rhs()->type()) {
         return false;
     }
-    if (!dynamic_cast<const IntegerType *>(&*lhs()->type())) {
+    if (!dynamic_cast<const IntegerOrPointerType *>(&*lhs()->type())) {
         return false;
     }
     return true;

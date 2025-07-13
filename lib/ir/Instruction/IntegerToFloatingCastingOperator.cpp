@@ -21,8 +21,5 @@ bool IntegerToFloatingCastingOperator::isWellFormed() const {
     if (!dynamic_cast<const IntegerType *>(&*value()->type())) {
         return false;
     }
-    if (*value()->type() == Ptr()) {
-        return false;
-    }
     return true;
 }

@@ -30,6 +30,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
@@ -183,7 +184,7 @@ struct std::hash<std::type_info> {
 template <>
 struct std::hash<Type> {
     size_t operator()(const Type &type) const noexcept {
-        assert(dynamic_cast<const IntegerType *>(&type) || dynamic_cast<const FloatingType *>(&type));
+        assert(dynamic_cast<const IntegerType *>(&type) || dynamic_cast<const FloatingType *>(&type) || type == Ptr());
         return typeid(type).hash_code();
     }
 };

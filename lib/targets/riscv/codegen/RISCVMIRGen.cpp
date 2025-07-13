@@ -86,7 +86,7 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/TypeVisitor.h"
@@ -767,13 +767,13 @@ public:
     void visitBitCast(const ir::BitCast &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = getRegister(*I.value());
-        if (dynamic_cast<const ir::IntegerType *>(&*I.type()) && dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type()) && dynamic_cast<const ir::IntegerOrPointerType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.type()) && dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<FMov>(Precision::kDouble, std::move(dst), std::move(src)));
-        } else if (dynamic_cast<const ir::FloatingType *>(&*I.type()) && dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
+        } else if (dynamic_cast<const ir::FloatingType *>(&*I.type()) && dynamic_cast<const ir::IntegerOrPointerType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<FMovFI>(Precision::kDouble, std::move(dst), std::move(src)));
-        } else if (dynamic_cast<const ir::IntegerType *>(&*I.type()) && dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
+        } else if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type()) && dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
             builder_.add(std::make_unique<FMovIF>(Precision::kDouble, std::move(dst), std::move(src)));
         } else {
             abort();
@@ -793,7 +793,7 @@ public:
         builder_.add(std::make_unique<CmpZBr>(8, Condition::kNEZ, cond, &trueBlock, &falseBlock));
 
         builder_.setPos(&trueBlock, trueBlock.end());
-        if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type())) {
             builder_.add(std::make_unique<Mov>(8, dst, src1));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.type())) {
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
@@ -804,7 +804,7 @@ public:
         builder_.add(std::make_unique<Br>(&endBlock));
 
         builder_.setPos(&falseBlock, falseBlock.end());
-        if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type())) {
             builder_.add(std::make_unique<Mov>(8, dst, src2));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.type())) {
             Precision precision = static_cast<const ir::FloatingType *>(&*I.type())->precision();
@@ -830,7 +830,7 @@ public:
         MemoryOperand src(getRegister(*I.ptr()));
         std::shared_ptr<Register> dst = valueMap_[&I];
 
-        if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type())) {
             int width = I.type()->size(8);
             ExtensionMode extMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
             builder_.add(std::make_unique<Load>(width, std::move(dst), std::move(src), extMode));
@@ -846,7 +846,7 @@ public:
         MemoryOperand dst(getRegister(*I.ptr()));
         std::shared_ptr<Register> src = getRegister(*I.value());
 
-        if (dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.value()->type())) {
             int width = I.value()->type()->size(8);
             builder_.add(std::make_unique<Store>(width, std::move(dst), std::move(src)));
         } else if (dynamic_cast<const ir::FloatingType *>(&*I.value()->type())) {
@@ -914,7 +914,7 @@ public:
             for (const ir::Phi *phi : phis) {
                 std::shared_ptr<Register> dst = tmps[phi],
                                           src = getRegister(*getIncomingValue(*phi, *I.parent()));
-                if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
+                if (dynamic_cast<const ir::IntegerOrPointerType *>(&*phi->type())) {
                     builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                 } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
                     Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
@@ -926,7 +926,7 @@ public:
             for (const ir::Phi *phi : phis) {
                 std::shared_ptr<Register> dst = valueMap_[phi],
                                           src = tmps[phi];
-                if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
+                if (dynamic_cast<const ir::IntegerOrPointerType *>(&*phi->type())) {
                     builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                 } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
                     Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
@@ -963,7 +963,7 @@ public:
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
                                               src = getRegister(*getIncomingValue(*phi, *I.parent()));
-                    if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
+                    if (dynamic_cast<const ir::IntegerOrPointerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                     } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
@@ -975,7 +975,7 @@ public:
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = valueMap_[phi],
                                               src = tmps[phi];
-                    if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
+                    if (dynamic_cast<const ir::IntegerOrPointerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                     } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
@@ -1007,7 +1007,7 @@ public:
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = tmps[phi],
                                               src = getRegister(*getIncomingValue(*phi, *I.parent()));
-                    if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
+                    if (dynamic_cast<const ir::IntegerOrPointerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                     } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
@@ -1019,7 +1019,7 @@ public:
                 for (const ir::Phi *phi : phis) {
                     std::shared_ptr<Register> dst = valueMap_[phi],
                                               src = tmps[phi];
-                    if (dynamic_cast<const ir::IntegerType *>(&*phi->type())) {
+                    if (dynamic_cast<const ir::IntegerOrPointerType *>(&*phi->type())) {
                         builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
                     } else if (dynamic_cast<const ir::FloatingType *>(&*phi->type())) {
                         Precision precision = static_cast<const ir::FloatingType *>(&*phi->type())->precision();
@@ -1059,7 +1059,7 @@ public:
     }
 
     void visitRet(const ir::Ret &I) override {
-        if (dynamic_cast<const ir::IntegerType *>(&*I.value()->type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.value()->type())) {
             std::shared_ptr<Register> dst = share(*riscvIntegerResultRegs()[0]),
                                       src = getRegister(*I.value());
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
@@ -1154,7 +1154,7 @@ private:
                     stackArgs.push_back(&*arg);
                 }
             } else {
-                if (dynamic_cast<const ir::IntegerType *>(&*arg->type())) {
+                if (dynamic_cast<const ir::IntegerOrPointerType *>(&*arg->type())) {
                     if (numIntegerArgs < 8) {
                         std::shared_ptr<Register> dst = share(*riscvIntegerArgRegs()[numIntegerArgs]),
                                                   src = getRegister(*arg);
@@ -1185,7 +1185,7 @@ private:
             for (int i = 0; i < n; ++i) {
                 MemoryOperand dst(share(*sp()), std::make_unique<IntegerImmediate>(i * 8));
                 std::shared_ptr<Register> src = getRegister(*stackArgs[i]);
-                if (dynamic_cast<const ir::IntegerType *>(&*stackArgs[i]->type())) {
+                if (dynamic_cast<const ir::IntegerOrPointerType *>(&*stackArgs[i]->type())) {
                     builder_.add(std::make_unique<Store>(8, std::move(dst), std::move(src)));
                 } else if (dynamic_cast<const ir::FloatingType *>(&*stackArgs[i]->type())) {
                     Precision precision = static_cast<const ir::FloatingType *>(&*stackArgs[i]->type())->precision();
@@ -1210,7 +1210,7 @@ private:
             builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
         }
 
-        if (dynamic_cast<const ir::IntegerType *>(&*I.type())) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type())) {
             std::shared_ptr<Register> dst = valueMap_[&I],
                                       src = share(*riscvIntegerResultRegs()[0]);
             builder_.add(std::make_unique<Mov>(8, std::move(dst), std::move(src)));
@@ -1380,7 +1380,7 @@ private:
         int numIntegerResults = 0,
             numFloatingResults = 0;
         std::unique_ptr<ir::Type> returnType = IF.functionType()->returnType();
-        if (dynamic_cast<const ir::IntegerType *>(&*returnType)) {
+        if (dynamic_cast<const ir::IntegerOrPointerType *>(&*returnType)) {
             ++numIntegerResults;
         } else if (dynamic_cast<const ir::FloatingType *>(&*returnType)) {
             ++numFloatingResults;
@@ -1394,7 +1394,7 @@ private:
                numFloatingArgs = 0,
                numStackArgs = 0;
         for (const ir::Argument &arg : args(IF)) {
-            if (dynamic_cast<const ir::IntegerType *>(&*arg.type())) {
+            if (dynamic_cast<const ir::IntegerOrPointerType *>(&*arg.type())) {
                 if (numIntegerArgs < 8) {
                     std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8),
                                               src = share(*riscvIntegerArgRegs()[numIntegerArgs]);

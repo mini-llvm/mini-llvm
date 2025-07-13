@@ -7,14 +7,14 @@
 #include <typeinfo>
 
 #include "mini-llvm/ir/Type.h"
-#include "mini-llvm/ir/Type/IntegerType.h"
+#include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
 
 namespace mini_llvm::ir {
 
 class Constant;
 
-class Ptr final : public IntegerType {
+class Ptr final : public IntegerOrPointerType {
 public:
     int size() const override {
         abort();

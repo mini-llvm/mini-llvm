@@ -58,9 +58,6 @@ bool GetElementPtr::isWellFormed() const {
         if (!dynamic_cast<const IntegerType *>(&*idx->type())) {
             return false;
         }
-        if (*idx->type() == Ptr()) {
-            return false;
-        }
     }
     return true;
 }

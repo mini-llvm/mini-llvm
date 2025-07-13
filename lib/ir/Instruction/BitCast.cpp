@@ -147,10 +147,9 @@ std::shared_ptr<Constant> foldImpl(const BitCast &I) {
 } // namespace
 
 bool BitCast::isFoldable() const {
-        return ((dynamic_cast<const IntegerConstant *>(&*value()) || dynamic_cast<const FloatingConstant *>(&*value()))
-                && (dynamic_cast<const IntegerType *>(&*type()) || dynamic_cast<const FloatingType *>(&*type()))
-                && *type() != Ptr())
-        || dynamic_cast<const PoisonValue *>(&*value());
+    return ((dynamic_cast<const IntegerConstant *>(&*value()) || dynamic_cast<const FloatingConstant *>(&*value()))
+            && (dynamic_cast<const IntegerType *>(&*type()) || dynamic_cast<const FloatingType *>(&*type())))
+            || dynamic_cast<const PoisonValue *>(&*value());
 }
 
 std::shared_ptr<Constant> BitCast::fold() const {
