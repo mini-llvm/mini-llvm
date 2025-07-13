@@ -25,7 +25,62 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
+
+namespace {
+
+std::unordered_set<const BasicBlock *> findReachable(const Function &F) {
+    std::unordered_set<const BasicBlock *> S;
+    std::queue<const BasicBlock *> Q;
+    S.insert(&F.entry());
+    Q.push(&F.entry());
+    while (!Q.empty()) {
+        const BasicBlock *u = Q.front();
+        Q.pop();
+        for (const BasicBlock *v : successors(*u)) {
+            if (!S.contains(v)) {
+                S.insert(v);
+                Q.push(v);
+            }
+        }
+    }
+    return S;
+}
+
+std::unordered_set<const BasicBlock *> findNotInCycle(const Function &F) {
+    HashMap<const BasicBlock *, int> in;
+    std::unordered_set<const BasicBlock *> S;
+    std::queue<const BasicBlock *> Q;
+    for (const BasicBlock &v : F) {
+        in.put(&v, 0);
+    }
+    for (const BasicBlock &u : F) {
+        for (const BasicBlock *v : successors(u)) {
+            ++in[v];
+        }
+    }
+    for (const BasicBlock &v : F) {
+        if (in[&v] == 0) {
+            S.insert(&v);
+            Q.push(&v);
+        }
+    }
+    while (!Q.empty()) {
+        const BasicBlock *u = Q.front();
+        Q.pop();
+        for (const BasicBlock *v : successors(*u)) {
+            --in[v];
+            if (in[v] == 0) {
+                S.insert(v);
+                Q.push(v);
+            }
+        }
+    }
+    return S;
+}
+
+} // namespace
 
 Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage)
         : functionType_(std::move(functionType)), linkage_(linkage) {
@@ -128,72 +183,26 @@ bool Function::isWellFormed() const {
             }
         }
     }
-    {
-        DominatorTreeAnalysis domTree;
-        domTree.runOnFunction(*this);
-
-        std::unordered_set<const BasicBlock *> S;
-        std::queue<const BasicBlock *> Q;
-        S.insert(&entry());
-        Q.push(&entry());
-        while (!Q.empty()) {
-            const BasicBlock *u = Q.front();
-            Q.pop();
-            for (const BasicBlock *v : successors(*u)) {
-                if (!S.contains(v)) {
-                    S.insert(v);
-                    Q.push(v);
-                }
-            }
-        }
-
-        for (const BasicBlock *B : S) {
-            for (const Instruction &I : *B) {
-                for (const UseBase &use : uses(I)) {
-                    if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                        if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
-                            return false;
-                        }
+    DominatorTreeAnalysis domTree;
+    domTree.runOnFunction(*this);
+    std::unordered_set<const BasicBlock *> reachable = findReachable(*this);
+    for (const BasicBlock *B : reachable) {
+        for (const Instruction &I : *B) {
+            for (const UseBase &use : uses(I)) {
+                if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                    if (!dynamic_cast<const Phi *>(II) && reachable.contains(II->parent()) && !domTree.dominates(I, *II)) {
+                        return false;
                     }
                 }
             }
         }
     }
-    {
-        HashMap<const BasicBlock *, int> in;
-        std::unordered_set<const BasicBlock *> S;
-        std::queue<const BasicBlock *> Q;
-        for (const BasicBlock &v : *this) {
-            in.put(&v, 0);
-        }
-        for (const BasicBlock &u : *this) {
-            for (const BasicBlock *v : successors(u)) {
-                ++in[v];
-            }
-        }
-        for (const BasicBlock &v : *this) {
-            if (in[&v] == 0) {
-                S.insert(&v);
-                Q.push(&v);
-            }
-        }
-        while (!Q.empty()) {
-            const BasicBlock *u = Q.front();
-            Q.pop();
-            for (const BasicBlock *v : successors(*u)) {
-                --in[v];
-                if (in[v] == 0) {
-                    S.insert(v);
-                    Q.push(v);
-                }
-            }
-        }
-        for (const BasicBlock &B : *this) {
-            if (!S.contains(&B)) {
-                for (const Instruction &I : B) {
-                    if (dynamic_cast<const Alloca *>(&I)) {
-                        return false;
-                    }
+    std::unordered_set<const BasicBlock *> notInCycle = findNotInCycle(*this);
+    for (const BasicBlock &B : *this) {
+        if (!notInCycle.contains(&B)) {
+            for (const Instruction &I : B) {
+                if (dynamic_cast<const Alloca *>(&I)) {
+                    return false;
                 }
             }
         }
