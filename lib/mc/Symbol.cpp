@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "mini-llvm/utils/ASCII.h"
+#include "mini-llvm/utils/Ascii.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mc;
@@ -14,11 +14,11 @@ bool shouldQuote(const std::string &name) {
     if (n == 0) {
         return true;
     }
-    if (!isLetter(name[0]) && name[0] != '.' && name[0] != '_') {
+    if (!isAsciiLetter(name[0]) && name[0] != '.' && name[0] != '_') {
         return true;
     }
     for (size_t i = 1; i < n; ++i) {
-        if (!isLetterOrDigit(name[i]) && name[i] != '.' && name[i] != '_') {
+        if (!isAsciiLetterOrDigit(name[i]) && name[i] != '.' && name[i] != '_') {
             return true;
         }
     }

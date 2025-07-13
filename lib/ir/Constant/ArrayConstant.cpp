@@ -16,7 +16,7 @@
 #include "mini-llvm/ir/Type/I8.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
-#include "mini-llvm/utils/ASCII.h"
+#include "mini-llvm/utils/Ascii.h"
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
@@ -41,7 +41,7 @@ std::string formatAsString(const ArrayConstant &C) {
         int8_t value = static_cast<const I8Constant *>(&*element)->value();
         if (value == '\\') {
             formatted += "\\\\";
-        } else if (isPrintable(value) && value != '"') {
+        } else if (isAsciiPrintable(value) && value != '"') {
             formatted += value;
         } else {
             formatted += std::format("\\{:02X}", static_cast<uint8_t>(value));

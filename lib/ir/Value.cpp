@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "mini-llvm/ir/Use.h"
-#include "mini-llvm/utils/ASCII.h"
+#include "mini-llvm/utils/Ascii.h"
 #include "mini-llvm/utils/Strings.h"
 
 using namespace mini_llvm;
@@ -17,7 +17,7 @@ namespace {
 
 bool shouldQuote(std::string_view str) {
     for (char ch : str) {
-        if (!isLetterOrDigit(ch) && ch != '$' && ch != '.' && ch != '_') {
+        if (!isAsciiLetterOrDigit(ch) && ch != '$' && ch != '.' && ch != '_') {
             return true;
         }
     }
@@ -30,7 +30,7 @@ std::string quote(std::string_view str) {
     for (char ch : str) {
         if (ch == '\\') {
             quoted += "\\\\";
-        } else if (isPrintable(ch) && ch != '"') {
+        } else if (isAsciiPrintable(ch) && ch != '"') {
             quoted += ch;
         } else {
             quoted += std::format("\\{:02X}", ch);

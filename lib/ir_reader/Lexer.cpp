@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "mini-llvm/ir_reader/Token.h"
-#include "mini-llvm/utils/ASCII.h"
+#include "mini-llvm/utils/Ascii.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Unicode.h"
 
@@ -66,9 +66,9 @@ private:
         if (lastToken()) {
             Token::Kind kind = lastToken()->kind;
             if (kind == kAt || kind == kPercent) {
-                if (isLetter(*current_) || isDigit(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
+                if (isAsciiLetter(*current_) || isAsciiDigit(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
                     const char *start = current_;
-                    while (isLetter(*current_) || isDigit(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
+                    while (isAsciiLetter(*current_) || isAsciiDigit(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
                         ++current_;
                     }
                     return {kName, std::string(start, current_), start};
@@ -99,17 +99,17 @@ private:
             ++current_;
             ++current_;
             uint64_t value = 0;
-            while (isHexDigit(*current_)) {
-                value = value * 0x10 + ((isDigit(*current_) ? (*current_ - '0') : ((*current_ | 0x20) - 'a' + 0xa)));
+            while (isAsciiHexDigit(*current_)) {
+                value = value * 0x10 + ((isAsciiDigit(*current_) ? (*current_ - '0') : (toAsciiLower(*current_) - 'a' + 0xa)));
                 ++current_;
             }
             return {kNumber, std::bit_cast<int64_t>(value), start};
         }
 
-        if (isDigit(*current_)) {
+        if (isAsciiDigit(*current_)) {
             const char *start = current_;
             uint64_t value = 0;
-            while (isDigit(*current_)) {
+            while (isAsciiDigit(*current_)) {
                 value = value * 10 + (*current_ - '0');
                 ++current_;
             }
@@ -124,7 +124,7 @@ private:
             const char *start = current_;
             ++current_;
             uint64_t value = 0;
-            while (isDigit(*current_)) {
+            while (isAsciiDigit(*current_)) {
                 value = value * 10 + (*current_ - '0');
                 ++current_;
             }
@@ -152,14 +152,14 @@ private:
                             if (ch == 0) {
                                 throw LexException("missing terminating \" character", current_);
                             }
-                            if (!isHexDigit(ch)) {
+                            if (!isAsciiHexDigit(ch)) {
                                 if (ch == '"') {
                                     throw LexException("incomplete escape sequence", current_);
                                 } else {
                                     throw LexException("invalid character in escape sequence", current_);
                                 }
                             }
-                            element = element * 0x10 + static_cast<int8_t>(isDigit(ch) ? (ch - '0') : ((ch | 0x20) - 'a' + 0xa));
+                            element = element * 0x10 + static_cast<int8_t>(isAsciiDigit(ch) ? (ch - '0') : (toAsciiLower(ch) - 'a' + 0xa));
                             ++current_;
                         }
                         elements.push_back(element);
@@ -191,9 +191,9 @@ private:
             return {kName, std::move(name), start};
         }
 
-        if (isLetter(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
+        if (isAsciiLetter(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_') {
             const char *start = current_;
-            while (isLetter(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_' || isDigit(*current_)) {
+            while (isAsciiLetter(*current_) || *current_ == '$' || *current_ == '.' || *current_ == '_' || isAsciiDigit(*current_)) {
                 ++current_;
             }
             std::string name(start, current_);

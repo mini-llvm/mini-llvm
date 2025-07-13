@@ -133,7 +133,6 @@ add_library(mini-llvm
     targets/riscv/opt/mir/passes/RISCVConstantPropagation.cpp
     targets/riscv/opt/mir/RISCVPassManager.cpp
     targets/riscv/RISCVBackendDriver.cpp
-    utils/ASCII.cpp
     utils/CommandLineParser.cpp
     utils/FileHandle.cpp
     utils/IO.cpp

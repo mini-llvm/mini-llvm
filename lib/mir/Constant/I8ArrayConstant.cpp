@@ -4,7 +4,7 @@
 #include <format>
 #include <string>
 
-#include "mini-llvm/utils/ASCII.h"
+#include "mini-llvm/utils/Ascii.h"
 
 using namespace mini_llvm::mir;
 
@@ -35,7 +35,7 @@ std::string I8ArrayConstant::format() const {
             formatted += "\\\"";
             break;
         default:
-            if (isPrintable(element)) {
+            if (isAsciiPrintable(element)) {
                 formatted += element;
             } else {
                 formatted += std::format("\\{:03o}", static_cast<uint8_t>(element));
