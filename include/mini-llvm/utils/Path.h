@@ -21,17 +21,17 @@ public:
 
     Path() = default;
 
-    Path(const std::filesystem::path &base)
+    Path(const Base &base)
         : Base(base) {}
 
-    Path(std::filesystem::path &&base) noexcept
+    Path(Base &&base) noexcept
         : Base(std::move(base)) {}
 
     Path(const SystemString &str)
         : Base(str.native()) {}
 
     Path(SystemString &&str)
-        : Base(std::move(str.native())) {}
+        : Base(std::move(str).native()) {}
 
     Path(const char *str)
         : Path(SystemString(str)) {}
@@ -48,12 +48,12 @@ public:
     Path(const Path &other) = default;
     Path(Path &&other) noexcept = default;
 
-    Path &operator=(const std::filesystem::path &base) {
+    Path &operator=(const Base &base) {
         Base::operator=(base);
         return *this;
     }
 
-    Path &operator=(std::filesystem::path &&base) noexcept {
+    Path &operator=(Base &&base) noexcept {
         Base::operator=(std::move(base));
         return *this;
     }
@@ -64,7 +64,7 @@ public:
     }
 
     Path &operator=(SystemString &&str) {
-        Base::operator=(std::move(str.native()));
+        Base::operator=(std::move(str).native());
         return *this;
     }
 
@@ -212,7 +212,7 @@ public:
         return *this;
     }
 
-    Path &operator/=(const std::filesystem::path &other) {
+    Path &operator/=(const Base &other) {
         Base::operator/=(other);
         return *this;
     }
@@ -239,13 +239,13 @@ public:
         return *this;
     }
 
-    Path &operator+=(const std::filesystem::path &other) {
-        Base::operator+=(other);
+    Path &operator+=(const Base &base) {
+        Base::operator+=(base);
         return *this;
     }
 
-    Path &operator+=(const SystemString &other) {
-        Base::operator+=(other.native());
+    Path &operator+=(const SystemString &str) {
+        Base::operator+=(str.native());
         return *this;
     }
 
