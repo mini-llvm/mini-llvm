@@ -198,21 +198,42 @@ TEST(UnicodeTest, DecodeUtf8InvalidContinuationByteFourBytes3) {
     EXPECT_EQ(cp, static_cast<char32_t>(-1));
 }
 
-TEST(UnicodeTest, DecodeUtf8Surrogate) {
-    const char *str = "\xed\xaf\xbf"; // U+DBFF
+TEST(UnicodeTest, DecodeUtf8SurrogateHigh) {
+    const char *str = "\xed\xa8\x80"; // U+DA00
     const char *ptr = str;
     char32_t cp = decodeUtf8(ptr);
     EXPECT_EQ(cp, static_cast<char32_t>(-1));
 }
 
-TEST(UnicodeTest, DecodeUtf8SurrogateHigh) {
+TEST(UnicodeTest, DecodeUtf8SurrogateHighMin) {
     const char *str = "\xed\xa0\x80"; // U+D800
     const char *ptr = str;
     char32_t cp = decodeUtf8(ptr);
     EXPECT_EQ(cp, static_cast<char32_t>(-1));
 }
 
+TEST(UnicodeTest, DecodeUtf8SurrogateHighMax) {
+    const char *str = "\xed\xaf\xbf"; // U+DBFF
+    const char *ptr = str;
+    char32_t cp = decodeUtf8(ptr);
+    EXPECT_EQ(cp, static_cast<char32_t>(-1));
+}
+
 TEST(UnicodeTest, DecodeUtf8SurrogateLow) {
+    const char *str = "\xed\b8\x80"; // U+DE00
+    const char *ptr = str;
+    char32_t cp = decodeUtf8(ptr);
+    EXPECT_EQ(cp, static_cast<char32_t>(-1));
+}
+
+TEST(UnicodeTest, DecodeUtf8SurrogateLowMin) {
+    const char *str = "\xed\xb0\x80"; // U+DC00
+    const char *ptr = str;
+    char32_t cp = decodeUtf8(ptr);
+    EXPECT_EQ(cp, static_cast<char32_t>(-1));
+}
+
+TEST(UnicodeTest, DecodeUtf8SurrogateLowMax) {
     const char *str = "\xed\xbf\xbf"; // U+DFFF
     const char *ptr = str;
     char32_t cp = decodeUtf8(ptr);
