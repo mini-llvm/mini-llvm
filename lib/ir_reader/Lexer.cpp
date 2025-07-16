@@ -166,8 +166,8 @@ private:
                     }
                 } else {
                     const char *next = current_;
-                    std::optional<char32_t> cp = decodeUtf8(next);
-                    if (!cp) {
+                    char32_t cp = decodeUtf8(next);
+                    if (cp == static_cast<char32_t>(-1)) {
                         throw LexException("invalid UTF-8 character", current_);
                     }
                     while (current_ < next) {

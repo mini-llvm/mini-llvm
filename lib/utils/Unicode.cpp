@@ -1,8 +1,6 @@
 #include "mini-llvm/utils/Unicode.h"
 
-#include <optional>
-
-std::optional<char32_t> mini_llvm::decodeUtf8(const char *&ptr) noexcept {
+char32_t mini_llvm::decodeUtf8(const char *&ptr) noexcept {
     char8_t first = static_cast<char8_t>(*ptr);
     char32_t cp = 0;
     int n = 0;
@@ -20,22 +18,22 @@ std::optional<char32_t> mini_llvm::decodeUtf8(const char *&ptr) noexcept {
         cp = first & 0x07;
         n = 4;
     } else {
-        return std::nullopt;
+        return static_cast<char32_t>(-1);
     }
 
     for (int i = 1; i < n; ++i) {
         char8_t b = static_cast<char8_t>(*(ptr + i));
         if ((b & 0xc0) != 0x80) {
-            return std::nullopt;
+            return static_cast<char32_t>(-1);
         }
         cp = (cp << 6) | (b & 0x3f);
     }
 
     if ((n == 2 && cp < 0x80) || (n == 3 && cp < 0x800) || (n == 4 && cp < 0x10000)) {
-        return std::nullopt;
+        return static_cast<char32_t>(-1);
     }
     if ((cp >= 0xd800 && cp <= 0xdfff) || cp > 0x10ffff) {
-        return std::nullopt;
+        return static_cast<char32_t>(-1);
     }
 
     ptr += n;
