@@ -44,7 +44,7 @@ std::string quote(std::string_view str) {
 
 std::string ir::Value::formatName() const {
     if (name_.empty()) {
-        return std::format("_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
+        return "_" + toString(reinterpret_cast<uintptr_t>(this), 62);
     }
     if (shouldQuote(name_)) {
         return quote(name_);

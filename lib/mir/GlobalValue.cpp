@@ -9,7 +9,7 @@ using namespace mini_llvm::mir;
 
 std::string GlobalValue::formatAsOperand() const {
     if (name().empty()) {
-        return std::format("@_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
+        return "@_" + toString(reinterpret_cast<uintptr_t>(this), 62);
     }
     return "@" + name();
 }

@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <cstdint>
-#include <format>
 #include <memory>
 #include <ranges>
 #include <string>
@@ -51,7 +50,7 @@ std::string BasicBlock::format() const {
 
 std::string BasicBlock::formatAsOperand() const {
     if (name().empty()) {
-        return std::format("#_{}", toString(reinterpret_cast<uintptr_t>(this), 62));
+        return "#_" + toString(reinterpret_cast<uintptr_t>(this), 62);
     }
     return "#" + name();
 }
