@@ -24,7 +24,7 @@ jobs:
     steps:
       - run: |
           sudo apt-get update
-          sudo apt-get install -y ninja-build g++-14-mips64-linux-gnuabi64 gcc-14-riscv64-linux-gnu qemu-user
+          sudo apt-get install -y g++-14-mips64-linux-gnuabi64 gcc-14-riscv64-linux-gnu qemu-user
           sudo mkdir -p /usr/gnemul
           sudo ln -s /usr/mips64-linux-gnuabi64 /usr/gnemul/qemu-mips64
           sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
