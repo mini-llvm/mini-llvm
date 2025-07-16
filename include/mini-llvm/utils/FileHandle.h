@@ -45,6 +45,8 @@ public:
 
     void close();
 
+    FILE *release();
+
     void swap(FileHandle &other) noexcept {
         std::swap(handle_, other.handle_);
     }

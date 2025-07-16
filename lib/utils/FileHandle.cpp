@@ -28,3 +28,9 @@ void FileHandle::close() {
     fclose(handle_);
     handle_ = nullptr;
 }
+
+FILE *FileHandle::release() {
+    FILE *handle = handle_;
+    handle_ = nullptr;
+    return handle;
+}
