@@ -4,13 +4,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <type_traits>
 
 namespace {
 
 template <typename T>
 std::string toStringImpl(T value, int base) {
     if (value < 0) {
-        return "-" + toStringImpl(-value, base);
+        return "-" + toStringImpl(-static_cast<std::make_unsigned_t<T>>(value), base);
     }
 
     std::string result;
