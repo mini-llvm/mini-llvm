@@ -38,6 +38,7 @@ add_executable(tests
     ir_reader/IRReaderTest.cpp
     ir_reader/LexerTest.cpp
     ir_reader/ParserTest.cpp
+    utils/CommandLineParserTest.cpp
     utils/StringsTest.cpp
     utils/UnicodeTest.cpp
 )

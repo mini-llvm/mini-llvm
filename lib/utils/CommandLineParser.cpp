@@ -48,9 +48,6 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
                         return Unexpected(Error(ErrorKind::kMissingValue, arg));
                     }
                     std::string value = args[i++];
-                    if (value.starts_with("-") && value != "-") {
-                        return Unexpected(Error(ErrorKind::kMissingValue, arg));
-                    }
                     args_.emplace_back(OptionArgument(arg, value));
                     continue;
                 }
@@ -81,9 +78,6 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
                             return Unexpected(Error(ErrorKind::kMissingValue, arg));
                         }
                         std::string value = args[i++];
-                        if (value.starts_with("-") && value != "-") {
-                            return Unexpected(Error(ErrorKind::kMissingValue, arg));
-                        }
                         args_.emplace_back(OptionArgument(arg, value));
                         break;
                     }
