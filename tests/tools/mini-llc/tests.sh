@@ -3,67 +3,68 @@
 set -e
 
 tests=(
-    global_values
-    self_loop
-    irreducible_cfg
-    self_referential
-    lost_copy
-    swap
     alias_args
     alias_gep
     alias_inttoptr
+    arithmetic
+    casting
+    circular_call
+    div
     escape_arg
     escape_global
+    getelementptr
+    getelementptr_0
+    global_values
     impure
-    circular_call
+    indirect_call
+    irreducible_cfg
+    lost_copy
     many_args
     many_regs
     many_regs_large_stack_frame
-    arithmetic
     mul
-    div
-    rem
     relational
-    casting
-    getelementptr
-    getelementptr_0
+    rem
     select
     select_ptr
-    indirect_call
-    bit
-    max
-    sum
-    fibonacci
-    power
-    is_prime
-    gcd
-    gcd_iterative
-    exgcd
-    hanoi
-    partition_function
-    n_queens
+    self_loop
+    self_referential
+    swap
+
     accumulate
-    matmul
-    edit_distance
-    sieve_of_eratosthenes
-    bubble_sort
-    selection_sort
-    insertion_sort
-    heapsort
-    quicksort
-    mergesort
-    dfs
     bfs
-    topological_sort
-    tarjan_strongly_connected_components
+    bit
+    bubble_sort
+    dfs
     dijkstra_shortest_paths
+    edit_distance
+    exgcd
+    fibonacci
     floyd_warshall_all_pairs_shortest_paths
     gaussian_elimination
+    gcd
+    gcd_iterative
+    hanoi
+    heapsort
+    insertion_sort
+    is_prime
     linear_regression
+    matmul
+    max
+    mergesort
+    n_queens
+    partition_function
+    pcg32
+    power
+    quicksort
+    selection_sort
+    sieve_of_eratosthenes
+    splitmix64
+    sum
+    tarjan_strongly_connected_components
+    topological_sort
     xorshift32
     xorshift64
-    splitmix64
-    pcg32
 )
 
 for test_name in "${tests[@]}"; do
