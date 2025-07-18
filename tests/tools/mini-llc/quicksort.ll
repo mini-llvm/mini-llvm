@@ -35,9 +35,9 @@ define i32 @partition(ptr %0, i32 %1, i32 %2) {
   store i32 %1, ptr %5
   store i32 %2, ptr %6
   %9 = load i32, ptr %5
-  store i32 %9, ptr %7
-  %10 = load i32, ptr %6
-  %11 = sub i32 %10, 1
+  %10 = sub i32 %9, 1
+  store i32 %10, ptr %7
+  %11 = load i32, ptr %6
   store i32 %11, ptr %8
   br label %12
 
@@ -45,57 +45,57 @@ define i32 @partition(ptr %0, i32 %1, i32 %2) {
   br label %13
 
 13:
-  %14 = load ptr, ptr %4
-  %15 = load i32, ptr %7
-  %16 = sext i32 %15 to i64
-  %17 = getelementptr i32, ptr %14, i64 %16
-  %18 = load i32, ptr %17
-  %19 = load ptr, ptr %4
-  %20 = load i32, ptr %6
-  %21 = sext i32 %20 to i64
-  %22 = getelementptr i32, ptr %19, i64 %21
-  %23 = load i32, ptr %22
-  %24 = icmp slt i32 %18, %23
-  br i1 %24, label %25, label %28
+  %14 = load i32, ptr %7
+  %15 = add i32 %14, 1
+  store i32 %15, ptr %7
+  br label %16
 
-25:
-  %26 = load i32, ptr %7
-  %27 = add i32 %26, 1
-  store i32 %27, ptr %7
-  br label %13
+16:
+  %17 = load ptr, ptr %4
+  %18 = load i32, ptr %7
+  %19 = sext i32 %18 to i64
+  %20 = getelementptr i32, ptr %17, i64 %19
+  %21 = load i32, ptr %20
+  %22 = load ptr, ptr %4
+  %23 = load i32, ptr %6
+  %24 = sext i32 %23 to i64
+  %25 = getelementptr i32, ptr %22, i64 %24
+  %26 = load i32, ptr %25
+  %27 = icmp slt i32 %21, %26
+  br i1 %27, label %13, label %28
 
 28:
   br label %29
 
 29:
   %30 = load i32, ptr %8
-  %31 = load i32, ptr %5
-  %32 = icmp sgt i32 %30, %31
-  br i1 %32, label %33, label %45
+  %31 = add i32 %30, -1
+  store i32 %31, ptr %8
+  br label %32
 
-33:
-  %34 = load ptr, ptr %4
-  %35 = load i32, ptr %8
-  %36 = sext i32 %35 to i64
-  %37 = getelementptr i32, ptr %34, i64 %36
-  %38 = load i32, ptr %37
-  %39 = load ptr, ptr %4
-  %40 = load i32, ptr %6
-  %41 = sext i32 %40 to i64
-  %42 = getelementptr i32, ptr %39, i64 %41
-  %43 = load i32, ptr %42
-  %44 = icmp sgt i32 %38, %43
-  br label %45
+32:
+  %33 = load i32, ptr %8
+  %34 = load i32, ptr %5
+  %35 = icmp sge i32 %33, %34
+  br i1 %35, label %36, label %48
 
-45:
-  %46 = phi i1 [ false, %29 ], [ %44, %33 ]
-  br i1 %46, label %47, label %50
+36:
+  %37 = load ptr, ptr %4
+  %38 = load i32, ptr %8
+  %39 = sext i32 %38 to i64
+  %40 = getelementptr i32, ptr %37, i64 %39
+  %41 = load i32, ptr %40
+  %42 = load ptr, ptr %4
+  %43 = load i32, ptr %6
+  %44 = sext i32 %43 to i64
+  %45 = getelementptr i32, ptr %42, i64 %44
+  %46 = load i32, ptr %45
+  %47 = icmp sgt i32 %41, %46
+  br label %48
 
-47:
-  %48 = load i32, ptr %8
-  %49 = add i32 %48, -1
-  store i32 %49, ptr %8
-  br label %29
+48:
+  %49 = phi i1 [ false, %32 ], [ %47, %36 ]
+  br i1 %49, label %29, label %50
 
 50:
   %51 = load i32, ptr %7

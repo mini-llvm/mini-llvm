@@ -7,10 +7,10 @@ void swap(int *a, int *b) {
 }
 
 int partition(int a[], int l, int r) {
-    int i = l, j = r - 1;
+    int i = l - 1, j = r;
     for (;;) {
-        while (a[i] < a[r]) ++i;
-        while (j > l && a[j] > a[r]) --j;
+        do ++i; while (a[i] < a[r]);
+        do --j; while (j >= l && a[j] > a[r]);
         if (i < j) swap(&a[i], &a[j]);
         else break;
     }
