@@ -18,18 +18,18 @@ tests=(
     impure
     indirect_call
     irreducible_cfg
-    lost_copy
     many_args
     many_regs
     many_regs_large_stack_frame
     mul
+    phi_lost_copy
+    phi_swap
     relational
     rem
     select
     select_ptr
     self_loop
     self_referential
-    swap
 
     accumulate
     bfs
