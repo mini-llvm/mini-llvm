@@ -22,6 +22,7 @@
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Matrix.h"
+#include "mini-llvm/utils/PCG32.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
@@ -195,7 +196,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
     if (n <= 16) {
         bestPath = dp(n, D, 0);
     } else {
-        bestPath = aco(n, D, 0, 10, 1., 1., 0.1, 1., initialPath, 100, std::mt19937(42));
+        bestPath = aco(n, D, 0, 10, 1., 1., 0.1, 1., initialPath, 100, PCG32(42));
     }
 
     bool changed = false;
