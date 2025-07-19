@@ -15,7 +15,7 @@ struct FPExt {
     }
 
     template <typename From>
-        requires std::floating_point<From> && (sizeof(To) >= sizeof(From))
+        requires (std::floating_point<From> && sizeof(To) >= sizeof(From))
     To operator()(From x) const noexcept {
         return static_cast<To>(x);
     }

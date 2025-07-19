@@ -17,7 +17,7 @@ struct Trunc {
     }
 
     template <typename From>
-        requires std::integral<From> && (!std::same_as<From, bool>) && (sizeof(To) <= sizeof(From))
+        requires (std::integral<From> && !std::same_as<From, bool> && sizeof(To) <= sizeof(From))
     To operator()(From x) const noexcept {
         return
             std::bit_cast<To>(

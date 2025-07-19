@@ -62,7 +62,7 @@ public:
 };
 
 template <typename ValueT>
-    requires std::derived_from<ValueT, Value> && (!std::same_as<ValueT, Value>)
+    requires (std::derived_from<ValueT, Value> && !std::same_as<ValueT, Value>)
 class Use<ValueT> final : public UseBase {
 public:
     Use(Value *user, std::shared_ptr<ValueT> value)

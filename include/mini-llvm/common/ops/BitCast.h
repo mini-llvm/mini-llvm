@@ -14,7 +14,7 @@ struct BitCast {
     }
 
     template <typename From>
-        requires (!std::same_as<From, bool>) && (sizeof(To) == sizeof(From))
+        requires (!std::same_as<From, bool> && sizeof(To) == sizeof(From))
     To operator()(From x) const noexcept {
         return std::bit_cast<To>(x);
     }

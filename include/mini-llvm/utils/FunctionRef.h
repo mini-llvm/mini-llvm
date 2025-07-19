@@ -22,8 +22,8 @@ public:
                     reinterpret_cast<F *>(bound), std::forward<Args>(args)...); }) {}
 
     template <typename F>
-        requires (!std::is_same_v<std::remove_cv_t<std::remove_reference_t<F>>, FunctionRef>) &&
-                 std::is_invocable_r_v<R, std::remove_reference_t<F> &, Args...>
+        requires (!std::is_same_v<std::remove_cv_t<std::remove_reference_t<F>>, FunctionRef> &&
+                  std::is_invocable_r_v<R, std::remove_reference_t<F> &, Args...>)
     FunctionRef(F &&f) noexcept
         : bound_(const_cast<void *>(reinterpret_cast<const void *>(std::addressof(f)))),
             thunk_([](void *bound, Args &&...args) {
