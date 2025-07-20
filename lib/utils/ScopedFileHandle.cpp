@@ -1,4 +1,4 @@
-#include "mini-llvm/utils/FileHandle.h"
+#include "mini-llvm/utils/ScopedFileHandle.h"
 
 #include <cstdio>
 
@@ -7,15 +7,15 @@
 
 using namespace mini_llvm;
 
-FileHandle::FileHandle(const Path &path, const SystemString &mode) {
+ScopedFileHandle::ScopedFileHandle(const Path &path, const SystemString &mode) {
     open(path, mode);
 }
 
-FileHandle::~FileHandle() {
+ScopedFileHandle::~ScopedFileHandle() {
     close();
 }
 
-void FileHandle::open(const Path &path, const SystemString &mode) {
+void ScopedFileHandle::open(const Path &path, const SystemString &mode) {
 #ifdef _WIN32
     handle_ = _wfopen(path.base().c_str(), mode.c_str());
 #else
@@ -23,13 +23,13 @@ void FileHandle::open(const Path &path, const SystemString &mode) {
 #endif
 }
 
-void FileHandle::close() {
+void ScopedFileHandle::close() {
     if (handle_ == nullptr) return;
     fclose(handle_);
     handle_ = nullptr;
 }
 
-FILE *FileHandle::release() {
+FILE *ScopedFileHandle::release() {
     FILE *handle = handle_;
     handle_ = nullptr;
     return handle;

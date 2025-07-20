@@ -6,8 +6,8 @@
 #include <string>
 
 #include "mini-llvm/utils/Expected.h"
-#include "mini-llvm/utils/FileHandle.h"
 #include "mini-llvm/utils/Path.h"
+#include "mini-llvm/utils/ScopedFileHandle.h"
 #include "mini-llvm/utils/SystemError.h"
 
 using namespace mini_llvm;
@@ -29,7 +29,7 @@ Expected<std::string, SystemError> mini_llvm::readAll(FILE *stream) {
 }
 
 Expected<std::string, SystemError> mini_llvm::readAll(const Path &path) {
-    FileHandle handle(path, "rb");
+    ScopedFileHandle handle(path, "rb");
     if (!handle) {
         return Unexpected(SystemError(errno));
     }
@@ -51,7 +51,7 @@ Expected<void, SystemError> mini_llvm::writeAll(FILE *stream, const char *data, 
 }
 
 Expected<void, SystemError> mini_llvm::writeAll(const Path &path, const char *data, size_t size) {
-    FileHandle handle(path, "wb");
+    ScopedFileHandle handle(path, "wb");
     if (!handle) {
         return Unexpected(SystemError(errno));
     }
