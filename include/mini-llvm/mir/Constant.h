@@ -11,6 +11,11 @@ namespace mini_llvm::mir {
 class Constant {
 public:
     virtual ~Constant() = default;
+    Constant() = default;
+    Constant(const Constant &) = delete;
+    Constant(Constant &&) = delete;
+    Constant &operator=(const Constant &) = delete;
+    Constant &operator=(Constant &&) = delete;
     virtual int size() const = 0;
     virtual std::string format() const = 0;
     virtual void accept(ConstantVisitor &visitor) = 0;

@@ -20,6 +20,11 @@ class ZeroConstant;
 class ConstantVisitor {
 public:
     virtual ~ConstantVisitor() = default;
+    ConstantVisitor() = default;
+    ConstantVisitor(const ConstantVisitor &) = delete;
+    ConstantVisitor(ConstantVisitor &&) = delete;
+    ConstantVisitor &operator=(const ConstantVisitor &) = delete;
+    ConstantVisitor &operator=(ConstantVisitor &&) = delete;
 
     virtual void visitI16ArrayConstant(I16ArrayConstant &C) { visitI16ArrayConstant(std::as_const(C)); }
     virtual void visitI16Constant(I16Constant &C) { visitI16Constant(std::as_const(C)); }

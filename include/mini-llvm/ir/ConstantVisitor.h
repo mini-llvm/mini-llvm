@@ -22,6 +22,11 @@ class VoidValue;
 class ConstantVisitor {
 public:
     virtual ~ConstantVisitor() = default;
+    ConstantVisitor() = default;
+    ConstantVisitor(const ConstantVisitor &) = delete;
+    ConstantVisitor(ConstantVisitor &&) = delete;
+    ConstantVisitor &operator=(const ConstantVisitor &) = delete;
+    ConstantVisitor &operator=(ConstantVisitor &&) = delete;
 
     virtual void visitArrayConstant(ArrayConstant &C) { visitArrayConstant(std::as_const(C)); }
     virtual void visitDoubleConstant(DoubleConstant &C) { visitDoubleConstant(std::as_const(C)); }

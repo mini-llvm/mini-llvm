@@ -21,6 +21,11 @@ class Void;
 class TypeVisitor {
 public:
     virtual ~TypeVisitor() = default;
+    TypeVisitor() = default;
+    TypeVisitor(const TypeVisitor &) = delete;
+    TypeVisitor(TypeVisitor &&) = delete;
+    TypeVisitor &operator=(const TypeVisitor &) = delete;
+    TypeVisitor &operator=(TypeVisitor &&) = delete;
 
     virtual void visitArrayType(ArrayType &type) { visitArrayType(std::as_const(type)); }
     virtual void visitBasicBlockType(BasicBlockType &type) { visitBasicBlockType(std::as_const(type)); }
