@@ -12,7 +12,7 @@ enum RISCVOperation {
 #undef OPS
 };
 
-constexpr const char *mnemonic(RISCVOperation op) {
+inline constexpr const char *mnemonic(RISCVOperation op) {
     switch (op) {
 #define OPS
 #define X(mnemonic, name) case RISCV_##name: return mnemonic;

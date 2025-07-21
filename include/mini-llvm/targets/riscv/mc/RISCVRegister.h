@@ -12,7 +12,7 @@ enum RISCVRegister {
 #undef REGS
 };
 
-constexpr const char *name(RISCVRegister reg) {
+inline constexpr const char *name(RISCVRegister reg) {
     switch (reg) {
 #define REGS
 #define X(idx, name, class, width, isPreserved, isAllocatable) case RISCV_##name: return #name;
