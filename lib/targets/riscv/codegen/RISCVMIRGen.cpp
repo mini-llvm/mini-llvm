@@ -1282,7 +1282,7 @@ public:
                 GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage()));
                 globalVarMap_.put(&IG, &MG);
             } else {
-                GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant(), IG.valueType()->alignment(8), std::nullopt));
+                GlobalVar &MG = MM_->appendGlobalVar(std::make_unique<GlobalVar>(IG.name(), IG.linkage(), IG.isConstant(), IG.valueType()->alignment(8), nullptr));
                 globalVarMap_.put(&IG, &MG);
             }
         }

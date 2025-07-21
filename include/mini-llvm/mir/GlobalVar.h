@@ -1,7 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 
@@ -17,7 +16,7 @@ public:
               Linkage linkage,
               bool isConstant,
               int alignment,
-              std::optional<std::unique_ptr<Constant>> initializer)
+              std::unique_ptr<Constant> initializer)
         : name_(std::move(name)),
           linkage_(linkage),
           isConstant_(isConstant),
@@ -29,7 +28,7 @@ public:
           linkage_(linkage),
           isConstant_(false),
           alignment_(0),
-          initializer_(std::nullopt) {}
+          initializer_(nullptr) {}
 
     GlobalVar(const GlobalVar &&) = delete;
     GlobalVar(GlobalVar &&) = delete;
@@ -73,15 +72,15 @@ public:
     }
 
     Constant &initializer() {
-        return **initializer_;
+        return *initializer_;
     }
 
     const Constant &initializer() const {
-        return **initializer_;
+        return *initializer_;
     }
 
-    void setInitializer(std::unique_ptr<Constant> data) {
-        initializer_ = std::move(data);
+    void setInitializer(std::unique_ptr<Constant> initializer) {
+        initializer_ = std::move(initializer);
     }
 
     std::string format() const override;
@@ -91,7 +90,7 @@ private:
     Linkage linkage_;
     bool isConstant_;
     int alignment_;
-    std::optional<std::unique_ptr<Constant>> initializer_;
+    std::unique_ptr<Constant> initializer_;
 };
 
 } // namespace mini_llvm::mir
