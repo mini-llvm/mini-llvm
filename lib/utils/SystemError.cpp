@@ -16,7 +16,7 @@ namespace {
 
 // https://github.com/python/cpython/blob/v3.13.5/PC/errmap.h
 
-int winerror_to_errno(DWORD winerror) {
+int winerror_to_errno(unsigned long winerror) {
     // Unwrap FACILITY_WIN32 HRESULT errors.
     if ((winerror & 0xFFFF0000) == 0x80070000) {
         winerror &= 0x0000FFFF;

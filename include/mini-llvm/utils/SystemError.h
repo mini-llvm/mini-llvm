@@ -2,16 +2,12 @@
 
 #include <optional>
 
-#ifdef _WIN32
-    #include <windows.h>
-#endif
-
 namespace mini_llvm {
 
 class SystemError {
 public:
 #ifdef _WIN32
-    using native_type = DWORD;
+    using native_type = unsigned long;
 #else
     using native_type = int;
 #endif
