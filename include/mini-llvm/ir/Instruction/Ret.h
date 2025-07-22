@@ -13,10 +13,11 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Ret final : public Terminator {
+class MINI_LLVM_EXPORT Ret final : public Terminator {
 public:
     explicit Ret(std::shared_ptr<Value> value = std::make_shared<VoidValue>()) : value_(this, std::move(value)) {}
 

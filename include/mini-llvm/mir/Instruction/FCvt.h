@@ -15,11 +15,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class FCvt : public Instruction {
+class MINI_LLVM_EXPORT FCvt : public Instruction {
 public:
     FCvt(Precision dstPrecision,
          Precision srcPrecision,

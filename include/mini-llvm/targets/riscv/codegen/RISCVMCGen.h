@@ -4,10 +4,11 @@
 
 #include "mini-llvm/mc/Module.h"
 #include "mini-llvm/mir/Module.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm {
 
-class RISCVMCGen {
+class MINI_LLVM_EXPORT RISCVMCGen {
 public:
     RISCVMCGen(const mir::Module *MM, mc::Module *MCM);
     ~RISCVMCGen();

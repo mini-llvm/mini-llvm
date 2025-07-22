@@ -12,10 +12,11 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Br final : public Terminator {
+class MINI_LLVM_EXPORT Br final : public Terminator {
 public:
     explicit Br(std::weak_ptr<BasicBlock> dest) : dest_(this, std::move(dest)) {}
 

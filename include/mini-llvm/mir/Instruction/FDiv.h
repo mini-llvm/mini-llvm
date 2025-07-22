@@ -8,11 +8,12 @@
 #include "mini-llvm/mir/Instruction/FBinaryOperator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class FDiv : public FBinaryOperator {
+class MINI_LLVM_EXPORT FDiv : public FBinaryOperator {
 public:
     FDiv(Precision precision,
          std::shared_ptr<Register> dst,

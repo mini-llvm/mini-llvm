@@ -7,10 +7,11 @@
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/GlobalValue.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class GlobalVar final : public GlobalValue {
+class MINI_LLVM_EXPORT GlobalVar final : public GlobalValue {
 public:
     GlobalVar(std::string name,
               Linkage linkage,

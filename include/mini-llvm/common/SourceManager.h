@@ -6,9 +6,11 @@
 #include <utility>
 #include <vector>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm {
 
-class SourceManager {
+class MINI_LLVM_EXPORT SourceManager {
 public:
     void setSource(std::string source);
 

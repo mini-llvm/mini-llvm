@@ -2,10 +2,11 @@
 
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/opt/mir/FunctionTransform.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class BasicBlockReordering final : public FunctionTransform {
+class MINI_LLVM_EXPORT BasicBlockReordering final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
 

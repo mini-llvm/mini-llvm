@@ -12,10 +12,11 @@
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class BitCast final : public Instruction {
+class MINI_LLVM_EXPORT BitCast final : public Instruction {
 public:
     BitCast(std::shared_ptr<Value> value, std::unique_ptr<Type> type)
         : value_(this, std::move(value)), type_(std::move(type)) {}

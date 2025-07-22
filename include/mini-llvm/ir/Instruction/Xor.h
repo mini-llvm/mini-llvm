@@ -8,10 +8,11 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Xor final : public BinaryIntegerArithmeticOperator {
+class MINI_LLVM_EXPORT Xor final : public BinaryIntegerArithmeticOperator {
 public:
     Xor(std::shared_ptr<Value> lhs, std::shared_ptr<Value> rhs)
         : BinaryIntegerArithmeticOperator(std::move(lhs), std::move(rhs)) {}

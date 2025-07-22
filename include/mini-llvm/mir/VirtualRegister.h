@@ -4,10 +4,11 @@
 #include <utility>
 
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class VirtualRegister final : public Register {
+class MINI_LLVM_EXPORT VirtualRegister final : public Register {
 public:
     explicit VirtualRegister(int width)
         : width_(width) {}

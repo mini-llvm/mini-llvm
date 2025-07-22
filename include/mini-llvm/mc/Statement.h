@@ -4,9 +4,11 @@
 #include <format>
 #include <string>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mc {
 
-class Statement {
+class MINI_LLVM_EXPORT Statement {
 public:
     virtual ~Statement() = default;
     Statement() = default;

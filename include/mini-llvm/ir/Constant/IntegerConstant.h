@@ -4,10 +4,11 @@
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class IntegerConstant : public Constant {
+class MINI_LLVM_EXPORT IntegerConstant : public Constant {
 public:
     virtual int64_t signExtendedValue() const = 0;
     virtual int64_t zeroExtendedValue() const = 0;

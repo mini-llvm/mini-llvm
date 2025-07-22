@@ -8,11 +8,12 @@
 #include "mini-llvm/mir/Instruction/FUnaryOperator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class FMov : public FUnaryOperator {
+class MINI_LLVM_EXPORT FMov : public FUnaryOperator {
 public:
     FMov(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : FUnaryOperator(precision, std::move(dst), std::move(src)) {}

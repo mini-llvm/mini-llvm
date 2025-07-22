@@ -6,10 +6,11 @@
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/VirtualRegister.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm {
 
-class NaiveAllocator : public RegisterAllocator {
+class MINI_LLVM_EXPORT NaiveAllocator : public RegisterAllocator {
 public:
     bool allocate(
         mir::Function &F,

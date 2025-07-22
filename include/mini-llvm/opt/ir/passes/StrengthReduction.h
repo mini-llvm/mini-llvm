@@ -4,10 +4,11 @@
 
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/opt/ir/FunctionTransform.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class StrengthReduction final : public FunctionTransform {
+class MINI_LLVM_EXPORT StrengthReduction final : public FunctionTransform {
 public:
     StrengthReduction(size_t mulThreshold, size_t divThreshold, size_t remThreshold)
         : mulThreshold_(mulThreshold), divThreshold_(divThreshold), remThreshold_(remThreshold) {}

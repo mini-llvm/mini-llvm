@@ -6,10 +6,11 @@
 #include "mini-llvm/ir/Instruction/BinaryFloatingOperator.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class BinaryFloatingArithmeticOperator : public BinaryFloatingOperator {
+class MINI_LLVM_EXPORT BinaryFloatingArithmeticOperator : public BinaryFloatingOperator {
 public:
     std::unique_ptr<Type> type() const override {
         return lhs()->type();

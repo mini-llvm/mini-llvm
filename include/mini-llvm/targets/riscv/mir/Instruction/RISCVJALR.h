@@ -10,11 +10,12 @@
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class RISCVJALR final : public Instruction {
+class MINI_LLVM_EXPORT RISCVJALR final : public Instruction {
 public:
     RISCVJALR(std::shared_ptr<Register> src, int numIntegerArgs, int numFloatingArgs)
         : src_(RegisterClass::kGPR, std::move(src)),

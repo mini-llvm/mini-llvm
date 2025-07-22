@@ -7,10 +7,11 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class BinaryIntegerOperator : public Instruction {
+class MINI_LLVM_EXPORT BinaryIntegerOperator : public Instruction {
 public:
     template <typename Self>
     auto &lhs(this Self &&self) {

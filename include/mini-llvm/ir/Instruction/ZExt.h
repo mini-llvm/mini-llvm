@@ -9,10 +9,11 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class ZExt final : public IntegerCastingOperator {
+class MINI_LLVM_EXPORT ZExt final : public IntegerCastingOperator {
 public:
     ZExt(std::shared_ptr<Value> value, std::unique_ptr<IntegerType> type)
         : IntegerCastingOperator(std::move(value), std::move(type)) {}

@@ -16,11 +16,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class CmpZBr : public Terminator {
+class MINI_LLVM_EXPORT CmpZBr : public Terminator {
 public:
     CmpZBr(int width,
            Condition cond,

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "mini-llvm/ir/Module.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class PassManager {
+class MINI_LLVM_EXPORT PassManager {
 public:
     explicit PassManager(int pointerSize)
         : pointerSize_(pointerSize) {}

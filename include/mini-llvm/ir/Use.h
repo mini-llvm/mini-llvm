@@ -7,11 +7,12 @@
 #include <variant>
 
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
-class UseBase {
+class MINI_LLVM_EXPORT UseBase {
 public:
     virtual ~UseBase();
     UseBase(Value *user, std::shared_ptr<Value> value);

@@ -6,6 +6,7 @@
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/opt/ir/FunctionAnalysis.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
@@ -15,7 +16,7 @@ struct DTNode {
     std::vector<const DTNode *> children;
 };
 
-class DominatorTreeAnalysis final : public FunctionAnalysis {
+class MINI_LLVM_EXPORT DominatorTreeAnalysis final : public FunctionAnalysis {
 public:
     DominatorTreeAnalysis();
     ~DominatorTreeAnalysis() override;

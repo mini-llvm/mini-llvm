@@ -8,11 +8,12 @@
 #include "mini-llvm/mir/Instruction/BinaryOperator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class UDiv : public BinaryOperator {
+class MINI_LLVM_EXPORT UDiv : public BinaryOperator {
 public:
     UDiv(int width,
          std::shared_ptr<Register> dst,

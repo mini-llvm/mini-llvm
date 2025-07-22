@@ -4,10 +4,11 @@
 
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/opt/mir/FunctionTransform.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class TailDuplication final : public FunctionTransform {
+class MINI_LLVM_EXPORT TailDuplication final : public FunctionTransform {
 public:
     explicit TailDuplication(size_t threshold) : threshold_(threshold) {}
 

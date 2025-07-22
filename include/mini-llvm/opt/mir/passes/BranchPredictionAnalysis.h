@@ -5,10 +5,11 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/opt/mir/FunctionAnalysis.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class BranchPredictionAnalysis final : public FunctionAnalysis {
+class MINI_LLVM_EXPORT BranchPredictionAnalysis final : public FunctionAnalysis {
 public:
     BranchPredictionAnalysis();
     ~BranchPredictionAnalysis() override;

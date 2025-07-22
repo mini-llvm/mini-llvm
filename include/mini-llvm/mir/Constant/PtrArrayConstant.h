@@ -7,10 +7,11 @@
 
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/GlobalValue.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class PtrArrayConstant final : public Constant {
+class MINI_LLVM_EXPORT PtrArrayConstant final : public Constant {
 public:
     PtrArrayConstant(int ptrSize, std::vector<GlobalValue *> elements)
         : ptrSize_(ptrSize), elements_(std::move(elements)) {}

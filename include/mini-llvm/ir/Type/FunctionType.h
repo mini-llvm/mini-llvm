@@ -11,11 +11,12 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::ir {
 
-class FunctionType final : public Type {
+class MINI_LLVM_EXPORT FunctionType final : public Type {
 public:
     using param_type_iterator = IndirectIterator<std::vector<std::unique_ptr<Type>>::const_iterator, Type>;
 

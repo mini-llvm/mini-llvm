@@ -7,10 +7,11 @@
 #include <utility>
 
 #include "mini-llvm/mc/GlobalValue.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class Module {
+class MINI_LLVM_EXPORT Module {
     using GlobalValueList = std::list<GlobalValue>;
 
 public:
@@ -18,6 +19,12 @@ public:
     using const_iterator = GlobalValueList::const_iterator;
     using reverse_iterator = GlobalValueList::reverse_iterator;
     using const_reverse_iterator = GlobalValueList::const_reverse_iterator;
+
+    Module() = default;
+    Module(const Module &) = delete;
+    Module(Module &&) = default;
+    Module &operator=(const Module &) = delete;
+    Module &operator=(Module &&) = default;
 
     iterator begin() {
         return globalValues_.begin();

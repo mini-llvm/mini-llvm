@@ -11,10 +11,11 @@
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class IntToPtr final : public Instruction {
+class MINI_LLVM_EXPORT IntToPtr final : public Instruction {
 public:
     explicit IntToPtr(std::shared_ptr<Value> value) : value_(this, std::move(value)) {}
 

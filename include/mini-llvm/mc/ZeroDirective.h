@@ -4,10 +4,11 @@
 #include <string>
 
 #include "mini-llvm/mc/Directive.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class ZeroDirective : public Directive {
+class MINI_LLVM_EXPORT ZeroDirective : public Directive {
 public:
     explicit ZeroDirective(int size) : size_(size) {}
 

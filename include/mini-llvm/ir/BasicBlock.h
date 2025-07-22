@@ -15,6 +15,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -22,7 +23,7 @@ namespace mini_llvm::ir {
 
 class Instruction;
 
-class BasicBlock final : public Value {
+class MINI_LLVM_EXPORT BasicBlock final : public Value {
     using InstructionList = std::list<std::shared_ptr<Instruction>>;
 
 public:
@@ -163,10 +164,10 @@ private:
     friend class Function;
 };
 
-bool hasNPredecessors(const BasicBlock &B, size_t n);
-bool hasNPredecessorsOrMore(const BasicBlock &B, size_t n);
-std::unordered_set<BasicBlock *> predecessors(const BasicBlock &B);
-std::unordered_set<BasicBlock *> successors(const BasicBlock &B);
-void removeFromParent(const BasicBlock &B);
+MINI_LLVM_EXPORT bool hasNPredecessors(const BasicBlock &B, size_t n);
+MINI_LLVM_EXPORT bool hasNPredecessorsOrMore(const BasicBlock &B, size_t n);
+MINI_LLVM_EXPORT std::unordered_set<BasicBlock *> predecessors(const BasicBlock &B);
+MINI_LLVM_EXPORT std::unordered_set<BasicBlock *> successors(const BasicBlock &B);
+MINI_LLVM_EXPORT void removeFromParent(const BasicBlock &B);
 
 } // namespace mini_llvm::ir

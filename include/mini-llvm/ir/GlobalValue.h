@@ -8,10 +8,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class GlobalValue : public Constant {
+class MINI_LLVM_EXPORT GlobalValue : public Constant {
 public:
     std::unique_ptr<Type> type() const override {
         return std::make_unique<Ptr>();

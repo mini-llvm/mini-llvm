@@ -17,6 +17,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/ir_reader/Symbol.h"
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
@@ -42,7 +43,7 @@ private:
     std::vector<Token>::const_iterator location_;
 };
 
-class Parser {
+class MINI_LLVM_EXPORT Parser {
 public:
     explicit Parser(std::vector<Token>::const_iterator current);
     ~Parser();
@@ -66,6 +67,6 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-Module parseModule(const std::vector<Token> &tokens);
+MINI_LLVM_EXPORT Module parseModule(const std::vector<Token> &tokens);
 
 } // namespace mini_llvm::ir

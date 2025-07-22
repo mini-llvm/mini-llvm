@@ -11,10 +11,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Float final : public FloatingType {
+class MINI_LLVM_EXPORT Float final : public FloatingType {
 public:
     Precision precision() const override {
         return Precision::kSingle;

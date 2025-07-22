@@ -11,10 +11,11 @@
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class GlobalVar final : public GlobalValue {
+class MINI_LLVM_EXPORT GlobalVar final : public GlobalValue {
 public:
     GlobalVar(std::unique_ptr<Type> valueType,
               Linkage linkage,

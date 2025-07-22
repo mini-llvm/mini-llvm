@@ -8,11 +8,12 @@
 #include "mini-llvm/mir/Instruction/BinaryOperator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class URem : public BinaryOperator {
+class MINI_LLVM_EXPORT URem : public BinaryOperator {
 public:
     URem(int width,
          std::shared_ptr<Register> dst,

@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "mini-llvm/mir/StackSlot.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mir {
 
-class StackFrame {
+class MINI_LLVM_EXPORT StackFrame {
     using StackSlotList =  std::list<std::unique_ptr<StackSlot>>;
 
 public:

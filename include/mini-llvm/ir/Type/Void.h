@@ -9,10 +9,11 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Void final : public Type {
+class MINI_LLVM_EXPORT Void final : public Type {
 public:
     int size() const override {
         abort();

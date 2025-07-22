@@ -15,11 +15,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class LA : public Instruction {
+class MINI_LLVM_EXPORT LA : public Instruction {
 public:
     LA(int width, std::shared_ptr<Register> dst, GlobalValue *src)
         : width_(width), dst_(RegisterClass::kGPR, std::move(dst)), src_(src) {}

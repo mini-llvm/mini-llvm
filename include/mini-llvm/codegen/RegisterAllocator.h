@@ -8,11 +8,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/FunctionRef.h"
 
 namespace mini_llvm {
 
-class RegisterAllocator {
+class MINI_LLVM_EXPORT RegisterAllocator {
 public:
     using RegisterAction = FunctionRef<
         void (mir::Register *reg, mir::StackSlot *slot, const mir::BasicBlockBuilder &builder)

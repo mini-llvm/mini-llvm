@@ -14,12 +14,13 @@
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
-class IndirectCall : public Instruction {
+class MINI_LLVM_EXPORT IndirectCall : public Instruction {
     using ArgumentList = std::vector<std::unique_ptr<Use<Value>>>;
 
 public:

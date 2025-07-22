@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
@@ -33,7 +34,7 @@ private:
     const char *location_;
 };
 
-class Lexer {
+class MINI_LLVM_EXPORT Lexer {
 public:
     explicit Lexer(const char *current);
     ~Lexer();
@@ -47,6 +48,6 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-std::vector<Token> lex(const char *source);
+MINI_LLVM_EXPORT std::vector<Token> lex(const char *source);
 
 } // namespace mini_llvm::ir

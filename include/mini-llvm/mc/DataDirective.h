@@ -5,10 +5,11 @@
 #include <string>
 
 #include "mini-llvm/mc/Directive.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class DataDirective : public Directive {
+class MINI_LLVM_EXPORT DataDirective : public Directive {
 public:
     int width() const {
         return width_;

@@ -9,12 +9,13 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
 class Constant;
 
-class Ptr final : public IntegerOrPointerType {
+class MINI_LLVM_EXPORT Ptr final : public IntegerOrPointerType {
 public:
     int size() const override {
         abort();

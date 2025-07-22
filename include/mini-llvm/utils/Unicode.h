@@ -1,7 +1,9 @@
 #pragma once
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm {
 
-char32_t decodeUtf8(const char *&ptr) noexcept;
+MINI_LLVM_EXPORT char32_t decodeUtf8(const char *&ptr) noexcept;
 
 } // namespace mini_llvm

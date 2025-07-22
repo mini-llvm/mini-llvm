@@ -9,10 +9,11 @@
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class FPToUI final : public FloatingToIntegerCastingOperator {
+class MINI_LLVM_EXPORT FPToUI final : public FloatingToIntegerCastingOperator {
 public:
     FPToUI(std::shared_ptr<Value> value, std::unique_ptr<IntegerType> type)
         : FloatingToIntegerCastingOperator(std::move(value), std::move(type)) {}

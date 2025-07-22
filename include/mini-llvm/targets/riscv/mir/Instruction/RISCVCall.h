@@ -13,10 +13,11 @@
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class RISCVCall final : public Instruction {
+class MINI_LLVM_EXPORT RISCVCall final : public Instruction {
 public:
     RISCVCall(Function *callee, int numIntegerArgs, int numFloatingArgs)
         : callee_(callee), numIntegerArgs_(numIntegerArgs), numFloatingArgs_(numFloatingArgs) {}

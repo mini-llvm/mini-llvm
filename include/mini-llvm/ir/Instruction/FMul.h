@@ -8,10 +8,11 @@
 #include "mini-llvm/ir/Instruction/BinaryFloatingArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class FMul final : public BinaryFloatingArithmeticOperator {
+class MINI_LLVM_EXPORT FMul final : public BinaryFloatingArithmeticOperator {
 public:
     FMul(std::shared_ptr<Value> lhs, std::shared_ptr<Value> rhs)
         : BinaryFloatingArithmeticOperator(std::move(lhs), std::move(rhs)) {}

@@ -6,10 +6,11 @@
 #include <string>
 
 #include "mini-llvm/common/Linkage.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class GlobalValue {
+class MINI_LLVM_EXPORT GlobalValue {
 public:
     virtual ~GlobalValue() = default;
     GlobalValue() = default;

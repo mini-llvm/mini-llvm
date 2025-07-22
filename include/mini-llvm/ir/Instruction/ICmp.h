@@ -9,10 +9,11 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerRelationalOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class ICmp final : public BinaryIntegerRelationalOperator {
+class MINI_LLVM_EXPORT ICmp final : public BinaryIntegerRelationalOperator {
 public:
     enum class Condition {
         kEQ,

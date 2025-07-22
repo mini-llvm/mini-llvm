@@ -13,11 +13,12 @@
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::ir {
 
-class GetElementPtr final : public Instruction {
+class MINI_LLVM_EXPORT GetElementPtr final : public Instruction {
     using IdxList = std::vector<std::unique_ptr<Use<Value>>>;
 
 public:

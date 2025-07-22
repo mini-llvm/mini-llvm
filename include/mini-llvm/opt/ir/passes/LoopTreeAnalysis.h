@@ -6,6 +6,7 @@
 
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/opt/ir/FunctionAnalysis.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
@@ -20,7 +21,7 @@ struct LTNode {
     std::vector<const LTNode *> children;
 };
 
-class LoopTreeAnalysis final : public FunctionAnalysis {
+class MINI_LLVM_EXPORT LoopTreeAnalysis final : public FunctionAnalysis {
 public:
     LoopTreeAnalysis();
     ~LoopTreeAnalysis() override;

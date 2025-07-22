@@ -2,10 +2,11 @@
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/opt/mir/BasicBlockTransform.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class NullOperationElimination final : public BasicBlockTransform {
+class MINI_LLVM_EXPORT NullOperationElimination final : public BasicBlockTransform {
 public:
     bool runOnBasicBlock(BasicBlock &B) override;
 

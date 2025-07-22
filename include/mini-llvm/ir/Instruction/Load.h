@@ -10,10 +10,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Load final : public Instruction {
+class MINI_LLVM_EXPORT Load final : public Instruction {
 public:
     Load(std::unique_ptr<Type> type, std::shared_ptr<Value> addr)
         : type_(std::move(type)), ptr_(this, std::move(addr)) {}

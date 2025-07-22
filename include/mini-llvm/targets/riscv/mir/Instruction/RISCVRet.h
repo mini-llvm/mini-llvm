@@ -10,10 +10,11 @@
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/targets/riscv/mir/RISCVInstructionVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class RISCVRet final : public Terminator {
+class MINI_LLVM_EXPORT RISCVRet final : public Terminator {
 public:
     RISCVRet(int numIntegerResults, int numFloatingResults)
         : numIntegerResults_(numIntegerResults), numFloatingResults_(numFloatingResults) {}

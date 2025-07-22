@@ -9,10 +9,11 @@
 #include "mini-llvm/ir/Instruction/BinaryFloatingRelationalOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class FCmp final : public BinaryFloatingRelationalOperator {
+class MINI_LLVM_EXPORT FCmp final : public BinaryFloatingRelationalOperator {
 public:
     enum class Condition {
         kOEQ,

@@ -1,8 +1,10 @@
 #pragma once
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::ir {
 
-class Pass {
+class MINI_LLVM_EXPORT Pass {
 public:
     virtual ~Pass() = default;
     Pass() = default;

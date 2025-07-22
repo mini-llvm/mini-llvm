@@ -9,11 +9,12 @@
 #include "mini-llvm/mir/Instruction/BinaryOperatorI.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class SubI : public BinaryOperatorI {
+class MINI_LLVM_EXPORT SubI : public BinaryOperatorI {
 public:
     SubI(int width,
          std::shared_ptr<Register> dst,

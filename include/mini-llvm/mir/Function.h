@@ -11,11 +11,12 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/GlobalValue.h"
 #include "mini-llvm/mir/StackFrame.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mir {
 
-class Function final : public GlobalValue {
+class MINI_LLVM_EXPORT Function final : public GlobalValue {
     using BasicBlockList = std::list<std::unique_ptr<BasicBlock>>;
 
 public:

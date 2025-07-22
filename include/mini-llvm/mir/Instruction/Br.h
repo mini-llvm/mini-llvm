@@ -9,10 +9,11 @@
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/mir/MemoryOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class Br : public Terminator {
+class MINI_LLVM_EXPORT Br : public Terminator {
 public:
     explicit Br(BasicBlock *dest) : dest_(dest) {}
 

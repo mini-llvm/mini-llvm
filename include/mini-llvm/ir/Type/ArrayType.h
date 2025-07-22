@@ -11,10 +11,11 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class ArrayType final : public Type {
+class MINI_LLVM_EXPORT ArrayType final : public Type {
 public:
     ArrayType(std::unique_ptr<Type> elementType, size_t numElements)
         : elementType_(std::move(elementType)), numElements_(numElements) {}

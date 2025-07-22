@@ -4,10 +4,11 @@
 
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class Terminator : public Instruction {
+class MINI_LLVM_EXPORT Terminator : public Instruction {
 public:
     bool hasSideEffects() const override {
         return true;

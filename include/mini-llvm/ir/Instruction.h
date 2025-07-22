@@ -12,11 +12,12 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
 
-class Instruction : public Value {
+class MINI_LLVM_EXPORT Instruction : public Value {
 public:
     BasicBlock *parent() const {
         return parent_;
@@ -53,7 +54,7 @@ private:
     friend class BasicBlock;
 };
 
-Instruction &addToParent(const Instruction &before, std::shared_ptr<Instruction> I);
+MINI_LLVM_EXPORT Instruction &addToParent(const Instruction &before, std::shared_ptr<Instruction> I);
 
 template <typename T>
     requires std::derived_from<T, Instruction>
@@ -61,6 +62,6 @@ T &addToParent(const Instruction &before, std::shared_ptr<T> I) {
     return static_cast<T &>(addToParent(before, cast<Instruction>(std::move(I))));
 }
 
-void removeFromParent(const Instruction &I);
+MINI_LLVM_EXPORT void removeFromParent(const Instruction &I);
 
 } // namespace mini_llvm::ir

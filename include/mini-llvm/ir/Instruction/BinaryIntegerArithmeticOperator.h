@@ -6,10 +6,11 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class BinaryIntegerArithmeticOperator : public BinaryIntegerOperator {
+class MINI_LLVM_EXPORT BinaryIntegerArithmeticOperator : public BinaryIntegerOperator {
 public:
     std::unique_ptr<Type> type() const override {
         return lhs()->type();

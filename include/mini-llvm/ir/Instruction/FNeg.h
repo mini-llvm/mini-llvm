@@ -8,10 +8,11 @@
 #include "mini-llvm/ir/Instruction/UnaryFloatingArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class FNeg final : public UnaryFloatingArithmeticOperator {
+class MINI_LLVM_EXPORT FNeg final : public UnaryFloatingArithmeticOperator {
 public:
     explicit FNeg(std::shared_ptr<Value> value) : UnaryFloatingArithmeticOperator(std::move(value)) {}
 

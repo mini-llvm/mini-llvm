@@ -7,10 +7,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class BinaryFloatingRelationalOperator : public BinaryFloatingOperator {
+class MINI_LLVM_EXPORT BinaryFloatingRelationalOperator : public BinaryFloatingOperator {
 public:
     std::unique_ptr<Type> type() const override {
         return std::make_unique<I1>();

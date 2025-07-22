@@ -5,6 +5,7 @@
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/FunctionAnalysis.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
@@ -15,7 +16,7 @@ enum class AliasResult {
     kNoAlias,
 };
 
-class AliasAnalysis final : public FunctionAnalysis {
+class MINI_LLVM_EXPORT AliasAnalysis final : public FunctionAnalysis {
 public:
     AliasAnalysis();
     ~AliasAnalysis() override;

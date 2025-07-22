@@ -1,10 +1,11 @@
 #pragma once
 
 #include "mini-llvm/mc/Module.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class RISCVPassManager {
+class MINI_LLVM_EXPORT RISCVPassManager {
 public:
     void run(Module &M) const;
 };

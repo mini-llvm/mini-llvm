@@ -11,10 +11,11 @@
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class Live : public Instruction {
+class MINI_LLVM_EXPORT Live : public Instruction {
 public:
     explicit Live(PhysicalRegister *physReg) : physReg_(physReg) {}
 

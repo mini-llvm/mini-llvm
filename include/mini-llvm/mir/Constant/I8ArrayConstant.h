@@ -8,10 +8,11 @@
 
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class I8ArrayConstant final : public Constant {
+class MINI_LLVM_EXPORT I8ArrayConstant final : public Constant {
 public:
     explicit I8ArrayConstant(std::vector<int8_t> elements) : elements_(std::move(elements)) {}
 

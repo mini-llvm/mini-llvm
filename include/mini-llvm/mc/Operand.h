@@ -4,9 +4,11 @@
 #include <format>
 #include <string>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mc {
 
-class Operand {
+class MINI_LLVM_EXPORT Operand {
 public:
     virtual ~Operand() = default;
     Operand() = default;

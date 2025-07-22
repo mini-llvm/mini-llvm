@@ -3,10 +3,11 @@
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Module.h"
 #include "mini-llvm/opt/mc/ModuleTransform.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class GlobalValueTransform : public ModuleTransform {
+class MINI_LLVM_EXPORT MINI_LLVM_EXPORT GlobalValueTransform : public ModuleTransform {
 public:
     virtual bool runOnGlobalValue(GlobalValue &G) = 0;
     bool runOnModule(Module &M) override;

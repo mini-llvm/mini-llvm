@@ -3,12 +3,13 @@
 #include <cstdio>
 #include <utility>
 
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Path.h"
 #include "mini-llvm/utils/SystemString.h"
 
 namespace mini_llvm {
 
-class ScopedFileHandle {
+class MINI_LLVM_EXPORT ScopedFileHandle {
 public:
     ScopedFileHandle() = default;
 

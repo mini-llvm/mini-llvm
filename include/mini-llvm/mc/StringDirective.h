@@ -6,10 +6,11 @@
 #include <vector>
 
 #include "mini-llvm/mc/Directive.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class StringDirective : public Directive {
+class MINI_LLVM_EXPORT StringDirective : public Directive {
 public:
     explicit StringDirective(std::vector<int8_t> elements)
         : elements_(std::move(elements)) {}

@@ -15,11 +15,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class FMovIF : public Instruction {
+class MINI_LLVM_EXPORT FMovIF : public Instruction {
 public:
     FMovIF(Precision precision, std::shared_ptr<Register> dst, std::shared_ptr<Register> src)
         : precision_(precision),

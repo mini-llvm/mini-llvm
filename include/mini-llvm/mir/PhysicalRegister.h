@@ -4,10 +4,11 @@
 
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class PhysicalRegister : public Register {
+class MINI_LLVM_EXPORT PhysicalRegister : public Register {
 public:
     virtual int idx() const = 0;
     virtual std::string name() const = 0;

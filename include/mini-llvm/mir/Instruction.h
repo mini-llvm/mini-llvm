@@ -12,10 +12,11 @@
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class Instruction {
+class MINI_LLVM_EXPORT Instruction {
 public:
     virtual ~Instruction() = default;
     Instruction() = default;
@@ -45,8 +46,8 @@ public:
     virtual void accept(InstructionVisitor &visitor) const = 0;
 };
 
-std::unordered_set<Register *> use(const Instruction &I);
-std::unordered_set<Register *> def(const Instruction &I);
+MINI_LLVM_EXPORT std::unordered_set<Register *> use(const Instruction &I);
+MINI_LLVM_EXPORT std::unordered_set<Register *> def(const Instruction &I);
 
 } // namespace mini_llvm::mir
 

@@ -2,9 +2,11 @@
 
 #include <optional>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm {
 
-class SystemError {
+class MINI_LLVM_EXPORT SystemError {
 public:
 #ifdef _WIN32
     using native_type = unsigned long;

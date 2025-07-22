@@ -15,11 +15,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class FLoad : public Instruction {
+class MINI_LLVM_EXPORT FLoad : public Instruction {
 public:
     FLoad(Precision precision, std::shared_ptr<Register> dst, MemoryOperand src)
         : precision_(precision),

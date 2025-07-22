@@ -7,12 +7,13 @@
 #include <string>
 
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
 class Constant;
 
-class Type {
+class MINI_LLVM_EXPORT Type {
 public:
     virtual ~Type() = default;
     Type() = default;

@@ -13,12 +13,13 @@
 
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class BasicBlock {
+class MINI_LLVM_EXPORT BasicBlock {
     using InstructionList = std::list<std::unique_ptr<Instruction>>;
 
 public:

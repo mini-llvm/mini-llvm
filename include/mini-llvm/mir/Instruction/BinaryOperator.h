@@ -12,10 +12,11 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class BinaryOperator : public Instruction {
+class MINI_LLVM_EXPORT BinaryOperator : public Instruction {
 public:
     int width() const {
         return width_;

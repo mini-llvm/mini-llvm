@@ -11,11 +11,12 @@
 
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/GlobalVar.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mir {
 
-class Module {
+class MINI_LLVM_EXPORT Module {
     using GlobalVarList = std::list<std::unique_ptr<GlobalVar>>;
     using FunctionList = std::list<std::unique_ptr<Function>>;
 
@@ -25,6 +26,12 @@ public:
 
     using function_iterator = IndirectIterator<FunctionList::iterator>;
     using const_function_iterator = IndirectIterator<FunctionList::const_iterator>;
+
+    Module() = default;
+    Module(const Module &) = delete;
+    Module(Module &&) = default;
+    Module &operator=(const Module &) = delete;
+    Module &operator=(Module &&) = default;
 
     global_var_iterator global_var_begin() {
         return global_var_iterator(globalVars_.begin());

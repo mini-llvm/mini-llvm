@@ -14,11 +14,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class CondSet : public Instruction {
+class MINI_LLVM_EXPORT CondSet : public Instruction {
 public:
     CondSet(int width, Condition cond, std::shared_ptr<Register> dst)
         : width_(width), cond_(cond), dst_(RegisterClass::kGPR, std::move(dst)) {}

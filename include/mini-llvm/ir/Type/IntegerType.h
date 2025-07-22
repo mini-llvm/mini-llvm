@@ -1,9 +1,10 @@
 #pragma once
 
 #include "mini-llvm/ir/Type/IntegerOrPointerType.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class IntegerType : public IntegerOrPointerType {};
+class MINI_LLVM_EXPORT IntegerType : public IntegerOrPointerType {};
 
 } // namespace mini_llvm::ir

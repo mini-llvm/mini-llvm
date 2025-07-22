@@ -8,11 +8,12 @@
 #include "mini-llvm/mir/Instruction/UnaryOperator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/Register.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class Mov : public UnaryOperator {
+class MINI_LLVM_EXPORT Mov : public UnaryOperator {
 public:
     Mov(int width,
         std::shared_ptr<Register> dst,

@@ -6,10 +6,11 @@
 #include "mini-llvm/ir/Instruction/UnaryFloatingOperator.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class UnaryFloatingArithmeticOperator : public UnaryFloatingOperator {
+class MINI_LLVM_EXPORT UnaryFloatingArithmeticOperator : public UnaryFloatingOperator {
 public:
     std::unique_ptr<Type> type() const override {
         return value()->type();

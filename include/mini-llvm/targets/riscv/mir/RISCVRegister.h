@@ -6,10 +6,11 @@
 
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterClass.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class RISCVRegister final : public PhysicalRegister {
+class MINI_LLVM_EXPORT RISCVRegister final : public PhysicalRegister {
 public:
     int idx() const override {
         return idx_;
@@ -59,12 +60,12 @@ namespace riscv {
 
 } // namespace riscv
 
-const std::unordered_set<RISCVRegister *> &riscvRegs();
-const std::vector<RISCVRegister *> &riscvIntegerResultRegs();
-const std::vector<RISCVRegister *> &riscvIntegerArgRegs();
-const std::vector<RISCVRegister *> &riscvFloatingResultRegs();
-const std::vector<RISCVRegister *> &riscvFloatingArgRegs();
-std::unordered_set<PhysicalRegister *> riscvCallImplicitDsts();
-std::unordered_set<PhysicalRegister *> riscvCallImplicitSrcs(int numIntegerArgs, int numFloatingArgs);
+MINI_LLVM_EXPORT const std::unordered_set<RISCVRegister *> &riscvRegs();
+MINI_LLVM_EXPORT const std::vector<RISCVRegister *> &riscvIntegerResultRegs();
+MINI_LLVM_EXPORT const std::vector<RISCVRegister *> &riscvIntegerArgRegs();
+MINI_LLVM_EXPORT const std::vector<RISCVRegister *> &riscvFloatingResultRegs();
+MINI_LLVM_EXPORT const std::vector<RISCVRegister *> &riscvFloatingArgRegs();
+MINI_LLVM_EXPORT std::unordered_set<PhysicalRegister *> riscvCallImplicitDsts();
+MINI_LLVM_EXPORT std::unordered_set<PhysicalRegister *> riscvCallImplicitSrcs(int numIntegerArgs, int numFloatingArgs);
 
 } // namespace mini_llvm::mir

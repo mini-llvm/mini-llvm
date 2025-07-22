@@ -8,10 +8,11 @@
 
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class I64ArrayConstant final : public Constant {
+class MINI_LLVM_EXPORT I64ArrayConstant final : public Constant {
 public:
     explicit I64ArrayConstant(std::vector<int64_t> elements) : elements_(std::move(elements)) {}
 

@@ -141,6 +141,14 @@ add_library(mini-llvm
     utils/Unicode.cpp
     utils/Windows.cpp
 )
+set_target_properties(mini-llvm PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+)
+if(BUILD_SHARED_LIBS)
+    target_compile_definitions(mini-llvm PRIVATE MINI_LLVM_SHARED_BUILD)
+    target_compile_definitions(mini-llvm INTERFACE MINI_LLVM_SHARED)
+endif()
 target_compile_features(mini-llvm PUBLIC cxx_std_23)
 target_include_directories(mini-llvm PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"

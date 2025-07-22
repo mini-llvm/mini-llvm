@@ -14,10 +14,11 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class FUnaryOperator : public Instruction {
+class MINI_LLVM_EXPORT FUnaryOperator : public Instruction {
 public:
     Precision precision() const {
         return precision_;

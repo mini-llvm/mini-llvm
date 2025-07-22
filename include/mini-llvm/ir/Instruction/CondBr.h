@@ -12,10 +12,11 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class CondBr final : public Terminator {
+class MINI_LLVM_EXPORT CondBr final : public Terminator {
 public:
     CondBr(std::shared_ptr<Value> cond, std::weak_ptr<BasicBlock> trueDest, std::weak_ptr<BasicBlock> falseDest)
         : cond_(this, std::move(cond)), trueDest_(this, std::move(trueDest)), falseDest_(this, std::move(falseDest)) {}

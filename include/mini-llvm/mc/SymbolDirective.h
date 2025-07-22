@@ -6,10 +6,11 @@
 
 #include "mini-llvm/mc/Directive.h"
 #include "mini-llvm/mc/Symbol.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class SymbolDirective : public Directive {
+class MINI_LLVM_EXPORT SymbolDirective : public Directive {
 public:
     const Symbol &symbol() const {
         return symbol_;

@@ -5,10 +5,11 @@
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
 #include "mini-llvm/mir/GlobalValue.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class PtrConstant final : public Constant {
+class MINI_LLVM_EXPORT PtrConstant final : public Constant {
 public:
     PtrConstant(int ptrSize, GlobalValue *ptr)
         : ptrSize_(ptrSize), ptr_(ptr) {}

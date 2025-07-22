@@ -10,11 +10,12 @@
 
 #include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/mc/Symbol.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::mc {
 
-class GlobalValue {
+class MINI_LLVM_EXPORT GlobalValue {
     using StatementList = std::list<std::unique_ptr<Statement>>;
 
 public:
@@ -28,6 +29,11 @@ public:
 
     GlobalValue(Symbol symbol, std::string section, bool isGlobal)
         : symbol_(std::move(symbol)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(0) {}
+
+    GlobalValue(const GlobalValue &) = delete;
+    GlobalValue(GlobalValue &&) = default;
+    GlobalValue &operator=(const GlobalValue &) = delete;
+    GlobalValue &operator=(GlobalValue &&) = default;
 
     const Symbol &symbol() const {
         return symbol_;

@@ -15,6 +15,7 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -22,7 +23,7 @@ namespace mini_llvm::ir {
 
 class BasicBlock;
 
-class Function final : public GlobalValue {
+class MINI_LLVM_EXPORT Function final : public GlobalValue {
     using ArgumentList = std::vector<std::shared_ptr<Argument>>;
     using AttributeList = std::vector<Attribute>;
     using BasicBlockList = std::list<std::shared_ptr<BasicBlock>>;

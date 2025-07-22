@@ -8,11 +8,12 @@
 #include <variant>
 #include <vector>
 
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Expected.h"
 
 namespace mini_llvm {
 
-class CommandLineParser {
+class MINI_LLVM_EXPORT CommandLineParser {
 public:
     class OptionArgument {
     public:

@@ -6,12 +6,14 @@
 #include <string_view>
 #include <vector>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::windows {
 
 // https://utf8everywhere.org/#windows
 
-std::wstring widen(std::string_view str);
-std::string narrow(std::wstring_view wstr);
+MINI_LLVM_EXPORT std::wstring widen(std::string_view str);
+MINI_LLVM_EXPORT std::string narrow(std::wstring_view wstr);
 
 } // namespace mini_llvm::windows
 

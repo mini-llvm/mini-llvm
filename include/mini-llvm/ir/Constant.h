@@ -4,10 +4,11 @@
 
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Constant : public Value {
+class MINI_LLVM_EXPORT Constant : public Value {
 public:
     virtual void accept(ConstantVisitor &visitor) = 0;
     virtual void accept(ConstantVisitor &visitor) const = 0;

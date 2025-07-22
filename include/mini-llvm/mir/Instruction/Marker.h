@@ -10,10 +10,11 @@
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class Marker : public Instruction {
+class MINI_LLVM_EXPORT Marker : public Instruction {
 public:
     explicit Marker(int id) : id_(id) {}
 

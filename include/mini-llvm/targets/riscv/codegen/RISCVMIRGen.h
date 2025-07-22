@@ -4,10 +4,11 @@
 
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/mir/Module.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm {
 
-class RISCVMIRGen {
+class MINI_LLVM_EXPORT RISCVMIRGen {
 public:
     enum { kSave, kRestore };
 

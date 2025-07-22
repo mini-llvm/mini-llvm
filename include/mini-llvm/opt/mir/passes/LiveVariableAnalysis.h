@@ -8,10 +8,11 @@
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/opt/mir/FunctionAnalysis.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class LiveVariableAnalysis final : public FunctionAnalysis {
+class MINI_LLVM_EXPORT LiveVariableAnalysis final : public FunctionAnalysis {
 public:
     LiveVariableAnalysis();
     ~LiveVariableAnalysis() override;

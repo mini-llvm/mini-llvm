@@ -7,10 +7,11 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class LSHR final : public BinaryIntegerArithmeticOperator {
+class MINI_LLVM_EXPORT LSHR final : public BinaryIntegerArithmeticOperator {
 public:
     LSHR(std::shared_ptr<Value> lhs, std::shared_ptr<Value> rhs)
         : BinaryIntegerArithmeticOperator(std::move(lhs), std::move(rhs)) {}

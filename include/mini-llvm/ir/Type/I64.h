@@ -10,10 +10,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class I64 final : public IntegerType {
+class MINI_LLVM_EXPORT I64 final : public IntegerType {
 public:
     int size() const override {
         return 8;

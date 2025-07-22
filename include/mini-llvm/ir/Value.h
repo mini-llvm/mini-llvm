@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -17,7 +18,7 @@ namespace mini_llvm::ir {
 
 class UseBase;
 
-class Value : public std::enable_shared_from_this<Value> {
+class MINI_LLVM_EXPORT Value : public std::enable_shared_from_this<Value> {
     using UseSet = std::unordered_set<UseBase *>;
 
 public:
@@ -79,8 +80,8 @@ inline auto uses(const Value &value) {
     return std::ranges::subrange(value.use_begin(), value.use_end());
 }
 
-bool replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue);
-bool replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue);
+MINI_LLVM_EXPORT bool replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue);
+MINI_LLVM_EXPORT bool replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue);
 
 template <typename ValueT>
     requires std::derived_from<ValueT, Value>

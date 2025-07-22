@@ -15,10 +15,11 @@
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/ArrowProxy.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Phi final : public Instruction {
+class MINI_LLVM_EXPORT Phi final : public Instruction {
     using IncomingList = std::list<std::pair<std::unique_ptr<Use<BasicBlock>>, std::unique_ptr<Use<Value>>>>;
 
 public:
@@ -188,11 +189,11 @@ inline auto incomings(const Phi &I) {
     return std::ranges::subrange(I.incoming_begin(), I.incoming_end());
 }
 
-bool hasIncomingBlock(const Phi &I, const BasicBlock &B);
-void removeIncomingBlock(Phi &I, const BasicBlock &B);
-const Use<Value> &getIncomingValue(const Phi &I, const BasicBlock &B);
-Use<Value> &getIncomingValue(Phi &I, const BasicBlock &B);
-std::unordered_set<BasicBlock *> incomingBlocks(const Phi &I);
-std::unordered_set<Value *> incomingValues(const Phi &I);
+MINI_LLVM_EXPORT bool hasIncomingBlock(const Phi &I, const BasicBlock &B);
+MINI_LLVM_EXPORT void removeIncomingBlock(Phi &I, const BasicBlock &B);
+MINI_LLVM_EXPORT const Use<Value> &getIncomingValue(const Phi &I, const BasicBlock &B);
+MINI_LLVM_EXPORT Use<Value> &getIncomingValue(Phi &I, const BasicBlock &B);
+MINI_LLVM_EXPORT std::unordered_set<BasicBlock *> incomingBlocks(const Phi &I);
+MINI_LLVM_EXPORT std::unordered_set<Value *> incomingValues(const Phi &I);
 
 } // namespace mini_llvm::ir

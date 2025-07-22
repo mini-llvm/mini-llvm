@@ -1,10 +1,12 @@
 #pragma once
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mir {
 
 class StackFrame;
 
-class StackSlot {
+class MINI_LLVM_EXPORT StackSlot {
 public:
     StackSlot(int size, int alignment) : size_(size), alignment_(alignment) {}
     StackSlot(const StackSlot &) = delete;

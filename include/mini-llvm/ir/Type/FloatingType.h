@@ -2,10 +2,11 @@
 
 #include "mini-llvm/common/Precision.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class FloatingType : public Type {
+class MINI_LLVM_EXPORT FloatingType : public Type {
 public:
     virtual Precision precision() const = 0;
 };

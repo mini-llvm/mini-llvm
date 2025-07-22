@@ -14,10 +14,11 @@
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class CondBr : public Terminator {
+class MINI_LLVM_EXPORT CondBr : public Terminator {
 public:
     CondBr(Condition cond, BasicBlock *trueDest, BasicBlock *falseDest)
         : cond_(cond), trueDest_(trueDest), falseDest_(falseDest) {}

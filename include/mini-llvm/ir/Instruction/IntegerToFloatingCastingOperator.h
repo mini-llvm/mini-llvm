@@ -9,10 +9,11 @@
 #include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class IntegerToFloatingCastingOperator : public Instruction {
+class MINI_LLVM_EXPORT IntegerToFloatingCastingOperator : public Instruction {
 public:
     template <typename Self>
     auto &value(this Self &&self) {

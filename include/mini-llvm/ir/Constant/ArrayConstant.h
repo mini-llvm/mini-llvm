@@ -12,11 +12,12 @@
 #include "mini-llvm/ir/Type/ArrayType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::ir {
 
-class ArrayConstant final : public Constant {
+class MINI_LLVM_EXPORT ArrayConstant final : public Constant {
     using ElementList = std::vector<std::unique_ptr<Use<Constant>>>;
 
 public:

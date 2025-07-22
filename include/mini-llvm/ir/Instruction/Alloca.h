@@ -10,10 +10,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Alloca final : public Instruction {
+class MINI_LLVM_EXPORT Alloca final : public Instruction {
 public:
     explicit Alloca(std::unique_ptr<Type> allocatedType) : allocatedType_(std::move(allocatedType)) {}
 

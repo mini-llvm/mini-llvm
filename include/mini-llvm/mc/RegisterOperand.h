@@ -3,10 +3,11 @@
 #include <string>
 
 #include "mini-llvm/mc/Operand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class RegisterOperand : public Operand {
+class MINI_LLVM_EXPORT RegisterOperand : public Operand {
 public:
     explicit RegisterOperand(int idx) : idx_(idx) {}
 

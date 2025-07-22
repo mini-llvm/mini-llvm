@@ -5,10 +5,11 @@
 #include <string>
 
 #include "mini-llvm/mir/ConstantVisitor.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
-class Constant {
+class MINI_LLVM_EXPORT Constant {
 public:
     virtual ~Constant() = default;
     Constant() = default;

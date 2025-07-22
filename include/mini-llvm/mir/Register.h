@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mini-llvm/utils/Compiler.h"
 #include <concepts>
 #include <format>
 #include <memory>
@@ -7,7 +8,7 @@
 
 namespace mini_llvm::mir {
 
-class Register : public std::enable_shared_from_this<Register> {
+class MINI_LLVM_EXPORT Register : public std::enable_shared_from_this<Register> {
 public:
     virtual ~Register() = default;
     Register() = default;

@@ -11,10 +11,11 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Store final : public Instruction {
+class MINI_LLVM_EXPORT Store final : public Instruction {
 public:
     Store(std::shared_ptr<Value> value, std::shared_ptr<Value> addr)
         : value_(this, std::move(value)), ptr_(this, std::move(addr)) {}

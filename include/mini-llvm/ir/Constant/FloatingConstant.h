@@ -4,10 +4,11 @@
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class FloatingConstant : public Constant {
+class MINI_LLVM_EXPORT FloatingConstant : public Constant {
 public:
     virtual uint64_t bitPattern() const = 0;
 };

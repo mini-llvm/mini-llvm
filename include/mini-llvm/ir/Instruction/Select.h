@@ -10,10 +10,11 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::ir {
 
-class Select final : public Instruction {
+class MINI_LLVM_EXPORT Select final : public Instruction {
 public:
     Select(std::shared_ptr<Value> cond, std::shared_ptr<Value> trueValue, std::shared_ptr<Value> falseValue)
         : cond_(this, std::move(cond)),

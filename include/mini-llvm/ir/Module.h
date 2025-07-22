@@ -11,11 +11,12 @@
 
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/GlobalVar.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 
 namespace mini_llvm::ir {
 
-class Module {
+class MINI_LLVM_EXPORT Module {
     using GlobalVarList = std::list<std::shared_ptr<GlobalVar>>;
     using FunctionList = std::list<std::shared_ptr<Function>>;
 

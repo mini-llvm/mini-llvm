@@ -15,11 +15,12 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 
-class FCmp : public Instruction {
+class MINI_LLVM_EXPORT FCmp : public Instruction {
 public:
     FCmp(Precision precision, std::shared_ptr<Register> src1, std::shared_ptr<Register> src2)
         : precision_(precision),
