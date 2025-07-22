@@ -2,7 +2,7 @@
 
 | main | develop |
 |:-:|:-:|
-| [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Amain) [![build-mips64-linux](https://github.com/mini-llvm/mini-llvm/actions/workflows/build-mips64-linux.yml/badge.svg?branch=main)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build-mips64-linux.yml?query=branch%3Amain) | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Adevelop) [![build-mips64-linux](https://github.com/mini-llvm/mini-llvm/actions/workflows/build-mips64-linux.yml/badge.svg?branch=develop)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build-mips64-linux.yml?query=branch%3Adevelop) |
+| [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Amain) | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Adevelop) |
 
 ## Design
 
