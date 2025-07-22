@@ -1,9 +1,8 @@
 #include "mini-llvm/utils/SystemError.h"
 
-#include <cerrno>
-#include <cstring>
-
 #ifdef _WIN32
+    #include <cerrno>
+
     #include <windows.h>
 
     #include "mini-llvm/utils/Windows.h"
