@@ -103,7 +103,9 @@ int mainImpl(std::vector<std::string> args) {
                 continue;
             }
         }
-        inputFile = arg.positional()->arg();
+        if (const auto *positional = arg.positional()) {
+            inputFile = positional->arg();
+        }
     }
 
     if (!inputFile) {

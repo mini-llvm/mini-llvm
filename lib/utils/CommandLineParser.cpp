@@ -33,6 +33,7 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
             continue;
         }
         if (arg == "--") {
+            args_.emplace_back(Separator());
             isPositional = true;
             continue;
         }

@@ -849,6 +849,11 @@ TEST(CommandLineParserTest, PositionalDoubleHyphen) {
     auto j = parser.end();
 
     ASSERT_NE(i, j);
+    ASSERT_NE(i->separator(), nullptr);
+
+    ++i;
+
+    ASSERT_NE(i, j);
     ASSERT_NE(i->positional(), nullptr);
     ASSERT_EQ(i->positional()->arg(), "--");
 
@@ -886,6 +891,11 @@ TEST(CommandLineParserTest, Separator) {
     ASSERT_NE(i, j);
     ASSERT_NE(i->positional(), nullptr);
     ASSERT_EQ(i->positional()->arg(), "positional");
+
+    ++i;
+
+    ASSERT_NE(i, j);
+    ASSERT_NE(i->separator(), nullptr);
 
     ++i;
 

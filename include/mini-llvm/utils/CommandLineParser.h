@@ -48,6 +48,8 @@ public:
         std::string arg_;
     };
 
+    class Separator {};
+
     class Argument {
     public:
         explicit Argument(OptionArgument option)
@@ -55,6 +57,9 @@ public:
 
         explicit Argument(PositionalArgument positionalArg)
             : arg_(std::move(positionalArg)) {}
+
+        explicit Argument(Separator separator)
+            : arg_(separator) {}
 
         const OptionArgument *option() const {
             return std::get_if<OptionArgument>(&arg_);
@@ -64,8 +69,12 @@ public:
             return std::get_if<PositionalArgument>(&arg_);
         }
 
+        const Separator *separator() const {
+            return std::get_if<Separator>(&arg_);
+        }
+
     private:
-        std::variant<OptionArgument, PositionalArgument> arg_;
+        std::variant<OptionArgument, PositionalArgument, Separator> arg_;
     };
 
     using iterator = std::vector<Argument>::const_iterator;
