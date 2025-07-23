@@ -15,6 +15,7 @@
 #include "mini-llvm/ir/Attribute.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/GlobalValue.h"
+#include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
 #include "mini-llvm/ir/Instruction/Ret.h"
