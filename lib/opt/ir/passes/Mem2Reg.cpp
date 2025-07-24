@@ -67,8 +67,8 @@ private:
         HashMap<const Alloca *, const Value *> oldDefs = defs_;
         for (const Instruction &I : *node->block) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
-                if (phis_.contains(phi)) {
-                    const Alloca *v = phis_[phi];
+                if (auto i = phis_.find(phi); i != phis_.end()) {
+                    const Alloca *v = i->second;
                     defs_.put(v, phi);
                 }
             }
@@ -92,8 +92,8 @@ private:
         for (BasicBlock *succ : successors(*node->block)) {
             for (Instruction &I : *succ) {
                 if (auto *phi = dynamic_cast<Phi *>(&I)) {
-                    if (phis_.contains(phi)) {
-                        const Alloca *v = phis_[phi];
+                    if (auto i = phis_.find(phi); i != phis_.end()) {
+                        const Alloca *v = i->second;
                         const Value *value = defs_[v];
                         if (value != nullptr) {
                             phi->addIncoming(*node->block, share(*const_cast<Value *>(value)));
