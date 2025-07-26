@@ -33,7 +33,7 @@ public:
     }
 
     int size() const override {
-        return static_cast<int>(numElements()) * 4;
+        return static_cast<int>(numElements()) * 8;
     }
 
     std::string format() const override;

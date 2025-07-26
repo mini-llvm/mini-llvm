@@ -59,7 +59,7 @@ inline constexpr const char *specifier(FCmp::Condition cond) {
         case kONE: return "one";
         case kOLT: return "olt";
         case kOGT: return "ogt";
-        case kOLE: return "olt";
+        case kOLE: return "ole";
         case kOGE: return "oge";
         default: abort();
     }
