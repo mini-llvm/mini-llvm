@@ -182,7 +182,7 @@ define i32 @add(i32 %0, i32 %1) {
 mini-llc --target=riscv64 -o example.s example.ll
 ```
 
-## Building
+## Build
 
 | Linux | Windows |
 |:-:|:-:|
@@ -209,6 +209,7 @@ cmake -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_BUILD_TYPE=Release -DMINI_LLVM_TESTS=O
 cmake --build .
 ./tools/mini-llc/mini-llc --help
 ```
+
 ## Running Tests
 
 ### Unit Tests
@@ -226,7 +227,7 @@ sudo apt-get -y install gcc-14-riscv64-linux-gnu qemu-user
 sudo mkdir -p /usr/gnemul
 sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 cd <repo-dir>/tests/tools/mini-llc
-export MINI_LLC_COMMAND="../../../build/tools/mini-llc/mini-llc"
+export MINI_LLC_COMMAND="../../../build/bin/mini-llc"
 export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
 export EMULATOR_COMMAND="qemu-riscv64"
 export DIFF_COMMAND="diff"
@@ -236,7 +237,7 @@ export EMULATOR_TIMEOUT=60
 ./test-all.sh --target=riscv64
 ```
 
-## Installing
+## Installation
 
 ```sh
 cd <repo-dir>/build
