@@ -4,10 +4,6 @@ import re
 import sys
 
 
-COMMAND_PATTERN = re.compile(r'(?:add_(?:library|executable)|target_sources)\s*\(\s*[^)\s]+(?:\s+[A-Z]+)*((?:\s+[^)\s]+)*)\s*\)')
-SOURCE_PATTERN = re.compile(r'[^)\s]+')
-
-
 def expand_tabs(script):
     return script.replace('\t', '    ')
 
@@ -25,10 +21,10 @@ def trim_final_newlines(script):
 
 def sort_sources(script):
     replacements = []
-    for command in COMMAND_PATTERN.finditer(script):
+    for command in re.finditer(r'add_(?:library|executable)\s*\(\s*[^)\s]+(?:\s+[A-Z]+)*((?:\s+[^)\s]+)*)\s*\)', script):
         if command.group(1):
             sources = []
-            for source in SOURCE_PATTERN.finditer(command.group(1)):
+            for source in re.finditer(r'[^)\s]+', command.group(1)):
                 sources.append((command.start(1) + source.start(0), command.start(1) + source.end(0), source.group(0)))
             sources = list(zip(*sources))
             sources[2] = sorted(sources[2], key=str.lower)
