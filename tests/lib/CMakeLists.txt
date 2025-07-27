@@ -45,7 +45,9 @@ add_executable(tests
     utils/StringsTest.cpp
     utils/UnicodeTest.cpp
 )
-target_compile_features(tests PRIVATE cxx_std_23)
+if(MSVC)
+    target_compile_options(tests PRIVATE /utf-8)
+endif()
 target_link_libraries(tests PRIVATE mini-llvm GTest::gtest)
 
 include(GoogleTest)
