@@ -67,7 +67,7 @@ std::vector<size_t> dp(size_t n, const Matrix<double> &D, size_t s) {
             }
         }
     }
-    size_t t;
+    size_t t{};
     double min = std::numeric_limits<double>::infinity();
     for (size_t v = 0; v < n; ++v) {
         if (v != s && f[clear(full(n), s, v), v] < min) {
@@ -79,7 +79,7 @@ std::vector<size_t> dp(size_t n, const Matrix<double> &D, size_t s) {
     std::vector<size_t> path;
     path.push_back(t);
     for (size_t i = 1; i < n - 1; ++i) {
-        size_t v;
+        size_t v{};
         double min = std::numeric_limits<double>::infinity();
         for (size_t u = 0; u < n; ++u) {
             if (u != t && test(S, u) && f[clear(S, u), u] + D[u, t] < min) {

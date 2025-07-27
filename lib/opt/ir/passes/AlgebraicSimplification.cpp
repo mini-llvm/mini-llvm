@@ -1,6 +1,7 @@
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 
 #include <cstdint>
+#include <cstdlib>
 #include <memory>
 #include <utility>
 
@@ -178,6 +179,9 @@ void dfs(const DTNode *node, bool &changed) {
                     case ICmp::Condition::kUGT:
                         result = false;
                         break;
+
+                    default:
+                        abort();
                 }
                 replaceAllUsesWith(*icmp, std::make_shared<I1Constant>(result));
                 removeFromParent(*icmp);

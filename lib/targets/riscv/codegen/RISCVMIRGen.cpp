@@ -435,9 +435,11 @@ public:
     void visitTrunc(const ir::Trunc &I) override {
         std::shared_ptr<Register> dst = valueMap_[&I],
                                   src = getRegister(*I.value());
-        int dstBitWidth = I.type()->bitSize(8),
-            srcBitWidth = I.value()->type()->bitSize(8);
+        int dstBitWidth = I.type()->bitSize(8);
+#ifndef NDEBUG
+        int srcBitWidth = I.value()->type()->bitSize(8);
         assert(dstBitWidth < srcBitWidth);
+#endif
         if (dstBitWidth == 32) {
             builder_.add(std::make_unique<SExt>(8, 4, std::move(dst), std::move(src)));
         } else {
@@ -507,9 +509,11 @@ public:
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<Neg>(8, dst, src));
             } else {
-                int dstBitWidth = I.type()->bitSize(8),
-                    srcBitWidth = I.value()->type()->bitSize(8);
+                int srcBitWidth = I.value()->type()->bitSize(8);
+#ifndef NDEBUG
+                int dstBitWidth = I.type()->bitSize(8);
                 assert(dstBitWidth > srcBitWidth);
+#endif
                 if (srcBitWidth == 32) {
                     builder_.add(std::make_unique<SExt>(8, 4, std::move(dst), std::move(src)));
                 } else {
@@ -579,9 +583,11 @@ public:
             if (*I.value()->type() == ir::I1()) {
                 builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(1)));
             } else {
-                int dstBitWidth = I.type()->bitSize(8),
-                    srcBitWidth = I.value()->type()->bitSize(8);
+                int srcBitWidth = I.value()->type()->bitSize(8);
+#ifndef NDEBUG
+                int dstBitWidth = I.type()->bitSize(8);
                 assert(dstBitWidth > srcBitWidth);
+#endif
                 if (srcBitWidth == 8) {
                     builder_.add(std::make_unique<AndI>(8, dst, src, std::make_unique<IntegerImmediate>(0xff)));
                 } else {
