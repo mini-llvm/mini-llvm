@@ -1,0 +1,5 @@
+common --enable_bzlmod --noenable_workspace
+
+build --cxxopt=-std=c++23
+
+test --test_output=all

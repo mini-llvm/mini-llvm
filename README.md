@@ -192,13 +192,15 @@ mini-llc --target=riscv64 -o example.s example.ll
 |:-:|:-:|:-:|
 | ≥ 14 | ≥ 18 | ≥ 19.42 (VS 2022 17.12) |
 
-| CMake |
-|:-:|
-| ≥ 3.20 |
+| CMake | Bazel |
+|:-:|:-:|
+| ≥ 3.20 | ≥ 7.1 |
 
 ```sh
 git clone --depth=1 --recurse-submodules --shallow-submodules <repo-url>
 ```
+
+### With CMake
 
 ```sh
 sudo apt-get update
@@ -210,13 +212,28 @@ cmake --build .
 ./tools/mini-llc/mini-llc --help
 ```
 
+### With Bazel (Experimental)
+
+```sh
+sudo apt-get update
+sudo apt-get -y install g++-14
+# Install Bazel: https://bazel.build/install/ubuntu
+cd <repo-dir>
+CC=gcc-14 CXX=g++-14 bazel build -c opt //...
+./bazel-bin/tools/mini-llc/mini-llc --help
+```
+
 ## Running Tests
 
 ### Unit Tests
 
 ```sh
+# CMake
 cd <repo-dir>/build
 ctest .
+
+# Bazel
+CC=gcc-14 CXX=g++-14 bazel test -c opt //unittests:unittests
 ```
 
 ### Integration Tests
@@ -227,7 +244,13 @@ sudo apt-get -y install gcc-14-riscv64-linux-gnu qemu-user
 sudo mkdir -p /usr/gnemul
 sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 cd <repo-dir>/tests/mini-llc
+
+# CMake
 export MINI_LLC_COMMAND="../../build/bin/mini-llc"
+
+# Bazel
+export MINI_LLC_COMMAND="../../bazel-bin/tools/mini-llc/mini-llc"
+
 export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
 export EMULATOR_COMMAND="qemu-riscv64"
 export DIFF_COMMAND="diff"
@@ -240,6 +263,7 @@ export EMULATOR_TIMEOUT=60
 ## Installation
 
 ```sh
+# CMake
 cd <repo-dir>/build
 cmake --install .
 ```

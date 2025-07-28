@@ -2,6 +2,9 @@
 CMakeUserPresets.json
 compile_commands.json
 
+# Bazel
+/bazel-*
+
 # Python
 *.pyc
 __pycache__/
