@@ -224,5 +224,5 @@ if(MINI_LLVM_TESTS)
 
     add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL SYSTEM)
 
-    add_subdirectory(tests)
+    add_subdirectory(unittests)
 endif()

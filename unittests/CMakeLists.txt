@@ -1,4 +1,4 @@
-add_executable(tests
+add_executable(unittests
     ir/Constant/ArrayConstantTest.cpp
     ir/Instruction/AddTest.cpp
     ir/Instruction/AllocaTest.cpp
@@ -46,9 +46,9 @@ add_executable(tests
     utils/UnicodeTest.cpp
 )
 if(MSVC)
-    target_compile_options(tests PRIVATE /utf-8)
+    target_compile_options(unittests PRIVATE /utf-8)
 endif()
-target_link_libraries(tests PRIVATE mini-llvm GTest::gtest)
+target_link_libraries(unittests PRIVATE mini-llvm GTest::gtest)
 
 include(GoogleTest)
-gtest_discover_tests(tests)
+gtest_discover_tests(unittests)

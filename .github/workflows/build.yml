@@ -54,7 +54,7 @@ jobs:
 
       - run: ctest --test-dir ${{ github.workspace }}/build --build-config ${{ matrix.build-type }}
 
-      - working-directory: ${{ github.workspace }}/tests/tools/mini-llc
+      - working-directory: ${{ github.workspace }}/tests/mini-llc
         run: |
           export MINI_LLC_COMMAND="${{ github.workspace }}/build/bin/mini-llc"
           export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
