@@ -756,8 +756,20 @@ TEST(CommandLineParserTest, UnrecognizedOptionShort) {
     ASSERT_EQ(result.error().optionName(), "-s");
 }
 
-TEST(CommandLineParserTest, UnrecognizedOptionLong) {
+TEST(CommandLineParserTest, UnrecognizedOptionLong1) {
     std::vector<std::string> args{"program", "--long"};
+
+    CommandLineParser parser;
+
+    Expected<void, CommandLineParser::Error> result = parser(args);
+
+    ASSERT_FALSE(result);
+    ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kUnrecognizedOption);
+    ASSERT_EQ(result.error().optionName(), "--long");
+}
+
+TEST(CommandLineParserTest, UnrecognizedOptionLong2) {
+    std::vector<std::string> args{"program", "--long=value"};
 
     CommandLineParser parser;
 
