@@ -41,6 +41,7 @@ add_executable(unittests
     main.cpp
     utils/AsciiTest.cpp
     utils/CommandLineParserTest.cpp
+    utils/SequenceOpsTest.cpp
     utils/SetOpsTest.cpp
     utils/StringJoinerTest.cpp
     utils/StringsTest.cpp
