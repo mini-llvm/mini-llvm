@@ -83,8 +83,11 @@ private:
                 if (auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
                     if (vars_.contains(v)) {
                         const Value *value = defs_[v];
-                        assert(value != nullptr);
-                        replaceAllUsesWith(*load, share(*const_cast<Value *>(value)));
+                        if (value != nullptr) {
+                            replaceAllUsesWith(*load, share(*const_cast<Value *>(value)));
+                        } else {
+                            replaceAllUsesWith(*load, std::make_shared<PoisonValue>(v->allocatedType()));
+                        }
                     }
                 }
             }

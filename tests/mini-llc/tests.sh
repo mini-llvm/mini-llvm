@@ -18,6 +18,7 @@ tests=(
     impure
     indirect_call
     irreducible_cfg
+    load_uninitialized
     many_args
     many_regs
     many_regs_large_stack_frame
