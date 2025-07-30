@@ -44,7 +44,8 @@ struct std::formatter<mini_llvm::mc::Symbol> {
         return ctx.begin();
     }
 
-    auto format(const mini_llvm::mc::Symbol &symbol, std::format_context &ctx) const {
+    template <typename FormatContext>
+    auto format(const mini_llvm::mc::Symbol &symbol, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", symbol.format());
     }
 };
