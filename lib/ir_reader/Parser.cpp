@@ -7,8 +7,10 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <queue>
 #include <ranges>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -92,6 +94,7 @@
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/ir_reader/Symbol.h"
 #include "mini-llvm/ir_reader/Token.h"
@@ -1022,6 +1025,27 @@ public:
                 }
                 replaceAllUsesWith(*II, I);
                 symbolTable_[symbol] = I;
+
+                std::unordered_set<const Instruction *> S;
+                std::queue<const Instruction *> Q;
+                S.insert(&*I);
+                Q.push(&*I);
+                while (!Q.empty()) {
+                    const Instruction *u = Q.front();
+                    Q.pop();
+                    for (const UseBase &use : uses(*u)) {
+                        if (auto *v = dynamic_cast<const Instruction *>(use.user())) {
+                            if (!dynamic_cast<const Phi *>(v)) {
+                                if (v == &*I) {
+                                    throw ParseException("circular reference", symbolLocation);
+                                }
+                                if (S.insert(v).second) {
+                                    Q.push(v);
+                                }
+                            }
+                        }
+                    }
+                }
             } else {
                 symbolTable_.put(symbol, I);
             }

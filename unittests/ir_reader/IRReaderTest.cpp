@@ -381,11 +381,12 @@ define void @test(i1 %0) {
     EXPECT_TRUE(parseModule(input));
 }
 
-TEST(IRReaderTest, SelfReferentialAdd) {
+TEST(IRReaderTest, SelfReferenceAdd) {
     const char *input = R"(
-define void @test() {
-0:
-    %1 = add i32 %1, %1
+define void @test(ptr %0) {
+1:
+    %2 = add i32 %2, 1
+    store i32 %2, ptr %0
     ret void
 }
 )";
@@ -393,11 +394,41 @@ define void @test() {
     parseModule(input);
 }
 
-TEST(IRReaderTest, SelfReferentialSExt) {
+TEST(IRReaderTest, SelfReferenceSExt) {
     const char *input = R"(
-define void @test() {
-0:
-    %1 = sext i32 %1 to i64
+define void @test(ptr %0) {
+1:
+    %2 = sext i32 %2 to i64
+    store i64 %2, ptr %0
+    ret void
+}
+)";
+
+    parseModule(input);
+}
+
+TEST(IRReaderTest, CircularReference1) {
+    const char *input = R"(
+define void @test(ptr %0) {
+1:
+    %2 = add i32 %3, 1
+    %3 = add i32 %2, 1
+    store i32 %3, ptr %0
+    ret void
+}
+)";
+
+    parseModule(input);
+}
+
+TEST(IRReaderTest, CircularReference2) {
+    const char *input = R"(
+define void @test(ptr %0) {
+1:
+    %2 = add i32 %3, 1
+    %3 = add i32 %4, 1
+    %4 = add i32 %2, 1
+    store i32 %4, ptr %0
     ret void
 }
 )";
