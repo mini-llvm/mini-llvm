@@ -5,10 +5,11 @@
 
 #include "mini-llvm/mc/Operand.h"
 #include "mini-llvm/mc/Symbol.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class SymbolOperand final : public Operand {
+class MINI_LLVM_EXPORT SymbolOperand final : public Operand {
 public:
     explicit SymbolOperand(Symbol symbol) : symbol_(std::move(symbol)) {}
 

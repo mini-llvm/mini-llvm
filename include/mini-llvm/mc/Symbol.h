@@ -5,9 +5,11 @@
 #include <functional>
 #include <string>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mc {
 
-class Symbol {
+class MINI_LLVM_EXPORT Symbol {
 public:
     explicit Symbol(std::string name) : name_(std::move(name)) {}
 

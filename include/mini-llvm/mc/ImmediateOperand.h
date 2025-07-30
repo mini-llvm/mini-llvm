@@ -4,10 +4,11 @@
 #include <string>
 
 #include "mini-llvm/mc/Operand.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class ImmediateOperand final : public Operand {
+class MINI_LLVM_EXPORT ImmediateOperand final : public Operand {
 public:
     explicit ImmediateOperand(int64_t value) : value_(value) {}
 
