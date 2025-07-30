@@ -29,7 +29,7 @@ tests=(
     select
     select_ptr
     self_loop
-    self_referential
+    self_reference
 
     accumulate
     bfs
