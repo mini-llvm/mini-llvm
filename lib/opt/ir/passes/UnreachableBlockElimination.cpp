@@ -20,8 +20,7 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
         const BasicBlock *u = Q.front();
         Q.pop();
         for (const BasicBlock *v : successors(*u)) {
-            if (!S.contains(v)) {
-                S.insert(v);
+            if (S.insert(v).second) {
                 Q.push(v);
             }
         }

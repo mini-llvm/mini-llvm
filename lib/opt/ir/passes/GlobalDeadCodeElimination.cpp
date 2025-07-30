@@ -22,8 +22,7 @@ namespace {
 void collect(const Constant &C, std::unordered_set<const GlobalValue *> &S, std::queue<const GlobalValue *> &Q) {
     if (!dynamic_cast<const ArrayConstant *>(&C)) {
         if (auto *value = dynamic_cast<const GlobalValue *>(&C)) {
-            if (!S.contains(value)) {
-                S.insert(value);
+            if (S.insert(value).second) {
                 Q.push(value);
             }
         }
@@ -59,8 +58,7 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
                 for (const Instruction &I : B) {
                     for (const UseBase *op : I.operands()) {
                         if (auto *value2 = dynamic_cast<const GlobalValue *>(&**op)) {
-                            if (!S.contains(value2)) {
-                                S.insert(value2);
+                            if (S.insert(value2).second) {
                                 Q.push(value2);
                             }
                         }

@@ -156,8 +156,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
                 if (&*use == &*store->ptr()) {
                     const BasicBlock *X = store->parent();
                     for (const BasicBlock *Y : DF[X]) {
-                        if (!S.contains(Y)) {
-                            S.insert(Y);
+                        if (S.insert(Y).second) {
                             Q.push(Y);
                         }
                     }
@@ -168,8 +167,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
             const BasicBlock *X = Q.front();
             Q.pop();
             for (const BasicBlock *Y : DF[X]) {
-                if (!S.contains(Y)) {
-                    S.insert(Y);
+                if (S.insert(Y).second) {
                     Q.push(Y);
                 }
             }

@@ -45,9 +45,10 @@ public:
                         const BasicBlock *x = Q.front();
                         Q.pop();
                         for (const BasicBlock *y : predecessors(*x)) {
-                            if (y != v && !S.contains(y)) {
-                                S.insert(y);
-                                Q.push(y);
+                            if (y != v) {
+                                if (S.insert(y).second) {
+                                    Q.push(y);
+                                }
                             }
                         }
                     }

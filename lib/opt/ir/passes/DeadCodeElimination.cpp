@@ -76,8 +76,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         Q.pop();
         for (const UseBase *op : I->operands()) {
             if (auto *II = dynamic_cast<const Instruction *>(&**op)) {
-                if (!S.contains(II)) {
-                    S.insert(II);
+                if (S.insert(II).second) {
                     Q.push(II);
                 }
             }
