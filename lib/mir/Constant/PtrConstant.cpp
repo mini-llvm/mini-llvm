@@ -10,10 +10,16 @@ using namespace mini_llvm::mir;
 std::string PtrConstant::format() const {
     StringJoiner formatted(" ");
     formatted.add("ptr({})", ptrSize());
-    if (ptr() == nullptr) {
-        formatted.add("null");
+    std::string formattedValue;
+    auto [basePtr, offset] = value();
+    if (basePtr == nullptr) {
+        formattedValue = "null";
     } else {
-        formatted.add("{:o}", *ptr());
+        formattedValue = std::format("{:o}", *basePtr);
     }
+    if (offset != 0) {
+        formattedValue += std::format("{:+}", offset);
+    }
+    formatted.add("{}", formattedValue);
     return formatted.toString();
 }

@@ -12,6 +12,7 @@
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/common/ops/SExt.h"
 #include "mini-llvm/common/Precision.h"
+#include "mini-llvm/mc/AddressOperand.h"
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/GlobalValueBuilder.h"
 #include "mini-llvm/mc/ImmediateOperand.h"
@@ -19,7 +20,6 @@
 #include "mini-llvm/mc/Operand.h"
 #include "mini-llvm/mc/StringDirective.h"
 #include "mini-llvm/mc/Symbol.h"
-#include "mini-llvm/mc/SymbolOperand.h"
 #include "mini-llvm/mc/ZeroDirective.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
@@ -101,12 +101,12 @@
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
+#include "mini-llvm/targets/riscv/mc/RISCVAddressDirective.h"
 #include "mini-llvm/targets/riscv/mc/RISCVDataDirective.h"
 #include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
 #include "mini-llvm/targets/riscv/mc/RISCVMemoryOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 #include "mini-llvm/targets/riscv/mc/RISCVRegisterOperand.h"
-#include "mini-llvm/targets/riscv/mc/RISCVSymbolDirective.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVJALR.h"
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVRet.h"
@@ -178,19 +178,20 @@ public:
     }
 
     void visitPtrConstant(const mir::PtrConstant &C) override {
-        if (C.ptr() == nullptr) {
+        auto [basePtr, offset] = C.value();
+        if (basePtr == nullptr && offset == 0) {
             builder_.add(std::make_unique<ZeroDirective>(C.ptrSize()));
         } else {
-            builder_.add(std::make_unique<RISCVSymbolDirective>(emitSymbol(*C.ptr())));
+            builder_.add(std::make_unique<RISCVAddressDirective>(emitSymbol(*basePtr), offset));
         }
     }
 
     void visitPtrArrayConstant(const mir::PtrArrayConstant &C) override {
-        for (mir::GlobalValue *element : C.elements()) {
-            if (element == nullptr) {
+        for (auto [basePtr, offset] : C.elements()) {
+            if (basePtr == nullptr && offset == 0) {
                 builder_.add(std::make_unique<ZeroDirective>(8));
             } else {
-                builder_.add(std::make_unique<RISCVSymbolDirective>(emitSymbol(*element)));
+                builder_.add(std::make_unique<RISCVAddressDirective>(emitSymbol(*basePtr), offset));
             }
         }
     }
@@ -802,16 +803,16 @@ private:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    static std::unique_ptr<SymbolOperand> makeOperand(const mir::BasicBlockOperand &op) {
-        return std::make_unique<SymbolOperand>(emitSymbol(*op));
+    static std::unique_ptr<AddressOperand> makeOperand(const mir::BasicBlockOperand &op) {
+        return std::make_unique<AddressOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<SymbolOperand> makeOperand(const mir::GlobalValueOperand &op) {
-        return std::make_unique<SymbolOperand>(emitSymbol(*op));
+    static std::unique_ptr<AddressOperand> makeOperand(const mir::GlobalValueOperand &op) {
+        return std::make_unique<AddressOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<SymbolOperand> makeOperand(const mir::FunctionOperand &op) {
-        return std::make_unique<SymbolOperand>(emitSymbol(*op));
+    static std::unique_ptr<AddressOperand> makeOperand(const mir::FunctionOperand &op) {
+        return std::make_unique<AddressOperand>(emitSymbol(*op));
     }
 
     static std::unique_ptr<ImmediateOperand> makeOperand(const mir::ImmediateOperand &op) {

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
+#include <utility>
 
 #include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/ConstantVisitor.h"
@@ -11,19 +13,26 @@ namespace mini_llvm::mir {
 
 class MINI_LLVM_EXPORT PtrConstant final : public Constant {
 public:
-    PtrConstant(int ptrSize, GlobalValue *ptr)
-        : ptrSize_(ptrSize), ptr_(ptr) {}
+    PtrConstant(int ptrSize, std::pair<GlobalValue *, int64_t> value)
+        : ptrSize_(ptrSize), value_(value) {}
+
+    PtrConstant(int ptrSize, GlobalValue *basePtr, int64_t offset)
+        : ptrSize_(ptrSize), value_(basePtr, offset) {}
 
     int ptrSize() const {
         return ptrSize_;
     }
 
-    GlobalValue *ptr() const {
-        return ptr_;
+    std::pair<GlobalValue *, int64_t> value() const {
+        return value_;
     }
 
-    void setPtr(GlobalValue *ptr) {
-        ptr_ = ptr;
+    void setValue(std::pair<GlobalValue *, int64_t> value) {
+        value_ = value;
+    }
+
+    void setValue(GlobalValue *basePtr, int64_t offset) {
+        value_ = {basePtr, offset};
     }
 
     int size() const override {
@@ -42,7 +51,7 @@ public:
 
 private:
     int ptrSize_;
-    GlobalValue *ptr_;
+    std::pair<GlobalValue *, int64_t> value_;
 };
 
 } // namespace mini_llvm::mir

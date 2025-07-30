@@ -225,14 +225,14 @@ public:
     }
 
     void visitPtr(const ir::Ptr &) override {
-        std::vector<GlobalValue *> elements;
+        std::vector<std::pair<GlobalValue *, int64_t>> elements;
         for (const ir::Constant *element : flattened_) {
             if (dynamic_cast<const ir::NullPtrConstant *>(element)) {
-                elements.push_back(nullptr);
+                elements.emplace_back(nullptr, 0);
             } else if (auto *G = dynamic_cast<const ir::GlobalVar *>(element)) {
-                elements.push_back(globalVarMap_[G]);
+                elements.emplace_back(globalVarMap_[G], 0);
             } else if (auto *F = dynamic_cast<const ir::Function *>(element)) {
-                elements.push_back(functionMap_[F]);
+                elements.emplace_back(functionMap_[F], 0);
             } else {
                 abort();
             }
@@ -301,17 +301,17 @@ public:
     }
 
     void visitNullPtrConstant(const ir::NullPtrConstant &) override {
-        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, nullptr));
+        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, nullptr, 0));
     }
 
     void visitGlobalVar(const ir::GlobalVar &G) override {
         GlobalValue *ptr = globalVarMap_[&G];
-        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr));
+        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr, 0));
     }
 
     void visitFunction(const ir::Function &F) override {
         GlobalValue *ptr = functionMap_[&F];
-        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr));
+        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr, 0));
     }
 
     void visitArrayConstant(const ir::ArrayConstant &C) override {

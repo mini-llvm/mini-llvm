@@ -2,12 +2,12 @@
 
 #include <unordered_set>
 
+#include "mini-llvm/mc/AddressOperand.h"
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Instruction.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/mc/Symbol.h"
-#include "mini-llvm/mc/SymbolOperand.h"
 
 using namespace mini_llvm::mc;
 
@@ -21,8 +21,8 @@ bool UnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
     for (const Statement &stmt : G) {
         if (auto *I = dynamic_cast<const Instruction *>(&stmt)) {
             for (const Operand &op : operands(*I)) {
-                if (auto *symbolOp = dynamic_cast<const SymbolOperand *>(&op)) {
-                    used.insert(symbolOp->symbol());
+                if (auto *addrOp = dynamic_cast<const AddressOperand *>(&op)) {
+                    used.insert(addrOp->addr().baseSymbol());
                 }
             }
         }

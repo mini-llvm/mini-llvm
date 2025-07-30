@@ -2,9 +2,9 @@
 
 #include <iterator>
 
+#include "mini-llvm/mc/AddressOperand.h"
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Label.h"
-#include "mini-llvm/mc/SymbolOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 
@@ -20,9 +20,9 @@ bool RISCVFallthrough::runOnGlobalValue(GlobalValue &G) {
     for (GlobalValue::const_iterator i = G.begin(); std::next(i) != G.end();) {
         if (auto *I = dynamic_cast<const RISCVInstruction *>(&*i)) {
             if (I->opcode() == RISCV_J) {
-                if (auto *symbolOp = dynamic_cast<const SymbolOperand *>(&*I->operand_begin())) {
+                if (auto *addrOp = dynamic_cast<const AddressOperand *>(&*I->operand_begin())) {
                     if (auto *label = dynamic_cast<const Label *>(&*std::next(i))) {
-                        if (symbolOp->symbol() == label->symbol()) {
+                        if (addrOp->addr().baseSymbol() == label->symbol()) {
                             G.remove(i++);
                             changed = true;
                             continue;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,18 +14,22 @@ namespace mini_llvm::mir {
 
 class MINI_LLVM_EXPORT PtrArrayConstant final : public Constant {
 public:
-    PtrArrayConstant(int ptrSize, std::vector<GlobalValue *> elements)
+    PtrArrayConstant(int ptrSize, std::vector<std::pair<GlobalValue *, int64_t>> elements)
         : ptrSize_(ptrSize), elements_(std::move(elements)) {}
 
     int ptrSize() const {
         return ptrSize_;
     }
 
-    const std::vector<GlobalValue *> &elements() const {
+    const std::vector<std::pair<GlobalValue *, int64_t>> &elements() const & {
         return elements_;
     }
 
-    void setElements(std::vector<GlobalValue *> elements) {
+    std::vector<std::pair<GlobalValue *, int64_t>> elements() && {
+        return std::move(elements_);
+    }
+
+    void setElements(std::vector<std::pair<GlobalValue *, int64_t>> elements) {
         elements_ = std::move(elements);
     }
 
@@ -48,7 +53,7 @@ public:
 
 private:
     int ptrSize_;
-    std::vector<GlobalValue *> elements_;
+    std::vector<std::pair<GlobalValue *, int64_t>> elements_;
 };
 
 } // namespace mini_llvm::mir

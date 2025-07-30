@@ -87,6 +87,7 @@ add_library(mini-llvm
     lib/ir_reader/IRReader.cpp
     lib/ir_reader/Lexer.cpp
     lib/ir_reader/Parser.cpp
+    lib/mc/Address.cpp
     lib/mc/GlobalValue.cpp
     lib/mc/Instruction.cpp
     lib/mc/Module.cpp
