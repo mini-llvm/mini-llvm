@@ -36,6 +36,7 @@ tests=(
     select_ptr
     self_loop
     self_reference
+    store_ptr
     type_punning
     unreachable_block
 

@@ -35,7 +35,7 @@ namespace {
 bool isPromotable(const Alloca &v) {
     return std::ranges::all_of(uses(v), [&v](const UseBase &use) {
         if (auto *store = dynamic_cast<const Store *>(use.user())) {
-            return &*store->ptr() == &v && *store->value()->type() == *v.allocatedType();
+            return &*store->ptr() == &v && &*store->value() != &v && *store->value()->type() == *v.allocatedType();
         }
         if (auto *load = dynamic_cast<const Load *>(use.user())) {
             return &*load->ptr() == &v && *load->type() == *v.allocatedType();
