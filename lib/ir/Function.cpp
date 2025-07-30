@@ -6,6 +6,8 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <ranges>
+#include <stack>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -48,36 +50,86 @@ std::unordered_set<const BasicBlock *> findReachable(const Function &F) {
     return S;
 }
 
+void dfs(
+    const BasicBlock *u,
+    const HashMap<const BasicBlock *, std::unordered_set<const BasicBlock *>> &g,
+    HashMap<const BasicBlock *, int> &dfn,
+    HashMap<const BasicBlock *, int> &low,
+    HashMap<const BasicBlock *, int> &scc,
+    int &timer,
+    int &sccCount,
+    std::stack<const BasicBlock *> &S
+) {
+    dfn[u] = low[u] = timer;
+    ++timer;
+    S.push(u);
+    for (const BasicBlock *v : g[u]) {
+        if (dfn[v] == -1) {
+            dfs(v, g, dfn, low, scc, timer, sccCount, S);
+            low[u] = std::min(low[u], low[v]);
+        } else if (scc[v] == -1) {
+            low[u] = std::min(low[u], dfn[v]);
+        }
+    }
+    if (low[u] == dfn[u]) {
+        const BasicBlock *v;
+        do {
+            v = S.top();
+            S.pop();
+            scc[v] = sccCount;
+        } while (v != u);
+        ++sccCount;
+    }
+}
+
 std::unordered_set<const BasicBlock *> findNotInCycle(const Function &F) {
-    HashMap<const BasicBlock *, int> in;
-    std::unordered_set<const BasicBlock *> S;
-    std::queue<const BasicBlock *> Q;
-    for (const BasicBlock &v : F) {
-        in.put(&v, 0);
-    }
-    for (const BasicBlock &u : F) {
-        for (const BasicBlock *v : successors(u)) {
-            ++in[v];
+    HashMap<const BasicBlock *, std::unordered_set<const BasicBlock *>> g;
+    for (const BasicBlock &B : F) {
+        g.put(&B, {});
+        for (const BasicBlock *succ : successors(B)) {
+            g[&B].insert(succ);
         }
     }
-    for (const BasicBlock &v : F) {
-        if (in[&v] == 0) {
-            S.insert(&v);
-            Q.push(&v);
+    HashMap<const BasicBlock *, int> dfn, low;
+    HashMap<const BasicBlock *, int> scc;
+    int timer;
+    int sccCount;
+    std::stack<const BasicBlock *> S;
+    for (const BasicBlock *v : std::views::keys(g)) {
+        dfn.put(v, -1);
+        low.put(v, -1);
+        scc.put(v, -1);
+    }
+    timer = 0;
+    sccCount = 0;
+    for (const BasicBlock *u : std::views::keys(g)) {
+        if (dfn[u] == -1) {
+            dfs(u, g, dfn, low, scc, timer, sccCount, S);
         }
     }
-    while (!Q.empty()) {
-        const BasicBlock *u = Q.front();
-        Q.pop();
-        for (const BasicBlock *v : successors(*u)) {
-            --in[v];
-            if (in[v] == 0) {
-                S.insert(v);
-                Q.push(v);
+    HashMap<int, int> sizes;
+    for (int C = 0; C < sccCount; ++C) {
+        sizes.put(C, 0);
+    }
+    for (const BasicBlock *v : std::views::keys(g)) {
+        ++sizes[scc[v]];
+    }
+    std::unordered_set<const BasicBlock *> notInCycle;
+    for (const BasicBlock *u : std::views::keys(g)) {
+        if (sizes[scc[u]] == 1) {
+            bool hasSelfLoop = false;
+            for (const BasicBlock *v : g[u]) {
+                if (v == u) {
+                    hasSelfLoop = true;
+                    break;
+                }
+            }
+            if (!hasSelfLoop) {
+                notInCycle.insert(u);
             }
         }
     }
-    return S;
+    return notInCycle;
 }
 
 } // namespace
