@@ -14,6 +14,7 @@ tests=(
     escape_global
     getelementptr
     getelementptr_2
+    getelementptr_3
     global_values
     impure
     indirect_call

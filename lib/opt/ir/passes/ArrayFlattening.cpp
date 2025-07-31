@@ -7,16 +7,20 @@
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Add.h"
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
 #include "mini-llvm/ir/Instruction/Mul.h"
+#include "mini-llvm/ir/Instruction/SExt.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/ArrayType.h"
+#include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
 
 using namespace mini_llvm::ir;
 
@@ -42,8 +46,14 @@ bool ArrayFlattening::runOnFunction(Function &F) {
                     if (n > 0) {
                         std::vector<std::shared_ptr<Value>> terms;
                         for (size_t j = 0; j < n; ++j) {
+                            std::shared_ptr<Value> idx = share(*gep->idx(j));
+                            if (*idx->type() != I64()) {
+                                std::shared_ptr<Instruction> sext = std::make_shared<SExt>(idx, std::make_unique<I64>());
+                                addToParent(*gep, sext);
+                                idx = sext;
+                            }
                             std::shared_ptr<Instruction> mul = std::make_shared<Mul>(
-                                share(*gep->idx(j)), gep->idx(j)->type()->constant(sizes[j])
+                                idx, std::make_shared<I64Constant>(sizes[j])
                             );
                             addToParent(*gep, mul);
                             terms.push_back(mul);
