@@ -13,7 +13,7 @@ tests=(
     escape_arg
     escape_global
     getelementptr
-    getelementptr_0
+    getelementptr_2
     global_values
     impure
     indirect_call
