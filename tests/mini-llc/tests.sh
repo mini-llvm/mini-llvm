@@ -9,6 +9,7 @@ tests=(
     arithmetic
     casting
     circular_call
+    circular_call_2
     div
     escape_arg
     escape_global
