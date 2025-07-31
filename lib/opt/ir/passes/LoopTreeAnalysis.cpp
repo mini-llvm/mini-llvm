@@ -37,27 +37,33 @@ public:
         for (const BasicBlock &u : F) {
             for (const BasicBlock *v : successors(u)) {
                 if (domTree.dominates(*v, u)) {
-                    std::unordered_set<const BasicBlock *> S;
-                    std::queue<const BasicBlock *> Q;
-                    S.insert(&u);
-                    Q.push(&u);
-                    while (!Q.empty()) {
-                        const BasicBlock *x = Q.front();
-                        Q.pop();
-                        for (const BasicBlock *y : predecessors(*x)) {
-                            if (y != v) {
-                                if (S.insert(y).second) {
-                                    Q.push(y);
+                    if (v == &u) {
+                        Loop loop({&u}, &u);
+
+                        loops_.emplace_back(std::move(loop));
+                    } else {
+                        std::unordered_set<const BasicBlock *> S;
+                        std::queue<const BasicBlock *> Q;
+                        S.insert(&u);
+                        Q.push(&u);
+                        while (!Q.empty()) {
+                            const BasicBlock *x = Q.front();
+                            Q.pop();
+                            for (const BasicBlock *y : predecessors(*x)) {
+                                if (y != v) {
+                                    if (S.insert(y).second) {
+                                        Q.push(y);
+                                    }
                                 }
                             }
                         }
-                    }
-                    S.insert(v);
+                        S.insert(v);
 
-                    Loop loop(std::move(S), v);
+                        Loop loop(std::move(S), v);
 
-                    if (isNaturalLoop(loop, domTree)) {
-                        loops_.emplace_back(std::move(loop));
+                        if (isNaturalLoop(loop, domTree)) {
+                            loops_.emplace_back(std::move(loop));
+                        }
                     }
                 }
             }
