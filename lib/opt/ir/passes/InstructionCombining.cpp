@@ -5,8 +5,11 @@
 #include <utility>
 #include <vector>
 
+#include "mini-llvm/common/ops/Add.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/I64Constant.h"
+#include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Add.h"
@@ -78,7 +81,10 @@ void dfs(const DTNode *node, bool &changed) {
             while (isCombinableGEP(*ptr) && *static_cast<const GetElementPtr *>(&*ptr)->sourceType() == *gep->sourceType()) {
                 GetElementPtr *gep2 = static_cast<GetElementPtr *>(&*ptr);
                 ptr = share(*gep2->ptr());
-                idx = Add(idx, share(**gep2->idx_begin())).fold();
+                idx = std::make_shared<I64Constant>(ops::Add()(
+                    static_cast<const IntegerConstant *>(&*idx)->signExtendedValue(),
+                    static_cast<const IntegerConstant *>(&**gep2->idx_begin())->signExtendedValue()
+                ));
             }
             if (&*ptr != &*gep->ptr()) {
                 std::vector<std::shared_ptr<Value>> indices;
