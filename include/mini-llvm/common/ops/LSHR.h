@@ -12,12 +12,13 @@ struct LSHR {
     template <typename Tx, typename Ty>
         requires std::integral<Tx> && std::integral<Ty>
     std::optional<Tx> operator()(Tx x, Ty y) const noexcept {
-        if (y >= static_cast<Ty>(sizeof(Tx) * CHAR_BIT))
+        std::make_unsigned_t<Ty> uy = std::bit_cast<std::make_unsigned_t<Ty>>(y);
+        if (uy >= static_cast<std::make_unsigned_t<Ty>>(sizeof(Tx) * CHAR_BIT))
             return std::nullopt;
         return
             std::bit_cast<Tx>(
                 static_cast<std::make_unsigned_t<Tx>>(
-                    std::bit_cast<std::make_unsigned_t<Tx>>(x) >> y));
+                    std::bit_cast<std::make_unsigned_t<Tx>>(x) >> uy));
     }
 
     template <typename Ty>

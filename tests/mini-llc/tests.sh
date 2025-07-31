@@ -25,6 +25,7 @@ tests=(
     mul
     phi_lost_copy
     phi_swap
+    poison
     relational
     rem
     select
