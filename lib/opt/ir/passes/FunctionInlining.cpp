@@ -49,15 +49,11 @@ bool isRecursive(const Function &F) {
     return false;
 }
 
-bool shouldInlineHeuristic(const Call &call) {
-    return isShort(*call.callee()) && !isRecursive(*call.callee());
-}
-
 bool shouldInline(const Call &call) {
     if (call.callee()->empty()) return false;
     if (call.callee()->hasAttr(Attribute::kNoInline)) return false;
     if (call.callee()->hasAttr(Attribute::kAlwaysInline)) return true;
-    return shouldInlineHeuristic(call);
+    return isShort(*call.callee()) && !isRecursive(*call.callee());
 }
 
 BasicBlock *splitBefore(BasicBlock::const_iterator i) {
@@ -92,15 +88,15 @@ BasicBlock *splitBefore(BasicBlock::const_iterator i) {
 bool FunctionInlining::runOnFunction(Function &F) {
     bool changed = false;
 
-    for (BasicBlock &B : F) {
-        for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
-            if (auto *call = dynamic_cast<const Call *>(&*i)) {
+    for (auto i = F.begin(); i != F.end(); ++i) {
+        for (auto j = i->begin(), e = i->end(); j != e; ++j) {
+            if (auto *call = dynamic_cast<const Call *>(&*j)) {
                 const Function *callee = &*call->callee();
                 if (shouldInline(*call)) {
-                    BasicBlock *B2 = splitBefore(std::next(i));
+                    BasicBlock *B = splitBefore(std::next(j));
 
                     if (*callee->functionType()->returnType() != Void()) {
-                        Phi &phi = B2->prepend(std::make_shared<Phi>(callee->functionType()->returnType()));
+                        Phi &phi = B->prepend(std::make_shared<Phi>(callee->functionType()->returnType()));
                         replaceAllUsesWith(*call, weaken(phi));
                     }
 
@@ -129,7 +125,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
                                 valueMap.put(&callee_I, &*caller_I);
                                 cloned.push_back(&*caller_I);
                             } else {
-                                caller_B->append(std::make_shared<Br>(weaken(*B2)));
+                                caller_B->append(std::make_shared<Br>(weaken(*B)));
                                 if (*callee->functionType()->returnType() != Void()) {
                                     exits.emplace_back(caller_B, &*static_cast<const Ret *>(&callee_I)->value());
                                 }
@@ -139,18 +135,18 @@ bool FunctionInlining::runOnFunction(Function &F) {
 
                     for (Instruction *caller_I : cloned) {
                         for (UseBase *op : caller_I->operands()) {
-                            if (auto j = valueMap.find(&**op); j != valueMap.end()) {
-                                op->set(share(*j->second));
+                            if (auto k = valueMap.find(&**op); k != valueMap.end()) {
+                                op->set(share(*k->second));
                             }
                         }
                     }
 
                     if (*callee->functionType()->returnType() != Void()) {
                         for (auto [caller_B, value] : exits) {
-                            if (auto j = valueMap.find(value); j != valueMap.end()) {
-                                value = j->second;
+                            if (auto k = valueMap.find(value); k != valueMap.end()) {
+                                value = k->second;
                             }
-                            static_cast<Phi *>(&B2->front())->addIncoming(*caller_B, share(*value));
+                            static_cast<Phi *>(&B->front())->addIncoming(*caller_B, share(*value));
                         }
                     }
 
