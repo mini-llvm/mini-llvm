@@ -57,8 +57,8 @@ function main {
     echo "*" > "$result_dir/.gitignore"
 
     MINI_LLC_COMMAND="${MINI_LLC_COMMAND:-mini-llc}"
-    LINKER_COMMAND="${LINKER_COMMAND:-riscv64-linux-gnu-gcc}"
-    EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-riscv64}"
+    LINKER_COMMAND="${LINKER_COMMAND:-$target-linux-gnu-gcc}"
+    EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-$target}"
     DIFF_COMMAND="${DIFF_COMMAND:-diff}"
     MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-60}"
     LINKER_TIMEOUT="${LINKER_TIMEOUT:-60}"
