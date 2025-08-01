@@ -12,6 +12,7 @@
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/Br.h"
 #include "mini-llvm/ir/Instruction/Call.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
@@ -121,7 +122,11 @@ bool FunctionInlining::runOnFunction(Function &F) {
                             BasicBlock *caller_B = static_cast<BasicBlock *>(valueMap[&callee_B]);
                             if (!dynamic_cast<const Ret *>(&callee_I)) {
                                 std::shared_ptr<Instruction> caller_I = cast<Instruction>(callee_I.clone());
-                                caller_B->append(caller_I);
+                                if (dynamic_cast<const Alloca *>(&*caller_I)) {
+                                    F.entry().prepend(caller_I);
+                                } else {
+                                    caller_B->append(caller_I);
+                                }
                                 valueMap.put(&callee_I, &*caller_I);
                                 cloned.push_back(&*caller_I);
                             } else {

@@ -19,6 +19,7 @@ tests=(
     global_values
     impure
     indirect_call
+    inline_alloca
     irreducible_cfg
     load_uninitialized
     many_args
