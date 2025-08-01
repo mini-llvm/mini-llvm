@@ -233,6 +233,7 @@ cd <repo-dir>/build
 ctest .
 
 # Bazel
+cd <repo-dir>
 CC=gcc-14 CXX=g++-14 bazel test -c opt //unittests:unittests
 ```
 
