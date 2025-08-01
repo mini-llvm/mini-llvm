@@ -37,6 +37,7 @@ tests=(
     self_loop
     self_reference
     type_punning
+    unreachable_block
 
     accumulate
     bfs

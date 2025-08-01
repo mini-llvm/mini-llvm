@@ -18,6 +18,7 @@
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -117,6 +118,8 @@ private:
 } // namespace
 
 bool Mem2Reg::runOnFunction(Function &F) {
+    bool changed = UnreachableBlockElimination().runOnFunction(F);
+
     std::unordered_set<const Alloca *> vars;
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
@@ -129,7 +132,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
     }
 
     if (vars.empty()) {
-        return false;
+        return changed;
     }
 
     DominatorTreeAnalysis domTree;
