@@ -36,6 +36,7 @@ tests=(
     select_ptr
     self_loop
     self_reference
+    type_punning
 
     accumulate
     bfs
