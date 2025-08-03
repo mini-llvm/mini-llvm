@@ -39,6 +39,7 @@ tests=(
     store_ptr
     type_punning
     unreachable_block
+    unreachable_block_2
 
     accumulate
     bfs
