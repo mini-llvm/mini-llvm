@@ -249,6 +249,19 @@ bool Function::isWellFormed() const {
             }
         }
     }
+    for (const BasicBlock &B : *this) {
+        if (!reachable.contains(&B)) {
+            for (const Instruction &I : B) {
+                for (const UseBase &use : uses(I)) {
+                    if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                        if (!dynamic_cast<const Phi *>(II) && reachable.contains(II->parent())) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+    }
     std::unordered_set<const BasicBlock *> notInCycle = findNotInCycle(*this);
     for (const BasicBlock &B : *this) {
         if (!notInCycle.contains(&B)) {
