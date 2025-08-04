@@ -1,4 +1,5 @@
 add_executable(unittests
+    ir/BasicBlockTest.cpp
     ir/Constant/ArrayConstantTest.cpp
     ir/FunctionTest.cpp
     ir/Instruction/AddTest.cpp
