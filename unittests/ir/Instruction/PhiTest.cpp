@@ -21,8 +21,8 @@ protected:
         block1_->setName("block1");
         block2_->setName("block2");
         phi_->setName("result");
-        phi_->addIncoming(*block1_, std::make_shared<I32Constant>(42));
-        phi_->addIncoming(*block2_, std::make_shared<I32Constant>(43));
+        phi_->addIncoming(block1_, std::make_shared<I32Constant>(42));
+        phi_->addIncoming(block2_, std::make_shared<I32Constant>(43));
     }
 };
 

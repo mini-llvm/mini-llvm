@@ -100,9 +100,9 @@ private:
                         const Alloca *v = i->second;
                         const Value *value = defs_[v];
                         if (value != nullptr) {
-                            phi->addIncoming(*node->block, share(*const_cast<Value *>(value)));
+                            phi->addIncoming(weaken(*const_cast<BasicBlock *>(node->block)), share(*const_cast<Value *>(value)));
                         } else {
-                            phi->addIncoming(*node->block, std::make_shared<PoisonValue>(v->allocatedType()));
+                            phi->addIncoming(weaken(*const_cast<BasicBlock *>(node->block)), std::make_shared<PoisonValue>(v->allocatedType()));
                         }
                     }
                 }

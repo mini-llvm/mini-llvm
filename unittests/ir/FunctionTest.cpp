@@ -49,8 +49,8 @@ TEST(FunctionTest, IsWellFormedUnreachableBlock1) {
     Add &I1 = B2.append(std::make_shared<Add>(share(arg1), std::make_shared<I32Constant>(1)));
     B2.append(std::make_shared<Br>(weaken(B3)));
     Phi &I2 = B3.append(std::make_shared<Phi>(std::make_unique<I32>()));
-    I2.addIncoming(B1, std::make_shared<I32Constant>(0));
-    I2.addIncoming(B2, share(I1));
+    I2.addIncoming(weaken(B1), std::make_shared<I32Constant>(0));
+    I2.addIncoming(weaken(B2), share(I1));
     B3.append(std::make_shared<Ret>(share(I2)));
 
     EXPECT_TRUE(F.isWellFormed());

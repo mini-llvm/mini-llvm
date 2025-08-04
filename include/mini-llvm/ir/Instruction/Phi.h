@@ -154,7 +154,7 @@ public:
 
     incoming_iterator findIncoming(const BasicBlock &B);
     const_incoming_iterator findIncoming(const BasicBlock &B) const;
-    void addIncoming(const BasicBlock &B, std::shared_ptr<Value> value);
+    void addIncoming(std::weak_ptr<BasicBlock> B, std::shared_ptr<Value> value);
     void removeIncoming(const_incoming_iterator i);
 
     std::unordered_set<const UseBase *> operands() const override;

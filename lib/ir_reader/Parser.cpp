@@ -995,7 +995,7 @@ public:
                             throw ParseException("duplicate incoming block", blockLocation);
                         }
 
-                        phi.addIncoming(*block, value);
+                        phi.addIncoming(block, value);
                     };
 
                     parseIncoming(*phi);
