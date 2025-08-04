@@ -14,10 +14,12 @@ TEST(CommandLineParserTest, NoArgs) {
 
     CommandLineParser parser;
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_EQ(i, j);
 }
@@ -28,10 +30,12 @@ TEST(CommandLineParserTest, ShortNoValue) {
     CommandLineParser parser;
     parser.addOption("-s");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -49,10 +53,12 @@ TEST(CommandLineParserTest, ShortRequiredValue1) {
     CommandLineParser parser;
     parser.addOption("-s:");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -70,10 +76,12 @@ TEST(CommandLineParserTest, ShortRequiredValue2) {
     CommandLineParser parser;
     parser.addOption("-s:");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -91,10 +99,12 @@ TEST(CommandLineParserTest, ShortOptionalValue1) {
     CommandLineParser parser;
     parser.addOption("-s::");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -112,10 +122,12 @@ TEST(CommandLineParserTest, ShortOptionalValue2) {
     CommandLineParser parser;
     parser.addOption("-s::");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -139,10 +151,12 @@ TEST(CommandLineParserTest, ShortOptionalValue3) {
     CommandLineParser parser;
     parser.addOption("-s::");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -160,10 +174,12 @@ TEST(CommandLineParserTest, LongNoValue) {
     CommandLineParser parser;
     parser.addOption("--long");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -181,10 +197,12 @@ TEST(CommandLineParserTest, LongRequiredValue1) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -202,10 +220,12 @@ TEST(CommandLineParserTest, LongRequiredValue2) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -223,10 +243,12 @@ TEST(CommandLineParserTest, LongOptionalValue1) {
     CommandLineParser parser;
     parser.addOption("--long::");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -244,10 +266,12 @@ TEST(CommandLineParserTest, LongOptionalValue2) {
     CommandLineParser parser;
     parser.addOption("--long::");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -271,10 +295,12 @@ TEST(CommandLineParserTest, LongOptionalValue3) {
     CommandLineParser parser;
     parser.addOption("--long::");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -295,10 +321,12 @@ TEST(CommandLineParserTest, Bundle) {
     parser.addOption("-c");
     parser.addOption("-d");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -340,10 +368,12 @@ TEST(CommandLineParserTest, BundleRequiredValue) {
     parser.addOption("-c");
     parser.addOption("-d");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -371,10 +401,12 @@ TEST(CommandLineParserTest, BundleOptionalValue) {
     parser.addOption("-c");
     parser.addOption("-d");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -399,12 +431,12 @@ TEST(CommandLineParserTest, EmptyValueShort) {
     CommandLineParser parser;
     parser.addOption("-s:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -422,12 +454,12 @@ TEST(CommandLineParserTest, EmptyValueLong1) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -445,12 +477,12 @@ TEST(CommandLineParserTest, EmptyValueLong2) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -469,12 +501,12 @@ TEST(CommandLineParserTest, EmptyValueBundle) {
     parser.addOption("-a");
     parser.addOption("-b:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -499,12 +531,12 @@ TEST(CommandLineParserTest, OptionLikeValueShort) {
     CommandLineParser parser;
     parser.addOption("-s:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -522,12 +554,12 @@ TEST(CommandLineParserTest, OptionLikeValueLong1) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -545,12 +577,12 @@ TEST(CommandLineParserTest, OptionLikeValueLong2) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -569,12 +601,12 @@ TEST(CommandLineParserTest, OptionLikeValueBundle) {
     parser.addOption("-a");
     parser.addOption("-b:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_TRUE(result);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -599,10 +631,12 @@ TEST(CommandLineParserTest, MultipleOccurrencesShort) {
     CommandLineParser parser;
     parser.addOption("-s");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -627,10 +661,12 @@ TEST(CommandLineParserTest, MultipleOccurrencesLong) {
     CommandLineParser parser;
     parser.addOption("--long");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -656,10 +692,12 @@ TEST(CommandLineParserTest, MultipleOccurrencesBundle) {
     parser.addOption("-a");
     parser.addOption("-b");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);
@@ -699,6 +737,7 @@ TEST(CommandLineParserTest, MissingValueShort) {
     parser.addOption("-s:");
 
     auto result = parser(args);
+
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kMissingValue);
     ASSERT_EQ(result.error().optionName(), "-s");
@@ -710,7 +749,7 @@ TEST(CommandLineParserTest, MissingValueLong) {
     CommandLineParser parser;
     parser.addOption("--long:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kMissingValue);
@@ -724,7 +763,7 @@ TEST(CommandLineParserTest, MissingValueBundle) {
     parser.addOption("-a");
     parser.addOption("-b:");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kMissingValue);
@@ -737,7 +776,7 @@ TEST(CommandLineParserTest, UnexpectedValue) {
     CommandLineParser parser;
     parser.addOption("--long");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kUnexpectedValue);
@@ -749,7 +788,7 @@ TEST(CommandLineParserTest, UnrecognizedOptionShort) {
 
     CommandLineParser parser;
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kUnrecognizedOption);
@@ -761,7 +800,7 @@ TEST(CommandLineParserTest, UnrecognizedOptionLong1) {
 
     CommandLineParser parser;
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kUnrecognizedOption);
@@ -773,7 +812,7 @@ TEST(CommandLineParserTest, UnrecognizedOptionLong2) {
 
     CommandLineParser parser;
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kUnrecognizedOption);
@@ -786,7 +825,7 @@ TEST(CommandLineParserTest, UnrecognizedOptionBundle) {
     CommandLineParser parser;
     parser.addOption("-a");
 
-    Expected<void, CommandLineParser::Error> result = parser(args);
+    auto result = parser(args);
 
     ASSERT_FALSE(result);
     ASSERT_EQ(result.error().kind(), CommandLineParser::ErrorKind::kUnrecognizedOption);
@@ -798,10 +837,12 @@ TEST(CommandLineParserTest, Positional) {
 
     CommandLineParser parser;
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->positional(), nullptr);
@@ -817,10 +858,12 @@ TEST(CommandLineParserTest, PositionalEmpty) {
 
     CommandLineParser parser;
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->positional(), nullptr);
@@ -836,10 +879,12 @@ TEST(CommandLineParserTest, PositionalHyphen) {
 
     CommandLineParser parser;
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->positional(), nullptr);
@@ -855,10 +900,12 @@ TEST(CommandLineParserTest, PositionalDoubleHyphen) {
 
     CommandLineParser parser;
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->separator(), nullptr);
@@ -881,10 +928,12 @@ TEST(CommandLineParserTest, Separator) {
     parser.addOption("-s");
     parser.addOption("--long");
 
-    ASSERT_TRUE(parser(args));
+    auto result = parser(args);
 
-    auto i = parser.begin();
-    auto j = parser.end();
+    ASSERT_TRUE(result);
+
+    auto i = result->begin();
+    auto j = result->end();
 
     ASSERT_NE(i, j);
     ASSERT_NE(i->option(), nullptr);

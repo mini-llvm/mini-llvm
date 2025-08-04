@@ -53,19 +53,21 @@ int mainImpl(std::vector<std::string> args) {
     parser.addOption("--dump-ir::");
     parser.addOption("--dump-mir::");
 
-    if (Expected<void, CommandLineParser::Error> result = parser(args); !result) {
+    auto parseResult = parser(args);
+
+    if (!parseResult) {
         using enum CommandLineParser::ErrorKind;
-        switch (result.error().kind()) {
+        switch (parseResult.error().kind()) {
         case kMissingValue:
-            std::println(stderr, "{}: error: missing value to '{}'", args[0], result.error().optionName());
+            std::println(stderr, "{}: error: missing value to '{}'", args[0], parseResult.error().optionName());
             break;
 
         case kUnexpectedValue:
-            std::println(stderr, "{}: error: unexpected value to '{}'", args[0], result.error().optionName());
+            std::println(stderr, "{}: error: unexpected value to '{}'", args[0], parseResult.error().optionName());
             break;
 
         case kUnrecognizedOption:
-            std::println(stderr, "{}: error: unrecognized option '{}'", args[0], result.error().optionName());
+            std::println(stderr, "{}: error: unrecognized option '{}'", args[0], parseResult.error().optionName());
             break;
         }
         return 1;
@@ -77,7 +79,7 @@ int mainImpl(std::vector<std::string> args) {
     std::optional<Path> irDumpFile;
     std::optional<Path> mirDumpFile;
 
-    for (const auto &arg : parser) {
+    for (const auto &arg : *parseResult) {
         if (const auto *option = arg.option()) {
             if (option->name() == "--help") {
                 std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", args[0]);

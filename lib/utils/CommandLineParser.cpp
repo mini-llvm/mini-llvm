@@ -22,18 +22,19 @@ void CommandLineParser::addOption(std::string name) {
     options_.emplace(std::move(name), kind);
 }
 
-Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std::vector<std::string> &args) {
+Expected<CommandLineParser::Result, CommandLineParser::Error> CommandLineParser::operator()(const std::vector<std::string> &args) {
+    std::vector<Argument> result;
     bool isPositional = false;
     size_t n = args.size();
     size_t i = 1;
     while (i < n) {
         std::string arg = args[i++];
         if (isPositional) {
-            args_.emplace_back(PositionalArgument(arg));
+            result.emplace_back(PositionalArgument(arg));
             continue;
         }
         if (arg == "--") {
-            args_.emplace_back(Separator());
+            result.emplace_back(Separator());
             isPositional = true;
             continue;
         }
@@ -49,10 +50,10 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
                         return Unexpected(Error(ErrorKind::kMissingValue, arg));
                     }
                     std::string value = args[i++];
-                    args_.emplace_back(OptionArgument(arg, value));
+                    result.emplace_back(OptionArgument(arg, value));
                     continue;
                 }
-                args_.emplace_back(OptionArgument(arg));
+                result.emplace_back(OptionArgument(arg));
                 continue;
             }
             std::string name = arg.substr(0, j);
@@ -64,7 +65,7 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
                 return Unexpected(Error(ErrorKind::kUnexpectedValue, name));
             }
             std::string value = arg.substr(j + 1);
-            args_.emplace_back(OptionArgument(name, value));
+            result.emplace_back(OptionArgument(name, value));
             continue;
         }
         if (arg.starts_with("-") && arg != "-") {
@@ -79,10 +80,10 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
                             return Unexpected(Error(ErrorKind::kMissingValue, arg));
                         }
                         std::string value = args[i++];
-                        args_.emplace_back(OptionArgument(arg, value));
+                        result.emplace_back(OptionArgument(arg, value));
                         break;
                     }
-                    args_.emplace_back(OptionArgument(arg));
+                    result.emplace_back(OptionArgument(arg));
                     break;
                 }
                 std::string name = arg.substr(0, 2);
@@ -91,17 +92,17 @@ Expected<void, CommandLineParser::Error> CommandLineParser::operator()(const std
                     return Unexpected(Error(ErrorKind::kUnrecognizedOption, name));
                 }
                 if (option->second == OptionKind::kNoValue) {
-                    args_.emplace_back(OptionArgument(name));
+                    result.emplace_back(OptionArgument(name));
                     arg.erase(arg.begin() + 1);
                     continue;
                 }
                 std::string value = arg.substr(2);
-                args_.emplace_back(OptionArgument(name, value));
+                result.emplace_back(OptionArgument(name, value));
                 break;
             }
             continue;
         }
-        args_.emplace_back(PositionalArgument(arg));
+        result.emplace_back(PositionalArgument(arg));
     }
-    return {};
+    return Result(std::move(result));
 }

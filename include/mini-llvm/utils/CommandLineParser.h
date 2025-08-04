@@ -78,7 +78,32 @@ public:
         std::variant<OptionArgument, PositionalArgument, Separator> arg_;
     };
 
-    using iterator = std::vector<Argument>::const_iterator;
+    class Result {
+    public:
+        using iterator = std::vector<Argument>::const_iterator;
+
+        explicit Result(std::vector<Argument> args)
+            : result_(std::move(args)) {}
+
+        iterator begin() const {
+            return result_.begin();
+        }
+
+        iterator end() const {
+            return result_.end();
+        }
+
+        size_t size() const {
+            return result_.size();
+        }
+
+        bool empty() const {
+            return result_.empty();
+        }
+
+    private:
+        std::vector<Argument> result_;
+    };
 
     enum class ErrorKind {
         kMissingValue,
@@ -106,23 +131,7 @@ public:
 
     void addOption(std::string name);
 
-    Expected<void, Error> operator()(const std::vector<std::string> &args);
-
-    iterator begin() const {
-        return args_.begin();
-    }
-
-    iterator end() const {
-        return args_.end();
-    }
-
-    size_t size() const {
-        return args_.size();
-    }
-
-    bool empty() const {
-        return args_.empty();
-    }
+    Expected<Result, Error> operator()(const std::vector<std::string> &args);
 
 private:
     enum class OptionKind {
