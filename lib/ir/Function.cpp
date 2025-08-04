@@ -229,7 +229,13 @@ bool Function::isWellFormed() const {
     for (const BasicBlock &B : *this) {
         for (const Instruction &I : B) {
             if (auto *phi = dynamic_cast<const Phi *>(&I)) {
-                if (incomingBlocks(*phi) != predecessors(B)) {
+                std::unordered_set<BasicBlock *> incomingBlocks;
+                for (Phi::ConstIncoming incoming : incomings(*phi)) {
+                    if (!incomingBlocks.insert(&*incoming.block).second) {
+                        return false;
+                    }
+                }
+                if (incomingBlocks != predecessors(B)) {
                     return false;
                 }
             }

@@ -120,6 +120,46 @@ TEST(FunctionTest, IsWellFormedIncomingBlocks2) {
     EXPECT_FALSE(F.isWellFormed());
 }
 
+TEST(FunctionTest, IsWellFormedIncomingBlocks3) {
+    // define i32 @test(i1 %arg1) {
+    // B1:
+    //   br i1 %arg1, label %B2, label %B3
+    //
+    // B2:
+    //   br label %B4
+    //
+    // B3:
+    //   br label %B4
+    //
+    // B4:
+    //   %I1 = phi i32 [ 2, %B2 ], [ 3, %B3 ], [ 3, %B3 ]
+    //   ret i32 %I1
+    // }
+
+    std::unique_ptr<Type> returnType = std::make_unique<I32>();
+    std::vector<std::unique_ptr<Type>> paramTypes;
+    paramTypes.push_back(std::make_unique<I1>());
+    std::unique_ptr<FunctionType> functionType = std::make_unique<FunctionType>(
+        std::move(returnType), std::move(paramTypes), false
+    );
+    Function F(std::move(functionType), Linkage::kExternal);
+    Argument &arg1 = F.arg(0);
+    BasicBlock &B1 = F.append();
+    BasicBlock &B2 = F.append();
+    BasicBlock &B3 = F.append();
+    BasicBlock &B4 = F.append();
+    B1.append(std::make_shared<CondBr>(share(arg1), weaken(B2), weaken(B3)));
+    B2.append(std::make_shared<Br>(weaken(B4)));
+    B3.append(std::make_shared<Br>(weaken(B4)));
+    Phi &I1 = B4.append(std::make_shared<Phi>(std::make_unique<I32>()));
+    I1.addIncoming(weaken(B2), std::make_shared<I32Constant>(2));
+    I1.addIncoming(weaken(B3), std::make_shared<I32Constant>(3));
+    I1.addIncoming(weaken(B3), std::make_shared<I32Constant>(3));
+    B4.append(std::make_shared<Ret>(share(I1)));
+
+    EXPECT_FALSE(F.isWellFormed());
+}
+
 TEST(FunctionTest, IsWellFormedUnreachableBlock1) {
     // define i32 @test(i32 %arg1) {
     // B1:
