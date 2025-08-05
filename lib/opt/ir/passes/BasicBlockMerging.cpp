@@ -27,6 +27,9 @@ bool canMergeWithSuccessor(const BasicBlock &B, const HashMap<const BasicBlock *
         return false;
     }
     const BasicBlock &succ = *static_cast<const Br *>(&B.back())->dest();
+    if (&succ == &B) {
+        return false;
+    }
     if (numPredecessors[&succ] > 1) {
         return false;
     }
