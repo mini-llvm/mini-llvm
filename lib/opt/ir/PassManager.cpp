@@ -19,6 +19,7 @@
 #include "mini-llvm/opt/ir/passes/PoisonPropagation.h"
 #include "mini-llvm/opt/ir/passes/RedundantLoadElimination.h"
 #include "mini-llvm/opt/ir/passes/StrengthReduction.h"
+#include "mini-llvm/opt/ir/passes/TailDuplication.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 
 using namespace mini_llvm::ir;
@@ -35,6 +36,7 @@ void PassManager::run(Module &M) const {
         changed |= BranchSimplification().runOnModule(M);
         changed |= JumpThreading().runOnModule(M);
         changed |= BasicBlockMerging().runOnModule(M);
+        changed |= TailDuplication(5).runOnModule(M);
         changed |= UnreachableBlockElimination().runOnModule(M);
         changed |= DeadStoreElimination(pointerSize_).runOnModule(M);
         changed |= RedundantLoadElimination(pointerSize_).runOnModule(M);

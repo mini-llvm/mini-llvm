@@ -124,6 +124,7 @@
 - `PoisonPropagation`
 - `RedundantLoadElimination`
 - `StrengthReduction`
+- `TailDuplication`
 - `UnreachableBlockElimination`
 - `AliasAnalysis`
 - `DominatorTreeAnalysis`
