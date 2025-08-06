@@ -30,11 +30,11 @@ namespace {
 constexpr size_t kCalleeThreshold = 20;
 constexpr size_t kCallerThreshold = 100;
 
-bool hasNInstructionsOrMore(const Function &F, size_t n) {
+bool hasMoreThanNInstructions(const Function &F, size_t n) {
     size_t count = 0;
     for (const BasicBlock &B : F) {
         count += B.size();
-        if (count >= n) {
+        if (count > n) {
             return true;
         }
     }
@@ -59,8 +59,8 @@ bool shouldInline(const Call &call) {
     if (call.callee()->hasAttr(Attribute::kNoInline)) return false;
     if (call.callee()->hasAttr(Attribute::kAlwaysInline)) return true;
     if (isRecursive(*call.callee())) return false;
-    if (hasNInstructionsOrMore(*call.callee(), kCalleeThreshold)) return false;
-    if (hasNInstructionsOrMore(*call.parent()->parent(), kCallerThreshold)) return false;
+    if (hasMoreThanNInstructions(*call.callee(), kCalleeThreshold)) return false;
+    if (hasMoreThanNInstructions(*call.parent()->parent(), kCallerThreshold)) return false;
     return true;
 }
 
