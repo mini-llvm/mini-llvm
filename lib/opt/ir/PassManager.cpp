@@ -1,7 +1,5 @@
 #include "mini-llvm/opt/ir/PassManager.h"
 
-#include <cassert>
-
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 #include "mini-llvm/opt/ir/passes/ArrayFlattening.h"
