@@ -344,8 +344,8 @@ public:
                 }
                 paramTypes.push_back(std::move(type));
                 if (!isDeclaration) {
-                    Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
-                    paramNames.push_back(std::move(symbol.name));
+                    Symbol paramSymbol = parseSymbol(Symbol::Scope::kLocal);
+                    paramNames.push_back(std::move(paramSymbol.name));
                 }
             }
             while (!isVarArgs && current_->kind == kComma) {
@@ -361,12 +361,12 @@ public:
                     }
                     paramTypes.push_back(std::move(type));
                     if (!isDeclaration) {
-                        Location symbolLocation = current_;
-                        Symbol symbol = parseSymbol(Symbol::Scope::kLocal);
-                        if (std::ranges::find(paramNames, symbol.name) != paramNames.end()) {
-                            throw ParseException("redefinition of argument", symbolLocation);
+                        Location paramSymbolLocation = current_;
+                        Symbol paramSymbol = parseSymbol(Symbol::Scope::kLocal);
+                        if (std::ranges::find(paramNames, paramSymbol.name) != paramNames.end()) {
+                            throw ParseException("redefinition of parameter", paramSymbolLocation);
                         }
-                        paramNames.push_back(std::move(symbol.name));
+                        paramNames.push_back(std::move(paramSymbol.name));
                     }
                 }
             }
