@@ -6,11 +6,10 @@
 
 #include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/mc/Symbol.h"
-#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT Label final : public Statement {
+class Label final : public Statement {
 public:
     explicit Label(Symbol symbol) : symbol_(std::move(symbol)) {}
 

@@ -6,11 +6,10 @@
 
 #include "mini-llvm/mc/Address.h"
 #include "mini-llvm/mc/Operand.h"
-#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT AddressOperand final : public Operand {
+class AddressOperand final : public Operand {
 public:
     explicit AddressOperand(Address addr)
         : addr_(std::move(addr)) {}

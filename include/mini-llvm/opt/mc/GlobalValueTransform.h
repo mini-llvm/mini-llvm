@@ -7,7 +7,7 @@
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT MINI_LLVM_EXPORT GlobalValueTransform : public ModuleTransform {
+class MINI_LLVM_EXPORT GlobalValueTransform : public ModuleTransform {
 public:
     virtual bool runOnGlobalValue(GlobalValue &G) = 0;
     bool runOnModule(Module &M) override;
