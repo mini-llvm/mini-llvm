@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstring>
+#include <format>
 #include <optional>
 #include <print>
 #include <string>
@@ -190,7 +191,7 @@ int mainImpl(std::vector<std::string> args) {
     passManager.run(*IM);
 
     if (irDumpFile) {
-        if (Expected<void, SystemError> result = writeAll(*irDumpFile, stdout, IM->format() + '\n'); !result) {
+        if (Expected<void, SystemError> result = writeAll(*irDumpFile, stdout, std::format("{}\n", *IM)); !result) {
             std::println(stderr, "{}: error: {}: {}", args[0], *irDumpFile, strerror(result.error().code()));
             return 1;
         }
@@ -210,13 +211,13 @@ int mainImpl(std::vector<std::string> args) {
     }
 
     if (mirDumpFile) {
-        if (Expected<void, SystemError> result = writeAll(*mirDumpFile, stdout, MM.format() + '\n'); !result) {
+        if (Expected<void, SystemError> result = writeAll(*mirDumpFile, stdout, std::format("{}\n", MM)); !result) {
             std::println(stderr, "{}: error: {}: {}", args[0], *mirDumpFile, strerror(result.error().code()));
             return 1;
         }
     }
 
-    if (Expected<void, SystemError> result = writeAll(*outputFile, stdout, MCM.format() + '\n'); !result) {
+    if (Expected<void, SystemError> result = writeAll(*outputFile, stdout, std::format("{}\n", MCM)); !result) {
         std::println(stderr, "{}: error: {}: {}", args[0], *outputFile, strerror(result.error().code()));
         return 1;
     }
