@@ -135,6 +135,7 @@ add_library(mini-llvm
     lib/opt/ir/passes/PoisonPropagation.cpp
     lib/opt/ir/passes/RedundantLoadElimination.cpp
     lib/opt/ir/passes/StrengthReduction.cpp
+    lib/opt/ir/passes/TailCallElimination.cpp
     lib/opt/ir/passes/TailDuplication.cpp
     lib/opt/ir/passes/UnreachableBlockElimination.cpp
     lib/opt/ir/PassManager.cpp
