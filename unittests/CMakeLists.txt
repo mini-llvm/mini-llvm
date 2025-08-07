@@ -50,9 +50,6 @@ add_executable(unittests
     utils/StringsTest.cpp
     utils/UnicodeTest.cpp
 )
-if(MSVC)
-    target_compile_options(unittests PRIVATE /utf-8)
-endif()
 target_link_libraries(unittests PRIVATE mini-llvm GTest::gtest)
 
 include(GoogleTest)

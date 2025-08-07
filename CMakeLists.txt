@@ -184,7 +184,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(mini-llvm INTERFACE MINI_LLVM_SHARED)
 endif()
 if(MSVC)
-    target_compile_options(mini-llvm PRIVATE /utf-8)
+    target_compile_options(mini-llvm PUBLIC /utf-8 /EHsc)
 endif()
 target_include_directories(mini-llvm PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
