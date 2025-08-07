@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <utility>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mir {
 
 class Add;
@@ -63,7 +65,7 @@ class URem;
 class Xor;
 class XorI;
 
-class InstructionVisitor {
+class MINI_LLVM_EXPORT InstructionVisitor {
 public:
     virtual ~InstructionVisitor() = default;
     InstructionVisitor() = default;

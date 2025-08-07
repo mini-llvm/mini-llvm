@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <utility>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mir {
 
 class I16ArrayConstant;
@@ -17,7 +19,7 @@ class PtrArrayConstant;
 class PtrConstant;
 class ZeroConstant;
 
-class ConstantVisitor {
+class MINI_LLVM_EXPORT ConstantVisitor {
 public:
     virtual ~ConstantVisitor() = default;
     ConstantVisitor() = default;

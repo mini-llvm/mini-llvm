@@ -6,9 +6,11 @@
 #include <memory>
 #include <string>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::mir {
 
-class Immediate {
+class MINI_LLVM_EXPORT Immediate {
 public:
     virtual ~Immediate() = default;
     Immediate(const Immediate &) = delete;

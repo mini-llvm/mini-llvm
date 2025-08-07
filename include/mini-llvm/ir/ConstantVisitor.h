@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <utility>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::ir {
 
 class ArrayConstant;
@@ -19,7 +21,7 @@ class NullPtrConstant;
 class PoisonValue;
 class VoidValue;
 
-class ConstantVisitor {
+class MINI_LLVM_EXPORT ConstantVisitor {
 public:
     virtual ~ConstantVisitor() = default;
     ConstantVisitor() = default;

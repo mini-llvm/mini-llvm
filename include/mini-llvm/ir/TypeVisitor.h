@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <utility>
 
+#include "mini-llvm/utils/Compiler.h"
+
 namespace mini_llvm::ir {
 
 class ArrayType;
@@ -18,7 +20,7 @@ class I8;
 class Ptr;
 class Void;
 
-class TypeVisitor {
+class MINI_LLVM_EXPORT TypeVisitor {
 public:
     virtual ~TypeVisitor() = default;
     TypeVisitor() = default;
