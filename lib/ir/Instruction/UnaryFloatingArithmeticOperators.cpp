@@ -23,7 +23,7 @@ template <typename Op>
 class ConstantVisitorImpl final : public ConstantVisitor {
 public:
     std::shared_ptr<Constant> takeResult() {
-        return std::move(*result_);
+        return *std::move(result_);
     }
 
     void visitFloatConstant(const FloatConstant &value) override {

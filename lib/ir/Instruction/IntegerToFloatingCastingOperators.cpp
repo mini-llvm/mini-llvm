@@ -36,7 +36,7 @@ template <typename Op, typename ResultConst>
 class ConstantVisitorImpl : public ConstantVisitor {
 public:
     std::shared_ptr<Constant> takeResult() {
-        return std::move(*result_);
+        return *std::move(result_);
     }
 
     void visitI1Constant(const I1Constant &value) override {
@@ -74,7 +74,7 @@ public:
     explicit TypeVisitorImpl(const Constant &value) : value_(value) {}
 
     std::shared_ptr<Constant> takeResult() {
-        return std::move(*result_);
+        return *std::move(result_);
     }
 
     void visitFloat(const Float &) override {

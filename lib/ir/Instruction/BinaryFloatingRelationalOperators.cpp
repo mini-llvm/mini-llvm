@@ -33,7 +33,7 @@ public:
     explicit ConstantVisitorImpl(const Constant &lhs) : lhs_(lhs) {}
 
     std::shared_ptr<Constant> takeResult() {
-        return std::move(*result_);
+        return *std::move(result_);
     }
 
     void visitFloatConstant(const FloatConstant &rhs) override {
