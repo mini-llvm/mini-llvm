@@ -159,7 +159,7 @@ std::vector<size_t> aco(
     return bestPath;
 }
 
-void swap(BasicBlockOperand &lhs, BasicBlockOperand &rhs) {
+void swapOperands(BasicBlockOperand &lhs, BasicBlockOperand &rhs) {
     BasicBlock *tmp = &*lhs;
     lhs.set(&*rhs);
     rhs.set(tmp);
@@ -218,7 +218,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         if (auto *br = dynamic_cast<CondBr *>(&i->back())) {
             if (&*j == &*br->falseDest()) {
                 br->setCond(inverted(br->cond()));
-                swap(br->trueDest(), br->falseDest());
+                swapOperands(br->trueDest(), br->falseDest());
                 changed = true;
                 continue;
             }
@@ -227,7 +227,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         if (auto *br = dynamic_cast<CmpBr *>(&i->back())) {
             if (&*j == &*br->falseDest()) {
                 br->setCond(inverted(br->cond()));
-                swap(br->trueDest(), br->falseDest());
+                swapOperands(br->trueDest(), br->falseDest());
                 changed = true;
                 continue;
             }
@@ -236,7 +236,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
         if (auto *br = dynamic_cast<CmpZBr *>(&i->back())) {
             if (&*j == &*br->falseDest()) {
                 br->setCond(inverted(br->cond()));
-                swap(br->trueDest(), br->falseDest());
+                swapOperands(br->trueDest(), br->falseDest());
                 changed = true;
                 continue;
             }

@@ -100,8 +100,8 @@ public:
         if (ptr1 == ptr2 && size1 != size2) {
             return AliasResult::kPartialAlias;
         }
-        const Value *object1 = objects_.get(ptr1, ptr1),
-                    *object2 = objects_.get(ptr2, ptr2);
+        const Value *object1 = objects_.get(ptr1).value_or(ptr1),
+                    *object2 = objects_.get(ptr2).value_or(ptr2);
         if ((dynamic_cast<const GlobalValue *>(object1) && dynamic_cast<const GlobalValue *>(object2) && object1 != object2) ||
                 (dynamic_cast<const Alloca *>(object1) && dynamic_cast<const Alloca *>(object2) && object1 != object2) ||
                 (dynamic_cast<const GlobalValue *>(object1) && dynamic_cast<const Alloca *>(object2)) ||

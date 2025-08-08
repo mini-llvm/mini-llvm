@@ -4,8 +4,11 @@
 
 #include <cassert>
 #include <functional>
+#include <optional>
 #include <unordered_map>
 #include <utility>
+
+#include "mini-llvm/utils/OptionalRef.h"
 
 namespace mini_llvm {
 
@@ -87,13 +90,22 @@ public:
         return i->second;
     }
 
-    template <typename Key2 = Key, typename Value2 = Value>
-    Value get(const Key2 &key, Value2 &&defaultValue) const {
+    template <typename Key2 = Key>
+    OptionalRef<Value> get(const Key2 &key) {
         auto i = find(key);
         if (i != end()) {
             return i->second;
         }
-        return static_cast<Value>(std::forward<Value2>(defaultValue));
+        return std::nullopt;
+    }
+
+    template <typename Key2 = Key>
+    OptionalRef<const Value> get(const Key2 &key) const {
+        auto i = find(key);
+        if (i != end()) {
+            return i->second;
+        }
+        return std::nullopt;
     }
 
     template <typename Key2 = Key, typename Value2 = Value>
