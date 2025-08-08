@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/ir_reader/Parser.h"
 
 #include <bit>

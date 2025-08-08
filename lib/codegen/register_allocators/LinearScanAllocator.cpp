@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/codegen/register_allocators/LinearScanAllocator.h"
 
 #include <algorithm>

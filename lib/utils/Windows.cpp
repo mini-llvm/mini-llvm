@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #ifdef _WIN32
 
 #include "mini-llvm/utils/Windows.h"

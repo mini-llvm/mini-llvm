@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/mir/passes/StackOffsetEvaluation.h"
 
 #include <memory>

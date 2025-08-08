@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/ir/passes/RedundantLoadElimination.h"
 
 #include <cassert>

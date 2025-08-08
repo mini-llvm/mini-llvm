@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/mir/FunctionTransform.h"
 
 #include "mini-llvm/mir/Function.h"

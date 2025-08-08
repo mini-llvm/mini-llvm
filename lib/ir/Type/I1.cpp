@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/ir/Type/I1.h"
 
 #include <cstdint>

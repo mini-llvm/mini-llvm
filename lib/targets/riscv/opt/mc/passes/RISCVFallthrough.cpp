@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/targets/riscv/opt/mc/passes/RISCVFallthrough.h"
 
 #include <iterator>

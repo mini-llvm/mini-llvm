@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/ir/Instruction/BinaryFloatingOperator.h"
 
 #include "mini-llvm/ir/Constant.h"

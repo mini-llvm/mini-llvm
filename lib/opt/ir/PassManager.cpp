@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/ir/PassManager.h"
 
 #include "mini-llvm/ir/Module.h"

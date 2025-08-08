@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include <cstdint>
 #include <initializer_list>
 #include <memory>

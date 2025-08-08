@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir_reader/IRReader.h"

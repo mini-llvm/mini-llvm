@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
 #include <cstdlib>

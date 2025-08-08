@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/mir/passes/JumpThreading.h"
 
 #include "mini-llvm/mir/BasicBlock.h"

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 
 #include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"

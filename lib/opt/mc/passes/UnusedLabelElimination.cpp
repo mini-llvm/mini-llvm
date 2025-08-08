@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/mc/passes/UnusedLabelElimination.h"
 
 #include <unordered_set>

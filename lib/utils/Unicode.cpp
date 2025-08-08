@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/utils/Unicode.h"
 
 char32_t mini_llvm::decodeUtf8(const char *&ptr) noexcept {

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/ir/Instruction/IntegerToFloatingCastingOperator.h"
 
 #include "mini-llvm/ir/Constant.h"

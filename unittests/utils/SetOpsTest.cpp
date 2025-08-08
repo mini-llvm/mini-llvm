@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include <unordered_set>
 
 #include <gtest/gtest.h>

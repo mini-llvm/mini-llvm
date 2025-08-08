@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/mc/GlobalValueTransform.h"
 
 #include "mini-llvm/mc/GlobalValue.h"

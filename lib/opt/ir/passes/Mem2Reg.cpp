@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/opt/ir/passes/Mem2Reg.h"
 
 #include <algorithm>

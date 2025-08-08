@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/targets/riscv/opt/mir/RISCVPassManager.h"
 
 #include "mini-llvm/mir/Module.h"

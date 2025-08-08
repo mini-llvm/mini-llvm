@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/ir/Instruction/IndirectCall.h"
 
 #include <memory>

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/mir/Instruction.h"
 
 #include <unordered_set>

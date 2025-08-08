@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "mini-llvm/mc/Module.h"
 
 #include <cstdlib>
