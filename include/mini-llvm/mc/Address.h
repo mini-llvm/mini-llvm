@@ -27,7 +27,7 @@ public:
         return baseSymbol_;
     }
 
-    Symbol baseSymbol() && {
+    Symbol &&baseSymbol() && {
         return std::move(baseSymbol_);
     }
 

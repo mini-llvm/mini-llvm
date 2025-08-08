@@ -27,7 +27,7 @@ public:
         return elements_;
     }
 
-    std::vector<std::pair<GlobalValue *, int64_t>> elements() && {
+    std::vector<std::pair<GlobalValue *, int64_t>> &&elements() && {
         return std::move(elements_);
     }
 

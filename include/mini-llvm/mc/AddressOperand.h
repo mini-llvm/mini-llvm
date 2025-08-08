@@ -26,7 +26,7 @@ public:
         return addr_;
     }
 
-    Address addr() && {
+    Address &&addr() && {
         return std::move(addr_);
     }
 

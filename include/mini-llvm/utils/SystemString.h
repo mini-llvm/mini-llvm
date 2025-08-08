@@ -86,7 +86,7 @@ public:
         return str_;
     }
 
-    string_type native() && noexcept {
+    string_type &&native() && noexcept {
         return std::move(str_);
     }
 
