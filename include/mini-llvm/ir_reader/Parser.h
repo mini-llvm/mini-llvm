@@ -48,7 +48,11 @@ private:
 class MINI_LLVM_EXPORT Parser {
 public:
     explicit Parser(std::vector<Token>::const_iterator current);
+
     ~Parser();
+
+    Parser(Parser &&) noexcept;
+    Parser &operator=(Parser &&) noexcept;
 
     Module parseModule();
     std::shared_ptr<GlobalVar> parseGlobalVarHeader(bool &isDeclaration);

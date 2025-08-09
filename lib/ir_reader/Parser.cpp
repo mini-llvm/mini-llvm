@@ -1532,6 +1532,10 @@ Parser::Parser(std::vector<Token>::const_iterator current)
 
 Parser::~Parser() = default;
 
+Parser::Parser(Parser &&) noexcept = default;
+
+Parser &Parser::operator=(Parser &&) noexcept = default;
+
 Module Parser::parseModule() {
     return impl_->parseModule();
 }

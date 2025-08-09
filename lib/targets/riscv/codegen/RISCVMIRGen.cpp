@@ -1459,6 +1459,10 @@ RISCVMIRGen::RISCVMIRGen(const ir::Module *IM, Module *MM)
 
 RISCVMIRGen::~RISCVMIRGen() = default;
 
+RISCVMIRGen::RISCVMIRGen(RISCVMIRGen &&) noexcept = default;
+
+RISCVMIRGen &RISCVMIRGen::operator=(RISCVMIRGen &&) noexcept = default;
+
 void RISCVMIRGen::emit() {
     impl_->emit();
 }

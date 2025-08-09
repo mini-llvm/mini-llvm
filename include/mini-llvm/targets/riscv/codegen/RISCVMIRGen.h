@@ -15,7 +15,11 @@ public:
     enum { kSave, kRestore };
 
     RISCVMIRGen(const ir::Module *IM, mir::Module *MM);
+
     ~RISCVMIRGen();
+
+    RISCVMIRGen(RISCVMIRGen &&) noexcept;
+    RISCVMIRGen &operator=(RISCVMIRGen &&) noexcept;
 
     void emit();
 

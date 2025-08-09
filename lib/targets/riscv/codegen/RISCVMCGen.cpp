@@ -911,6 +911,10 @@ RISCVMCGen::RISCVMCGen(const mir::Module *MM, Module *MCM)
 
 RISCVMCGen::~RISCVMCGen() = default;
 
+RISCVMCGen::RISCVMCGen(RISCVMCGen &&) noexcept = default;
+
+RISCVMCGen &RISCVMCGen::operator=(RISCVMCGen &&) noexcept = default;
+
 void RISCVMCGen::emit() {
     impl_->emit();
 }

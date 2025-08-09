@@ -260,6 +260,10 @@ RISCVBackendDriver::RISCVBackendDriver(RegisterAllocator *allocator)
 
 RISCVBackendDriver::~RISCVBackendDriver() = default;
 
+RISCVBackendDriver::RISCVBackendDriver(RISCVBackendDriver &&) noexcept = default;
+
+RISCVBackendDriver &RISCVBackendDriver::operator=(RISCVBackendDriver &&) noexcept = default;
+
 void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Module &MCM) {
     impl_->run(IM, MM, MCM);
 }

@@ -15,7 +15,11 @@ namespace mini_llvm {
 class MINI_LLVM_EXPORT RISCVBackendDriver {
 public:
     explicit RISCVBackendDriver(RegisterAllocator *allocator);
+
     ~RISCVBackendDriver();
+
+    RISCVBackendDriver(RISCVBackendDriver &&) noexcept;
+    RISCVBackendDriver &operator=(RISCVBackendDriver &&) noexcept;
 
     void run(const ir::Module &IM, mir::Module &MM, mc::Module &MCM);
 

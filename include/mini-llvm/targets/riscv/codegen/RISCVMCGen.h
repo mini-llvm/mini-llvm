@@ -13,7 +13,11 @@ namespace mini_llvm {
 class MINI_LLVM_EXPORT RISCVMCGen {
 public:
     RISCVMCGen(const mir::Module *MM, mc::Module *MCM);
+
     ~RISCVMCGen();
+
+    RISCVMCGen(RISCVMCGen &&) noexcept;
+    RISCVMCGen &operator=(RISCVMCGen &&) noexcept;
 
     void emit();
 

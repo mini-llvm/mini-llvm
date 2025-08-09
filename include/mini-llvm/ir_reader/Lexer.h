@@ -39,7 +39,11 @@ private:
 class MINI_LLVM_EXPORT Lexer {
 public:
     explicit Lexer(const char *current);
+
     ~Lexer();
+
+    Lexer(Lexer &&) noexcept;
+    Lexer &operator=(Lexer &&) noexcept;
 
     std::optional<Token> lastToken();
     Token nextToken();

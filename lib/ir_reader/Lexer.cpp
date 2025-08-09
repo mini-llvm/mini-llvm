@@ -318,6 +318,10 @@ Lexer::Lexer(const char *current)
 
 Lexer::~Lexer() = default;
 
+Lexer::Lexer(Lexer &&) noexcept = default;
+
+Lexer &Lexer::operator=(Lexer &&) noexcept = default;
+
 std::optional<Token> Lexer::lastToken() {
     return impl_->lastToken();
 }
