@@ -563,3 +563,9 @@ define void @test() {
 
     EXPECT_TRUE(parseModule(input));
 }
+
+TEST(IRReaderTest, NegativeNumElements) {
+    const char *input = "@test = global [-1 x i32] zeroinitializer";
+
+    EXPECT_FALSE(parseModule(input));
+}

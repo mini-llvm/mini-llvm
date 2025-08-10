@@ -1471,7 +1471,10 @@ public:
                 if (current_->kind != kNumber) {
                     throw ParseException("expected number", current_);
                 }
-                size_t numElements = static_cast<size_t>(std::get<int64_t>(current_->value));
+                int64_t numElements = std::get<int64_t>(current_->value);
+                if (numElements < 0) {
+                    throw ParseException("number of elements must be non-negative", current_);
+                }
                 ++current_;
                 if (current_->kind != kX) {
                     throw ParseException("expected 'x'", current_);
@@ -1486,7 +1489,7 @@ public:
                     throw ParseException("expected ']'", current_);
                 }
                 ++current_;
-                return std::make_unique<ArrayType>(std::move(elementType), numElements);
+                return std::make_unique<ArrayType>(std::move(elementType), static_cast<size_t>(numElements));
             }
 
             default: {
