@@ -2,13 +2,12 @@
 
 #pragma once
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <typeinfo>
 
 #include "mini-llvm/ir/Constant.h"
-#include "mini-llvm/ir/Constant/IntegerConstant.h"
+#include "mini-llvm/ir/Constant/PointerConstant.h"
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Ptr.h"
@@ -16,16 +15,8 @@
 
 namespace mini_llvm::ir {
 
-class NullPtrConstant final : public IntegerConstant {
+class NullPtrConstant final : public PointerConstant {
 public:
-    int64_t signExtendedValue() const override {
-        return 0;
-    }
-
-    int64_t zeroExtendedValue() const override {
-        return 0;
-    }
-
     void accept(ConstantVisitor &visitor) override {
         visitor.visitNullPtrConstant(*this);
     }

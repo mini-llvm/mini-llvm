@@ -6,7 +6,7 @@
 #include <memory>
 #include <string>
 
-#include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/Constant/PointerConstant.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Value.h"
@@ -14,7 +14,7 @@
 
 namespace mini_llvm::ir {
 
-class MINI_LLVM_EXPORT GlobalValue : public Constant {
+class MINI_LLVM_EXPORT GlobalValue : public PointerConstant {
 public:
     std::unique_ptr<Type> type() const override {
         return std::make_unique<Ptr>();
