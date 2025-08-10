@@ -27,8 +27,8 @@
 #include "mini-llvm/ir/Constant/I8Constant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
 #include "mini-llvm/ir/Constant/NullPtrConstant.h"
+#include "mini-llvm/ir/Constant/PointerConstant.h"
 #include "mini-llvm/ir/Constant/PoisonValue.h"
-#include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/GlobalVar.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -91,12 +91,12 @@
 #include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
-#include "mini-llvm/ir/TypeVisitor.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockBuilder.h"
 #include "mini-llvm/mir/Condition.h"
+#include "mini-llvm/mir/Constant.h"
 #include "mini-llvm/mir/Constant/I16ArrayConstant.h"
 #include "mini-llvm/mir/Constant/I16Constant.h"
 #include "mini-llvm/mir/Constant/I32ArrayConstant.h"
@@ -190,172 +190,124 @@ void flatten(const ir::Constant &C, std::vector<const ir::Constant *> &flattened
     }
 }
 
-class TypeVisitorImpl final : public ir::TypeVisitor {
-public:
-    explicit TypeVisitorImpl(GlobalVar &globalVar,
-                             const std::vector<const ir::Constant *> &flattened,
-                             const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
-                             const HashMap<const ir::Function *, Function *> &functionMap)
-        : globalVar_(globalVar), flattened_(flattened), globalVarMap_(globalVarMap), functionMap_(functionMap) {}
-
-    void visitI1(const ir::I1 &) override {
-        visitIntegerType<ir::I1Constant, I8ArrayConstant, int8_t>();
+std::pair<GlobalValue *, int64_t> emitPtrConstantValue(
+    const ir::PointerConstant &C,
+    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
+    const HashMap<const ir::Function *, Function *> &functionMap
+) {
+    if (auto *G = dynamic_cast<const ir::GlobalVar *>(&C)) {
+        return {globalVarMap[G], 0};
     }
-
-    void visitI8(const ir::I8 &) override {
-        visitIntegerType<ir::I8Constant, I8ArrayConstant, int8_t>();
+    if (auto *F = dynamic_cast<const ir::Function *>(&C)) {
+        return {functionMap[F], 0};
     }
-
-    void visitI16(const ir::I16 &) override {
-        visitIntegerType<ir::I16Constant, I16ArrayConstant, int16_t>();
+    if (dynamic_cast<const ir::NullPtrConstant *>(&C)) {
+        return {nullptr, 0};
     }
+    abort();
+}
 
-    void visitI32(const ir::I32 &) override {
-        visitIntegerType<ir::I32Constant, I32ArrayConstant, int32_t>();
+std::unique_ptr<Constant> emitConstant(
+    const ir::Constant &C,
+    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
+    const HashMap<const ir::Function *, Function *> &functionMap
+) {
+    if (auto *pointerConstant = dynamic_cast<const ir::PointerConstant *>(&C)) {
+        return std::make_unique<PtrConstant>(8, emitPtrConstantValue(*pointerConstant, globalVarMap, functionMap));
     }
-
-    void visitI64(const ir::I64 &) override {
-        visitIntegerType<ir::I64Constant, I64ArrayConstant, int64_t>();
+    if (C == *C.type()->zeroValue()) {
+        return std::make_unique<ZeroConstant>(C.type()->size(8));
     }
-
-    void visitFloat(const ir::Float &) override {
-        visitFloatingType<ir::FloatConstant, I32ArrayConstant, int32_t>();
+    if (auto *i1Constant = dynamic_cast<const ir::I1Constant *>(&C)) {
+        return std::make_unique<I8Constant>(static_cast<int8_t>(i1Constant->value()));
     }
-
-    void visitDouble(const ir::Double &) override {
-        visitFloatingType<ir::DoubleConstant, I64ArrayConstant, int64_t>();
+    if (auto *i8Constant = dynamic_cast<const ir::I8Constant *>(&C)) {
+        return std::make_unique<I8Constant>(i8Constant->value());
     }
+    if (auto *i16Constant = dynamic_cast<const ir::I16Constant *>(&C)) {
+        return std::make_unique<I16Constant>(i16Constant->value());
+    }
+    if (auto *i32Constant = dynamic_cast<const ir::I32Constant *>(&C)) {
+        return std::make_unique<I32Constant>(i32Constant->value());
+    }
+    if (auto *i64Constant = dynamic_cast<const ir::I64Constant *>(&C)) {
+        return std::make_unique<I64Constant>(i64Constant->value());
+    }
+    if (auto *floatConstant = dynamic_cast<const ir::FloatConstant *>(&C)) {
+        return std::make_unique<I32Constant>(std::bit_cast<int32_t>(floatConstant->value()));
+    }
+    if (auto *doubleConstant = dynamic_cast<const ir::DoubleConstant *>(&C)) {
+        return std::make_unique<I64Constant>(std::bit_cast<int64_t>(doubleConstant->value()));
+    }
+    if (auto *arrayConstant = dynamic_cast<const ir::ArrayConstant *>(&C)) {
+        std::vector<const ir::Constant *> flattened;
+        flatten(*arrayConstant, flattened);
 
-    void visitPtr(const ir::Ptr &) override {
-        std::vector<std::pair<GlobalValue *, int64_t>> elements;
-        for (const ir::Constant *element : flattened_) {
-            if (dynamic_cast<const ir::NullPtrConstant *>(element)) {
-                elements.emplace_back(nullptr, 0);
-            } else if (auto *G = dynamic_cast<const ir::GlobalVar *>(element)) {
-                elements.emplace_back(globalVarMap_[G], 0);
-            } else if (auto *F = dynamic_cast<const ir::Function *>(element)) {
-                elements.emplace_back(functionMap_[F], 0);
-            } else {
-                abort();
+        std::unique_ptr<ir::Type> type = arrayConstant->type();
+        while (dynamic_cast<const ir::ArrayType *>(&*type)) {
+            type = static_cast<const ir::ArrayType *>(&*type)->elementType();
+        }
+
+        if (*type == ir::I1()) {
+            std::vector<int8_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(static_cast<int8_t>(static_cast<const ir::I1Constant *>(element)->value()));
             }
+            return std::make_unique<I8ArrayConstant>(std::move(elements));
         }
-        globalVar_.setInitializer(std::make_unique<PtrArrayConstant>(8, std::move(elements)));
-    }
-
-private:
-    GlobalVar &globalVar_;
-    const std::vector<const ir::Constant *> &flattened_;
-    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
-    const HashMap<const ir::Function *, Function *> &functionMap_;
-
-    template <typename IConst, typename MConst, typename Integer>
-    void visitIntegerType() {
-        std::vector<Integer> elements;
-        for (const ir::Constant *element : flattened_) {
-            elements.push_back(static_cast<Integer>(static_cast<const IConst *>(element)->value()));
-        }
-        globalVar_.setInitializer(std::make_unique<MConst>(std::move(elements)));
-    }
-
-    template <typename IConst, typename MConst, typename Integer>
-    void visitFloatingType() {
-        std::vector<Integer> elements;
-        for (const ir::Constant *element : flattened_) {
-            elements.push_back(std::bit_cast<Integer>(static_cast<const IConst *>(element)->value()));
-        }
-        globalVar_.setInitializer(std::make_unique<MConst>(std::move(elements)));
-    }
-};
-
-class ConstantVisitorImpl final : public ir::ConstantVisitor {
-public:
-    explicit ConstantVisitorImpl(GlobalVar &globalVar,
-                                 const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
-                                 const HashMap<const ir::Function *, Function *> &functionMap)
-        : globalVar_(globalVar), globalVarMap_(globalVarMap), functionMap_(functionMap) {}
-
-    void visitI1Constant(const ir::I1Constant &C) override {
-        visitIntegerConstant<ir::I1Constant, I8Constant, int8_t>(C);
-    }
-
-    void visitI8Constant(const ir::I8Constant &C) override {
-        visitIntegerConstant<ir::I8Constant, I8Constant, int8_t>(C);
-    }
-
-    void visitI16Constant(const ir::I16Constant &C) override {
-        visitIntegerConstant<ir::I16Constant, I16Constant, int16_t>(C);
-    }
-
-    void visitI32Constant(const ir::I32Constant &C) override {
-        visitIntegerConstant<ir::I32Constant, I32Constant, int32_t>(C);
-    }
-
-    void visitI64Constant(const ir::I64Constant &C) override {
-        visitIntegerConstant<ir::I64Constant, I64Constant, int64_t>(C);
-    }
-
-    void visitFloatConstant(const ir::FloatConstant &C) override {
-        visitFloatingConstant<ir::FloatConstant, I32Constant, int32_t>(C);
-    }
-
-    void visitDoubleConstant(const ir::DoubleConstant &C) override {
-        visitFloatingConstant<ir::DoubleConstant, I64Constant, int64_t>(C);
-    }
-
-    void visitNullPtrConstant(const ir::NullPtrConstant &) override {
-        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, nullptr, 0));
-    }
-
-    void visitGlobalVar(const ir::GlobalVar &G) override {
-        GlobalValue *ptr = globalVarMap_[&G];
-        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr, 0));
-    }
-
-    void visitFunction(const ir::Function &F) override {
-        GlobalValue *ptr = functionMap_[&F];
-        globalVar_.setInitializer(std::make_unique<PtrConstant>(8, ptr, 0));
-    }
-
-    void visitArrayConstant(const ir::ArrayConstant &C) override {
-        if (C == *C.type()->zeroValue()) {
-            globalVar_.setInitializer(std::make_unique<ZeroConstant>(C.type()->size(8)));
-        } else {
-            std::vector<const ir::Constant *> flattened;
-            flatten(C, flattened);
-
-            std::unique_ptr<ir::Type> type = C.type();
-            while (dynamic_cast<const ir::ArrayType *>(&*type)) {
-                type = static_cast<const ir::ArrayType *>(&*type)->elementType();
+        if (*type == ir::I8()) {
+            std::vector<int8_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(static_cast<const ir::I8Constant *>(element)->value());
             }
-
-            TypeVisitorImpl visitor(globalVar_, flattened, globalVarMap_, functionMap_);
-            type->accept(visitor);
+            return std::make_unique<I8ArrayConstant>(std::move(elements));
         }
-    }
-
-private:
-    GlobalVar &globalVar_;
-    const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap_;
-    const HashMap<const ir::Function *, Function *> &functionMap_;
-
-    template <typename IConst, typename MConst, typename Integer>
-    void visitIntegerConstant(const IConst &C) {
-        if (C == *C.type()->zeroValue()) {
-            globalVar_.setInitializer(std::make_unique<ZeroConstant>(C.type()->size(8)));
-        } else {
-            globalVar_.setInitializer(std::make_unique<MConst>(static_cast<Integer>(C.value())));
+        if (*type == ir::I16()) {
+            std::vector<int16_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(static_cast<const ir::I16Constant *>(element)->value());
+            }
+            return std::make_unique<I16ArrayConstant>(std::move(elements));
         }
-    }
-
-    template <typename IConst, typename MConst, typename Integer>
-    void visitFloatingConstant(const IConst &C) {
-        if (C == *C.type()->zeroValue()) {
-            globalVar_.setInitializer(std::make_unique<ZeroConstant>(C.type()->size(8)));
-        } else {
-            globalVar_.setInitializer(std::make_unique<MConst>(std::bit_cast<Integer>(C.value())));
+        if (*type == ir::I32()) {
+            std::vector<int32_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(static_cast<const ir::I32Constant *>(element)->value());
+            }
+            return std::make_unique<I32ArrayConstant>(std::move(elements));
         }
+        if (*type == ir::I64()) {
+            std::vector<int64_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(static_cast<const ir::I64Constant *>(element)->value());
+            }
+            return std::make_unique<I64ArrayConstant>(std::move(elements));
+        }
+        if (*type == ir::Float()) {
+            std::vector<int32_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(std::bit_cast<int32_t>(static_cast<const ir::FloatConstant *>(element)->value()));
+            }
+            return std::make_unique<I32ArrayConstant>(std::move(elements));
+        }
+        if (*type == ir::Double()) {
+            std::vector<int64_t> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(std::bit_cast<int64_t>(static_cast<const ir::DoubleConstant *>(element)->value()));
+            }
+            return std::make_unique<I64ArrayConstant>(std::move(elements));
+        }
+        if (*type == ir::Ptr()) {
+            std::vector<std::pair<GlobalValue *, int64_t>> elements;
+            for (const ir::Constant *element : flattened) {
+                elements.push_back(emitPtrConstantValue(*static_cast<const ir::PointerConstant *>(element), globalVarMap, functionMap));
+            }
+            return std::make_unique<PtrArrayConstant>(8, std::move(elements));
+        }
+        abort();
     }
-};
+    abort();
+}
 
 class InstructionVisitorImpl final : public ir::InstructionVisitor {
 public:
@@ -1317,8 +1269,7 @@ private:
     HashMap<const ir::Function *, Function *> functionMap_;
 
     void emitGlobalVar(const ir::GlobalVar &IG, GlobalVar &MG) {
-        ConstantVisitorImpl visitor(MG, globalVarMap_, functionMap_);
-        IG.initializer().accept(visitor);
+        MG.setInitializer(emitConstant(IG.initializer(), globalVarMap_, functionMap_));
     }
 
     void emitFunction(const ir::Function &IF, Function &MF) {
