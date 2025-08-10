@@ -13,10 +13,13 @@ namespace mini_llvm::mc {
 class MINI_LLVM_EXPORT Statement {
 public:
     virtual ~Statement() = default;
+
     Statement() = default;
+
     Statement(const Statement &) = delete;
-    Statement(Statement &&) = delete;
     Statement &operator=(const Statement &) = delete;
+
+    Statement(Statement &&) = delete;
     Statement &operator=(Statement &&) = delete;
 
     virtual std::string format() const = 0;

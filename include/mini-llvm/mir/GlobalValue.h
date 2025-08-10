@@ -15,10 +15,13 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT GlobalValue {
 public:
     virtual ~GlobalValue() = default;
+
     GlobalValue() = default;
+
     GlobalValue(const GlobalValue &) = delete;
-    GlobalValue(GlobalValue &&) = delete;
     GlobalValue &operator=(const GlobalValue &) = delete;
+
+    GlobalValue(GlobalValue &&) = delete;
     GlobalValue &operator=(GlobalValue &&) = delete;
 
     virtual std::string name() const = 0;

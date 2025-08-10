@@ -21,11 +21,15 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT Instruction {
 public:
     virtual ~Instruction() = default;
+
     Instruction() = default;
+
     Instruction(const Instruction &) = delete;
-    Instruction(Instruction &&) = delete;
     Instruction &operator=(const Instruction &) = delete;
+
+    Instruction(Instruction &&) = delete;
     Instruction &operator=(Instruction &&) = delete;
+
     virtual std::unordered_set<const RegisterOperand *> regOps() const = 0;
     virtual std::unordered_set<const RegisterOperand *> dsts() const = 0;
     virtual std::unordered_set<const RegisterOperand *> srcs() const = 0;

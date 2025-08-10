@@ -9,10 +9,13 @@ namespace mini_llvm::ir {
 class MINI_LLVM_EXPORT Pass {
 public:
     virtual ~Pass() = default;
+
     Pass() = default;
+
     Pass(const Pass &) = delete;
-    Pass(Pass &&) = delete;
     Pass &operator=(const Pass &) = delete;
+
+    Pass(Pass &&) = delete;
     Pass &operator=(Pass &&) = delete;
 
     virtual const char *name() const = 0;

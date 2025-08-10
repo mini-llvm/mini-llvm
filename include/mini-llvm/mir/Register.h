@@ -13,10 +13,13 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT Register : public std::enable_shared_from_this<Register> {
 public:
     virtual ~Register() = default;
+
     Register() = default;
+
     Register(const Register &) = delete;
-    Register(Register &&) = delete;
     Register &operator=(const Register &) = delete;
+
+    Register(Register &&) = delete;
     Register &operator=(Register &&) = delete;
 
     virtual int width() const = 0;

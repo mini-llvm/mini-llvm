@@ -15,10 +15,13 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT Immediate {
 public:
     virtual ~Immediate() = default;
+
     Immediate(const Immediate &) = delete;
-    Immediate(Immediate &&) = delete;
     Immediate &operator=(const Immediate &) = delete;
+
+    Immediate(Immediate &&) = delete;
     Immediate &operator=(Immediate &&) = delete;
+
     virtual int64_t value() const = 0;
     virtual std::unique_ptr<Immediate> clone() const = 0;
 

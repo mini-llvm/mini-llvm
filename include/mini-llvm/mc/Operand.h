@@ -13,10 +13,13 @@ namespace mini_llvm::mc {
 class MINI_LLVM_EXPORT Operand {
 public:
     virtual ~Operand() = default;
+
     Operand() = default;
+
     Operand(const Operand &) = delete;
-    Operand(Operand &&) = delete;
     Operand &operator=(const Operand &) = delete;
+
+    Operand(Operand &&) = delete;
     Operand &operator=(Operand &&) = delete;
 
     virtual std::string format() const = 0;

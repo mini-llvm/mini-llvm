@@ -17,12 +17,16 @@ namespace mini_llvm::ir {
 class MINI_LLVM_EXPORT UseBase {
 public:
     virtual ~UseBase();
+
     UseBase(Value *user, std::shared_ptr<Value> value);
     UseBase(Value *user, std::weak_ptr<Value> value);
+
     UseBase(const UseBase &) = delete;
-    UseBase(UseBase &&) = delete;
     UseBase &operator=(const UseBase &) = delete;
+
+    UseBase(UseBase &&) = delete;
     UseBase &operator=(UseBase &&) = delete;
+
     Value *user() const { return user_; }
     virtual Value &operator*() const;
     virtual Value *operator->() const { return &operator*(); }

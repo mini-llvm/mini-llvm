@@ -70,10 +70,13 @@ class XorI;
 class MINI_LLVM_EXPORT InstructionVisitor {
 public:
     virtual ~InstructionVisitor() = default;
+
     InstructionVisitor() = default;
+
     InstructionVisitor(const InstructionVisitor &) = delete;
-    InstructionVisitor(InstructionVisitor &&) = delete;
     InstructionVisitor &operator=(const InstructionVisitor &) = delete;
+
+    InstructionVisitor(InstructionVisitor &&) = delete;
     InstructionVisitor &operator=(InstructionVisitor &&) = delete;
 
     virtual void visitAdd(Add &I) { visitAdd(std::as_const(I)); }

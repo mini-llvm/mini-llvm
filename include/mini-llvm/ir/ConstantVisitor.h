@@ -26,10 +26,13 @@ class VoidValue;
 class MINI_LLVM_EXPORT ConstantVisitor {
 public:
     virtual ~ConstantVisitor() = default;
+
     ConstantVisitor() = default;
+
     ConstantVisitor(const ConstantVisitor &) = delete;
-    ConstantVisitor(ConstantVisitor &&) = delete;
     ConstantVisitor &operator=(const ConstantVisitor &) = delete;
+
+    ConstantVisitor(ConstantVisitor &&) = delete;
     ConstantVisitor &operator=(ConstantVisitor &&) = delete;
 
     virtual void visitArrayConstant(ArrayConstant &C) { visitArrayConstant(std::as_const(C)); }

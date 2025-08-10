@@ -27,10 +27,13 @@ public:
     using use_iterator = IndirectIterator<UseSet::iterator, UseBase>;
 
     virtual ~Value() = default;
+
     Value() = default;
+
     Value(const Value &) = delete;
-    Value(Value &&) = delete;
     Value &operator=(const Value &) = delete;
+
+    Value(Value &&) = delete;
     Value &operator=(Value &&) = delete;
 
     const std::string &name() const {

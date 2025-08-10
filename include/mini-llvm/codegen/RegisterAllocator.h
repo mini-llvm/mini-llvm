@@ -22,10 +22,13 @@ public:
     >;
 
     virtual ~RegisterAllocator() = default;
+
     RegisterAllocator() = default;
+
     RegisterAllocator(const RegisterAllocator &) = delete;
-    RegisterAllocator(RegisterAllocator &&) = delete;
     RegisterAllocator &operator=(const RegisterAllocator &) = delete;
+
+    RegisterAllocator(RegisterAllocator &&) = delete;
     RegisterAllocator &operator=(RegisterAllocator &&) = delete;
 
     virtual bool allocate(mir::Function &F,

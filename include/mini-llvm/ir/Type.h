@@ -18,11 +18,15 @@ class Constant;
 class MINI_LLVM_EXPORT Type {
 public:
     virtual ~Type() = default;
+
     Type() = default;
+
     Type(const Type &) = delete;
-    Type(Type &&) = delete;
     Type &operator=(const Type &) = delete;
+
+    Type(Type &&) = delete;
     Type &operator=(Type &&) = delete;
+
     virtual int size() const = 0;
     virtual int alignment() const = 0;
     virtual int size(int) const { return size(); }
