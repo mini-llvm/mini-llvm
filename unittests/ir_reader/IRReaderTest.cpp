@@ -41,7 +41,7 @@ TEST(IRReaderTest, GlobalVar) {
 }
 
 TEST(IRReaderTest, PrivateGlobalVar) {
-    const char *input = "@test = private constant i32 42";
+    const char *input = "@test = private global i32 42";
 
     EXPECT_TRUE(parseModule(input));
 }
@@ -65,13 +65,13 @@ TEST(IRReaderTest, ExternalInternalGlobal) {
 }
 
 TEST(IRReaderTest, ExternalPrivateGlobal) {
-    const char *input = "@test = external private constant i32 42";
+    const char *input = "@test = external private global i32 42";
 
     EXPECT_FALSE(parseModule(input));
 }
 
 TEST(IRReaderTest, InternalPrivateGlobal) {
-    const char *input = "@test = internal private constant i32 42";
+    const char *input = "@test = internal private global i32 42";
 
     EXPECT_FALSE(parseModule(input));
 }
