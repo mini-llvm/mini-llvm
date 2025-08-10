@@ -8,12 +8,12 @@ tests=(
     alias_inttoptr
     arithmetic
     casting
-    circular_call
+    circular_call_1
     circular_call_2
     div
     escape_arg
     escape_global
-    getelementptr
+    getelementptr_1
     getelementptr_2
     getelementptr_3
     getelementptr_4
@@ -38,7 +38,7 @@ tests=(
     self_reference
     store_ptr
     type_punning
-    unreachable_block
+    unreachable_block_1
     unreachable_block_2
 
     accumulate
