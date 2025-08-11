@@ -22,13 +22,13 @@ public:
 
     template <typename U>
         requires std::is_convertible_v<U &, T &>
-    constexpr OptionalRef(U &value) noexcept : value_(static_cast<T *>(&value)) {}
+    constexpr OptionalRef(U &value) noexcept : value_(&value) {}
 
     constexpr OptionalRef(const OptionalRef &other) noexcept = default;
 
     template <typename U>
         requires std::is_convertible_v<U &, T &>
-    constexpr OptionalRef(const OptionalRef<U> &other) noexcept : value_(static_cast<T *>(other.value_)) {}
+    constexpr OptionalRef(const OptionalRef<U> &other) noexcept : value_(other.value_) {}
 
     constexpr OptionalRef &operator=(const OptionalRef &other) noexcept = default;
 
