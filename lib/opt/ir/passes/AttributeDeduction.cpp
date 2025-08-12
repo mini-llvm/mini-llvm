@@ -78,16 +78,14 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     HashMap<const Function *, int> dfn, low;
     HashMap<const Function *, int> scc;
-    int timer;
-    int sccCount;
-    std::stack<const Function *> S;
     for (auto v : std::views::keys(callGraph)) {
         dfn.put(v, -1);
         low.put(v, -1);
         scc.put(v, -1);
     }
-    timer = 0;
-    sccCount = 0;
+    int timer = 0;
+    int sccCount = 0;
+    std::stack<const Function *> S;
     for (auto u : std::views::keys(callGraph)) {
         if (dfn[u] == -1) {
             dfs(u, callGraph, dfn, low, scc, timer, sccCount, S);

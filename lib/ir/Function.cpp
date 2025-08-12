@@ -94,16 +94,14 @@ std::unordered_set<const BasicBlock *> findNotInCycle(const Function &F) {
     }
     HashMap<const BasicBlock *, int> dfn, low;
     HashMap<const BasicBlock *, int> scc;
-    int timer;
-    int sccCount;
-    std::stack<const BasicBlock *> S;
     for (const BasicBlock *v : std::views::keys(g)) {
         dfn.put(v, -1);
         low.put(v, -1);
         scc.put(v, -1);
     }
-    timer = 0;
-    sccCount = 0;
+    int timer = 0;
+    int sccCount = 0;
+    std::stack<const BasicBlock *> S;
     for (const BasicBlock *u : std::views::keys(g)) {
         if (dfn[u] == -1) {
             dfs(u, g, dfn, low, scc, timer, sccCount, S);
