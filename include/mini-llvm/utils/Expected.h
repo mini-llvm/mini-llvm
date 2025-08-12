@@ -23,30 +23,38 @@ public:
 
     template <typename F>
         requires std::is_convertible_v<F, E>
-    constexpr Unexpected(Unexpected<F> error) : error_(std::move(*error)) {}
+    constexpr Unexpected(Unexpected<F> error) : error_(*std::move(error)) {}
 
-    constexpr E &operator*() {
+    constexpr E &operator*() & noexcept {
         return error_;
     }
 
-    constexpr const E &operator*() const {
+    constexpr const E &operator*() const & noexcept {
         return error_;
     }
 
-    constexpr E *operator->() {
+    constexpr E &&operator*() && noexcept {
+        return std::move(error_);
+    }
+
+    constexpr E *operator->() noexcept {
         return std::addressof(error_);
     }
 
-    constexpr const E *operator->() const {
+    constexpr const E *operator->() const noexcept {
         return std::addressof(error_);
     }
 
-    constexpr E &error() {
+    constexpr E &error() & noexcept {
         return error_;
     }
 
-    constexpr const E &error() const {
+    constexpr const E &error() const & noexcept {
         return error_;
+    }
+
+    constexpr E &&error() && noexcept {
+        return std::move(error_);
     }
 
 private:
@@ -73,40 +81,52 @@ public:
         requires std::is_convertible_v<F, E>
     constexpr Expected(Unexpected<F> error) : valueOrError_(static_cast<Unexpected<E>>(std::move(error))) {}
 
-    constexpr explicit operator bool() const {
+    explicit constexpr operator bool() const noexcept {
         return std::holds_alternative<T>(valueOrError_);
     }
 
-    constexpr T &operator*() {
+    constexpr T &operator*() & noexcept {
         return std::get<T>(valueOrError_);
     }
 
-    constexpr const T &operator*() const {
+    constexpr const T &operator*() const & noexcept {
         return std::get<T>(valueOrError_);
     }
 
-    constexpr T *operator->() {
+    constexpr T &&operator*() && noexcept {
+        return std::get<T>(std::move(valueOrError_));
+    }
+
+    constexpr T *operator->() noexcept {
         return std::addressof(std::get<T>(valueOrError_));
     }
 
-    constexpr const T *operator->() const {
+    constexpr const T *operator->() const noexcept {
         return std::addressof(std::get<T>(valueOrError_));
     }
 
-    constexpr T &value() {
+    constexpr T &value() & noexcept {
         return std::get<T>(valueOrError_);
     }
 
-    constexpr const T &value() const {
+    constexpr const T &value() const & noexcept {
         return std::get<T>(valueOrError_);
     }
 
-    constexpr E &error() {
+    constexpr T &&value() && noexcept {
+        return std::get<T>(std::move(valueOrError_));
+    }
+
+    constexpr E &error() & noexcept {
         return *std::get<Unexpected<E>>(valueOrError_);
     }
 
-    constexpr const E &error() const {
+    constexpr const E &error() const & noexcept {
         return *std::get<Unexpected<E>>(valueOrError_);
+    }
+
+    constexpr E &&error() && noexcept {
+        return *std::get<Unexpected<E>>(std::move(valueOrError_));
     }
 
 private:
@@ -124,16 +144,20 @@ public:
         requires std::is_convertible_v<F, E>
     constexpr Expected(Unexpected<F> error) : error_(static_cast<Unexpected<E>>(std::move(error))) {}
 
-    constexpr explicit operator bool() const {
+    explicit constexpr operator bool() const {
         return !error_;
     }
 
-    constexpr E &error() {
+    constexpr E &error() & noexcept {
         return **error_;
     }
 
-    constexpr const E &error() const {
+    constexpr const E &error() const & noexcept {
         return **error_;
+    }
+
+    constexpr E &&error() && noexcept {
+        return **std::move(error_);
     }
 
 private:

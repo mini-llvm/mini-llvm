@@ -159,7 +159,7 @@ int mainImpl(std::vector<std::string> args) {
     }
     normalizeLineEndings(*source);
     SourceManager sourceManager;
-    sourceManager.setSource(std::move(*source));
+    sourceManager.setSource(*std::move(source));
 
     std::vector<Diagnostic> diags;
     std::optional<ir::Module> IM = ir::parseModule(sourceManager.source(), diags);
