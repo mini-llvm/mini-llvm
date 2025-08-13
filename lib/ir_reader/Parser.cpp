@@ -409,6 +409,11 @@ public:
                 ++current_;
                 break;
 
+            case kReadOnly:
+                F->setAttr(Attribute::kReadOnly);
+                ++current_;
+                break;
+
             default:
                 shouldBreak = true;
                 break;

@@ -72,9 +72,10 @@ const BasicBlock *findLCA(
     return u;
 }
 
-bool isCallToImpure(const Instruction &I) {
+bool isCriticalCall(const Instruction &I) {
     if (auto *call = dynamic_cast<const Call *>(&I)) {
-        if (!call->callee()->hasAttr(Attribute::kReadNone)) {
+        const Function &callee = *call->callee();
+        if (!callee.hasAttr(Attribute::kReadNone)) {
             return true;
         }
     }
@@ -86,7 +87,7 @@ bool isPinned(const Instruction &I) {
         || dynamic_cast<const Terminator *>(&I)
         || dynamic_cast<const Load *>(&I)
         || dynamic_cast<const Store *>(&I)
-        || isCallToImpure(I);
+        || isCriticalCall(I);
 }
 
 void scheduleEarly(

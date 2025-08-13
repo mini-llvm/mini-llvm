@@ -98,7 +98,8 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                 continue;
             }
             if (auto *call = dynamic_cast<const Call *>(&I)) {
-                if (!call->callee()->hasAttr(Attribute::kReadNone)) {
+                const Function &callee = *call->callee();
+                if (!callee.hasAttr(Attribute::kReadNone) && !callee.hasAttr(Attribute::kReadOnly)) {
                     oldStores.clear();
                     oldLoads.clear();
                 }

@@ -216,6 +216,7 @@ private:
                 {"alwaysinline", kAlwaysInline},
                 {"noinline", kNoInline},
                 {"readnone", kReadNone},
+                {"readonly", kReadOnly},
 
                 {"i1", kI1},
                 {"i8", kI8},

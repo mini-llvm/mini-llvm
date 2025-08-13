@@ -32,9 +32,10 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-bool isCallToReadNone(const Instruction &I) {
+bool isNonCriticalCall(const Instruction &I) {
     if (auto *call = dynamic_cast<const Call *>(&I)) {
-        if (call->callee()->hasAttr(Attribute::kReadNone)) {
+        const Function &callee = *call->callee();
+        if (callee.hasAttr(Attribute::kReadNone) || callee.hasAttr(Attribute::kReadOnly)) {
             return true;
         }
     }
@@ -57,7 +58,7 @@ bool isCritical(const Instruction &I) {
         && !dynamic_cast<const Alloca *>(&I)
         && !dynamic_cast<const Load *>(&I)
         && !dynamic_cast<const Phi *>(&I)
-        && !isCallToReadNone(I);
+        && !isNonCriticalCall(I);
 }
 
 } // namespace

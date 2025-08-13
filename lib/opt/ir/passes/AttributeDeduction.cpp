@@ -92,7 +92,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
         }
     }
 
-    std::unordered_set<int> notReadNone;
+    std::unordered_set<int> notReadNone, notReadOnly;
     for (const Function &F : functions(M)) {
         if (!F.hasAttr(Attribute::kReadNone)) {
             if (!F.isDeclaration()) {
@@ -118,6 +118,28 @@ bool AttributeDeduction::runOnModule(Module &M) {
                 }
             } else {
                 notReadNone.insert(scc[&F]);
+            }
+        }
+        if (!F.hasAttr(Attribute::kReadOnly)) {
+            if (!F.isDeclaration()) {
+                bool readOnly = true;
+                for (const BasicBlock &B : F) {
+                    for (const Instruction &I : B) {
+                        if (auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
+                            readOnly = false;
+                            break;
+                        }
+                        if (dynamic_cast<const IndirectCall *>(&I)) {
+                            readOnly = false;
+                            break;
+                        }
+                    }
+                }
+                if (!readOnly) {
+                    notReadOnly.insert(scc[&F]);
+                }
+            } else {
+                notReadOnly.insert(scc[&F]);
             }
         }
     }
@@ -175,6 +197,18 @@ bool AttributeDeduction::runOnModule(Module &M) {
                 notReadNone.insert(u);
             }
         }
+        if (!notReadOnly.contains(u)) {
+            bool readOnly = true;
+            for (auto v : sccGraph[u]) {
+                if (notReadOnly.contains(v)) {
+                    readOnly = false;
+                    break;
+                }
+            }
+            if (!readOnly) {
+                notReadOnly.insert(u);
+            }
+        }
     }
 
     bool changed = false;
@@ -182,6 +216,10 @@ bool AttributeDeduction::runOnModule(Module &M) {
     for (Function &F : functions(M)) {
         if (!F.hasAttr(Attribute::kReadNone) && !notReadNone.contains(scc[&F])) {
             F.setAttr(Attribute::kReadNone);
+            changed = true;
+        }
+        if (!F.hasAttr(Attribute::kReadNone) && !F.hasAttr(Attribute::kReadOnly) && !notReadOnly.contains(scc[&F])) {
+            F.setAttr(Attribute::kReadOnly);
             changed = true;
         }
     }
