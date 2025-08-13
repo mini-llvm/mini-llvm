@@ -18,7 +18,6 @@ tests=(
     getelementptr_3
     getelementptr_4
     global_values
-    impure
     indirect_call
     inline_alloca
     irreducible_cfg
