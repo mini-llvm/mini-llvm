@@ -4,13 +4,15 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 #include <queue>
 #include <ranges>
 #include <stack>
 #include <unordered_set>
 #include <vector>
 
-#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Attribute/ReadNone.h"
+#include "mini-llvm/ir/Attribute/ReadOnly.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -94,7 +96,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     std::unordered_set<int> notReadNone, notReadOnly;
     for (const Function &F : functions(M)) {
-        if (!F.hasAttr(Attribute::kReadNone)) {
+        if (!F.attr<ReadNone>()) {
             if (!F.isDeclaration()) {
                 bool readNone = true;
                 for (const BasicBlock &B : F) {
@@ -120,7 +122,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
                 notReadNone.insert(scc[&F]);
             }
         }
-        if (!F.hasAttr(Attribute::kReadOnly)) {
+        if (!F.attr<ReadOnly>()) {
             if (!F.isDeclaration()) {
                 bool readOnly = true;
                 for (const BasicBlock &B : F) {
@@ -214,12 +216,12 @@ bool AttributeDeduction::runOnModule(Module &M) {
     bool changed = false;
 
     for (Function &F : functions(M)) {
-        if (!F.hasAttr(Attribute::kReadNone) && !notReadNone.contains(scc[&F])) {
-            F.setAttr(Attribute::kReadNone);
+        if (!F.attr<ReadNone>() && !notReadNone.contains(scc[&F])) {
+            F.addAttr(std::make_unique<ReadNone>());
             changed = true;
         }
-        if (!F.hasAttr(Attribute::kReadNone) && !F.hasAttr(Attribute::kReadOnly) && !notReadOnly.contains(scc[&F])) {
-            F.setAttr(Attribute::kReadOnly);
+        if (!F.attr<ReadNone>() && !F.attr<ReadOnly>() && !notReadOnly.contains(scc[&F])) {
+            F.addAttr(std::make_unique<ReadOnly>());
             changed = true;
         }
     }

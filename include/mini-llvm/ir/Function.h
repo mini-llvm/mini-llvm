@@ -2,13 +2,16 @@
 
 #pragma once
 
+#include <algorithm>
 #include <cassert>
+#include <concepts>
 #include <cstddef>
 #include <list>
 #include <memory>
+#include <optional>
 #include <ranges>
 #include <string>
-#include <typeinfo>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/common/Linkage.h"
@@ -20,6 +23,7 @@
 #include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
+#include "mini-llvm/utils/OptionalRef.h"
 
 namespace mini_llvm::ir {
 
@@ -27,14 +31,15 @@ class BasicBlock;
 
 class MINI_LLVM_EXPORT Function final : public GlobalValue {
     using ArgumentList = std::vector<std::shared_ptr<Argument>>;
-    using AttributeList = std::vector<Attribute>;
+    using AttributeList = std::vector<std::unique_ptr<Attribute>>;
     using BasicBlockList = std::list<std::shared_ptr<BasicBlock>>;
 
 public:
     using arg_iterator = IndirectIterator<ArgumentList::iterator, Argument>;
     using const_arg_iterator = IndirectIterator<ArgumentList::const_iterator, const Argument>;
 
-    using attr_iterator = AttributeList::const_iterator;
+    using attr_iterator = IndirectIterator<AttributeList::const_iterator, Attribute>;
+    using const_attr_iterator = IndirectIterator<AttributeList::const_iterator, const Attribute>;
 
     using iterator = IndirectIterator<BasicBlockList::iterator, BasicBlock>;
     using const_iterator = IndirectIterator<BasicBlockList::const_iterator, const BasicBlock>;
@@ -84,11 +89,11 @@ public:
     }
 
     attr_iterator attr_begin() const {
-        return attrs_.begin();
+        return attr_iterator(attrs_.begin());
     }
 
     attr_iterator attr_end() const {
-        return attrs_.end();
+        return attr_iterator(attrs_.end());
     }
 
     bool attr_empty() const {
@@ -99,13 +104,51 @@ public:
         return attrs_.size();
     }
 
-    Attribute attr(size_t i) const {
-        return attrs_[i];
+    Attribute &attr(size_t i) {
+        return *attrs_[i];
     }
 
-    bool hasAttr(Attribute attr) const;
-    void setAttr(Attribute attr);
-    void clearAttr(Attribute attr);
+    const Attribute &attr(size_t i) const {
+        return *attrs_[i];
+    }
+
+    template <typename T>
+        requires std::derived_from<T, Attribute>
+    OptionalRef<Attribute> attr() {
+        auto i = std::ranges::find_if(attrs_, [](const std::unique_ptr<Attribute> &attr) {
+            return dynamic_cast<const T *>(&*attr);
+        });
+        if (i == attrs_.end()) {
+            return std::nullopt;
+        }
+        return **i;
+    }
+
+    template <typename T>
+    OptionalRef<const Attribute> attr() const {
+        auto i = std::ranges::find_if(attrs_, [](const std::unique_ptr<Attribute> &attr) {
+            return dynamic_cast<const T *>(&*attr);
+        });
+        if (i == attrs_.end()) {
+            return std::nullopt;
+        }
+        return **i;
+    }
+
+    template <typename T>
+        requires std::derived_from<T, Attribute>
+    T &addAttr(std::unique_ptr<T> attr) {
+        attrs_.push_back(std::move(attr));
+        return static_cast<T &>(*attrs_.back());
+    }
+
+    template <typename T>
+        requires std::derived_from<T, Attribute>
+    void removeAttr() {
+        std::erase_if(attrs_, [](const std::unique_ptr<Attribute> &attr) {
+            return dynamic_cast<const T *>(&*attr);
+        });
+    }
 
     iterator begin() {
         return iterator(blocks_.begin());

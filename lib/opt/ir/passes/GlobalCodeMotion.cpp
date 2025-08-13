@@ -8,7 +8,7 @@
 #include <ranges>
 #include <utility>
 
-#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Attribute/ReadNone.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -75,7 +75,7 @@ const BasicBlock *findLCA(
 bool isCriticalCall(const Instruction &I) {
     if (auto *call = dynamic_cast<const Call *>(&I)) {
         const Function &callee = *call->callee();
-        if (!callee.hasAttr(Attribute::kReadNone)) {
+        if (!callee.attr<ReadNone>()) {
             return true;
         }
     }

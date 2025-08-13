@@ -9,7 +9,7 @@
 #include <typeinfo>
 #include <unordered_set>
 
-#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Attribute/ReadNone.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/FloatingConstant.h"
 #include "mini-llvm/ir/Constant/IntegerConstant.h"
@@ -158,7 +158,7 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
             return false;
         }
         const Function *callee = &*lhsValue->callee();
-        if (!callee->hasAttr(Attribute::kReadNone)) {
+        if (!callee->attr<ReadNone>()) {
             return false;
         }
         if (lhsValue->arg_size() != rhsValue->arg_size()) {
@@ -301,7 +301,7 @@ struct std::hash<ValueNumber> {
         }
         if (auto *value = dynamic_cast<const Call *>(number.value)) {
             const Function *callee = &*value->callee();
-            if (!callee->hasAttr(Attribute::kReadNone)) {
+            if (!callee->attr<ReadNone>()) {
                 return reinterpret_cast<size_t>(value);
             }
             size_t seed = 0;

@@ -10,7 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Attribute/AlwaysInline.h"
+#include "mini-llvm/ir/Attribute/NoInline.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -58,8 +59,8 @@ bool isRecursive(const Function &F) {
 
 bool shouldInline(const Call &call) {
     if (call.callee()->empty()) return false;
-    if (call.callee()->hasAttr(Attribute::kNoInline)) return false;
-    if (call.callee()->hasAttr(Attribute::kAlwaysInline)) return true;
+    if (call.callee()->attr<NoInline>()) return false;
+    if (call.callee()->attr<AlwaysInline>()) return true;
     if (isRecursive(*call.callee())) return false;
     if (hasMoreThanNInstructions(*call.callee(), kCalleeThreshold)) return false;
     if (hasMoreThanNInstructions(*call.parent()->parent(), kCallerThreshold)) return false;

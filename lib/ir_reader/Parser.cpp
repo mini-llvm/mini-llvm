@@ -18,7 +18,10 @@
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Argument.h"
-#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Attribute/AlwaysInline.h"
+#include "mini-llvm/ir/Attribute/NoInline.h"
+#include "mini-llvm/ir/Attribute/ReadNone.h"
+#include "mini-llvm/ir/Attribute/ReadOnly.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/ArrayConstant.h"
@@ -395,22 +398,22 @@ public:
             bool shouldBreak = false;
             switch (current_->kind) {
             case kAlwaysInline:
-                F->setAttr(Attribute::kAlwaysInline);
+                F->addAttr(std::make_unique<AlwaysInline>());
                 ++current_;
                 break;
 
             case kNoInline:
-                F->setAttr(Attribute::kNoInline);
+                F->addAttr(std::make_unique<NoInline>());
                 ++current_;
                 break;
 
             case kReadNone:
-                F->setAttr(Attribute::kReadNone);
+                F->addAttr(std::make_unique<ReadNone>());
                 ++current_;
                 break;
 
             case kReadOnly:
-                F->setAttr(Attribute::kReadOnly);
+                F->addAttr(std::make_unique<ReadOnly>());
                 ++current_;
                 break;
 

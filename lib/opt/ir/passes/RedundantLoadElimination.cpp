@@ -6,7 +6,8 @@
 #include <memory>
 #include <unordered_set>
 
-#include "mini-llvm/ir/Attribute.h"
+#include "mini-llvm/ir/Attribute/ReadNone.h"
+#include "mini-llvm/ir/Attribute/ReadOnly.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
@@ -99,7 +100,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
             }
             if (auto *call = dynamic_cast<const Call *>(&I)) {
                 const Function &callee = *call->callee();
-                if (!callee.hasAttr(Attribute::kReadNone) && !callee.hasAttr(Attribute::kReadOnly)) {
+                if (!callee.attr<ReadNone>() && !callee.attr<ReadOnly>()) {
                     oldStores.clear();
                     oldLoads.clear();
                 }

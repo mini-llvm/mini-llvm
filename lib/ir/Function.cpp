@@ -141,20 +141,6 @@ Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage)
     }
 }
 
-bool Function::hasAttr(Attribute attr) const {
-    return std::ranges::contains(attrs_, attr);
-}
-
-void Function::setAttr(Attribute attr) {
-    if (!std::ranges::contains(attrs_, attr)) {
-        attrs_.push_back(attr);
-    }
-}
-
-void Function::clearAttr(Attribute attr) {
-    std::erase(attrs_, attr);
-}
-
 BasicBlock &Function::add(Function::const_iterator pos, std::shared_ptr<BasicBlock> block) {
     assert(block->parent_ == nullptr);
     assert(block->parentIterator_ == std::nullopt);
@@ -310,8 +296,8 @@ std::string Function::format() const {
         formattedArgs.add("...");
     }
     formatted.add("{} {:o}{}", *functionType()->returnType(), *this, formattedArgs);
-    for (Attribute attr : attrs(*this)) {
-        formatted.add(specifier(attr));
+    for (const Attribute &attr : attrs(*this)) {
+        formatted.add("{}", attr);
     }
     if (!isDeclaration()) {
         StringJoiner formattedBody("\n\n", "{\n", "\n}");
