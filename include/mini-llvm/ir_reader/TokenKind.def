@@ -8,8 +8,8 @@ X(Private)
 X(Internal)
 X(External)
 
-X(NoInline)
 X(AlwaysInline)
+X(NoInline)
 X(ReadNone)
 
 X(I1)

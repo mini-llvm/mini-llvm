@@ -92,32 +92,32 @@ bool AttributeDeduction::runOnModule(Module &M) {
         }
     }
 
-    std::unordered_set<int> impure;
+    std::unordered_set<int> notReadNone;
     for (const Function &F : functions(M)) {
         if (!F.hasAttr(Attribute::kReadNone)) {
             if (!F.isDeclaration()) {
-                bool isImpure = false;
+                bool readNone = true;
                 for (const BasicBlock &B : F) {
                     for (const Instruction &I : B) {
                         if (auto *load = dynamic_cast<const Load *>(&I); load && !dynamic_cast<const Alloca *>(&*load->ptr())) {
-                            isImpure = true;
+                            readNone = false;
                             break;
                         }
                         if (auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
-                            isImpure = true;
+                            readNone = false;
                             break;
                         }
                         if (dynamic_cast<const IndirectCall *>(&I)) {
-                            isImpure = true;
+                            readNone = false;
                             break;
                         }
                     }
                 }
-                if (isImpure) {
-                    impure.insert(scc[&F]);
+                if (!readNone) {
+                    notReadNone.insert(scc[&F]);
                 }
             } else {
-                impure.insert(scc[&F]);
+                notReadNone.insert(scc[&F]);
             }
         }
     }
@@ -163,16 +163,16 @@ bool AttributeDeduction::runOnModule(Module &M) {
     }
 
     for (auto u : std::views::reverse(topo)) {
-        if (!impure.contains(u)) {
-            bool isImpure = false;
+        if (!notReadNone.contains(u)) {
+            bool readNone = true;
             for (auto v : sccGraph[u]) {
-                if (impure.contains(v)) {
-                    isImpure = true;
+                if (notReadNone.contains(v)) {
+                    readNone = false;
                     break;
                 }
             }
-            if (isImpure) {
-                impure.insert(u);
+            if (!readNone) {
+                notReadNone.insert(u);
             }
         }
     }
@@ -180,7 +180,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
     bool changed = false;
 
     for (Function &F : functions(M)) {
-        if (!F.hasAttr(Attribute::kReadNone) && !impure.contains(scc[&F])) {
+        if (!F.hasAttr(Attribute::kReadNone) && !notReadNone.contains(scc[&F])) {
             F.setAttr(Attribute::kReadNone);
             changed = true;
         }

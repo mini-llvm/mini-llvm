@@ -213,8 +213,8 @@ private:
                 {"internal", kInternal},
                 {"external", kExternal},
 
-                {"noinline", kNoInline},
                 {"alwaysinline", kAlwaysInline},
+                {"noinline", kNoInline},
                 {"readnone", kReadNone},
 
                 {"i1", kI1},

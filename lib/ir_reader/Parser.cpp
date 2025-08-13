@@ -394,13 +394,13 @@ public:
         for (;;) {
             bool shouldBreak = false;
             switch (current_->kind) {
-            case kNoInline:
-                F->setAttr(Attribute::kNoInline);
+            case kAlwaysInline:
+                F->setAttr(Attribute::kAlwaysInline);
                 ++current_;
                 break;
 
-            case kAlwaysInline:
-                F->setAttr(Attribute::kAlwaysInline);
+            case kNoInline:
+                F->setAttr(Attribute::kNoInline);
                 ++current_;
                 break;
 
