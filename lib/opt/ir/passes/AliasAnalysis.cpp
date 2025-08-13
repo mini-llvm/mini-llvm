@@ -84,14 +84,7 @@ public:
         assert(*ptr2.type() == Ptr());
         assert(size2 > 0);
 
-        if (dynamic_cast<const NullPtrConstant *>(&ptr1) ||
-                dynamic_cast<const NullPtrConstant *>(&ptr2) ||
-                (dynamic_cast<const GlobalValue *>(&ptr1) && dynamic_cast<const GlobalValue *>(&ptr2) && &ptr1 != &ptr2) ||
-                (dynamic_cast<const Alloca *>(&ptr1) && dynamic_cast<const Alloca *>(&ptr2) && &ptr1 != &ptr2) ||
-                (dynamic_cast<const GlobalValue *>(&ptr1) && dynamic_cast<const Alloca *>(&ptr2)) ||
-                (dynamic_cast<const Alloca *>(&ptr1) && dynamic_cast<const GlobalValue *>(&ptr2)) ||
-                (dynamic_cast<const Argument *>(&ptr1) && dynamic_cast<const Alloca *>(&ptr2)) ||
-                (dynamic_cast<const Alloca *>(&ptr1) && dynamic_cast<const Argument *>(&ptr2))) {
+        if (dynamic_cast<const NullPtrConstant *>(&ptr1) || dynamic_cast<const NullPtrConstant *>(&ptr2)) {
             return AliasResult::kNoAlias;
         }
         if (&ptr1 == &ptr2 && size1 == size2) {
