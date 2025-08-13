@@ -77,7 +77,6 @@ private:
     std::string name_;
     mutable UseSet uses_;
 
-    friend bool operator==(const Value &lhs, const Value &rhs);
     friend class UseBase;
 };
 
