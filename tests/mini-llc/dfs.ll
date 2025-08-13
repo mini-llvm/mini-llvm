@@ -6,9 +6,9 @@
 @visited = global ptr null
 @format = private constant [4 x i8] c"%d\0A\00"
 
-declare ptr @malloc(i64)
-declare void @free(ptr)
-declare ptr @memset(ptr, i32, i64)
+declare ptr @malloc(i64) inaccessiblememonly
+declare void @free(ptr) inaccessiblemem_or_argmemonly
+declare ptr @memset(ptr, i32, i64) argmemonly
 declare i32 @printf(ptr, ...)
 
 define void @add_edge(i32 %0, i32 %1, i32 %2) {

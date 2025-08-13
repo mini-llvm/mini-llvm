@@ -8,7 +8,7 @@
 
 @format = private constant [16 x i8] c"%d %d %d %d %d\0A\00"
 
-declare ptr @memcpy(ptr, ptr, i64)
+declare ptr @memcpy(ptr, ptr, i64) argmemonly
 declare i32 @printf(ptr, ...)
 
 define i32 @min(i32 %0, i32 %1) {

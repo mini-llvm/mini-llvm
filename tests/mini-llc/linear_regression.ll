@@ -26,7 +26,7 @@
 
 @format = private constant [13 x i8] c"%.17g %.17g\0A\00"
 
-declare ptr @memcpy(ptr, ptr, i64)
+declare ptr @memcpy(ptr, ptr, i64) argmemonly
 declare i32 @printf(ptr, ...)
 
 define double @mean(ptr %0, i32 %1) {

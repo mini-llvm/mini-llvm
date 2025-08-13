@@ -19,6 +19,9 @@
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Argument.h"
 #include "mini-llvm/ir/Attribute/AlwaysInline.h"
+#include "mini-llvm/ir/Attribute/ArgMemOnly.h"
+#include "mini-llvm/ir/Attribute/InaccessibleMemOnly.h"
+#include "mini-llvm/ir/Attribute/InaccessibleMemOrArgMemOnly.h"
 #include "mini-llvm/ir/Attribute/NoInline.h"
 #include "mini-llvm/ir/Attribute/ReadNone.h"
 #include "mini-llvm/ir/Attribute/ReadOnly.h"
@@ -399,6 +402,21 @@ public:
             switch (current_->kind) {
             case kAlwaysInline:
                 F->addAttr(std::make_unique<AlwaysInline>());
+                ++current_;
+                break;
+
+            case kArgMemOnly:
+                F->addAttr(std::make_unique<ArgMemOnly>());
+                ++current_;
+                break;
+
+            case kInaccessibleMemOnly:
+                F->addAttr(std::make_unique<InaccessibleMemOnly>());
+                ++current_;
+                break;
+
+            case kInaccessibleMemOrArgMemOnly:
+                F->addAttr(std::make_unique<InaccessibleMemOrArgMemOnly>());
                 ++current_;
                 break;
 

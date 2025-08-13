@@ -1,7 +1,7 @@
 @a = private constant [8 x i32] [i32 5, i32 4, i32 1, i32 3, i32 8, i32 7, i32 6, i32 2]
 @format = private constant [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
-declare ptr @memcpy(ptr, ptr, i64)
+declare ptr @memcpy(ptr, ptr, i64) argmemonly
 declare i32 @printf(ptr, ...)
 
 define void @mergesort(ptr %0, ptr %1, i32 %2, i32 %3) {

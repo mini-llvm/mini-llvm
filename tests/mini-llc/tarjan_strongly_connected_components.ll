@@ -12,9 +12,9 @@
 @top = global i32 0
 @format = private constant [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
-declare ptr @malloc(i64)
-declare void @free(ptr)
-declare ptr @memset(ptr, i32, i64)
+declare ptr @malloc(i64) inaccessiblememonly
+declare void @free(ptr) inaccessiblemem_or_argmemonly
+declare ptr @memset(ptr, i32, i64) argmemonly
 declare i32 @printf(ptr, ...)
 
 define void @add_edge(i32 %0, i32 %1, i32 %2) {

@@ -4,8 +4,8 @@
 @str4 = private constant [10 x i8] c"execution\00"
 @format = private constant [4 x i8] c"%d\0A\00"
 
-declare ptr @malloc(i64)
-declare void @free(ptr)
+declare ptr @malloc(i64) inaccessiblememonly
+declare void @free(ptr) inaccessiblemem_or_argmemonly
 declare i32 @printf(ptr, ...)
 
 define i32 @min(i32 %0, i32 %1, i32 %2) {

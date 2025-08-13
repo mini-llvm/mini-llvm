@@ -5,6 +5,9 @@
 #include <cassert>
 #include <unordered_set>
 
+#include "mini-llvm/ir/Attribute/ArgMemOnly.h"
+#include "mini-llvm/ir/Attribute/InaccessibleMemOnly.h"
+#include "mini-llvm/ir/Attribute/InaccessibleMemOrArgMemOnly.h"
 #include "mini-llvm/ir/Attribute/ReadNone.h"
 #include "mini-llvm/ir/Attribute/ReadOnly.h"
 #include "mini-llvm/ir/BasicBlock.h"
@@ -14,6 +17,7 @@
 #include "mini-llvm/ir/Instruction/IndirectCall.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/Store.h"
+#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/AliasAnalysis.h"
@@ -69,9 +73,32 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
             }
             if (auto *call = dynamic_cast<const Call *>(&I)) {
                 const Function &callee = *call->callee();
-                if (!callee.attr<ReadNone>() && !callee.attr<ReadOnly>()) {
-                    oldStores.clear();
+                if (callee.attr<ReadNone>() || callee.attr<ReadOnly>() || callee.attr<InaccessibleMemOnly>()) {
+                    continue;
                 }
+                if (callee.attr<ArgMemOnly>() || callee.attr<InaccessibleMemOrArgMemOnly>()) {
+                    for (auto i = oldStores.begin(); i != oldStores.end();) {
+                        const Store *oldStore = *i;
+                        const Value *oldPtr = &*oldStore->ptr();
+                        bool alias = false;
+                        for (const Use<Value> &arg : args(*call)) {
+                            if (*arg->type() == Ptr()) {
+                                AliasResult result = aa.alias(*arg, *oldPtr);
+                                if (result != AliasResult::kNoAlias) {
+                                    alias = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (alias) {
+                            i = oldStores.erase(i);
+                        } else {
+                            ++i;
+                        }
+                    }
+                    continue;
+                }
+                oldStores.clear();
                 continue;
             }
             if (dynamic_cast<const IndirectCall *>(&I)) {

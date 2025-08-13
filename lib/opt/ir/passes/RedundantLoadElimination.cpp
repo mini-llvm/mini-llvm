@@ -6,6 +6,9 @@
 #include <memory>
 #include <unordered_set>
 
+#include "mini-llvm/ir/Attribute/ArgMemOnly.h"
+#include "mini-llvm/ir/Attribute/InaccessibleMemOnly.h"
+#include "mini-llvm/ir/Attribute/InaccessibleMemOrArgMemOnly.h"
 #include "mini-llvm/ir/Attribute/ReadNone.h"
 #include "mini-llvm/ir/Attribute/ReadOnly.h"
 #include "mini-llvm/ir/BasicBlock.h"
@@ -16,6 +19,7 @@
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/Store.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/AliasAnalysis.h"
 #include "mini-llvm/utils/Memory.h"
@@ -100,10 +104,52 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
             }
             if (auto *call = dynamic_cast<const Call *>(&I)) {
                 const Function &callee = *call->callee();
-                if (!callee.attr<ReadNone>() && !callee.attr<ReadOnly>()) {
-                    oldStores.clear();
-                    oldLoads.clear();
+                if (callee.attr<ReadNone>() || callee.attr<ReadOnly>() || callee.attr<InaccessibleMemOnly>()) {
+                    continue;
                 }
+                if (callee.attr<ArgMemOnly>() || callee.attr<InaccessibleMemOrArgMemOnly>()) {
+                    for (auto j = oldStores.begin(); j != oldStores.end();) {
+                        const Store *oldStore = *j;
+                        const Value *oldPtr = &*oldStore->ptr();
+                        bool alias = false;
+                        for (const Use<Value> &arg : args(*call)) {
+                            if (*arg->type() == Ptr()) {
+                                AliasResult result = aa.alias(*arg, *oldPtr);
+                                if (result != AliasResult::kNoAlias) {
+                                    alias = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (alias) {
+                            j = oldStores.erase(j);
+                        } else {
+                            ++j;
+                        }
+                    }
+                    for (auto j = oldLoads.begin(); j != oldLoads.end();) {
+                        const Load *oldLoad = *j;
+                        const Value *oldPtr = &*oldLoad->ptr();
+                        bool alias = false;
+                        for (const Use<Value> &arg : args(*call)) {
+                            if (*arg->type() == Ptr()) {
+                                AliasResult result = aa.alias(*arg, *oldPtr);
+                                if (result != AliasResult::kNoAlias) {
+                                    alias = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (alias) {
+                            j = oldLoads.erase(j);
+                        } else {
+                            ++j;
+                        }
+                    }
+                    continue;
+                }
+                oldStores.clear();
+                oldLoads.clear();
                 continue;
             }
             if (dynamic_cast<const IndirectCall *>(&I)) {

@@ -1,5 +1,5 @@
 declare i32 @putchar(i32)
-declare ptr @memset(ptr, i32, i64)
+declare ptr @memset(ptr, i32, i64) argmemonly
 
 define void @print_board(i32 %0, ptr %1) {
 2:

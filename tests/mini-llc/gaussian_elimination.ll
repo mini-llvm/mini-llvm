@@ -15,7 +15,7 @@
 @format = private constant [19 x i8] c"%.17g %.17g %.17g\0A\00"
 
 declare double @fabs(double)
-declare ptr @memcpy(ptr, ptr, i64)
+declare ptr @memcpy(ptr, ptr, i64) argmemonly
 declare i32 @printf(ptr, ...)
 
 define void @swap(ptr %0, ptr %1) {

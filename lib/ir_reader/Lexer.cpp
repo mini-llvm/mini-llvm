@@ -214,6 +214,9 @@ private:
                 {"external", kExternal},
 
                 {"alwaysinline", kAlwaysInline},
+                {"argmemonly", kArgMemOnly},
+                {"inaccessiblememonly", kInaccessibleMemOnly},
+                {"inaccessiblemem_or_argmemonly", kInaccessibleMemOrArgMemOnly},
                 {"noinline", kNoInline},
                 {"readnone", kReadNone},
                 {"readonly", kReadOnly},

@@ -78,6 +78,26 @@ public:
         dfs(domTree.node(F.entry()), objects_);
     }
 
+    AliasResult alias(const Value &ptr1, const Value &ptr2) const {
+        assert(*ptr1.type() == Ptr());
+        assert(*ptr2.type() == Ptr());
+
+        if (dynamic_cast<const NullPtrConstant *>(&ptr1) || dynamic_cast<const NullPtrConstant *>(&ptr2)) {
+            return AliasResult::kNoAlias;
+        }
+        const Value *object1 = objects_.get(&ptr1).value_or(&ptr1),
+                    *object2 = objects_.get(&ptr2).value_or(&ptr2);
+        if ((dynamic_cast<const GlobalValue *>(object1) && dynamic_cast<const GlobalValue *>(object2) && object1 != object2) ||
+                (dynamic_cast<const Alloca *>(object1) && dynamic_cast<const Alloca *>(object2) && object1 != object2) ||
+                (dynamic_cast<const GlobalValue *>(object1) && dynamic_cast<const Alloca *>(object2)) ||
+                (dynamic_cast<const Alloca *>(object1) && dynamic_cast<const GlobalValue *>(object2)) ||
+                (dynamic_cast<const Argument *>(object1) && dynamic_cast<const Alloca *>(object2)) ||
+                (dynamic_cast<const Alloca *>(object1) && dynamic_cast<const Argument *>(object2))) {
+            return AliasResult::kNoAlias;
+        }
+        return AliasResult::kMayAlias;
+    }
+
     AliasResult alias(const Value &ptr1, int size1, const Value &ptr2, int size2) const {
         assert(*ptr1.type() == Ptr());
         assert(size1 > 0);
@@ -116,6 +136,10 @@ AliasAnalysis::~AliasAnalysis() = default;
 
 void AliasAnalysis::runOnFunction(const Function &F) {
     impl_->runOnFunction(F);
+}
+
+AliasResult AliasAnalysis::alias(const Value &ptr1, const Value &ptr2) const {
+    return impl_->alias(ptr1, ptr2);
 }
 
 AliasResult AliasAnalysis::alias(const Value &ptr1, int size1, const Value &ptr2, int size2) const {
