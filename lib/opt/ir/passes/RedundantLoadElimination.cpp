@@ -40,7 +40,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                     const Store *oldStore = *j;
                     const Value *oldPtr = &*oldStore->ptr();
                     int oldSize = oldStore->value()->type()->size(pointerSize_);
-                    if (aa.alias(ptr, size, oldPtr, oldSize) != AliasResult::kNoAlias) {
+                    if (aa.alias(*ptr, size, *oldPtr, oldSize) != AliasResult::kNoAlias) {
                         j = oldStores.erase(j);
                     } else {
                         ++j;
@@ -50,7 +50,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                     const Load *oldLoad = *j;
                     const Value *oldPtr = &*oldLoad->ptr();
                     int oldSize = oldLoad->type()->size(pointerSize_);
-                    if (aa.alias(ptr, size, oldPtr, oldSize) != AliasResult::kNoAlias) {
+                    if (aa.alias(*ptr, size, *oldPtr, oldSize) != AliasResult::kNoAlias) {
                         j = oldLoads.erase(j);
                     } else {
                         ++j;
@@ -68,7 +68,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                     const Value *oldPtr = &*oldStore->ptr();
                     std::unique_ptr<Type> oldType = oldStore->value()->type();
                     int oldSize = oldType->size(pointerSize_);
-                    if (aa.alias(ptr, size, oldPtr, oldSize) == AliasResult::kMustAlias && *type == *oldType) {
+                    if (aa.alias(*ptr, size, *oldPtr, oldSize) == AliasResult::kMustAlias && *type == *oldType) {
                         value = &*oldStore->value();
                         break;
                     }
@@ -83,7 +83,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                     const Value *oldPtr = &*oldLoad->ptr();
                     std::unique_ptr<Type> oldType = oldLoad->type();
                     int oldSize = oldType->size(pointerSize_);
-                    if (aa.alias(ptr, size, oldPtr, oldSize) == AliasResult::kMustAlias && *type == *oldType) {
+                    if (aa.alias(*ptr, size, *oldPtr, oldSize) == AliasResult::kMustAlias && *type == *oldType) {
                         value = const_cast<Load *>(oldLoad);
                         break;
                     }

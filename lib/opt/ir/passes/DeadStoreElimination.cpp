@@ -36,7 +36,7 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
                     const Store *oldStore = *i;
                     const Value *oldPtr = &*oldStore->ptr();
                     int oldSize = oldStore->value()->type()->size(pointerSize_);
-                    AliasResult result = aa.alias(ptr, size, oldPtr, oldSize);
+                    AliasResult result = aa.alias(*ptr, size, *oldPtr, oldSize);
                     if (result == AliasResult::kMustAlias) {
                         removeFromParent(*oldStore);
                         changed = true;
@@ -57,7 +57,7 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
                     const Store *oldStore = *i;
                     const Value *oldPtr = &*oldStore->ptr();
                     int oldSize = oldStore->value()->type()->size(pointerSize_);
-                    AliasResult result = aa.alias(ptr, size, oldPtr, oldSize);
+                    AliasResult result = aa.alias(*ptr, size, *oldPtr, oldSize);
                     if (result != AliasResult::kNoAlias) {
                         i = oldStores.erase(i);
                     } else {
