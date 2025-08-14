@@ -1,0 +1,57 @@
+name: docs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  docs:
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      HOMEBREW_NO_ANALYTICS: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_INSTALL_CLEANUP: 1
+    steps:
+      - run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          brew install doxygen graphviz
+
+      - uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          cmake \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/build" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=g++-14 \
+            -DMINI_LLVM_DOCS=ON \
+            -G Ninja
+
+      - run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+          cmake --build "${{ github.workspace }}/build" --target docs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "${{ github.workspace }}/build/html"
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

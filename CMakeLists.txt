@@ -4,7 +4,8 @@ project(mini-llvm VERSION 0.1.0 LANGUAGES CXX)
 
 option(BUILD_SHARED_LIBS "Build shared libraries." OFF)
 
-option(MINI_LLVM_TESTS "Build tests." ON)
+option(MINI_LLVM_TESTS "Build tests." OFF)
+option(MINI_LLVM_DOCS "Build docs." OFF)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -228,4 +229,24 @@ if(MINI_LLVM_TESTS)
     add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL SYSTEM)
 
     add_subdirectory(unittests)
+endif()
+
+if(MINI_LLVM_DOCS)
+    find_package(Doxygen REQUIRED)
+
+    set(DOXYGEN_GENERATE_HTML YES)
+    set(DOXYGEN_RECURSIVE YES)
+    set(DOXYGEN_FILE_PATTERNS *.h *.cpp)
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_EXCLUDE_SYMBOLS detail Impl)
+    set(DOXYGEN_HTML_EXTRA_STYLESHEET "${PROJECT_SOURCE_DIR}/third_party/doxygen-awesome-css/doxygen-awesome.css")
+    set(DOXYGEN_HTML_COLORSTYLE LIGHT)
+
+    doxygen_add_docs(
+        docs
+        "${PROJECT_SOURCE_DIR}/include"
+        "${PROJECT_SOURCE_DIR}/lib"
+        ALL
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    )
 endif()
