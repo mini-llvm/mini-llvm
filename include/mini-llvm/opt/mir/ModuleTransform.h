@@ -8,7 +8,7 @@
 
 namespace mini_llvm::mir {
 
-class MINI_LLVM_EXPORT ModuleTransform : Pass {
+class MINI_LLVM_EXPORT ModuleTransform : public Pass {
 public:
     virtual bool runOnModule(Module &M) = 0;
 };
