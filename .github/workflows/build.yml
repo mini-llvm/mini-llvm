@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - develop
+  workflow_dispatch:
 
 defaults:
   run:
@@ -39,7 +40,8 @@ jobs:
 
       - run: |
           cmake \
-            -B ${{ github.workspace }}/build \
+            -S "${{ github.workspace }}" \
+            -B "${{ github.workspace }}/build" \
             -DCMAKE_BUILD_TYPE="${{ matrix.build-type }}" \
             -DCMAKE_CXX_COMPILER="${{ matrix.compiler }}" \
             -DCMAKE_CXX_FLAGS="${{ matrix.sanitizer }}" \
@@ -57,9 +59,9 @@ jobs:
       - working-directory: ${{ github.workspace }}/tests/mini-llc
         run: |
           export MINI_LLC_COMMAND="${{ github.workspace }}/build/bin/mini-llc"
-          export LINKER_COMMAND="riscv64-linux-gnu-gcc-14"
-          export EMULATOR_COMMAND="qemu-riscv64"
-          export DIFF_COMMAND="diff"
+          export LINKER_COMMAND=riscv64-linux-gnu-gcc-14
+          export EMULATOR_COMMAND=qemu-riscv64
+          export DIFF_COMMAND=diff
           export MINI_LLC_TIMEOUT=60
           export LINKER_TIMEOUT=60
           export EMULATOR_TIMEOUT=60

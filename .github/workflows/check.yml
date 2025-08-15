@@ -9,14 +9,15 @@ on:
     branches:
       - main
       - develop
+  workflow_dispatch:
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - run: ./contrib/format-all.sh --check
+      - run: ${{ github.workspace }}/contrib/format-all.sh --check
