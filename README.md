@@ -4,6 +4,8 @@
 |:-:|:-:|
 | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Amain) | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Adevelop) |
 
+[Docs](https://mini-llvm.github.io/mini-llvm/)
+
 ## Design
 
 ![Design](assets/design.svg)
