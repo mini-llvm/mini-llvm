@@ -238,14 +238,13 @@ if(MINI_LLVM_DOCS)
     set(DOXYGEN_RECURSIVE YES)
     set(DOXYGEN_FILE_PATTERNS *.h *.cpp)
     set(DOXYGEN_EXTRACT_ALL YES)
-    set(DOXYGEN_EXCLUDE_SYMBOLS detail Impl)
+    set(DOXYGEN_EXCLUDE_SYMBOLS detail)
     set(DOXYGEN_HTML_EXTRA_STYLESHEET "${PROJECT_SOURCE_DIR}/third_party/doxygen-awesome-css/doxygen-awesome.css")
     set(DOXYGEN_HTML_COLORSTYLE LIGHT)
 
     doxygen_add_docs(
         docs
         "${PROJECT_SOURCE_DIR}/include"
-        "${PROJECT_SOURCE_DIR}/lib"
         ALL
         WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
     )
