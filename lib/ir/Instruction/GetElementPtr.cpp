@@ -2,6 +2,7 @@
 
 #include "mini-llvm/ir/Instruction/GetElementPtr.h"
 
+#include <cstddef>
 #include <format>
 #include <memory>
 #include <string>
@@ -11,6 +12,7 @@
 
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Type/ArrayType.h"
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
@@ -60,6 +62,15 @@ bool GetElementPtr::isWellFormed() const {
         if (!dynamic_cast<const IntegerType *>(&*idx->type())) {
             return false;
         }
+    }
+    size_t n = 1;
+    std::unique_ptr<Type> type = sourceType();
+    while (dynamic_cast<const ArrayType *>(&*type)) {
+        ++n;
+        type = static_cast<const ArrayType *>(&*type)->elementType();
+    }
+    if (idx_size() > n) {
+        return false;
     }
     return true;
 }
