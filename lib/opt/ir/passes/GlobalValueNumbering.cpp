@@ -45,7 +45,7 @@ using namespace mini_llvm::ir;
 // Cliff Click. 1995. Global code motion/global value numbering.
 // In Proceedings of the ACM SIGPLAN 1995 conference on
 // Programming language design and implementation (PLDI '95).
-// Association for Computing Machinery, New York, NY, USA, 246–257.
+// Association for Computing Machinery, New York, NY, USA, 246-257.
 // https://doi.org/10.1145/207110.207154
 
 namespace {

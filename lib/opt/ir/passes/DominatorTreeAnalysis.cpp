@@ -19,7 +19,7 @@ using namespace mini_llvm::ir;
 
 // Thomas Lengauer and Robert Endre Tarjan. 1979.
 // A fast algorithm for finding dominators in a flowgraph.
-// ACM Trans. Program. Lang. Syst. 1, 1 (July 1979), 121-141.
+// ACM Trans. Program. Lang. Syst. 1, 1 (Jan. 1979), 121-141.
 // https://doi.org/10.1145/357062.357071
 
 namespace {

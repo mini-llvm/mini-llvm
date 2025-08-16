@@ -1,22 +1,24 @@
-# mini-llvm
+# ⚙️ mini-llvm
 
 | main | develop |
 |:-:|:-:|
 | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Amain) | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Adevelop) |
 
-[Docs](https://mini-llvm.github.io/mini-llvm/)
+[📖 Documentation](https://mini-llvm.github.io/mini-llvm/)
 
-## Design
+## ✨ Design
 
 ![Design](assets/design.svg)
 
-## Supported Targets
+## 🌟 Features
+
+### Supported Targets
 
 - `riscv64`
 
-## Supported IR Constructs
+### Supported IR Constructs
 
-### Types
+#### Types
 
 - `void`
 - Integer types
@@ -33,7 +35,7 @@
 - Function types
 - `label`
 
-### Constants
+#### Constants
 
 - Integer constants
 - Floating-point constants
@@ -41,7 +43,7 @@
 - Array constants
 - `poison`
 
-### Instructions
+#### Instructions
 
 - Terminators
   - `br`
@@ -104,9 +106,9 @@
   - `call`
   - `phi`
 
-## Transform & Analysis Passes (Work in Progress)
+### Transform & Analysis Passes
 
-### IR
+#### IR
 
 - `AlgebraicSimplification`
 - `ArrayFlattening`
@@ -133,7 +135,7 @@
 - `DominatorTreeAnalysis`
 - `LoopTreeAnalysis`
 
-### MIR
+#### MIR
 
 - `BasicBlockMerging`
 - `BasicBlockReordering`
@@ -150,18 +152,18 @@
 - `LiveVariableAnalysis`
 - `RISCVConstantPropagation` (`riscv64`)
 
-### MC
+#### MC
 
 - `UnusedLabelElimination`
 - `RISCVFallthrough` (`riscv64`)
 
-## Register Allocators
+### Register Allocators
 
 - `GraphColoringAllocator`
 - `LinearScanAllocator`
 - `NaiveAllocator`
 
-## Usage
+## ▶️ Usage
 
 <table>
 <tr>
@@ -186,11 +188,11 @@ define i32 @add(i32 %0, i32 %1) {
 mini-llc --target=riscv64 -o example.s example.ll
 ```
 
-## Build
+## 🛠️ Build
 
 | Linux | Windows |
 |:-:|:-:|
-| ✓ | ✓ |
+| ✅ | ✅ |
 
 | GCC | Clang | MSVC |
 |:-:|:-:|:-:|
@@ -216,7 +218,7 @@ cmake --build .
 ./tools/mini-llc/mini-llc --help
 ```
 
-### With Bazel (Experimental)
+### With Bazel
 
 ```sh
 sudo apt-get update
@@ -227,7 +229,7 @@ CC=gcc-14 CXX=g++-14 bazel build -c opt //...
 ./bazel-bin/tools/mini-llc/mini-llc --help
 ```
 
-## Running Tests
+## 🧪 Running Tests
 
 ### Unit Tests
 
@@ -265,7 +267,7 @@ export EMULATOR_TIMEOUT=60
 ./test-all.sh --target=riscv64
 ```
 
-## Installation
+## 📦 Installation
 
 ```sh
 # CMake
@@ -273,6 +275,15 @@ cd <repo-dir>/build
 cmake --install .
 ```
 
-## License
+## 📚 References
+
+- LLVM Language Reference Manual. <https://llvm.org/docs/LangRef.html>
+- Cliff Click. 1995. Global code motion/global value numbering. In *Proceedings of the ACM SIGPLAN 1995 Conference on Programming Language Design and Implementation* (PLDI '95). Association for Computing Machinery, New York, NY, USA, 246–257. https://doi.org/10.1145/207110.207154
+- Ron Cytron, Jeanne Ferrante, Barry K. Rosen, Mark N. Wegman, and F. Kenneth Zadeck. 1991. Efficiently computing static single assignment form and the control dependence graph. *ACM Trans. Program. Lang. Syst.* 13, 4 (Oct. 1991), 451–490. https://doi.org/10.1145/115372.115320
+- Torbjörn Granlund and Peter L. Montgomery. 1994. Division by invariant integers using multiplication. In *Proceedings of the ACM SIGPLAN 1994 Conference on Programming Language Design and Implementation* (PLDI '94). Association for Computing Machinery, New York, NY, USA, 61–72. https://doi.org/10.1145/178243.178249
+- Thomas Lengauer and Robert Endre Tarjan. 1979. A fast algorithm for finding dominators in a flowgraph. *ACM Trans. Program. Lang. Syst.* 1, 1 (Jan. 1979), 121–141. https://doi.org/10.1145/357062.357071
+- Massimiliano Poletto and Vivek Sarkar. 1999. Linear scan register allocation. *ACM Trans. Program. Lang. Syst.* 21, 5 (Sept. 1999), 895–913. https://doi.org/10.1145/330249.330250
+
+## 📄 License
 
 mini-llvm is licensed under the [MIT license](https://opensource.org/licenses/MIT).
