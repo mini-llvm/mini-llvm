@@ -2,14 +2,11 @@
 
 #include "mini-llvm/ir/Function.h"
 
-#include <algorithm>
 #include <cassert>
 #include <iterator>
 #include <memory>
 #include <optional>
 #include <queue>
-#include <ranges>
-#include <stack>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -27,112 +24,10 @@
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
-#include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
-
-namespace {
-
-std::unordered_set<const BasicBlock *> findReachable(const Function &F) {
-    std::unordered_set<const BasicBlock *> S;
-    std::queue<const BasicBlock *> Q;
-    S.insert(&F.entry());
-    Q.push(&F.entry());
-    while (!Q.empty()) {
-        const BasicBlock *u = Q.front();
-        Q.pop();
-        for (const BasicBlock *v : successors(*u)) {
-            if (S.insert(v).second) {
-                Q.push(v);
-            }
-        }
-    }
-    return S;
-}
-
-void dfs(
-    const BasicBlock *u,
-    const HashMap<const BasicBlock *, std::unordered_set<const BasicBlock *>> &g,
-    HashMap<const BasicBlock *, int> &dfn,
-    HashMap<const BasicBlock *, int> &low,
-    HashMap<const BasicBlock *, int> &scc,
-    int &timer,
-    int &sccCount,
-    std::stack<const BasicBlock *> &S
-) {
-    dfn[u] = low[u] = timer;
-    ++timer;
-    S.push(u);
-    for (const BasicBlock *v : g[u]) {
-        if (dfn[v] == -1) {
-            dfs(v, g, dfn, low, scc, timer, sccCount, S);
-            low[u] = std::min(low[u], low[v]);
-        } else if (scc[v] == -1) {
-            low[u] = std::min(low[u], dfn[v]);
-        }
-    }
-    if (low[u] == dfn[u]) {
-        const BasicBlock *v;
-        do {
-            v = S.top();
-            S.pop();
-            scc[v] = sccCount;
-        } while (v != u);
-        ++sccCount;
-    }
-}
-
-std::unordered_set<const BasicBlock *> findNotInCycle(const Function &F) {
-    HashMap<const BasicBlock *, std::unordered_set<const BasicBlock *>> g;
-    for (const BasicBlock &B : F) {
-        g.put(&B, {});
-        for (const BasicBlock *succ : successors(B)) {
-            g[&B].insert(succ);
-        }
-    }
-    HashMap<const BasicBlock *, int> dfn, low;
-    HashMap<const BasicBlock *, int> scc;
-    for (const BasicBlock *v : std::views::keys(g)) {
-        dfn.put(v, -1);
-        low.put(v, -1);
-        scc.put(v, -1);
-    }
-    int timer = 0;
-    int sccCount = 0;
-    std::stack<const BasicBlock *> S;
-    for (const BasicBlock *u : std::views::keys(g)) {
-        if (dfn[u] == -1) {
-            dfs(u, g, dfn, low, scc, timer, sccCount, S);
-        }
-    }
-    HashMap<int, int> sizes;
-    for (int C = 0; C < sccCount; ++C) {
-        sizes.put(C, 0);
-    }
-    for (const BasicBlock *v : std::views::keys(g)) {
-        ++sizes[scc[v]];
-    }
-    std::unordered_set<const BasicBlock *> notInCycle;
-    for (const BasicBlock *u : std::views::keys(g)) {
-        if (sizes[scc[u]] == 1) {
-            bool hasSelfLoop = false;
-            for (const BasicBlock *v : g[u]) {
-                if (v == u) {
-                    hasSelfLoop = true;
-                    break;
-                }
-            }
-            if (!hasSelfLoop) {
-                notInCycle.insert(u);
-            }
-        }
-    }
-    return notInCycle;
-}
-
-} // namespace
 
 Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage)
         : functionType_(std::move(functionType)), linkage_(linkage) {
@@ -229,12 +124,24 @@ bool Function::isWellFormed() const {
     }
     DominatorTreeAnalysis domTree;
     domTree.runOnFunction(*this);
-    std::unordered_set<const BasicBlock *> reachable = findReachable(*this);
-    for (const BasicBlock *B : reachable) {
+    std::unordered_set<const BasicBlock *> S;
+    std::queue<const BasicBlock *> Q;
+    S.insert(&entry());
+    Q.push(&entry());
+    while (!Q.empty()) {
+        const BasicBlock *u = Q.front();
+        Q.pop();
+        for (const BasicBlock *v : successors(*u)) {
+            if (S.insert(v).second) {
+                Q.push(v);
+            }
+        }
+    }
+    for (const BasicBlock *B : S) {
         for (const Instruction &I : *B) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                    if (!dynamic_cast<const Phi *>(II) && reachable.contains(II->parent()) && !domTree.dominates(I, *II)) {
+                    if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
                         return false;
                     }
                 }
@@ -242,11 +149,11 @@ bool Function::isWellFormed() const {
         }
     }
     for (const BasicBlock &B : *this) {
-        if (!reachable.contains(&B)) {
+        if (!S.contains(&B)) {
             for (const Instruction &I : B) {
                 for (const UseBase &use : uses(I)) {
                     if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                        if (!dynamic_cast<const Phi *>(II) && reachable.contains(II->parent())) {
+                        if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent())) {
                             return false;
                         }
                     }
@@ -254,9 +161,8 @@ bool Function::isWellFormed() const {
             }
         }
     }
-    std::unordered_set<const BasicBlock *> notInCycle = findNotInCycle(*this);
     for (const BasicBlock &B : *this) {
-        if (!notInCycle.contains(&B)) {
+        if (&B != &entry()) {
             for (const Instruction &I : B) {
                 if (dynamic_cast<const Alloca *>(&I)) {
                     return false;
