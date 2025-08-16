@@ -6,6 +6,7 @@ tests=(
     alias_args
     alias_gep
     alias_inttoptr
+    alloca_tail_call
     arithmetic
     casting
     circular_call_1

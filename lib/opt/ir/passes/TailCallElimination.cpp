@@ -6,11 +6,14 @@
 #include <iterator>
 #include <memory>
 #include <ranges>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/ir/Argument.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
+#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/Br.h"
 #include "mini-llvm/ir/Instruction/Call.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
@@ -66,6 +69,16 @@ bool TailCallElimination::runOnFunction(Function &F) {
 
     BasicBlock &oldEntry = F.entry();
 
+    std::vector<std::shared_ptr<Instruction>> allocas;
+
+    for (auto i = oldEntry.begin(); i != oldEntry.end();) {
+        Instruction &I = *i++;
+        if (dynamic_cast<Alloca *>(&I)) {
+            allocas.push_back(share(I));
+            removeFromParent(I);
+        }
+    }
+
     HashMap<Argument *, Phi *> phis;
 
     for (Argument &arg : args(F)) {
@@ -78,6 +91,11 @@ bool TailCallElimination::runOnFunction(Function &F) {
     }
 
     BasicBlock &newEntry = F.prepend();
+
+    for (auto &I : allocas) {
+        newEntry.append(std::move(I));
+    }
+
     newEntry.append(std::make_shared<Br>(weaken(oldEntry)));
 
     for (Argument &arg : args(F)) {
