@@ -884,7 +884,8 @@ public:
                     std::vector<std::shared_ptr<Value>> indices;
                     Location idxTypeLocation;
                     std::unique_ptr<Type> idxType;
-                    while (current_->kind == kComma) {
+                    std::unique_ptr<Type> type = sourceType->clone();
+                    if (current_->kind == kComma) {
                         ++current_;
                         idxTypeLocation = current_;
                         idxType = parseType();
@@ -892,6 +893,19 @@ public:
                             throw ParseException("must be an integer type", idxTypeLocation);
                         }
                         indices.push_back(parseValue(*idxType));
+                        while (current_->kind == kComma) {
+                            ++current_;
+                            idxTypeLocation = current_;
+                            idxType = parseType();
+                            if (!dynamic_cast<const IntegerType *>(&*idxType)) {
+                                throw ParseException("must be an integer type", idxTypeLocation);
+                            }
+                            indices.push_back(parseValue(*idxType));
+                            if (!dynamic_cast<const ArrayType *>(&*type)) {
+                                throw ParseException("too many indices", idxTypeLocation);
+                            }
+                            type = static_cast<const ArrayType *>(&*type)->elementType();
+                        }
                     }
 
                     I = std::make_shared<GetElementPtr>(std::move(sourceType), std::move(ptr), std::move(indices));

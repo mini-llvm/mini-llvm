@@ -365,6 +365,18 @@ define void @test1() {
     EXPECT_TRUE(parseModule(input));
 }
 
+TEST(IRReaderTest, GetElementPtrTooManyIndices) {
+    const char *input = R"(
+define ptr @test(ptr %0) {
+1:
+  %2 = getelementptr [2 x [3 x i32]], ptr %0, i32 0, i32 0, i32 0, i32 0
+  ret ptr %2
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
 TEST(IRReaderTest, Phi) {
     const char *input = R"(
 define void @test(i1 %0) {
