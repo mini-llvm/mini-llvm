@@ -12,6 +12,7 @@
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/Call.h"
 #include "mini-llvm/ir/Instruction/IndirectCall.h"
 #include "mini-llvm/ir/Instruction/Load.h"
@@ -86,6 +87,7 @@ bool isCriticalCall(const Instruction &I) {
 bool isPinned(const Instruction &I) {
     return dynamic_cast<const Phi *>(&I)
         || dynamic_cast<const Terminator *>(&I)
+        || dynamic_cast<const Alloca *>(&I)
         || dynamic_cast<const Load *>(&I)
         || dynamic_cast<const Store *>(&I)
         || dynamic_cast<const IndirectCall *>(&I)
