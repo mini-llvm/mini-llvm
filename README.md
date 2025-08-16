@@ -277,7 +277,7 @@ cmake --install .
 
 ## 📚 References
 
-- LLVM Language Reference Manual. <https://llvm.org/docs/LangRef.html>
+- LLVM Language Reference Manual. https://llvm.org/docs/LangRef.html
 - Cliff Click. 1995. Global code motion/global value numbering. In *Proceedings of the ACM SIGPLAN 1995 Conference on Programming Language Design and Implementation* (PLDI '95). Association for Computing Machinery, New York, NY, USA, 246–257. https://doi.org/10.1145/207110.207154
 - Ron Cytron, Jeanne Ferrante, Barry K. Rosen, Mark N. Wegman, and F. Kenneth Zadeck. 1991. Efficiently computing static single assignment form and the control dependence graph. *ACM Trans. Program. Lang. Syst.* 13, 4 (Oct. 1991), 451–490. https://doi.org/10.1145/115372.115320
 - Torbjörn Granlund and Peter L. Montgomery. 1994. Division by invariant integers using multiplication. In *Proceedings of the ACM SIGPLAN 1994 Conference on Programming Language Design and Implementation* (PLDI '94). Association for Computing Machinery, New York, NY, USA, 61–72. https://doi.org/10.1145/178243.178249
