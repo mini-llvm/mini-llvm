@@ -13,6 +13,7 @@
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Call.h"
+#include "mini-llvm/ir/Instruction/IndirectCall.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
 #include "mini-llvm/ir/Instruction/Store.h"
@@ -87,6 +88,7 @@ bool isPinned(const Instruction &I) {
         || dynamic_cast<const Terminator *>(&I)
         || dynamic_cast<const Load *>(&I)
         || dynamic_cast<const Store *>(&I)
+        || dynamic_cast<const IndirectCall *>(&I)
         || isCriticalCall(I);
 }
 
