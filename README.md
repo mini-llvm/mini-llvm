@@ -1,12 +1,32 @@
+<div align="center">
+
 # ⚙️ mini-llvm
+
+**A minimal implementation of the LLVM core libraries and tools**
 
 | main | develop |
 |:-:|:-:|
 | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Amain) | [![build](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml/badge.svg?branch=develop)](https://github.com/mini-llvm/mini-llvm/actions/workflows/build.yml?query=branch%3Adevelop) |
 
-[📖 Documentation](https://mini-llvm.github.io/mini-llvm/)
+</div>
 
-## ✨ Design
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [Design](#-design)
+- [Features](#-features)
+- [Usage](#-usage)
+- [Build](#-build)
+- [Testing](#-testing)
+- [Installation](#-installation)
+- [References](#-references)
+- [License](#-license)
+
+## 🎯 Overview
+
+**mini-llvm** is a minimal yet powerful implementation of the LLVM core libraries and tools, built to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
+
+## 💡 Design
 
 ![Design](assets/design.svg)
 
@@ -87,12 +107,12 @@
   - Floating-point
     - `fptrunc`
     - `fpext`
-  - Integer ↔ Floating-point
+  - Integer ↔️ Floating-point
     - `sitofp`
     - `uitofp`
     - `fptosi`
     - `fptoui`
-  - Pointer ↔ Integer
+  - Pointer ↔️ Integer
     - `ptrtoint`
     - `inttoptr`
   - `bitcast`
@@ -105,6 +125,16 @@
   - `select`
   - `call`
   - `phi`
+
+#### Attributes
+
+- `alwaysinline`
+- `argmemonly`
+- `inaccessiblemem_or_argmemonly`
+- `inaccessiblememonly`
+- `noinline`
+- `readnone`
+- `readonly`
 
 ### Transform & Analysis Passes
 
@@ -163,11 +193,11 @@
 - `LinearScanAllocator`
 - `NaiveAllocator`
 
-## ▶️ Usage
+## 💻 Usage
 
 <table>
 <tr>
-<td>example.ll</td>
+<td>add.ll</td>
 </tr>
 <tr>
 <td>
@@ -184,11 +214,49 @@ define i32 @add(i32 %0, i32 %1) {
 </tr>
 </table>
 
-```sh
-mini-llc --target=riscv64 -o example.s example.ll
+<table>
+<tr>
+<td>main.ll</td>
+</tr>
+<tr>
+<td>
+
+```llvm
+@scan_format = private constant [6 x i8] c"%d %d\00"
+@print_format = private constant [14 x i8] c"%d + %d = %d\0A\00"
+
+declare i32 @scanf(ptr, ...)
+declare i32 @printf(ptr, ...)
+
+declare i32 @add(i32, i32)
+
+define i32 @main() {
+0:
+  %1 = alloca i32
+  %2 = alloca i32
+  %3 = call i32 @scanf(ptr @scan_format, ptr %1, ptr %2)
+  %4 = load i32, ptr %1
+  %5 = load i32, ptr %2
+  %6 = call i32 @add(i32 %4, i32 %5)
+  %7 = call i32 @printf(ptr @print_format, i32 %4, i32 %5, i32 %6)
+  ret i32 0
+}
 ```
 
-## 🛠️ Build
+</td>
+</tr>
+</table>
+
+```sh
+mini-llc --target=riscv64 -o add.s add.ll
+mini-llc --target=riscv64 -o main.s main.ll
+riscv64-linux-gnu-gcc -c -o add.o add.s
+riscv64-linux-gnu-gcc -c -o main.o main.s
+riscv64-linux-gnu-gcc -o example add.o main.o
+qemu-riscv64 ./example
+```
+
+## 🔧 Build
 
 | Linux | Windows |
 |:-:|:-:|
@@ -211,25 +279,42 @@ git clone --depth=1 --recurse-submodules --shallow-submodules <repo-url>
 ```sh
 sudo apt-get update
 sudo apt-get -y install g++-14 cmake ninja-build
+
 cd <repo-dir>
 mkdir build && cd build
+
 cmake -DCMAKE_CXX_COMPILER=g++-14 -DCMAKE_BUILD_TYPE=Release -DMINI_LLVM_TESTS=ON -G Ninja ..
 cmake --build .
+
 ./tools/mini-llc/mini-llc --help
 ```
+
+| Build Option | Default | Description |
+| - | - | - |
+| `BUILD_SHARED_LIBS` | `OFF` | Build mini-llvm as a shared library (libmini-llvm.so) |
+| `MINI_LLVM_TESTS` | `OFF` | Build tests |
+| `MINI_LLVM_DOCS` | `OFF` | Build docs (requires Doxygen and Graphviz) |
 
 ### With Bazel
 
 ```sh
 sudo apt-get update
 sudo apt-get -y install g++-14
+
 # Install Bazel: https://bazel.build/install/ubuntu
+
 cd <repo-dir>
+
 CC=gcc-14 CXX=g++-14 bazel build -c opt //...
+
 ./bazel-bin/tools/mini-llc/mini-llc --help
 ```
 
-## 🧪 Running Tests
+| Build Option | Default | Description |
+| - | - | - |
+| `shared` | `false` | Build mini-llvm as a shared library (libmini-llvm.so) |
+
+## 🧪 Testing
 
 ### Unit Tests
 
@@ -247,9 +332,11 @@ CC=gcc-14 CXX=g++-14 bazel test -c opt //unittests:unittests
 
 ```sh
 sudo apt-get update
-sudo apt-get -y install gcc-14-riscv64-linux-gnu qemu-user
+sudo apt-get -y install gcc-riscv64-linux-gnu qemu-user
+
 sudo mkdir -p /usr/gnemul
 sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
+
 cd <repo-dir>/tests/mini-llc
 
 # CMake
@@ -258,12 +345,13 @@ export MINI_LLC_COMMAND=../../build/bin/mini-llc
 # Bazel
 export MINI_LLC_COMMAND=../../bazel-bin/tools/mini-llc/mini-llc
 
-export LINKER_COMMAND=riscv64-linux-gnu-gcc-14
+export LINKER_COMMAND=riscv64-linux-gnu-gcc
 export EMULATOR_COMMAND=qemu-riscv64
 export DIFF_COMMAND=diff
 export MINI_LLC_TIMEOUT=60
 export LINKER_TIMEOUT=60
 export EMULATOR_TIMEOUT=60
+
 ./test-all.sh --target=riscv64
 ```
 
