@@ -16,8 +16,12 @@ class MINI_LLVM_EXPORT SourceManager {
 public:
     void setSource(std::string source);
 
-    const std::string &source() const {
+    const std::string &source() const & {
         return source_;
+    }
+
+    std::string &&source() && {
+        return std::move(source_);
     }
 
     size_t lineCount() const {

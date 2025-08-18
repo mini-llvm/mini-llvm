@@ -17,12 +17,16 @@ public:
     explicit StringDirective(std::vector<int8_t> elements)
         : elements_(std::move(elements)) {}
 
-    std::vector<int8_t> &elements() {
+    std::vector<int8_t> &elements() & {
         return elements_;
     }
 
-    const std::vector<int8_t> &elements() const {
+    const std::vector<int8_t> &elements() const & {
         return elements_;
+    }
+
+    std::vector<int8_t> &&elements() && {
+        return std::move(elements_);
     }
 
     void setElements(std::vector<int8_t> elements) {

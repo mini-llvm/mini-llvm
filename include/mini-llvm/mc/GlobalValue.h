@@ -45,8 +45,12 @@ public:
         symbol_ = std::move(symbol);
     }
 
-    const std::string &section() const {
+    const std::string &section() const & {
         return section_;
+    }
+
+    std::string &&section() && {
+        return std::move(section_);
     }
 
     void setSection(std::string section) {

@@ -28,8 +28,12 @@ public:
     ParseException(std::string message, std::vector<Token>::const_iterator location)
         : message_(std::move(message)), location_(location) {}
 
-    const std::string &message() const {
+    const std::string &message() const & {
         return message_;
+    }
+
+    std::string &&message() && {
+        return std::move(message_);
     }
 
     std::vector<Token>::const_iterator location() const {

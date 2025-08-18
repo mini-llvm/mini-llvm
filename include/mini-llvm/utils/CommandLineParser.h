@@ -25,12 +25,20 @@ public:
         OptionArgument(std::string name, std::string value)
             : name_(std::move(name)), value_(std::move(value)) {}
 
-        const std::string &name() const {
+        const std::string &name() const & {
             return name_;
         }
 
-        const std::optional<std::string> &value() const {
+        std::string &&name() && {
+            return std::move(name_);
+        }
+
+        const std::optional<std::string> &value() const & {
             return value_;
+        }
+
+        std::optional<std::string> &&value() && {
+            return std::move(value_);
         }
 
     private:
@@ -43,8 +51,12 @@ public:
         explicit PositionalArgument(std::string arg)
             : arg_(std::move(arg)) {}
 
-        const std::string &arg() const {
+        const std::string &arg() const & {
             return arg_;
+        }
+
+        std::string &&arg() && {
+            return std::move(arg_);
         }
 
     private:
@@ -122,8 +134,12 @@ public:
             return kind_;
         }
 
-        const std::string &optionName() const {
+        const std::string &optionName() const & {
             return optionName_;
+        }
+
+        std::string &&optionName() && {
+            return std::move(optionName_);
         }
 
     private:

@@ -15,8 +15,12 @@ public:
     explicit VirtualRegister(int width)
         : width_(width) {}
 
-    const std::string &name() const {
+    const std::string &name() const & {
         return name_;
+    }
+
+    std::string &&name() && {
+        return std::move(name_);
     }
 
     void setName(std::string name) {

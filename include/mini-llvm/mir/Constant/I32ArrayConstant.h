@@ -18,12 +18,16 @@ class MINI_LLVM_EXPORT I32ArrayConstant final : public Constant {
 public:
     explicit I32ArrayConstant(std::vector<int32_t> elements) : elements_(std::move(elements)) {}
 
-    std::vector<int32_t> &elements() {
+    std::vector<int32_t> &elements() & {
         return elements_;
     }
 
-    const std::vector<int32_t> &elements() const {
+    const std::vector<int32_t> &elements() const & {
         return elements_;
+    }
+
+    std::vector<int32_t> &&elements() && {
+        return std::move(elements_);
     }
 
     void setElements(std::vector<int32_t> elements) {

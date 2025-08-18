@@ -36,8 +36,12 @@ public:
     BasicBlock &operator=(const BasicBlock &) = delete;
     BasicBlock &operator=(BasicBlock &&) = delete;
 
-    const std::string &name() const {
+    const std::string &name() const & {
         return name_;
+    }
+
+    std::string &&name() && {
+        return std::move(name_);
     }
 
     void setName(std::string name) {

@@ -23,6 +23,10 @@ public:
         return ptrSize_;
     }
 
+    std::vector<std::pair<GlobalValue *, int64_t>> &elements() & {
+        return elements_;
+    }
+
     const std::vector<std::pair<GlobalValue *, int64_t>> &elements() const & {
         return elements_;
     }

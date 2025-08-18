@@ -18,12 +18,16 @@ class MINI_LLVM_EXPORT I64ArrayConstant final : public Constant {
 public:
     explicit I64ArrayConstant(std::vector<int64_t> elements) : elements_(std::move(elements)) {}
 
-    std::vector<int64_t> &elements() {
+    std::vector<int64_t> &elements() & {
         return elements_;
     }
 
-    const std::vector<int64_t> &elements() const {
+    const std::vector<int64_t> &elements() const & {
         return elements_;
+    }
+
+    std::vector<int64_t> &&elements() && {
+        return std::move(elements_);
     }
 
     void setElements(std::vector<int64_t> elements) {

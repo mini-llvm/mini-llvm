@@ -19,8 +19,12 @@ public:
     LexException(std::string message, const char *location)
         : message_(std::move(message)), location_(location) {}
 
-    const std::string &message() const {
+    const std::string &message() const & {
         return message_;
+    }
+
+    std::string &&message() && {
+        return std::move(message_);
     }
 
     const char *location() const {
