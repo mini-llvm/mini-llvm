@@ -44,7 +44,7 @@ TEST(ParserTest, ArrayType) {
         {kEOF,          {}, nullptr},
     };
 
-    std::unique_ptr<Type> expectedOutput = std::make_unique<ArrayType>(
+    std::unique_ptr<Type> expected = std::make_unique<ArrayType>(
         std::make_unique<ArrayType>(
             std::make_unique<ArrayType>(
                 std::make_unique<I32>(),
@@ -55,7 +55,7 @@ TEST(ParserTest, ArrayType) {
         2
     );
 
-    EXPECT_EQ(*Parser(input.begin()).parseType(), *expectedOutput);
+    EXPECT_EQ(*Parser(input.begin()).parseType(), *expected);
 }
 
 TEST(ParserTest, ArrayConstant) {
@@ -91,7 +91,7 @@ TEST(ParserTest, ArrayConstant) {
         {kEOF,          {}, nullptr},
     };
 
-    std::shared_ptr<Constant> expectedOutput = std::make_shared<ArrayConstant>(
+    std::shared_ptr<Constant> expected = std::make_shared<ArrayConstant>(
         std::make_unique<ArrayType>(
             std::make_unique<ArrayType>(
                 std::make_unique<I32>(),
@@ -123,5 +123,5 @@ TEST(ParserTest, ArrayConstant) {
         }
     );
 
-    EXPECT_EQ(*Parser(input.begin()).parseConstant(*expectedOutput->type()), *expectedOutput);
+    EXPECT_EQ(*Parser(input.begin()).parseConstant(*expected->type()), *expected);
 }
