@@ -169,6 +169,18 @@ TEST(LexerTest, LabelNumber) {
     EXPECT_EQ(lex(input), expected);
 }
 
+TEST(LexerTest, LabelNumberHuge) {
+    const char *input = "12345678901234567890:";
+
+    std::vector<Token> expected{
+        {kName, "12345678901234567890", input + 0},
+        {kColon, {}, input + 20},
+        {kEOF, {}, input + 21},
+    };
+
+    EXPECT_EQ(lex(input), expected);
+}
+
 TEST(LexerTest, LabelDollar) {
     const char *input = "$:";
 
@@ -241,6 +253,18 @@ TEST(LexerTest, LocalIdentifierNumber) {
     EXPECT_EQ(lex(input), expected);
 }
 
+TEST(LexerTest, LocalIdentifierNumberHuge) {
+    const char *input = "%12345678901234567890";
+
+    std::vector<Token> expected{
+        {kPercent, {}, input + 0},
+        {kName, "12345678901234567890", input + 1},
+        {kEOF, {}, input + 21},
+    };
+
+    EXPECT_EQ(lex(input), expected);
+}
+
 TEST(LexerTest, LocalIdentifierDollar) {
     const char *input = "%$";
 
@@ -308,6 +332,18 @@ TEST(LexerTest, GlobalIdentifierNumber) {
         {kAt, {}, input + 0},
         {kName, "42", input + 1},
         {kEOF, {}, input + 3},
+    };
+
+    EXPECT_EQ(lex(input), expected);
+}
+
+TEST(LexerTest, GlobalIdentifierNumberHuge) {
+    const char *input = "@12345678901234567890";
+
+    std::vector<Token> expected{
+        {kAt, {}, input + 0},
+        {kName, "12345678901234567890", input + 1},
+        {kEOF, {}, input + 21},
     };
 
     EXPECT_EQ(lex(input), expected);

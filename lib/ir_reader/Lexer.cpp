@@ -116,7 +116,7 @@ private:
                 ++current_;
             }
             if (*current_ == ':') {
-                return {kName, std::to_string(value), start};
+                return {kName, std::string(start, current_), start};
             } else {
                 return {kNumber, std::bit_cast<int64_t>(value), start};
             }
