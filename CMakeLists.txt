@@ -169,8 +169,8 @@ add_library(mini-llvm
     lib/targets/riscv/opt/mir/RISCVPassManager.cpp
     lib/targets/riscv/RISCVBackendDriver.cpp
     lib/utils/CommandLineParser.cpp
+    lib/utils/FileHandle.cpp
     lib/utils/IO.cpp
-    lib/utils/ScopedFileHandle.cpp
     lib/utils/Strings.cpp
     lib/utils/SystemError.cpp
     lib/utils/Unicode.cpp

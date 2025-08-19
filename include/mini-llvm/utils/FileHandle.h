@@ -11,23 +11,23 @@
 
 namespace mini_llvm {
 
-class MINI_LLVM_EXPORT ScopedFileHandle {
+class MINI_LLVM_EXPORT FileHandle {
 public:
-    ScopedFileHandle() = default;
+    FileHandle() = default;
 
-    explicit ScopedFileHandle(FILE *handle) : handle_(handle) {}
+    explicit FileHandle(FILE *handle) : handle_(handle) {}
 
-    ScopedFileHandle(const Path &path, const SystemString &mode);
+    FileHandle(const Path &path, const SystemString &mode);
 
-    ~ScopedFileHandle();
+    ~FileHandle();
 
-    ScopedFileHandle(const ScopedFileHandle &) = delete;
+    FileHandle(const FileHandle &) = delete;
 
-    ScopedFileHandle(ScopedFileHandle &&other) noexcept {
+    FileHandle(FileHandle &&other) noexcept {
         swap(other);
     }
 
-    ScopedFileHandle &operator=(ScopedFileHandle other) noexcept {
+    FileHandle &operator=(FileHandle other) noexcept {
         swap(other);
         return *this;
     }
@@ -50,7 +50,7 @@ public:
 
     FILE *release();
 
-    void swap(ScopedFileHandle &other) noexcept {
+    void swap(FileHandle &other) noexcept {
         std::swap(handle_, other.handle_);
     }
 
@@ -58,7 +58,7 @@ private:
     FILE *handle_{};
 };
 
-inline void swap(ScopedFileHandle &lhs, ScopedFileHandle &rhs) noexcept {
+inline void swap(FileHandle &lhs, FileHandle &rhs) noexcept {
     lhs.swap(rhs);
 }
 

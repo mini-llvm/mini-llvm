@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-#include "mini-llvm/utils/ScopedFileHandle.h"
+#include "mini-llvm/utils/FileHandle.h"
 
 #include <cstdio>
 
@@ -9,15 +9,15 @@
 
 using namespace mini_llvm;
 
-ScopedFileHandle::ScopedFileHandle(const Path &path, const SystemString &mode) {
+FileHandle::FileHandle(const Path &path, const SystemString &mode) {
     open(path, mode);
 }
 
-ScopedFileHandle::~ScopedFileHandle() {
+FileHandle::~FileHandle() {
     close();
 }
 
-void ScopedFileHandle::open(const Path &path, const SystemString &mode) {
+void FileHandle::open(const Path &path, const SystemString &mode) {
 #ifdef _WIN32
     handle_ = _wfopen(path.base().c_str(), mode.c_str());
 #else
@@ -25,13 +25,13 @@ void ScopedFileHandle::open(const Path &path, const SystemString &mode) {
 #endif
 }
 
-void ScopedFileHandle::close() {
+void FileHandle::close() {
     if (handle_ == nullptr) return;
     fclose(handle_);
     handle_ = nullptr;
 }
 
-FILE *ScopedFileHandle::release() {
+FILE *FileHandle::release() {
     FILE *handle = handle_;
     handle_ = nullptr;
     return handle;
