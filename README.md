@@ -13,6 +13,7 @@
 ## 📑 Table of Contents
 
 - [Overview](#-overview)
+- [Highlights](#-highlights)
 - [Design](#-design)
 - [Features](#-features)
 - [Usage](#-usage)
@@ -24,7 +25,14 @@
 
 ## 🎯 Overview
 
-**mini-llvm** is a minimal yet powerful implementation of the LLVM core libraries and tools, built to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
+**mini-llvm** is a minimal yet powerful implementation of the LLVM core libraries and tools, designed to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
+
+## ✨ Highlights
+
+- Modern C++ (C++23)
+- Cross-platform compatibility (Linux & Windows)
+- Easy integration (CMake & Bazel)
+- No external dependencies
 
 ## 💡 Design
 
@@ -138,7 +146,7 @@
 
 ### Transform & Analysis Passes
 
-#### IR
+#### IR-Level
 
 - `AlgebraicSimplification`
 - `ArrayFlattening`
@@ -165,7 +173,7 @@
 - `DominatorTreeAnalysis`
 - `LoopTreeAnalysis`
 
-#### MIR
+#### MIR-Level
 
 - `BasicBlockMerging`
 - `BasicBlockReordering`
@@ -182,7 +190,7 @@
 - `LiveVariableAnalysis`
 - `RISCVConstantPropagation` (`riscv64`)
 
-#### MC
+#### MC-Level
 
 - `UnusedLabelElimination`
 - `RISCVFallthrough` (`riscv64`)
