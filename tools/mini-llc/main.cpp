@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <cstring>
 #include <format>
+#include <memory>
 #include <optional>
 #include <print>
 #include <string>
@@ -11,6 +12,9 @@
 #include <vector>
 
 #include "mini-llvm/codegen/register_allocators/GraphColoringAllocator.h"
+#include "mini-llvm/codegen/register_allocators/LinearScanAllocator.h"
+#include "mini-llvm/codegen/register_allocators/NaiveAllocator.h"
+#include "mini-llvm/codegen/RegisterAllocator.h"
 #include "mini-llvm/common/Diagnostic.h"
 #include "mini-llvm/common/SourceManager.h"
 #include "mini-llvm/ir/Module.h"
@@ -46,8 +50,28 @@ std::optional<TargetOption> toTargetOption(std::string_view targetName) {
     return std::nullopt;
 }
 
+enum class RegisterAllocatorOption {
+    kGraphColoring,
+    kLinearScan,
+    kNaive,
+};
+
+std::optional<RegisterAllocatorOption> toRegisterAllocatorOption(std::string_view registerAllocatorName) {
+    if (registerAllocatorName == "graph-coloring") {
+        return RegisterAllocatorOption::kGraphColoring;
+    }
+    if (registerAllocatorName == "linear-scan") {
+        return RegisterAllocatorOption::kLinearScan;
+    }
+    if (registerAllocatorName == "naive") {
+        return RegisterAllocatorOption::kNaive;
+    }
+    return std::nullopt;
+}
+
 struct Options {
     std::optional<TargetOption> target;
+    std::optional<RegisterAllocatorOption> registerAllocator;
     std::optional<Path> inputFile;
     std::optional<Path> outputFile;
     std::optional<Path> irDumpFile;
@@ -59,6 +83,7 @@ int mainImpl(std::vector<std::string> args) {
 
     parser.addOption("--help");
     parser.addOption("--target:");
+    parser.addOption("--register-allocator:");
     parser.addOption("-o:");
     parser.addOption("--dump-ir::");
     parser.addOption("--dump-mir::");
@@ -95,6 +120,14 @@ int mainImpl(std::vector<std::string> args) {
                 options.target = toTargetOption(*option->value());
                 if (!options.target) {
                     std::println(stderr, "{}: error: unsupported target '{}'", args[0], *option->value());
+                    return 1;
+                }
+                continue;
+            }
+            if (option->name() == "--register-allocator") {
+                options.registerAllocator = toRegisterAllocatorOption(*option->value());
+                if (!options.registerAllocator) {
+                    std::println(stderr, "{}: error: invalid register allocator '{}'", args[0], *option->value());
                     return 1;
                 }
                 continue;
@@ -156,6 +189,10 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
 
+    if (!options.registerAllocator) {
+        options.registerAllocator = RegisterAllocatorOption::kGraphColoring;
+    }
+
     Expected<std::string, SystemError> source = readAll(*options.inputFile, stdin);
     if (!source) {
         std::println(stderr, "{}: error: {}: {}", args[0], *options.inputFile, strerror(source.error().code()));
@@ -208,11 +245,22 @@ int mainImpl(std::vector<std::string> args) {
     mir::Module MM;
     mc::Module MCM;
 
-    GraphColoringAllocator allocator;
+    std::unique_ptr<RegisterAllocator> allocator;
+    switch (*options.registerAllocator) {
+        case RegisterAllocatorOption::kGraphColoring:
+            allocator = std::make_unique<GraphColoringAllocator>();
+            break;
+        case RegisterAllocatorOption::kLinearScan:
+            allocator = std::make_unique<LinearScanAllocator>();
+            break;
+        case RegisterAllocatorOption::kNaive:
+            allocator = std::make_unique<NaiveAllocator>();
+            break;
+    }
 
     switch (*options.target) {
         case TargetOption::kRISCV64: {
-            RISCVBackendDriver backendDriver(&allocator);
+            RISCVBackendDriver backendDriver(&*allocator);
             backendDriver.run(*IM, MM, MCM);
             break;
         }
