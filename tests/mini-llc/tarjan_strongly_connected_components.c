@@ -5,10 +5,10 @@ int printf(const char *, ...);
 
 int n, m;
 int *adj;
-int *target, *next;
+int *to, *next;
 
 void add_edge(int e, int u, int v) {
-    target[e] = v;
+    to[e] = v;
     next[e] = adj[u];
     adj[u] = e;
 }
@@ -32,7 +32,7 @@ void tarjan(int u) {
     dfn[u] = low[u] = ++timer;
     stack[top++] = u;
     for (int e = adj[u]; e != -1; e = next[e]) {
-        int v = target[e];
+        int v = to[e];
         if (!dfn[v]) {
             tarjan(v);
             low[u] = min(low[u], low[v]);
@@ -65,7 +65,7 @@ int main(void) {
     adj = malloc(n * sizeof(int));
     memset(adj, -1, n * sizeof(int));
 
-    target = malloc(m * sizeof(int));
+    to = malloc(m * sizeof(int));
     next = malloc(m * sizeof(int));
 
     add_edge(0, 0, 1);
@@ -107,7 +107,7 @@ int main(void) {
     free(dfn);
 
     free(next);
-    free(target);
+    free(to);
 
     free(adj);
 

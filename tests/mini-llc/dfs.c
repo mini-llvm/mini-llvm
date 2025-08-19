@@ -5,10 +5,10 @@ int printf(const char *, ...);
 
 int n, m;
 int *adj;
-int *target, *next;
+int *to, *next;
 
 void add_edge(int e, int u, int v) {
-    target[e] = v;
+    to[e] = v;
     next[e] = adj[u];
     adj[u] = e;
 }
@@ -23,7 +23,7 @@ void dfs(int u) {
     visit(u);
     visited[u] = 1;
     for (int e = adj[u]; e != -1; e = next[e]) {
-        int v = target[e];
+        int v = to[e];
         if (!visited[v]) {
             dfs(v);
         }
@@ -37,7 +37,7 @@ int main(void) {
     adj = malloc(n * sizeof(int));
     memset(adj, -1, n * sizeof(int));
 
-    target = malloc(m * sizeof(int));
+    to = malloc(m * sizeof(int));
     next = malloc(m * sizeof(int));
 
     add_edge(0, 0, 1);
@@ -61,7 +61,7 @@ int main(void) {
     free(visited);
 
     free(next);
-    free(target);
+    free(to);
 
     free(adj);
 

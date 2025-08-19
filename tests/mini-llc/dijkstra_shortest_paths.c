@@ -5,10 +5,10 @@ int printf(const char *, ...);
 
 int n, m;
 int *adj;
-int *target, *weight, *next;
+int *to, *weight, *next;
 
 void add_edge(int e, int u, int v, int w) {
-    target[e] = v;
+    to[e] = v;
     weight[e] = w;
     next[e] = adj[u];
     adj[u] = e;
@@ -82,7 +82,7 @@ void dijkstra(int s) {
         int u = find_min();
         delete_min();
         for (int e = adj[u]; e != -1; e = next[e]) {
-            int v = target[e];
+            int v = to[e];
             int w = weight[e];
             if (dist[v] == -1) {
                 insert(v, dist[u] + w);
@@ -100,7 +100,7 @@ int main(void) {
     adj = malloc(n * sizeof(int));
     memset(adj, -1, n * sizeof(int));
 
-    target = malloc(m * sizeof(int));
+    to = malloc(m * sizeof(int));
     weight = malloc(m * sizeof(int));
     next = malloc(m * sizeof(int));
 
@@ -134,7 +134,7 @@ int main(void) {
 
     free(next);
     free(weight);
-    free(target);
+    free(to);
 
     free(adj);
 
