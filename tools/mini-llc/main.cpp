@@ -35,16 +35,24 @@ using namespace mini_llvm;
 
 namespace {
 
-enum class Target {
+enum class TargetOption {
     kRISCV64,
 };
 
-std::optional<Target> toTarget(std::string_view targetName) {
+std::optional<TargetOption> toTargetOption(std::string_view targetName) {
     if (targetName == "riscv64") {
-        return Target::kRISCV64;
+        return TargetOption::kRISCV64;
     }
     return std::nullopt;
 }
+
+struct Options {
+    std::optional<TargetOption> target;
+    std::optional<Path> inputFile;
+    std::optional<Path> outputFile;
+    std::optional<Path> irDumpFile;
+    std::optional<Path> mirDumpFile;
+};
 
 int mainImpl(std::vector<std::string> args) {
     CommandLineParser parser;
@@ -75,11 +83,7 @@ int mainImpl(std::vector<std::string> args) {
         return 1;
     }
 
-    std::optional<Target> target;
-    std::optional<Path> inputFile;
-    std::optional<Path> outputFile;
-    std::optional<Path> irDumpFile;
-    std::optional<Path> mirDumpFile;
+    Options options;
 
     for (const auto &arg : *parseResult) {
         if (const auto *option = arg.option()) {
@@ -88,43 +92,43 @@ int mainImpl(std::vector<std::string> args) {
                 return 0;
             }
             if (option->name() == "--target") {
-                target = toTarget(*option->value());
-                if (!target) {
+                options.target = toTargetOption(*option->value());
+                if (!options.target) {
                     std::println(stderr, "{}: error: unsupported target '{}'", args[0], *option->value());
                     return 1;
                 }
                 continue;
             }
             if (option->name() == "-o") {
-                outputFile = *option->value();
+                options.outputFile = *option->value();
                 continue;
             }
             if (option->name() == "--dump-ir") {
-                irDumpFile = option->value().value_or("-");
+                options.irDumpFile = option->value().value_or("-");
                 continue;
             }
             if (option->name() == "--dump-mir") {
-                mirDumpFile = option->value().value_or("-");
+                options.mirDumpFile = option->value().value_or("-");
                 continue;
             }
         }
         if (const auto *positional = arg.positional()) {
-            inputFile = positional->arg();
+            options.inputFile = positional->arg();
         }
     }
 
-    if (!inputFile) {
-        inputFile = "-";
+    if (!options.inputFile) {
+        options.inputFile = "-";
     }
 
-    if (!outputFile) {
-        outputFile = *inputFile;
-        if (*outputFile != "-") {
-            outputFile->replace_extension(".s");
+    if (!options.outputFile) {
+        options.outputFile = *options.inputFile;
+        if (*options.outputFile != "-") {
+            options.outputFile->replace_extension(".s");
         }
     }
 
-    if (!target) {
+    if (!options.target) {
         const char *targetName;
 #if defined(MINI_LLVM_X86_64)
         targetName = "x86_64";
@@ -145,16 +149,16 @@ int mainImpl(std::vector<std::string> args) {
 #else
         targetName = "unknown";
 #endif
-        target = toTarget(targetName);
-        if (!target) {
+        options.target = toTargetOption(targetName);
+        if (!options.target) {
             std::println(stderr, "{}: error: unsupported target '{}'", args[0], targetName);
             return 1;
         }
     }
 
-    Expected<std::string, SystemError> source = readAll(*inputFile, stdin);
+    Expected<std::string, SystemError> source = readAll(*options.inputFile, stdin);
     if (!source) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *inputFile, strerror(source.error().code()));
+        std::println(stderr, "{}: error: {}: {}", args[0], *options.inputFile, strerror(source.error().code()));
         return 1;
     }
     normalizeLineEndings(*source);
@@ -163,12 +167,12 @@ int mainImpl(std::vector<std::string> args) {
 
     std::vector<Diagnostic> diags;
     std::optional<ir::Module> IM = ir::parseModule(sourceManager.source(), diags);
-    if (*inputFile == "-") {
-        *inputFile = "<stdin>";
+    if (*options.inputFile == "-") {
+        *options.inputFile = "<stdin>";
     }
     for (const Diagnostic &diag : diags) {
         auto [line, column] = sourceManager.lineColumn(diag.location);
-        std::println(stderr, "{}:{}:{}: {}: {}", *inputFile, line + 1, column + 1, name(diag.level), diag.message);
+        std::println(stderr, "{}:{}:{}: {}: {}", *options.inputFile, line + 1, column + 1, name(diag.level), diag.message);
         if (line < sourceManager.lineCount()) {
             std::print(stderr, "{}", sourceManager.line(line));
             std::println(stderr, "{}^", std::string(column, ' '));
@@ -185,8 +189,8 @@ int mainImpl(std::vector<std::string> args) {
 
     int pointerSize;
 
-    switch (*target) {
-    case Target::kRISCV64:
+    switch (*options.target) {
+    case TargetOption::kRISCV64:
         pointerSize = 8;
         break;
     }
@@ -194,9 +198,9 @@ int mainImpl(std::vector<std::string> args) {
     ir::PassManager passManager(pointerSize);
     passManager.run(*IM);
 
-    if (irDumpFile) {
-        if (Expected<void, SystemError> result = writeAll(*irDumpFile, stdout, std::format("{}\n", *IM)); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *irDumpFile, strerror(result.error().code()));
+    if (options.irDumpFile) {
+        if (Expected<void, SystemError> result = writeAll(*options.irDumpFile, stdout, std::format("{}\n", *IM)); !result) {
+            std::println(stderr, "{}: error: {}: {}", args[0], *options.irDumpFile, strerror(result.error().code()));
             return 1;
         }
     }
@@ -206,23 +210,23 @@ int mainImpl(std::vector<std::string> args) {
 
     GraphColoringAllocator allocator;
 
-    switch (*target) {
-        case Target::kRISCV64: {
+    switch (*options.target) {
+        case TargetOption::kRISCV64: {
             RISCVBackendDriver backendDriver(&allocator);
             backendDriver.run(*IM, MM, MCM);
             break;
         }
     }
 
-    if (mirDumpFile) {
-        if (Expected<void, SystemError> result = writeAll(*mirDumpFile, stdout, std::format("{}\n", MM)); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *mirDumpFile, strerror(result.error().code()));
+    if (options.mirDumpFile) {
+        if (Expected<void, SystemError> result = writeAll(*options.mirDumpFile, stdout, std::format("{}\n", MM)); !result) {
+            std::println(stderr, "{}: error: {}: {}", args[0], *options.mirDumpFile, strerror(result.error().code()));
             return 1;
         }
     }
 
-    if (Expected<void, SystemError> result = writeAll(*outputFile, stdout, std::format("{}\n", MCM)); !result) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *outputFile, strerror(result.error().code()));
+    if (Expected<void, SystemError> result = writeAll(*options.outputFile, stdout, std::format("{}\n", MCM)); !result) {
+        std::println(stderr, "{}: error: {}: {}", args[0], *options.outputFile, strerror(result.error().code()));
         return 1;
     }
 
