@@ -126,24 +126,24 @@ public:
         HashMap<const BasicBlock *, const BasicBlock *> idom;
         LengauerTarjan(F, idom)();
 
-        std::unordered_set<const BasicBlock *> S;
+        std::unordered_set<const BasicBlock *> visited;
         std::queue<const BasicBlock *> Q;
-        S.insert(&F.entry());
+        visited.insert(&F.entry());
         Q.push(&F.entry());
         while (!Q.empty()) {
             const BasicBlock *u = Q.front();
             Q.pop();
             for (const BasicBlock *v : successors(*u)) {
-                if (S.insert(v).second) {
+                if (visited.insert(v).second) {
                     Q.push(v);
                 }
             }
         }
 
-        for (const BasicBlock *v : S) {
+        for (const BasicBlock *v : visited) {
             node_.put(v, {v, nullptr, {}});
         }
-        for (const BasicBlock *v : S) {
+        for (const BasicBlock *v : visited) {
             if (v != &F.entry()) {
                 const BasicBlock *u = idom[v];
                 node_[v].parent = &node_[u];

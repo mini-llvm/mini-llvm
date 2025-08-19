@@ -1068,9 +1068,9 @@ public:
                 replaceAllUsesWith(*II, I);
                 symbolTable_[symbol] = I;
 
-                std::unordered_set<const Instruction *> S;
+                std::unordered_set<const Instruction *> visited;
                 std::queue<const Instruction *> Q;
-                S.insert(&*I);
+                visited.insert(&*I);
                 Q.push(&*I);
                 while (!Q.empty()) {
                     const Instruction *u = Q.front();
@@ -1081,7 +1081,7 @@ public:
                                 if (v == &*I) {
                                     throw ParseException("circular reference", symbolLocation);
                                 }
-                                if (S.insert(v).second) {
+                                if (visited.insert(v).second) {
                                     Q.push(v);
                                 }
                             }

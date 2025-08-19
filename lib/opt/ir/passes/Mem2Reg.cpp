@@ -157,14 +157,14 @@ bool Mem2Reg::runOnFunction(Function &F) {
     HashMap<const Phi *, const Alloca *> phis;
 
     for (const Alloca *v : vars) {
-        std::unordered_set<const BasicBlock *> S;
+        std::unordered_set<const BasicBlock *> visited;
         std::queue<const BasicBlock *> Q;
         for (const UseBase &use : uses(*v)) {
             if (auto *store = dynamic_cast<const Store *>(use.user())) {
                 if (&*use == &*store->ptr()) {
                     const BasicBlock *X = store->parent();
                     for (const BasicBlock *Y : DF[X]) {
-                        if (S.insert(Y).second) {
+                        if (visited.insert(Y).second) {
                             Q.push(Y);
                         }
                     }
@@ -175,12 +175,12 @@ bool Mem2Reg::runOnFunction(Function &F) {
             const BasicBlock *X = Q.front();
             Q.pop();
             for (const BasicBlock *Y : DF[X]) {
-                if (S.insert(Y).second) {
+                if (visited.insert(Y).second) {
                     Q.push(Y);
                 }
             }
         }
-        for (const BasicBlock *B : S) {
+        for (const BasicBlock *B : visited) {
             const Phi &phi = const_cast<BasicBlock *>(B)->prepend(std::make_shared<Phi>(v->allocatedType()));
             phis.put(&phi, v);
         }

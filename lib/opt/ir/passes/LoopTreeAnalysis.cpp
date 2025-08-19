@@ -44,24 +44,24 @@ public:
 
                         loops_.emplace_back(std::move(loop));
                     } else {
-                        std::unordered_set<const BasicBlock *> S;
+                        std::unordered_set<const BasicBlock *> visited;
                         std::queue<const BasicBlock *> Q;
-                        S.insert(&u);
+                        visited.insert(&u);
                         Q.push(&u);
                         while (!Q.empty()) {
                             const BasicBlock *x = Q.front();
                             Q.pop();
                             for (const BasicBlock *y : predecessors(*x)) {
                                 if (y != v) {
-                                    if (S.insert(y).second) {
+                                    if (visited.insert(y).second) {
                                         Q.push(y);
                                     }
                                 }
                             }
                         }
-                        S.insert(v);
+                        visited.insert(v);
 
-                        Loop loop(std::move(S), v);
+                        Loop loop(std::move(visited), v);
 
                         if (isNaturalLoop(loop, domTree)) {
                             loops_.emplace_back(std::move(loop));

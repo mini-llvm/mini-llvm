@@ -14,15 +14,15 @@
 using namespace mini_llvm::ir;
 
 bool UnreachableBlockElimination::runOnFunction(Function &F) {
-    std::unordered_set<const BasicBlock *> S;
+    std::unordered_set<const BasicBlock *> visited;
     std::queue<const BasicBlock *> Q;
-    S.insert(&F.entry());
+    visited.insert(&F.entry());
     Q.push(&F.entry());
     while (!Q.empty()) {
         const BasicBlock *u = Q.front();
         Q.pop();
         for (const BasicBlock *v : successors(*u)) {
-            if (S.insert(v).second) {
+            if (visited.insert(v).second) {
                 Q.push(v);
             }
         }
@@ -34,7 +34,7 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
         for (Instruction &I : B) {
             if (auto *phi = dynamic_cast<Phi *>(&I)) {
                 for (auto i = phi->incoming_begin(); i != phi->incoming_end();) {
-                    if (!S.contains(&*i->block)) {
+                    if (!visited.contains(&*i->block)) {
                         phi->removeIncoming(i++);
                     } else {
                         ++i;
@@ -46,7 +46,7 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
 
     for (auto i = F.begin(); i != F.end();) {
         const BasicBlock &B = *i++;
-        if (!S.contains(&B)) {
+        if (!visited.contains(&B)) {
             removeFromParent(B);
             changed = true;
         }

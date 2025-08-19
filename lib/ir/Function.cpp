@@ -124,24 +124,24 @@ bool Function::isWellFormed() const {
     }
     DominatorTreeAnalysis domTree;
     domTree.runOnFunction(*this);
-    std::unordered_set<const BasicBlock *> S;
+    std::unordered_set<const BasicBlock *> visited;
     std::queue<const BasicBlock *> Q;
-    S.insert(&entry());
+    visited.insert(&entry());
     Q.push(&entry());
     while (!Q.empty()) {
         const BasicBlock *u = Q.front();
         Q.pop();
         for (const BasicBlock *v : successors(*u)) {
-            if (S.insert(v).second) {
+            if (visited.insert(v).second) {
                 Q.push(v);
             }
         }
     }
-    for (const BasicBlock *B : S) {
+    for (const BasicBlock *B : visited) {
         for (const Instruction &I : *B) {
             for (const UseBase &use : uses(I)) {
                 if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                    if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent()) && !domTree.dominates(I, *II)) {
+                    if (!dynamic_cast<const Phi *>(II) && visited.contains(II->parent()) && !domTree.dominates(I, *II)) {
                         return false;
                     }
                 }
@@ -149,11 +149,11 @@ bool Function::isWellFormed() const {
         }
     }
     for (const BasicBlock &B : *this) {
-        if (!S.contains(&B)) {
+        if (!visited.contains(&B)) {
             for (const Instruction &I : B) {
                 for (const UseBase &use : uses(I)) {
                     if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                        if (!dynamic_cast<const Phi *>(II) && S.contains(II->parent())) {
+                        if (!dynamic_cast<const Phi *>(II) && visited.contains(II->parent())) {
                             return false;
                         }
                     }

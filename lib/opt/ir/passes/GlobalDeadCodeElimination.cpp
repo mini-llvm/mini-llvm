@@ -21,34 +21,34 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-void collect(const Constant &C, std::unordered_set<const GlobalValue *> &S, std::queue<const GlobalValue *> &Q) {
+void collect(const Constant &C, std::unordered_set<const GlobalValue *> &visited, std::queue<const GlobalValue *> &Q) {
     if (!dynamic_cast<const ArrayConstant *>(&C)) {
         if (auto *value = dynamic_cast<const GlobalValue *>(&C)) {
-            if (S.insert(value).second) {
+            if (visited.insert(value).second) {
                 Q.push(value);
             }
         }
         return;
     }
     for (const Use<Constant> &element : elements(*static_cast<const ArrayConstant *>(&C))) {
-        collect(*element, S, Q);
+        collect(*element, visited, Q);
     }
 }
 
 } // namespace
 
 bool GlobalDeadCodeElimination::runOnModule(Module &M) {
-    std::unordered_set<const GlobalValue *> S;
+    std::unordered_set<const GlobalValue *> visited;
     std::queue<const GlobalValue *> Q;
     for (const GlobalVar &G : globalVars(M)) {
         if (G.linkage() == Linkage::kExternal && !G.isDeclaration()) {
-            S.insert(&G);
+            visited.insert(&G);
             Q.push(&G);
         }
     }
     for (const Function &F : functions(M)) {
         if (F.linkage() == Linkage::kExternal && !F.isDeclaration()) {
-            S.insert(&F);
+            visited.insert(&F);
             Q.push(&F);
         }
     }
@@ -60,7 +60,7 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
                 for (const Instruction &I : B) {
                     for (const UseBase *op : I.operands()) {
                         if (auto *value2 = dynamic_cast<const GlobalValue *>(&**op)) {
-                            if (S.insert(value2).second) {
+                            if (visited.insert(value2).second) {
                                 Q.push(value2);
                             }
                         }
@@ -71,7 +71,7 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
         }
         if (auto *G = dynamic_cast<const GlobalVar *>(value)) {
             if (!G->isDeclaration()) {
-                collect(G->initializer(), S, Q);
+                collect(G->initializer(), visited, Q);
             }
             continue;
         }
@@ -80,7 +80,7 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
     bool changed = false;
 
     for (auto i = M.global_var_begin(); i != M.global_var_end();) {
-        if (!S.contains(&*i)) {
+        if (!visited.contains(&*i)) {
             M.removeGlobalVar(i++);
             changed = true;
             continue;
@@ -88,7 +88,7 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
         ++i;
     }
     for (auto i = M.function_begin(); i != M.function_end();) {
-        if (!S.contains(&*i)) {
+        if (!visited.contains(&*i)) {
             M.removeFunction(i++);
             changed = true;
             continue;

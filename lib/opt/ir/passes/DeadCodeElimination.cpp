@@ -65,12 +65,12 @@ bool isCritical(const Instruction &I) {
 } // namespace
 
 bool DeadCodeElimination::runOnFunction(Function &F) {
-    std::unordered_set<const Instruction *> S;
+    std::unordered_set<const Instruction *> visited;
     std::queue<const Instruction *> Q;
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
             if (isCritical(I)) {
-                S.insert(&I);
+                visited.insert(&I);
                 Q.push(&I);
             }
         }
@@ -80,7 +80,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         Q.pop();
         for (const UseBase *op : I->operands()) {
             if (auto *II = dynamic_cast<const Instruction *>(&**op)) {
-                if (S.insert(II).second) {
+                if (visited.insert(II).second) {
                     Q.push(II);
                 }
             }
@@ -92,7 +92,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
     for (const BasicBlock &B : F) {
         for (auto i = B.begin(); i != B.end();) {
             const Instruction &I = *i++;
-            if (!S.contains(&I)) {
+            if (!visited.contains(&I)) {
                 removeFromParent(I);
                 changed = true;
             }
