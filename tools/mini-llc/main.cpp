@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <format>
 #include <memory>
@@ -105,7 +106,7 @@ int mainImpl(std::vector<std::string> args) {
             std::println(stderr, "{}: error: unrecognized option '{}'", args[0], parseResult.error().optionName());
             break;
         }
-        return 1;
+        return EXIT_FAILURE;
     }
 
     Options options;
@@ -114,13 +115,13 @@ int mainImpl(std::vector<std::string> args) {
         if (const auto *option = arg.option()) {
             if (option->name() == "--help") {
                 std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", args[0]);
-                return 0;
+                return EXIT_SUCCESS;
             }
             if (option->name() == "--target") {
                 options.target = toTargetOption(*option->value());
                 if (!options.target) {
                     std::println(stderr, "{}: error: unsupported target '{}'", args[0], *option->value());
-                    return 1;
+                    return EXIT_FAILURE;
                 }
                 continue;
             }
@@ -128,7 +129,7 @@ int mainImpl(std::vector<std::string> args) {
                 options.registerAllocator = toRegisterAllocatorOption(*option->value());
                 if (!options.registerAllocator) {
                     std::println(stderr, "{}: error: invalid register allocator '{}'", args[0], *option->value());
-                    return 1;
+                    return EXIT_FAILURE;
                 }
                 continue;
             }
@@ -185,7 +186,7 @@ int mainImpl(std::vector<std::string> args) {
         options.target = toTargetOption(targetName);
         if (!options.target) {
             std::println(stderr, "{}: error: unsupported target '{}'", args[0], targetName);
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 
@@ -196,7 +197,7 @@ int mainImpl(std::vector<std::string> args) {
     Expected<std::string, SystemError> source = readAll(*options.inputFile, stdin);
     if (!source) {
         std::println(stderr, "{}: error: {}: {}", args[0], *options.inputFile, strerror(source.error().code()));
-        return 1;
+        return EXIT_FAILURE;
     }
     normalizeLineEndings(*source);
     SourceManager sourceManager;
@@ -216,12 +217,12 @@ int mainImpl(std::vector<std::string> args) {
         }
     }
     if (!IM) {
-        return 1;
+        return EXIT_FAILURE;
     }
 
     if (!IM->isWellFormed()) {
         std::println(stderr, "{}: error: ill-formed module", args[0]);
-        return 1;
+        return EXIT_FAILURE;
     }
 
     int pointerSize;
@@ -238,7 +239,7 @@ int mainImpl(std::vector<std::string> args) {
     if (options.irDumpFile) {
         if (Expected<void, SystemError> result = writeAll(*options.irDumpFile, stdout, std::format("{}\n", *IM)); !result) {
             std::println(stderr, "{}: error: {}: {}", args[0], *options.irDumpFile, strerror(result.error().code()));
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 
@@ -269,16 +270,16 @@ int mainImpl(std::vector<std::string> args) {
     if (options.mirDumpFile) {
         if (Expected<void, SystemError> result = writeAll(*options.mirDumpFile, stdout, std::format("{}\n", MM)); !result) {
             std::println(stderr, "{}: error: {}: {}", args[0], *options.mirDumpFile, strerror(result.error().code()));
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 
     if (Expected<void, SystemError> result = writeAll(*options.outputFile, stdout, std::format("{}\n", MCM)); !result) {
         std::println(stderr, "{}: error: {}: {}", args[0], *options.outputFile, strerror(result.error().code()));
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 } // namespace
