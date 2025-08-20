@@ -6,8 +6,8 @@
 #include <string>
 #include <utility>
 
-#include "mini-llvm/targets/riscv/mc/RISCVAddress.h"
 #include "mini-llvm/mc/Operand.h"
+#include "mini-llvm/targets/riscv/mc/RISCVAddress.h"
 
 namespace mini_llvm::mc {
 
