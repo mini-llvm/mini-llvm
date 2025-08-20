@@ -1,7 +1,7 @@
 @n = global i32 0
 @m = global i32 0
 @adj = global ptr null
-@target = global ptr null
+@to = global ptr null
 @next = global ptr null
 @format = private constant [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
 
@@ -19,7 +19,7 @@ define void @add_edge(i32 %0, i32 %1, i32 %2) {
   store i32 %1, ptr %5
   store i32 %2, ptr %6
   %7 = load i32, ptr %6
-  %8 = load ptr, ptr @target
+  %8 = load ptr, ptr @to
   %9 = load i32, ptr %4
   %10 = sext i32 %9 to i64
   %11 = getelementptr i32, ptr %8, i64 %10
@@ -94,7 +94,7 @@ define void @topological_sort(ptr %0) {
   br i1 %37, label %38, label %56
 
 38:
-  %39 = load ptr, ptr @target
+  %39 = load ptr, ptr @to
   %40 = load i32, ptr %5
   %41 = sext i32 %40 to i64
   %42 = getelementptr i32, ptr %39, i64 %41
@@ -222,7 +222,7 @@ define void @topological_sort(ptr %0) {
   br i1 %120, label %121, label %148
 
 121:
-  %122 = load ptr, ptr @target
+  %122 = load ptr, ptr @to
   %123 = load i32, ptr %14
   %124 = sext i32 %123 to i64
   %125 = getelementptr i32, ptr %122, i64 %124
@@ -288,7 +288,7 @@ define i32 @main() {
   store ptr %1, ptr @adj
   %2 = call ptr @memset(ptr %1, i32 -1, i64 32)
   %3 = call ptr @malloc(i64 36)
-  store ptr %3, ptr @target
+  store ptr %3, ptr @to
   %4 = call ptr @malloc(i64 36)
   store ptr %4, ptr @next
   call void @add_edge(i32 0, i32 0, i32 1)

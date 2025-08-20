@@ -1,7 +1,7 @@
 @n = global i32 0
 @m = global i32 0
 @adj = global ptr null
-@target = global ptr null
+@to = global ptr null
 @weight = global ptr null
 @next = global ptr null
 @heap = global ptr null
@@ -26,7 +26,7 @@ define void @add_edge(i32 %0, i32 %1, i32 %2, i32 %3) {
   store i32 %2, ptr %7
   store i32 %3, ptr %8
   %9 = load i32, ptr %7
-  %10 = load ptr, ptr @target
+  %10 = load ptr, ptr @to
   %11 = load i32, ptr %5
   %12 = sext i32 %11 to i64
   %13 = getelementptr i32, ptr %10, i64 %12
@@ -409,7 +409,7 @@ define void @dijkstra(i32 %0) {
   br i1 %21, label %22, label %79
 
 22:
-  %23 = load ptr, ptr @target
+  %23 = load ptr, ptr @to
   %24 = load i32, ptr %4
   %25 = sext i32 %24 to i64
   %26 = getelementptr i32, ptr %23, i64 %25
@@ -499,7 +499,7 @@ define i32 @main() {
   store ptr %1, ptr @adj
   %2 = call ptr @memset(ptr %1, i32 -1, i64 20)
   %3 = call ptr @malloc(i64 40)
-  store ptr %3, ptr @target
+  store ptr %3, ptr @to
   %4 = call ptr @malloc(i64 40)
   store ptr %4, ptr @weight
   %5 = call ptr @malloc(i64 40)

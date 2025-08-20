@@ -1,7 +1,7 @@
 @n = global i32 0
 @m = global i32 0
 @adj = global ptr null
-@target = global ptr null
+@to = global ptr null
 @next = global ptr null
 @visited = global ptr null
 @format = private constant [4 x i8] c"%d\0A\00"
@@ -20,7 +20,7 @@ define void @add_edge(i32 %0, i32 %1, i32 %2) {
   store i32 %1, ptr %5
   store i32 %2, ptr %6
   %7 = load i32, ptr %6
-  %8 = load ptr, ptr @target
+  %8 = load ptr, ptr @to
   %9 = load i32, ptr %4
   %10 = sext i32 %9 to i64
   %11 = getelementptr i32, ptr %8, i64 %10
@@ -80,7 +80,7 @@ define void @dfs(i32 %0) {
   br i1 %17, label %18, label %39
 
 18:
-  %19 = load ptr, ptr @target
+  %19 = load ptr, ptr @to
   %20 = load i32, ptr %3
   %21 = sext i32 %20 to i64
   %22 = getelementptr i32, ptr %19, i64 %21
@@ -123,7 +123,7 @@ define i32 @main() {
   store ptr %1, ptr @adj
   %2 = call ptr @memset(ptr %1, i32 -1, i64 36)
   %3 = call ptr @malloc(i64 48)
-  store ptr %3, ptr @target
+  store ptr %3, ptr @to
   %4 = call ptr @malloc(i64 48)
   store ptr %4, ptr @next
   call void @add_edge(i32 0, i32 0, i32 1)
