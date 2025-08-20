@@ -9,7 +9,7 @@ int accumulate(const int a[], int n) {
 }
 
 int main(void) {
-    int a[8] = {5, 4, 1, 3, 8, 7, 6, 2};
-    printf("%d\n", accumulate(a, 8));
+    int a[16] = {7, 13, 11, 10, 5, 12, 0, 8, 14, 9, 6, 2, 3, 15, 1, 4};
+    printf("%d\n", accumulate(a, 16));
     return 0;
 }

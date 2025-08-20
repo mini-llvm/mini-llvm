@@ -1,5 +1,5 @@
-@a = private constant [8 x i32] [i32 5, i32 4, i32 1, i32 3, i32 8, i32 7, i32 6, i32 2]
-@format = private constant [25 x i8] c"%d %d %d %d %d %d %d %d\0A\00"
+@a = private constant [16 x i32] [i32 7, i32 13, i32 11, i32 10, i32 5, i32 12, i32 0, i32 8, i32 14, i32 9, i32 6, i32 2, i32 3, i32 15, i32 1, i32 4]
+@format = private constant [4 x i8] c"%d\0A\00"
 
 declare ptr @memcpy(ptr, ptr, i64) argmemonly
 declare i32 @printf(ptr, ...)
@@ -187,25 +187,56 @@ define void @heapsort(ptr %0, i32 %1) {
 
 define i32 @main() {
 0:
-  %1 = alloca [8 x i32]
-  %2 = call ptr @memcpy(ptr %1, ptr @a, i64 32)
-  call void @heapsort(ptr %1, i32 8)
-  %3 = getelementptr [8 x i32], ptr %1, i64 0, i64 0
-  %4 = getelementptr [8 x i32], ptr %1, i64 0, i64 1
-  %5 = getelementptr [8 x i32], ptr %1, i64 0, i64 2
-  %6 = getelementptr [8 x i32], ptr %1, i64 0, i64 3
-  %7 = getelementptr [8 x i32], ptr %1, i64 0, i64 4
-  %8 = getelementptr [8 x i32], ptr %1, i64 0, i64 5
-  %9 = getelementptr [8 x i32], ptr %1, i64 0, i64 6
-  %10 = getelementptr [8 x i32], ptr %1, i64 0, i64 7
-  %11 = load i32, ptr %3
-  %12 = load i32, ptr %4
-  %13 = load i32, ptr %5
-  %14 = load i32, ptr %6
-  %15 = load i32, ptr %7
-  %16 = load i32, ptr %8
-  %17 = load i32, ptr %9
-  %18 = load i32, ptr %10
-  %19 = call i32 (ptr, ...) @printf(ptr @format, i32 %11, i32 %12, i32 %13, i32 %14, i32 %15, i32 %16, i32 %17, i32 %18)
+  %1 = alloca [16 x i32]
+  %2 = call ptr @memcpy(ptr %1, ptr @a, i64 64)
+  call void @heapsort(ptr %1, i32 16)
+  %3 = getelementptr [16 x i32], ptr %1, i64 0, i64 0
+  %4 = load i32, ptr %3
+  %5 = call i32 @printf(ptr @format, i32 %4)
+  %6 = getelementptr [16 x i32], ptr %1, i64 0, i64 1
+  %7 = load i32, ptr %6
+  %8 = call i32 @printf(ptr @format, i32 %7)
+  %9 = getelementptr [16 x i32], ptr %1, i64 0, i64 2
+  %10 = load i32, ptr %9
+  %11 = call i32 @printf(ptr @format, i32 %10)
+  %12 = getelementptr [16 x i32], ptr %1, i64 0, i64 3
+  %13 = load i32, ptr %12
+  %14 = call i32 @printf(ptr @format, i32 %13)
+  %15 = getelementptr [16 x i32], ptr %1, i64 0, i64 4
+  %16 = load i32, ptr %15
+  %17 = call i32 @printf(ptr @format, i32 %16)
+  %18 = getelementptr [16 x i32], ptr %1, i64 0, i64 5
+  %19 = load i32, ptr %18
+  %20 = call i32 @printf(ptr @format, i32 %19)
+  %21 = getelementptr [16 x i32], ptr %1, i64 0, i64 6
+  %22 = load i32, ptr %21
+  %23 = call i32 @printf(ptr @format, i32 %22)
+  %24 = getelementptr [16 x i32], ptr %1, i64 0, i64 7
+  %25 = load i32, ptr %24
+  %26 = call i32 @printf(ptr @format, i32 %25)
+  %27 = getelementptr [16 x i32], ptr %1, i64 0, i64 8
+  %28 = load i32, ptr %27
+  %29 = call i32 @printf(ptr @format, i32 %28)
+  %30 = getelementptr [16 x i32], ptr %1, i64 0, i64 9
+  %31 = load i32, ptr %30
+  %32 = call i32 @printf(ptr @format, i32 %31)
+  %33 = getelementptr [16 x i32], ptr %1, i64 0, i64 10
+  %34 = load i32, ptr %33
+  %35 = call i32 @printf(ptr @format, i32 %34)
+  %36 = getelementptr [16 x i32], ptr %1, i64 0, i64 11
+  %37 = load i32, ptr %36
+  %38 = call i32 @printf(ptr @format, i32 %37)
+  %39 = getelementptr [16 x i32], ptr %1, i64 0, i64 12
+  %40 = load i32, ptr %39
+  %41 = call i32 @printf(ptr @format, i32 %40)
+  %42 = getelementptr [16 x i32], ptr %1, i64 0, i64 13
+  %43 = load i32, ptr %42
+  %44 = call i32 @printf(ptr @format, i32 %43)
+  %45 = getelementptr [16 x i32], ptr %1, i64 0, i64 14
+  %46 = load i32, ptr %45
+  %47 = call i32 @printf(ptr @format, i32 %46)
+  %48 = getelementptr [16 x i32], ptr %1, i64 0, i64 15
+  %49 = load i32, ptr %48
+  %50 = call i32 @printf(ptr @format, i32 %49)
   ret i32 0
 }
