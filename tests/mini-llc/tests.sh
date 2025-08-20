@@ -4,7 +4,7 @@ set -e
 
 tests=(
     alias_args
-    alias_gep
+    alias_getelementptr
     alias_inttoptr
     alloca_tail_call
     arithmetic
