@@ -192,8 +192,8 @@
 
 #### MC-Level
 
-- `UnusedLabelElimination`
 - `RISCVFallthrough` (`riscv64`)
+- `RISCVUnusedLabelElimination` (`riscv64`)
 
 ### Register Allocators
 

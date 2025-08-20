@@ -6,25 +6,37 @@
 #include <cstdlib>
 #include <string>
 
-#include "mini-llvm/mc/DataDirective.h"
+#include "mini-llvm/mc/Directive.h"
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mc {
 
-class RISCVDataDirective final : public DataDirective {
+class MINI_LLVM_EXPORT RISCVDataDirective final : public Directive {
 public:
     RISCVDataDirective(int width, int64_t value)
-        : DataDirective(width, value) {}
+        : width_(width), value_(value) {}
 
-protected:
-    std::string directiveName(int width) const override {
-        switch (width) {
-            case 1: return "byte";
-            case 2: return "half";
-            case 4: return "word";
-            case 8: return "dword";
-            default: abort();
-        }
+    int width() const {
+        return width_;
     }
+
+    void setWidth(int width) {
+        width_ = width;
+    }
+
+    int64_t value() const {
+        return value_;
+    }
+
+    void setValue(int64_t value) {
+        value_ = value;
+    }
+
+    std::string format() const override;
+
+private:
+    int width_;
+    int64_t value_;
 };
 
 } // namespace mini_llvm::mc

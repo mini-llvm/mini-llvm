@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 
-#include "mini-llvm/opt/mc/passes/UnusedLabelElimination.h"
+#include "mini-llvm/targets/riscv/opt/mc/passes/RISCVUnusedLabelElimination.h"
 
 #include <unordered_set>
 
-#include "mini-llvm/mc/AddressOperand.h"
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Instruction.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/mc/Symbol.h"
+#include "mini-llvm/targets/riscv/mc/RISCVAddressOperand.h"
 
 using namespace mini_llvm::mc;
 
-bool UnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
+bool RISCVUnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
     if (G.section() != ".text") {
         return false;
     }
@@ -23,7 +23,7 @@ bool UnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
     for (const Statement &stmt : G) {
         if (auto *I = dynamic_cast<const Instruction *>(&stmt)) {
             for (const Operand &op : operands(*I)) {
-                if (auto *addrOp = dynamic_cast<const AddressOperand *>(&op)) {
+                if (auto *addrOp = dynamic_cast<const RISCVAddressOperand *>(&op)) {
                     used.insert(addrOp->addr().baseSymbol());
                 }
             }

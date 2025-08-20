@@ -8,12 +8,12 @@
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT UnusedLabelElimination final : public GlobalValueTransform {
+class MINI_LLVM_EXPORT RISCVUnusedLabelElimination final : public GlobalValueTransform {
 public:
     bool runOnGlobalValue(GlobalValue &G) override;
 
     const char *name() const override {
-        return "UnusedLabelElimination";
+        return "RISCVUnusedLabelElimination";
     }
 };
 

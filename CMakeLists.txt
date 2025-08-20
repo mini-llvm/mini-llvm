@@ -88,9 +88,7 @@ add_library(mini-llvm
     lib/ir_reader/IRReader.cpp
     lib/ir_reader/Lexer.cpp
     lib/ir_reader/Parser.cpp
-    lib/mc/Address.cpp
     lib/mc/GlobalValue.cpp
-    lib/mc/Instruction.cpp
     lib/mc/Module.cpp
     lib/mc/StringDirective.cpp
     lib/mc/Symbol.cpp
@@ -141,7 +139,6 @@ add_library(mini-llvm
     lib/opt/ir/passes/UnreachableBlockElimination.cpp
     lib/opt/ir/PassManager.cpp
     lib/opt/mc/GlobalValueTransform.cpp
-    lib/opt/mc/passes/UnusedLabelElimination.cpp
     lib/opt/mir/BasicBlockTransform.cpp
     lib/opt/mir/FunctionTransform.cpp
     lib/opt/mir/passes/BasicBlockMerging.cpp
@@ -159,11 +156,15 @@ add_library(mini-llvm
     lib/opt/mir/passes/ZeroRegisterReplacement.cpp
     lib/targets/riscv/codegen/RISCVMCGen.cpp
     lib/targets/riscv/codegen/RISCVMIRGen.cpp
+    lib/targets/riscv/mc/RISCVAddress.cpp
+    lib/targets/riscv/mc/RISCVDataDirective.cpp
+    lib/targets/riscv/mc/RISCVInstruction.cpp
     lib/targets/riscv/mir/Instruction/RISCVCall.cpp
     lib/targets/riscv/mir/Instruction/RISCVJALR.cpp
     lib/targets/riscv/mir/Instruction/RISCVRet.cpp
     lib/targets/riscv/mir/RISCVRegister.cpp
     lib/targets/riscv/opt/mc/passes/RISCVFallthrough.cpp
+    lib/targets/riscv/opt/mc/passes/RISCVUnusedLabelElimination.cpp
     lib/targets/riscv/opt/mc/RISCVPassManager.cpp
     lib/targets/riscv/opt/mir/passes/RISCVConstantPropagation.cpp
     lib/targets/riscv/opt/mir/RISCVPassManager.cpp

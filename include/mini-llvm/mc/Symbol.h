@@ -12,7 +12,7 @@
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT Symbol {
+class MINI_LLVM_EXPORT Symbol final {
 public:
     explicit Symbol(std::string name) : name_(std::move(name)) {}
 

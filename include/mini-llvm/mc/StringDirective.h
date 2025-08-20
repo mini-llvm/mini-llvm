@@ -12,7 +12,7 @@
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT StringDirective : public Directive {
+class MINI_LLVM_EXPORT StringDirective final : public Directive {
 public:
     explicit StringDirective(std::vector<int8_t> elements)
         : elements_(std::move(elements)) {}

@@ -14,10 +14,8 @@
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/common/ops/SExt.h"
 #include "mini-llvm/common/Precision.h"
-#include "mini-llvm/mc/AddressOperand.h"
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/GlobalValueBuilder.h"
-#include "mini-llvm/mc/ImmediateOperand.h"
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/mc/Operand.h"
 #include "mini-llvm/mc/StringDirective.h"
@@ -104,7 +102,9 @@
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVAddressDirective.h"
+#include "mini-llvm/targets/riscv/mc/RISCVAddressOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVDataDirective.h"
+#include "mini-llvm/targets/riscv/mc/RISCVImmediateOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
 #include "mini-llvm/targets/riscv/mc/RISCVMemoryOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
@@ -805,20 +805,20 @@ private:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    static std::unique_ptr<AddressOperand> makeOperand(const mir::BasicBlockOperand &op) {
-        return std::make_unique<AddressOperand>(emitSymbol(*op));
+    static std::unique_ptr<RISCVAddressOperand> makeOperand(const mir::BasicBlockOperand &op) {
+        return std::make_unique<RISCVAddressOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<AddressOperand> makeOperand(const mir::GlobalValueOperand &op) {
-        return std::make_unique<AddressOperand>(emitSymbol(*op));
+    static std::unique_ptr<RISCVAddressOperand> makeOperand(const mir::GlobalValueOperand &op) {
+        return std::make_unique<RISCVAddressOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<AddressOperand> makeOperand(const mir::FunctionOperand &op) {
-        return std::make_unique<AddressOperand>(emitSymbol(*op));
+    static std::unique_ptr<RISCVAddressOperand> makeOperand(const mir::FunctionOperand &op) {
+        return std::make_unique<RISCVAddressOperand>(emitSymbol(*op));
     }
 
-    static std::unique_ptr<ImmediateOperand> makeOperand(const mir::ImmediateOperand &op) {
-        return std::make_unique<ImmediateOperand>(op->value());
+    static std::unique_ptr<RISCVImmediateOperand> makeOperand(const mir::ImmediateOperand &op) {
+        return std::make_unique<RISCVImmediateOperand>(op->value());
     }
 
     static std::unique_ptr<RISCVRegisterOperand> makeOperand(const mir::RegisterOperand &op) {

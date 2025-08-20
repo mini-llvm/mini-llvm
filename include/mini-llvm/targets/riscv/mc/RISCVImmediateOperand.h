@@ -9,9 +9,9 @@
 
 namespace mini_llvm::mc {
 
-class ImmediateOperand final : public Operand {
+class RISCVImmediateOperand final : public Operand {
 public:
-    explicit ImmediateOperand(int64_t value) : value_(value) {}
+    explicit RISCVImmediateOperand(int64_t value) : value_(value) {}
 
     int64_t value() const {
         return value_;

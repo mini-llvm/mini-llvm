@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: MIT
 
-#include "mini-llvm/mc/Instruction.h"
+#include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
 
 #include <format>
 #include <string>
 
+#include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mc;
 
-std::string Instruction::format() const {
+std::string RISCVInstruction::format() const {
     StringJoiner formatted(" ");
-    formatted.add(mnemonic(opcode()));
+    formatted.add(mnemonic(static_cast<RISCVOperation>(opcode())));
     if (!operand_empty()) {
         StringJoiner formattedOperands(", ");
         for (const Operand &operand : operands(*this)) {

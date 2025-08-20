@@ -6,27 +6,27 @@
 #include <string>
 #include <utility>
 
-#include "mini-llvm/mc/Address.h"
+#include "mini-llvm/targets/riscv/mc/RISCVAddress.h"
 #include "mini-llvm/mc/Operand.h"
 
 namespace mini_llvm::mc {
 
-class AddressOperand final : public Operand {
+class RISCVAddressOperand final : public Operand {
 public:
-    explicit AddressOperand(Address addr)
+    explicit RISCVAddressOperand(RISCVAddress addr)
         : addr_(std::move(addr)) {}
 
-    explicit AddressOperand(Symbol baseSymbol)
+    explicit RISCVAddressOperand(Symbol baseSymbol)
         : addr_(std::move(baseSymbol)) {}
 
-    AddressOperand(Symbol baseSymbol, int64_t offset)
+    RISCVAddressOperand(Symbol baseSymbol, int64_t offset)
         : addr_(std::move(baseSymbol), offset) {}
 
-    const Address &addr() const & {
+    const RISCVAddress &addr() const & {
         return addr_;
     }
 
-    Address &&addr() && {
+    RISCVAddress &&addr() && {
         return std::move(addr_);
     }
 
@@ -35,7 +35,7 @@ public:
     }
 
 private:
-    Address addr_;
+    RISCVAddress addr_;
 };
 
 } // namespace mini_llvm::mc

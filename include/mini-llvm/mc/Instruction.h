@@ -5,7 +5,6 @@
 #include <cstddef>
 #include <memory>
 #include <ranges>
-#include <string>
 #include <utility>
 #include <vector>
 
@@ -20,9 +19,6 @@ class MINI_LLVM_EXPORT Instruction : public Statement {
 public:
     using operand_iterator = IndirectIterator<std::vector<std::unique_ptr<Operand>>::iterator, Operand>;
     using const_operand_iterator = IndirectIterator<std::vector<std::unique_ptr<Operand>>::const_iterator, const Operand>;
-
-    explicit Instruction(int opcode, std::vector<std::unique_ptr<Operand>> operands = {})
-        : opcode_(opcode), operands_(std::move(operands)) {}
 
     int opcode() const {
         return opcode_;
@@ -68,10 +64,9 @@ public:
         operands_ = std::move(operands);
     }
 
-    std::string format() const override;
-
 protected:
-    virtual std::string mnemonic(int opcode) const = 0;
+    explicit Instruction(int opcode, std::vector<std::unique_ptr<Operand>> operands = {})
+        : opcode_(opcode), operands_(std::move(operands)) {}
 
 private:
     int opcode_;

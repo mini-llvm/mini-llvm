@@ -15,12 +15,12 @@
 
 namespace mini_llvm::mc {
 
-class MINI_LLVM_EXPORT Address {
+class MINI_LLVM_EXPORT RISCVAddress {
 public:
-    explicit Address(Symbol baseSymbol)
+    explicit RISCVAddress(Symbol baseSymbol)
         : baseSymbol_(std::move(baseSymbol)), offset_(0) {}
 
-    Address(Symbol baseSymbol, int64_t offset)
+    RISCVAddress(Symbol baseSymbol, int64_t offset)
         : baseSymbol_(std::move(baseSymbol)), offset_(offset) {}
 
     const Symbol &baseSymbol() const & {
@@ -53,8 +53,8 @@ private:
 } // namespace mini_llvm::mc
 
 template <>
-struct std::hash<mini_llvm::mc::Address> {
-    size_t operator()(const mini_llvm::mc::Address &addr) const noexcept {
+struct std::hash<mini_llvm::mc::RISCVAddress> {
+    size_t operator()(const mini_llvm::mc::RISCVAddress &addr) const noexcept {
         size_t seed = 0;
 
         mini_llvm::hash_combine(seed, addr.baseSymbol());
@@ -65,13 +65,13 @@ struct std::hash<mini_llvm::mc::Address> {
 };
 
 template <>
-struct std::formatter<mini_llvm::mc::Address> {
+struct std::formatter<mini_llvm::mc::RISCVAddress> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }
 
     template <typename FormatContext>
-    auto format(const mini_llvm::mc::Address &addr, FormatContext &ctx) const {
+    auto format(const mini_llvm::mc::RISCVAddress &addr, FormatContext &ctx) const {
         return std::format_to(ctx.out(), "{}", addr.format());
     }
 };
