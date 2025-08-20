@@ -264,7 +264,7 @@ riscv64-linux-gnu-gcc -o example add.o main.o
 qemu-riscv64 ./example
 ```
 
-## 🔧 Build
+## 🔨 Build
 
 | Linux | Windows |
 |:-:|:-:|
