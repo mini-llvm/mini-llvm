@@ -6,7 +6,6 @@ tests=(
     alias_args
     alias_getelementptr
     alias_inttoptr
-    alloca_tail_call
     arithmetic
     casting
     circular_call_1
@@ -37,6 +36,7 @@ tests=(
     self_loop
     self_reference
     store_ptr
+    tail_call_alloca
     type_punning
     unreachable_block_1
     unreachable_block_2
