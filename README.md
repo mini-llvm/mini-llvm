@@ -360,7 +360,7 @@ export MINI_LLC_TIMEOUT=60
 export LINKER_TIMEOUT=60
 export EMULATOR_TIMEOUT=60
 
-./test-all.sh --target=riscv64
+./test_all.sh --target=riscv64
 ```
 
 ## 📦 Installation
