@@ -286,7 +286,7 @@ git clone --depth=1 --recurse-submodules --shallow-submodules <repo-url>
 
 ```sh
 sudo apt-get update
-sudo apt-get -y install g++-14 cmake ninja-build
+sudo apt-get install -y g++-14 cmake ninja-build
 
 cd <repo-dir>
 mkdir build && cd build
@@ -307,7 +307,7 @@ cmake --build .
 
 ```sh
 sudo apt-get update
-sudo apt-get -y install g++-14
+sudo apt-get install -y g++-14
 
 # Install Bazel: https://bazel.build/install/ubuntu
 
@@ -340,7 +340,7 @@ CC=gcc-14 CXX=g++-14 bazel test -c opt //unittests:unittests
 
 ```sh
 sudo apt-get update
-sudo apt-get -y install gcc-riscv64-linux-gnu qemu-user
+sudo apt-get install -y gcc-riscv64-linux-gnu qemu-user
 
 sudo mkdir -p /usr/gnemul
 sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
@@ -355,13 +355,19 @@ export MINI_LLC_COMMAND=../../bazel-bin/tools/mini-llc/mini-llc
 
 export LINKER_COMMAND=riscv64-linux-gnu-gcc
 export EMULATOR_COMMAND=qemu-riscv64
-export DIFF_COMMAND=diff
-export MINI_LLC_TIMEOUT=60
-export LINKER_TIMEOUT=60
-export EMULATOR_TIMEOUT=60
 
 ./test_all.sh --target=riscv64
 ```
+
+| Environment Variable | Default |
+| - | - |
+| `MINI_LLC_COMMAND` | `mini-llc` |
+| `MINI_LLC_TIMEOUT` | `60` |
+| `LINKER_COMMAND` | `$target-linux-gnu-gcc` |
+| `LINKER_TIMEOUT` | `60` |
+| `EMULATOR_COMMAND` | `qemu-$target` |
+| `EMULATOR_TIMEOUT` | `60` |
+| `DIFF_COMMAND` | `diff` |
 
 ## 📦 Installation
 
