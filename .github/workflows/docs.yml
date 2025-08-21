@@ -18,40 +18,49 @@ defaults:
 
 jobs:
   docs:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    env:
+      DEBIAN_FRONTEND: noninteractive
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    env:
-      HOMEBREW_NO_ANALYTICS: 1
-      HOMEBREW_NO_AUTO_UPDATE: 1
-      HOMEBREW_NO_INSTALL_CLEANUP: 1
+
     steps:
       - run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install doxygen graphviz
+          apt-get update
+          apt-get upgrade -y
+          apt-get install -y build-essential curl file git procps
+
+      - run: |
+          NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
+
+      - run: brew install cmake doxygen graphviz ninja
 
       - uses: actions/checkout@v4
         with:
-          submodules: "true"
+          submodules: 'true'
+
+      - run: chown -R $(whoami):$(whoami) .
 
       - run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           cmake \
-            -S "${{ github.workspace }}" \
-            -B "${{ github.workspace }}/build" \
+            -S . \
+            -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_CXX_COMPILER=g++-14 \
             -DMINI_LLVM_DOCS=ON \
             -G Ninja
 
-      - run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          cmake --build "${{ github.workspace }}/build" --target docs
+      - run: cmake --build build --target docs
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: "${{ github.workspace }}/build/html"
+          path: ./build/html
 
       - id: deployment
         uses: actions/deploy-pages@v4

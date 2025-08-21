@@ -17,7 +17,22 @@ defaults:
 
 jobs:
   check:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    env:
+      DEBIAN_FRONTEND: noninteractive
+
     steps:
+      - run: |
+          apt-get update
+          apt-get upgrade -y
+          apt-get install -y git python3
+
       - uses: actions/checkout@v4
-      - run: ${{ github.workspace }}/contrib/format_all.sh --check
+
+      - run: chown -R $(whoami):$(whoami) .
+
+      - run: ./contrib/format_all.sh --check
