@@ -42,6 +42,7 @@ tests=(
     unreachable_block_2
 
     accumulate
+    base64
     bfs
     bit
     bubble_sort
