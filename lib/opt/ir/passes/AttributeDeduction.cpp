@@ -217,6 +217,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     for (Function &F : functions(M)) {
         if (!F.attr<ReadNone>() && !notReadNone.contains(scc[&F])) {
+            F.removeAttr<ReadOnly>();
             F.addAttr(std::make_unique<ReadNone>());
             changed = true;
         }
