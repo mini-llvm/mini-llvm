@@ -42,14 +42,14 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
                     const Value *oldPtr = &*oldStore->ptr();
                     int oldSize = oldStore->value()->type()->size(pointerSize_);
                     AliasResult result = aa.alias(*ptr, size, *oldPtr, oldSize);
-                    if (result == AliasResult::kMustAlias) {
-                        removeFromParent(*oldStore);
-                        changed = true;
-                    }
                     if (result != AliasResult::kNoAlias) {
                         i = oldStores.erase(i);
                     } else {
                         ++i;
+                    }
+                    if (result == AliasResult::kMustAlias) {
+                        removeFromParent(*oldStore);
+                        changed = true;
                     }
                 }
                 oldStores.insert(store);
