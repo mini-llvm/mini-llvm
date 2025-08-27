@@ -51,25 +51,28 @@ jobs:
 
       - run: |
           brew install binutils gcc@${{ env.GCC_VERSION }}
-          echo /home/linuxbrew/.linuxbrew/opt/binutils/bin >> "$GITHUB_PATH"
-          ln -s /home/linuxbrew/.linuxbrew/bin/gcc-${{ env.GCC_VERSION }} /home/linuxbrew/.linuxbrew/bin/gcc
-          ln -s /home/linuxbrew/.linuxbrew/bin/g++-${{ env.GCC_VERSION }} /home/linuxbrew/.linuxbrew/bin/g++
+          brew link -f binutils
+
+          for f in /home/linuxbrew/.linuxbrew/opt/gcc@${{ env.GCC_VERSION }}/bin/*-${{ env.GCC_VERSION }}; do
+            name="$(basename "$f")"
+            ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-${{ env.GCC_VERSION }}}"
+          done
 
       - if: ${{ matrix.compiler == 'clang++' }}
         run: |
           brew install llvm@${{ env.LLVM_VERSION }}
-          echo /home/linuxbrew/.linuxbrew/opt/llvm@${{ env.LLVM_VERSION }}/bin >> "$GITHUB_PATH"
+          brew link -f llvm@${{ env.LLVM_VERSION }}
 
-          mkdir -p ~/.config/clang
+          mkdir -p /home/linuxbrew/.linuxbrew/etc/clang
 
-          cat > ~/.config/clang/clang.cfg <<EOF
+          cat > /home/linuxbrew/.linuxbrew/etc/clang/clang.cfg <<EOF
           -isystem /home/linuxbrew/.linuxbrew/include
           -L/home/linuxbrew/.linuxbrew/lib
           -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
           -Wl,--enable-new-dtags
           EOF
 
-          cat > ~/.config/clang/clang++.cfg <<EOF
+          cat > /home/linuxbrew/.linuxbrew/etc/clang/clang++.cfg <<EOF
           -nostdinc++
           -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ env.GCC_VERSION }}
           -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ env.GCC_VERSION }}/x86_64-pc-linux-gnu
@@ -143,7 +146,7 @@ jobs:
       - run: |
           cmake ^
             -S . ^
-            -B ${{ github.workspace }}/build ^
+            -B build ^
             -DBUILD_SHARED_LIBS=${{ matrix.shared }} ^
             -DMINI_LLVM_TESTS=ON ^
             -G "Visual Studio 17 2022"
