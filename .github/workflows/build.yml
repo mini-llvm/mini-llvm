@@ -120,3 +120,34 @@ jobs:
           export EMULATOR_COMMAND=qemu-riscv64
 
           ./test_all.sh --target=riscv64
+
+  build-windows:
+    runs-on: windows-2025
+
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        shared: ['ON', 'OFF']
+
+      fail-fast: false
+
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+
+      - run: |
+          cmake ^
+            -S . ^
+            -B ${{ github.workspace }}/build ^
+            -DBUILD_SHARED_LIBS=${{ matrix.shared }} ^
+            -DMINI_LLVM_TESTS=ON ^
+            -G "Visual Studio 17 2022"
+
+      - run: cmake --build build --config ${{ matrix.config }}
+
+      - run: ctest --test-dir build --build-config ${{ matrix.config }}
