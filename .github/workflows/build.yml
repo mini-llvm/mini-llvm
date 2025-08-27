@@ -11,16 +11,12 @@ on:
       - develop
   workflow_dispatch:
 
-defaults:
-  run:
-    shell: bash
-
 env:
   GCC_VERSION: '15'
   LLVM_VERSION: '20'
 
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
 
     container:
@@ -28,12 +24,16 @@ jobs:
 
     strategy:
       matrix:
-        build-type: [Debug, Release]
-        toolchain: [GCC, LLVM]
-        sanitizer: ['', ASan, UBSan]
-        build-shared-libs: [false, true]
+        config: [Debug, Release]
+        compiler: [g++, clang++]
+        sanitizer: ['', -fsanitize=address, -fsanitize=undefined]
+        shared: ['OFF', 'ON']
 
       fail-fast: false
+
+    defaults:
+      run:
+        shell: bash
 
     env:
       DEBIAN_FRONTEND: noninteractive
@@ -52,8 +52,10 @@ jobs:
       - run: |
           brew install binutils gcc@${{ env.GCC_VERSION }}
           echo /home/linuxbrew/.linuxbrew/opt/binutils/bin >> "$GITHUB_PATH"
+          ln -s /home/linuxbrew/.linuxbrew/bin/gcc-${{ env.GCC_VERSION }} /home/linuxbrew/.linuxbrew/bin/gcc
+          ln -s /home/linuxbrew/.linuxbrew/bin/g++-${{ env.GCC_VERSION }} /home/linuxbrew/.linuxbrew/bin/g++
 
-      - if: ${{ matrix.toolchain == 'LLVM' }}
+      - if: ${{ matrix.compiler == 'clang++' }}
         run: |
           brew install llvm@${{ env.LLVM_VERSION }}
           echo /home/linuxbrew/.linuxbrew/opt/llvm@${{ env.LLVM_VERSION }}/bin >> "$GITHUB_PATH"
@@ -89,55 +91,16 @@ jobs:
       - run: chown -R $(whoami):$(whoami) .
 
       - run: |
-          case "${{ matrix.build-type }}" in
-            Debug)
-              BUILD_TYPE="Debug"
-              ;;
-            Release)
-              BUILD_TYPE="Release"
-              ;;
-          esac
-
-          case "${{ matrix.toolchain }}" in
-            GCC)
-              CXX_COMPILER=g++-${{ env.GCC_VERSION }}
-              ;;
-            LLVM)
-              CXX_COMPILER=clang++
-              ;;
-          esac
-
-          case "${{ matrix.sanitizer }}" in
-            "")
-              SANITIZER_FLAG=""
-              ;;
-            ASan)
-              SANITIZER_FLAG="-fsanitize=address"
-              ;;
-            UBSan)
-              SANITIZER_FLAG="-fsanitize=undefined"
-              ;;
-          esac
-
-          case ${{ matrix.build-shared-libs }} in
-            true)
-              BUILD_SHARED_LIBS="ON"
-              ;;
-            false)
-              BUILD_SHARED_LIBS="OFF"
-              ;;
-          esac
-
           cmake \
             -S . \
             -B build \
-            -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
-            -DCMAKE_CXX_COMPILER="$CXX_COMPILER" \
-            -DCMAKE_CXX_FLAGS="$SANITIZER_FLAG" \
-            -DCMAKE_EXE_LINKER_FLAGS="$SANITIZER_FLAG" \
-            -DCMAKE_SHARED_LINKER_FLAGS="$SANITIZER_FLAG" \
-            -DCMAKE_MODULE_LINKER_FLAGS="$SANITIZER_FLAG" \
-            -DBUILD_SHARED_LIBS="$BUILD_SHARED_LIBS" \
+            -DCMAKE_BUILD_TYPE="${{ matrix.config }}" \
+            -DCMAKE_CXX_COMPILER="${{ matrix.compiler }}" \
+            -DCMAKE_CXX_FLAGS="${{ matrix.sanitizer }}" \
+            -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DCMAKE_MODULE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DBUILD_SHARED_LIBS="${{ matrix.shared }}" \
             -DMINI_LLVM_TESTS=ON \
             -G Ninja
 
