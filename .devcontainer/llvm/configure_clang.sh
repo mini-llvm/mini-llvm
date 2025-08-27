@@ -1,17 +1,17 @@
 #!/bin/bash
 
-set -e
+set -eu
 
-mkdir -p ~/.config/clang
+mkdir -p /home/linuxbrew/.linuxbrew/etc/clang
 
-cat > ~/.config/clang/clang.cfg <<EOF
+cat > /home/linuxbrew/.linuxbrew/etc/clang/clang.cfg <<EOF
 -isystem /home/linuxbrew/.linuxbrew/include
 -L/home/linuxbrew/.linuxbrew/lib
 -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
 -Wl,--enable-new-dtags
 EOF
 
-cat > ~/.config/clang/clang++.cfg <<EOF
+cat > /home/linuxbrew/.linuxbrew/etc/clang/clang++.cfg <<EOF
 -nostdinc++
 -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION
 -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/x86_64-pc-linux-gnu
