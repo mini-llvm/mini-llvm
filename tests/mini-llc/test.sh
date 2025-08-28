@@ -2,97 +2,88 @@
 
 set -eu
 
-function run_test {
-    local test_name="$1"
-    local target="$2"
-    local result_dir="$3"
+tests=()
 
-    mkdir -p "$(dirname "$result_dir/$test_name")" &&
-    timeout --foreground -v "$MINI_LLC_TIMEOUT" $MINI_LLC_COMMAND --target="$target" -o "$result_dir/$test_name.s" "$test_name.ll" &&
-    timeout --foreground -v "$LINKER_TIMEOUT" $LINKER_COMMAND -o "$result_dir/$test_name" "$result_dir/$test_name.s" -lm &&
-    timeout --foreground -v "$EMULATOR_TIMEOUT" $EMULATOR_COMMAND "$result_dir/$test_name" > "$result_dir/$test_name.out" &&
-    $DIFF_COMMAND "${test_name}.ans" "$result_dir/$test_name.out"
-}
-
-function main {
-    local target=""
-    local result_dir=""
-    local tests=()
-
-    while (( $# > 0 )); do
-        case "$1" in
-        --help)
-            echo "Usage: $0 --target=<target> [--result-dir=<result-dir>] <tests>..."
-            exit 0
-            ;;
-        --target=*)
-            target="${1#*=}"
-            shift
-            ;;
-        --result-dir=*)
-            result_dir="${1#*=}"
-            shift
-            ;;
-        -*)
-            echo "$0: error: unrecognized option: $1" >&2
-            exit 1
-            ;;
-        *)
-            tests+=("$1")
-            shift
-            ;;
-        esac
-    done
-
-    if [[ -z "$target" ]]; then
-        echo "$0: error: no target" >&2
+while (( $# > 0 )); do
+    case "$1" in
+    --help)
+        echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--result-dir=<dir>] [--timeout=<duration>] <tests>..."
+        exit 0
+        ;;
+    --mini-llc=*)
+        mini_llc="${1#*=}"
+        shift
+        ;;
+    --target=*)
+        target="${1#*=}"
+        shift
+        ;;
+    --driver=*)
+        driver="${1#*=}"
+        shift
+        ;;
+    --emulator=*)
+        emulator="${1#*=}"
+        shift
+        ;;
+    --result-dir=*)
+        result_dir="${1#*=}"
+        shift
+        ;;
+    --timeout=*)
+        timeout="${1#*=}"
+        shift
+        ;;
+    -*)
+        echo "$0: error: unrecognized option: $1" >&2
         exit 1
+        ;;
+    *)
+        tests+=("$1")
+        shift
+        ;;
+    esac
+done
+
+if [[ ! -v mini_llc ]]; then
+    echo "$0: error: missing --mini-llc" >&2
+    exit 1
+fi
+
+if [[ ! -v target ]]; then
+    echo "$0: error: missing --target" >&2
+    exit 1
+fi
+
+if [[ ! -v driver ]]; then
+    driver="$target-linux-gnu-gcc"
+fi
+
+if [[ ! -v emulator ]]; then
+    emulator="qemu-$target"
+fi
+
+if [[ ! -v result_dir ]]; then
+    result_dir="$(dirname "$0")/result_$(date +%Y%m%d_%H%M%S)"
+fi
+
+if [[ ! -v timeout ]]; then
+    timeout=60
+fi
+
+width=0
+for test in "${tests[@]}"; do
+    if (( ${#test} > width )); then
+        width=${#test}
     fi
+done
 
-    if [[ -z "$result_dir" ]]; then
-        result_dir="result_$(date +%Y%m%d_%H%M%S)"
+for test in "${tests[@]}"; do
+    printf "%-*s " "$width" "$test"
+
+    if timeout --foreground -v "$timeout" "$(dirname "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$result_dir"; then
+        echo -e "\033[32mPASSED\033[0m"
+    else
+        echo -e "\033[31mFAILED\033[0m"
     fi
-
-    mkdir -p "$result_dir"
-    echo "*" > "$result_dir/.gitignore"
-
-    MINI_LLC_COMMAND="${MINI_LLC_COMMAND:-mini-llc}"
-    MINI_LLC_TIMEOUT="${MINI_LLC_TIMEOUT:-60}"
-
-    LINKER_COMMAND="${LINKER_COMMAND:-$target-linux-gnu-gcc}"
-    LINKER_TIMEOUT="${LINKER_TIMEOUT:-60}"
-
-    EMULATOR_COMMAND="${EMULATOR_COMMAND:-qemu-$target}"
-    EMULATOR_TIMEOUT="${EMULATOR_TIMEOUT:-60}"
-
-    DIFF_COMMAND="${DIFF_COMMAND:-diff}"
-
-    local width=0
-    for test_name in "${tests[@]}"; do
-        if (( ${#test_name} > width )); then
-            width=${#test_name}
-        fi
-    done
-
-    local failed_tests=()
-
-    for test_name in "${tests[@]}"; do
-        printf "%-*s " "$width" "$test_name"
-
-        if run_test "$test_name" "$target" "$result_dir"; then
-            echo "Passed"
-        else
-            echo "Failed"
-            failed_tests+=("$test_name")
-        fi
-    done
-
-    if (( "${#failed_tests[@]}" > 0 )); then
-        for test_name in "${failed_tests[@]}"; do
-            echo "$test_name" >> "$result_dir/failed_tests"
-        done
-        return 1
-    fi
-}
-
-main "$@"
+done

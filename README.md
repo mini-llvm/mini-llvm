@@ -348,26 +348,19 @@ sudo ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 cd <repo-dir>/tests/mini-llc
 
 # CMake
-export MINI_LLC_COMMAND=../../build/bin/mini-llc
+./test_all.sh \
+  --mini-llc=../../build/bin/mini-llc \
+  --target=riscv64 \
+  --driver=riscv64-linux-gnu-gcc \
+  --emulator=qemu-riscv64
 
 # Bazel
-export MINI_LLC_COMMAND=../../bazel-bin/tools/mini-llc/mini-llc
-
-export LINKER_COMMAND=riscv64-linux-gnu-gcc
-export EMULATOR_COMMAND=qemu-riscv64
-
-./test_all.sh --target=riscv64
+./test_all.sh \
+  --mini-llc=../../bazel-bin/tools/mini-llc/mini-llc \
+  --target=riscv64 \
+  --driver=riscv64-linux-gnu-gcc \
+  --emulator=qemu-riscv64
 ```
-
-| Environment Variable | Default |
-| - | - |
-| `MINI_LLC_COMMAND` | `mini-llc` |
-| `MINI_LLC_TIMEOUT` | `60` |
-| `LINKER_COMMAND` | `$target-linux-gnu-gcc` |
-| `LINKER_TIMEOUT` | `60` |
-| `EMULATOR_COMMAND` | `qemu-$target` |
-| `EMULATOR_TIMEOUT` | `60` |
-| `DIFF_COMMAND` | `diff` |
 
 ## 📦 Installation
 

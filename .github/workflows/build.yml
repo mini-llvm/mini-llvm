@@ -116,13 +116,12 @@ jobs:
           mkdir -p /usr/gnemul
           ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 
-      - working-directory: ./tests/mini-llc
-        run: |
-          export MINI_LLC_COMMAND=../../build/bin/mini-llc
-          export LINKER_COMMAND=riscv64-linux-gnu-gcc
-          export EMULATOR_COMMAND=qemu-riscv64
-
-          ./test_all.sh --target=riscv64
+      - run: |
+          ./tests/mini-llc/test_all.sh \
+            --mini-llc=./build/bin/mini-llc \
+            --target=riscv64 \
+            --driver=riscv64-linux-gnu-gcc \
+            --emulator=qemu-riscv64
 
   build-windows:
     runs-on: windows-2025
