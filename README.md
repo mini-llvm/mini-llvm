@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚙️ mini-llvm
+# mini-llvm
 
 **A minimal implementation of the LLVM core libraries and tools**
 
@@ -10,35 +10,35 @@
 
 </div>
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [Overview](#-overview)
-- [Highlights](#-highlights)
-- [Design](#-design)
-- [Features](#-features)
-- [Usage](#-usage)
-- [Build](#-build)
-- [Testing](#-testing)
-- [Installation](#-installation)
-- [References](#-references)
-- [License](#-license)
+- [Overview](#overview)
+- [Highlights](#highlights)
+- [Design](#design)
+- [Features](#features)
+- [Usage](#usage)
+- [Build](#build)
+- [Testing](#testing)
+- [Installation](#installation)
+- [References](#references)
+- [License](#license)
 
-## 🎯 Overview
+## Overview
 
 **mini-llvm** is a minimal yet powerful implementation of the LLVM core libraries and tools, designed to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
 
-## ✨ Highlights
+## Highlights
 
 - Modern C++ (C++23)
 - Cross-platform compatibility (Linux & Windows)
 - Easy integration (CMake & Bazel)
 - No external dependencies
 
-## 💡 Design
+## Design
 
 ![Design](assets/design.svg)
 
-## 🌟 Features
+## Features
 
 ### Supported Targets
 
@@ -201,7 +201,7 @@
 - `LinearScanAllocator`
 - `NaiveAllocator`
 
-## 💻 Usage
+## Usage
 
 <table>
 <tr>
@@ -264,7 +264,7 @@ riscv64-linux-gnu-gcc -o example add.o main.o
 qemu-riscv64 ./example
 ```
 
-## 🔨 Build
+## Build
 
 | Linux | Windows |
 |:-:|:-:|
@@ -322,7 +322,7 @@ CC=gcc-14 CXX=g++-14 bazel build -c opt //...
 | - | - | - |
 | `shared` | `false` | Build mini-llvm as a shared library (libmini-llvm.so) |
 
-## 🧪 Testing
+## Testing
 
 ### Unit Tests
 
@@ -362,7 +362,7 @@ cd <repo-dir>/tests/mini-llc
   --emulator=qemu-riscv64
 ```
 
-## 📦 Installation
+## Installation
 
 ```sh
 # CMake
@@ -370,7 +370,7 @@ cd <repo-dir>/build
 cmake --install .
 ```
 
-## 📚 References
+## References
 
 - LLVM Language Reference Manual. https://llvm.org/docs/LangRef.html
 - Cliff Click. 1995. Global code motion/global value numbering. In *Proceedings of the ACM SIGPLAN 1995 Conference on Programming Language Design and Implementation* (PLDI '95). Association for Computing Machinery, New York, NY, USA, 246–257. https://doi.org/10.1145/207110.207154
@@ -379,6 +379,6 @@ cmake --install .
 - Thomas Lengauer and Robert Endre Tarjan. 1979. A fast algorithm for finding dominators in a flowgraph. *ACM Trans. Program. Lang. Syst.* 1, 1 (Jan. 1979), 121–141. https://doi.org/10.1145/357062.357071
 - Massimiliano Poletto and Vivek Sarkar. 1999. Linear scan register allocation. *ACM Trans. Program. Lang. Syst.* 21, 5 (Sept. 1999), 895–913. https://doi.org/10.1145/330249.330250
 
-## 📄 License
+## License
 
 mini-llvm is licensed under the [MIT license](https://opensource.org/licenses/MIT).
