@@ -2,5 +2,5 @@
 
 set -e
 
-ln -s ../../contrib/pre_commit.sh .git/hooks/pre-commit
-ln -s ../../contrib/pre_push.sh .git/hooks/pre-push
+ln -sf ../../contrib/pre_commit.sh .git/hooks/pre-commit
+ln -sf ../../contrib/pre_push.sh .git/hooks/pre-push
