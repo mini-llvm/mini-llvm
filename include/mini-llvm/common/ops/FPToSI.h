@@ -17,6 +17,8 @@ struct FPToSI {
     template <typename From>
         requires std::floating_point<From>
     std::optional<To> operator()(From x) const noexcept {
+        if (std::isnan(x))
+            return std::nullopt;
         From t = std::trunc(x);
         if (t > static_cast<From>(std::numeric_limits<std::make_signed_t<To>>::max()))
             return std::nullopt;
