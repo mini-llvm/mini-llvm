@@ -93,7 +93,9 @@ private:
         };
 
         if (auto i = kLUT.find(*current_); i != kLUT.end()) {
-            return {i->second, {}, current_++};
+            const char *start = current_;
+            ++current_;
+            return {i->second, {}, start};
         }
 
         if (*current_ == '0' && (*(current_ + 1) == 'X' || *(current_ + 1) == 'x')) {
