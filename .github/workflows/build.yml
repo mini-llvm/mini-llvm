@@ -11,10 +11,6 @@ on:
       - develop
   workflow_dispatch:
 
-env:
-  GCC_VERSION: '15'
-  LLVM_VERSION: '20'
-
 jobs:
   build-linux:
     runs-on: ubuntu-latest
@@ -36,6 +32,8 @@ jobs:
         shell: bash
 
     env:
+      GCC_VERSION: '15'
+      LLVM_VERSION: '20'
       DEBIAN_FRONTEND: noninteractive
       UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
@@ -50,18 +48,18 @@ jobs:
           echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
 
       - run: |
-          brew install binutils gcc@${{ env.GCC_VERSION }}
+          brew install binutils gcc@$GCC_VERSION
           brew link -f binutils
 
-          for f in /home/linuxbrew/.linuxbrew/opt/gcc@${{ env.GCC_VERSION }}/bin/*-${{ env.GCC_VERSION }}; do
+          for f in /home/linuxbrew/.linuxbrew/opt/gcc@$GCC_VERSION/bin/*-$GCC_VERSION; do
             name="$(basename "$f")"
-            ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-${{ env.GCC_VERSION }}}"
+            ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-$GCC_VERSION}"
           done
 
       - if: ${{ matrix.compiler == 'clang++' }}
         run: |
-          brew install llvm@${{ env.LLVM_VERSION }}
-          brew link -f llvm@${{ env.LLVM_VERSION }}
+          brew install llvm@$LLVM_VERSION
+          brew link -f llvm@$LLVM_VERSION
 
           mkdir -p /home/linuxbrew/.linuxbrew/etc/clang
 
@@ -74,13 +72,13 @@ jobs:
 
           cat > /home/linuxbrew/.linuxbrew/etc/clang/clang++.cfg <<EOF
           -nostdinc++
-          -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ env.GCC_VERSION }}
-          -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ env.GCC_VERSION }}/x86_64-pc-linux-gnu
-          -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ env.GCC_VERSION }}/backward
+          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION
+          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/x86_64-pc-linux-gnu
+          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/backward
           -isystem /home/linuxbrew/.linuxbrew/include
-          -L/home/linuxbrew/.linuxbrew/lib/gcc/${{ env.GCC_VERSION }}
+          -L/home/linuxbrew/.linuxbrew/lib/gcc/$GCC_VERSION
           -L/home/linuxbrew/.linuxbrew/lib
-          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib/gcc/${{ env.GCC_VERSION }}
+          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib/gcc/$GCC_VERSION
           -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
           -Wl,--enable-new-dtags
           EOF
