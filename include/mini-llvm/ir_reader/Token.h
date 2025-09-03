@@ -8,6 +8,8 @@
 #include <variant>
 #include <vector>
 
+#include "mini-llvm/utils/BigInteger.h"
+
 namespace mini_llvm::ir {
 
 struct Token {
@@ -18,7 +20,7 @@ struct Token {
     };
 
     Kind kind;
-    std::variant<std::monostate, int64_t, std::string, std::vector<int8_t>> value;
+    std::variant<std::monostate, BigInteger, std::string, std::vector<int8_t>> value;
     const char *location;
 };
 

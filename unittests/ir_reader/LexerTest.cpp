@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 
 #include <cstdint>
-#include <limits>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include "mini-llvm/ir_reader/Lexer.h"
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/BigInteger.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
 using enum Token::Kind;
@@ -39,7 +40,7 @@ global i32 42 ; Comment
         {kEqual, {}, input + 17},
         {kGlobal, {}, input + 49},
         {kI32, {}, input + 56},
-        {kNumber, 42, input + 60},
+        {kNumber, BigInteger("42"), input + 60},
         {kEOF, {}, input + 83},
     };
 
@@ -50,7 +51,7 @@ TEST(LexerTest, NumberPositive) {
     const char *input = "42";
 
     std::vector<Token> expected{
-        {kNumber, 42, input + 0},
+        {kNumber, BigInteger("42"), input + 0},
         {kEOF, {}, input + 2},
     };
 
@@ -61,7 +62,7 @@ TEST(LexerTest, NumberNegative) {
     const char *input = "-42";
 
     std::vector<Token> expected{
-        {kNumber, -42, input + 0},
+        {kNumber, BigInteger("-42"), input + 0},
         {kEOF, {}, input + 3},
     };
 
@@ -72,7 +73,7 @@ TEST(LexerTest, NumberZero) {
     const char *input = "0";
 
     std::vector<Token> expected{
-        {kNumber, 0, input + 0},
+        {kNumber, BigInteger("0"), input + 0},
         {kEOF, {}, input + 1},
     };
 
@@ -83,7 +84,7 @@ TEST(LexerTest, NumberSignedMax) {
     const char *input = "9223372036854775807";
 
     std::vector<Token> expected{
-        {kNumber, std::numeric_limits<int64_t>::max(), input + 0},
+        {kNumber, BigInteger("9223372036854775807"), input + 0},
         {kEOF, {}, input + 19},
     };
 
@@ -94,7 +95,7 @@ TEST(LexerTest, NumberSignedMin) {
     const char *input = "-9223372036854775808";
 
     std::vector<Token> expected{
-        {kNumber, std::numeric_limits<int64_t>::min(), input + 0},
+        {kNumber, BigInteger("-9223372036854775808"), input + 0},
         {kEOF, {}, input + 20},
     };
 
@@ -105,7 +106,7 @@ TEST(LexerTest, NumberUnsignedMax) {
     const char *input = "18446744073709551615";
 
     std::vector<Token> expected{
-        {kNumber, static_cast<int64_t>(std::numeric_limits<uint64_t>::max()), input + 0},
+        {kNumber, BigInteger("18446744073709551615"), input + 0},
         {kEOF, {}, input + 20},
     };
 
@@ -116,7 +117,7 @@ TEST(LexerTest, HexNumberSignedMax) {
     const char *input = "0x7fffffffffffffff";
 
     std::vector<Token> expected{
-        {kNumber, std::numeric_limits<int64_t>::max(), input + 0},
+        {kNumber, BigInteger("7fffffffffffffff", 16), input + 0},
         {kEOF, {}, input + 18},
     };
 
@@ -127,7 +128,7 @@ TEST(LexerTest, HexNumberSignedMin) {
     const char *input = "0x8000000000000000";
 
     std::vector<Token> expected{
-        {kNumber, std::numeric_limits<int64_t>::min(), input + 0},
+        {kNumber, BigInteger("8000000000000000", 16), input + 0},
         {kEOF, {}, input + 18},
     };
 
@@ -138,7 +139,7 @@ TEST(LexerTest, HexNumberUnsignedMax) {
     const char *input = "0xffffffffffffffff";
 
     std::vector<Token> expected{
-        {kNumber, static_cast<int64_t>(std::numeric_limits<uint64_t>::max()), input + 0},
+        {kNumber, BigInteger("ffffffffffffffff", 16), input + 0},
         {kEOF, {}, input + 18},
     };
 

@@ -2,7 +2,6 @@
 
 #include "mini-llvm/ir_reader/Lexer.h"
 
-#include <bit>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -13,6 +12,7 @@
 
 #include "mini-llvm/ir_reader/Token.h"
 #include "mini-llvm/utils/Ascii.h"
+#include "mini-llvm/utils/BigInteger.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Unicode.h"
 
@@ -102,38 +102,38 @@ private:
             const char *start = current_;
             ++current_;
             ++current_;
-            uint64_t value = 0;
+            const char *firstDigit = current_;
+            if (!isAsciiHexDigit(*current_)) {
+                throw LexException("expected hexadecimal digit", current_);
+            }
             while (isAsciiHexDigit(*current_)) {
-                value = value * 0x10 + ((isAsciiDigit(*current_) ? (*current_ - '0') : (toAsciiLower(*current_) - 'a' + 0xa)));
                 ++current_;
             }
-            return {kNumber, std::bit_cast<int64_t>(value), start};
+            return {kNumber, BigInteger({firstDigit, current_}, 16), start};
         }
 
         if (isAsciiDigit(*current_)) {
             const char *start = current_;
-            uint64_t value = 0;
             while (isAsciiDigit(*current_)) {
-                value = value * 10 + (*current_ - '0');
                 ++current_;
             }
             if (*current_ == ':') {
                 return {kName, std::string(start, current_), start};
             } else {
-                return {kNumber, std::bit_cast<int64_t>(value), start};
+                return {kNumber, BigInteger({start, current_}), start};
             }
         }
 
         if (*current_ == '-') {
             const char *start = current_;
             ++current_;
-            uint64_t value = 0;
+            if (!isAsciiDigit(*current_)) {
+                throw LexException("expected digit", current_);
+            }
             while (isAsciiDigit(*current_)) {
-                value = value * 10 + (*current_ - '0');
                 ++current_;
             }
-            value = -value;
-            return {kNumber, std::bit_cast<int64_t>(value), start};
+            return {kNumber, BigInteger({start, current_}), start};
         }
 
         if ((*current_ == 'c' && *(current_ + 1) == '"') || *current_ == '"') {

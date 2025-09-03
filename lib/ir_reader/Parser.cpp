@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <iterator>
+#include <limits>
 #include <memory>
 #include <optional>
 #include <queue>
@@ -106,6 +107,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/ir_reader/Symbol.h"
 #include "mini-llvm/ir_reader/Token.h"
+#include "mini-llvm/utils/BigInteger.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -1328,7 +1330,7 @@ public:
         if (type == I8()) {
             switch (current_->kind) {
                 case kNumber: {
-                    int8_t value = static_cast<int8_t>(std::get<int64_t>(current_->value));
+                    int8_t value = static_cast<int8_t>(std::get<BigInteger>(current_->value).toInt64() & 0xff);
                     ++current_;
                     return std::make_unique<I8Constant>(value);
                 }
@@ -1344,7 +1346,7 @@ public:
         if (type == I16()) {
             switch (current_->kind) {
                 case kNumber: {
-                    int16_t value = static_cast<int16_t>(std::get<int64_t>(current_->value));
+                    int16_t value = static_cast<int16_t>(std::get<BigInteger>(current_->value).toInt64() & 0xffff);
                     ++current_;
                     return std::make_unique<I16Constant>(value);
                 }
@@ -1360,7 +1362,7 @@ public:
         if (type == I32()) {
             switch (current_->kind) {
                 case kNumber: {
-                    int32_t value = static_cast<int32_t>(std::get<int64_t>(current_->value));
+                    int32_t value = static_cast<int32_t>(std::get<BigInteger>(current_->value).toInt64() & 0xffffffff);
                     ++current_;
                     return std::make_unique<I32Constant>(static_cast<int32_t>(value));
                 }
@@ -1376,7 +1378,7 @@ public:
         if (type == I64()) {
             switch (current_->kind) {
                 case kNumber: {
-                    int64_t value = std::get<int64_t>(current_->value);
+                    int64_t value = std::get<BigInteger>(current_->value).toInt64();
                     ++current_;
                     return std::make_unique<I64Constant>(value);
                 }
@@ -1392,7 +1394,7 @@ public:
         if (type == Float()) {
             switch (current_->kind) {
                 case kNumber: {
-                    float value = static_cast<float>(std::bit_cast<double>(std::get<int64_t>(current_->value)));
+                    float value = static_cast<float>(std::bit_cast<double>(std::get<BigInteger>(current_->value).toInt64()));
                     ++current_;
                     return std::make_unique<FloatConstant>(value);
                 }
@@ -1408,7 +1410,7 @@ public:
         if (type == Double()) {
             switch (current_->kind) {
                 case kNumber: {
-                    double value = std::bit_cast<double>(std::get<int64_t>(current_->value));
+                    double value = std::bit_cast<double>(std::get<BigInteger>(current_->value).toInt64());
                     ++current_;
                     return std::make_unique<DoubleConstant>(value);
                 }
@@ -1511,9 +1513,12 @@ public:
                 if (current_->kind != kNumber) {
                     throw ParseException("expected number", current_);
                 }
-                int64_t numElements = std::get<int64_t>(current_->value);
+                BigInteger numElements = std::get<BigInteger>(current_->value);
                 if (numElements < 0) {
                     throw ParseException("number of elements must be non-negative", current_);
+                }
+                if (numElements > std::numeric_limits<int64_t>::max()) {
+                    throw ParseException("number of elements is too large", current_);
                 }
                 ++current_;
                 if (current_->kind != kX) {
@@ -1529,7 +1534,7 @@ public:
                     throw ParseException("expected ']'", current_);
                 }
                 ++current_;
-                return std::make_unique<ArrayType>(std::move(elementType), static_cast<size_t>(numElements));
+                return std::make_unique<ArrayType>(std::move(elementType), static_cast<size_t>(numElements.toInt64()));
             }
 
             default: {
