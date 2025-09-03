@@ -42,6 +42,7 @@ add_executable(unittests
     ir_reader/ParserTest.cpp
     main.cpp
     utils/AsciiTest.cpp
+    utils/BigIntegerTest.cpp
     utils/CommandLineParserTest.cpp
     utils/PCG32Test.cpp
     utils/SequenceOpsTest.cpp
