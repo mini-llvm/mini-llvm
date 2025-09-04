@@ -1,0 +1,15 @@
+load("@rules_fuzzing//fuzzing:cc_defs.bzl", "cc_fuzz_test")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_fuzz_test(
+    name = "fuzz",
+    srcs = ["fuzz.cpp"],
+    linkstatic = select({
+        "//:shared": False,
+        "//conditions:default": True,
+    }),
+    deps = [
+        "//:mini-llvm",
+    ],
+)

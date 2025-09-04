@@ -5,6 +5,7 @@ project(mini-llvm VERSION 0.1.0 LANGUAGES CXX)
 option(BUILD_SHARED_LIBS "Build shared libraries." OFF)
 
 option(MINI_LLVM_TESTS "Build tests." OFF)
+option(MINI_LLVM_FUZZ "Build fuzz targets." OFF)
 option(MINI_LLVM_DOCS "Build docs." OFF)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
@@ -231,6 +232,10 @@ if(MINI_LLVM_TESTS)
     add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL SYSTEM)
 
     add_subdirectory(unittests)
+endif()
+
+if(MINI_LLVM_FUZZ)
+    add_subdirectory(fuzz)
 endif()
 
 if(MINI_LLVM_DOCS)

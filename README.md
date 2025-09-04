@@ -301,6 +301,7 @@ cmake --build .
 | - | - | - |
 | `BUILD_SHARED_LIBS` | `OFF` | Build mini-llvm as a shared library (libmini-llvm.so) |
 | `MINI_LLVM_TESTS` | `OFF` | Build tests |
+| `MINI_LLVM_FUZZ` | `OFF` | Build fuzz targets |
 | `MINI_LLVM_DOCS` | `OFF` | Build docs (requires Doxygen and Graphviz) |
 
 ### With Bazel
