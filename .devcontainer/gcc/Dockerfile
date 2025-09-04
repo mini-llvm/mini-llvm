@@ -19,9 +19,13 @@ RUN set -ex; \
 
 RUN set -ex; \
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
-    brew install binutils gcc@$GCC_VERSION cmake ninja; \
+    brew install binutils gcc@$GCC_VERSION; \
     brew link -f binutils; \
     for f in /home/linuxbrew/.linuxbrew/opt/gcc@$GCC_VERSION/bin/*-$GCC_VERSION; do \
         name="$(basename "$f")"; \
         ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-$GCC_VERSION}"; \
     done
+
+RUN set -ex; \
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
+    brew install cmake ninja

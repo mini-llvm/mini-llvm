@@ -20,13 +20,22 @@ RUN set -ex; \
 
 RUN set -ex; \
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
-    brew install binutils gcc@$GCC_VERSION llvm@$LLVM_VERSION cmake ninja; \
-    brew link -f binutils llvm@$LLVM_VERSION; \
-    for f in /home/linuxbrew/.linuxbrew/opt/llvm@$LLVM_VERSION/bin/*-$GCC_VERSION; do \
+    brew install binutils gcc@$GCC_VERSION; \
+    brew link -f binutils; \
+    for f in /home/linuxbrew/.linuxbrew/opt/gcc@$GCC_VERSION/bin/*-$GCC_VERSION; do \
         name="$(basename "$f")"; \
         ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-$GCC_VERSION}"; \
     done
 
+RUN set -ex; \
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
+    brew install llvm@$LLVM_VERSION; \
+    brew link -f llvm@$LLVM_VERSION
+
 COPY ./configure_clang.sh ./configure_clang.sh
 
 RUN ./configure_clang.sh && rm ./configure_clang.sh
+
+RUN set -ex; \
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"; \
+    brew install cmake ninja
