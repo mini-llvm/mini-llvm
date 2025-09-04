@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 
 ARG GCC_VERSION=15
-ARG LLVM_VERSION=20
+ARG LLVM_VERSION=21
 
 RUN set -ex; \
     apt-get update; \

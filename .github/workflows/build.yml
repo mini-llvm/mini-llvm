@@ -33,7 +33,7 @@ jobs:
 
     env:
       GCC_VERSION: '15'
-      LLVM_VERSION: '20'
+      LLVM_VERSION: '21'
       DEBIAN_FRONTEND: noninteractive
       UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
