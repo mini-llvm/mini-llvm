@@ -31,7 +31,7 @@ jobs:
           apt-get upgrade -y
           apt-get install -y git python3
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - run: chown -R $(whoami):$(whoami) .
 
