@@ -57,18 +57,18 @@ private:
 
     BigInteger(int sign, std::vector<uint32_t> digits);
 
-    friend bool operator==(const BigInteger &lhs, const BigInteger &rhs) noexcept;
-    friend std::strong_ordering operator<=>(const BigInteger &lhs, const BigInteger &rhs) noexcept;
+    friend MINI_LLVM_EXPORT bool operator==(const BigInteger &lhs, const BigInteger &rhs) noexcept;
+    friend MINI_LLVM_EXPORT std::strong_ordering operator<=>(const BigInteger &lhs, const BigInteger &rhs) noexcept;
 
-    friend BigInteger operator+(const BigInteger &lhs, const BigInteger &rhs);
-    friend BigInteger operator-(const BigInteger &lhs, const BigInteger &rhs);
-    friend BigInteger operator*(const BigInteger &lhs, const BigInteger &rhs);
-    friend BigInteger operator/(const BigInteger &lhs, int32_t rhs);
-    friend int32_t operator%(const BigInteger &lhs, int32_t rhs);
+    friend MINI_LLVM_EXPORT BigInteger operator+(const BigInteger &lhs, const BigInteger &rhs);
+    friend MINI_LLVM_EXPORT BigInteger operator-(const BigInteger &lhs, const BigInteger &rhs);
+    friend MINI_LLVM_EXPORT BigInteger operator*(const BigInteger &lhs, const BigInteger &rhs);
+    friend MINI_LLVM_EXPORT BigInteger operator/(const BigInteger &lhs, int32_t rhs);
+    friend MINI_LLVM_EXPORT int32_t operator%(const BigInteger &lhs, int32_t rhs);
 
-    friend BigInteger abs(const BigInteger &value);
-    friend BigInteger abs(BigInteger &&value);
-    friend std::pair<BigInteger, int32_t> divRem(const BigInteger &lhs, int32_t rhs);
+    friend MINI_LLVM_EXPORT BigInteger abs(const BigInteger &value);
+    friend MINI_LLVM_EXPORT BigInteger abs(BigInteger &&value);
+    friend MINI_LLVM_EXPORT std::pair<BigInteger, int32_t> divRem(const BigInteger &lhs, int32_t rhs);
 };
 
 MINI_LLVM_EXPORT bool operator==(const BigInteger &lhs, const BigInteger &rhs) noexcept;
