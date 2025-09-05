@@ -161,6 +161,24 @@ bool Function::isWellFormed() const {
             }
         }
     }
+    for (const BasicBlock *B : visited) {
+        for (const Instruction &I : *B) {
+            if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+                for (Phi::ConstIncoming incoming : incomings(*phi)) {
+                    if (visited.contains(&*incoming.block)) {
+                        if (auto *II = dynamic_cast<const Instruction *>(&*incoming.value)) {
+                            if (!visited.contains(II->parent())) {
+                                return false;
+                            }
+                            if (!domTree.dominates(*II->parent(), *incoming.block)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
     for (const BasicBlock &B : *this) {
         if (&B != &entry()) {
             for (const Instruction &I : B) {
