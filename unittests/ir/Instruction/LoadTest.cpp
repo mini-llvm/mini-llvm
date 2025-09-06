@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Type/I32.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class LoadTest : public ::testing::Test {
 protected:
@@ -36,3 +35,5 @@ TEST_F(LoadTest, clone) {
     EXPECT_EQ(*load_->type(), *cloned->type());
     EXPECT_EQ(&*load_->ptr(), &*cloned->ptr());
 }
+
+} // namespace mini_llvm::ir

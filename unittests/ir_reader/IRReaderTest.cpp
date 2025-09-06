@@ -4,7 +4,7 @@
 
 #include "mini-llvm/ir_reader/IRReader.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 TEST(IRReaderTest, Function) {
     const char *input = R"(
@@ -581,3 +581,5 @@ TEST(IRReaderTest, NegativeNumElements) {
 
     EXPECT_FALSE(parseModule(input));
 }
+
+} // namespace mini_llvm::ir

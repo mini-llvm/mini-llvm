@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/ASHR.h"
 #include "mini-llvm/ir/Type/I32.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class ASHRTest : public ::testing::Test {
 protected:
@@ -37,3 +36,5 @@ TEST_F(ASHRTest, clone) {
     EXPECT_EQ(&*ashr_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*ashr_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

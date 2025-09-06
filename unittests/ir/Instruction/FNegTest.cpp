@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/FNeg.h"
 #include "mini-llvm/ir/Type/Double.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FNegTest : public ::testing::Test {
 protected:
@@ -36,3 +35,5 @@ TEST_F(FNegTest, clone) {
     std::shared_ptr<FNeg> cloned = cast<FNeg>(fneg_->clone());
     EXPECT_EQ(&*fneg_->value(), &*cloned->value());
 }
+
+} // namespace mini_llvm::ir

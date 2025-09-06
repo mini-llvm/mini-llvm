@@ -13,9 +13,9 @@
 #include "mini-llvm/ir_reader/Parser.h"
 #include "mini-llvm/ir_reader/Token.h"
 
-using namespace mini_llvm::ir;
+using enum mini_llvm::ir::Token::Kind;
 
-using enum Token::Kind;
+namespace mini_llvm::ir {
 
 TEST(ParserTest, Empty) {
     std::vector<Token> input{
@@ -125,3 +125,5 @@ TEST(ParserTest, ArrayConstant) {
 
     EXPECT_EQ(*Parser(input.begin()).parseConstant(*expected->type()), *expected);
 }
+
+} // namespace mini_llvm::ir

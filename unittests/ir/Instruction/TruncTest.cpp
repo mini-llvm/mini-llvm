@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/Trunc.h"
 #include "mini-llvm/ir/Type/I32.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class TruncTest : public ::testing::Test {
 protected:
@@ -38,3 +37,5 @@ TEST_F(TruncTest, clone) {
     EXPECT_EQ(&*trunc_->value(), &*cloned->value());
     EXPECT_EQ(*trunc_->type(), *cloned->type());
 }
+
+} // namespace mini_llvm::ir

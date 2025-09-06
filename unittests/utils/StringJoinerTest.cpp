@@ -6,7 +6,7 @@
 
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 TEST(StringJoinerTest, PrefixSuffix) {
     StringJoiner joiner(", ", "[", "]");
@@ -109,3 +109,5 @@ TEST(StringJoinerTest, StdFormat) {
 
     EXPECT_EQ(std::format("{}", joiner), "[element1, element2, element3]");
 }
+
+} // namespace mini_llvm

@@ -7,7 +7,7 @@
 
 #include "mini-llvm/utils/Strings.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 TEST(StringsTest, ToStringPositive) {
     EXPECT_EQ(toString(INT32_C(12345), 10), "12345");
@@ -160,3 +160,5 @@ TEST(StringsTest, NormalizeLineEndingsMixedStyles) {
     normalizeLineEndings(str);
     EXPECT_EQ(str, "Line 1\nLine 2\nLine 3\nLine 4\n");
 }
+
+} // namespace mini_llvm

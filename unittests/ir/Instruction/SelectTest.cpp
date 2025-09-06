@@ -10,8 +10,7 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class SelectTest : public ::testing::Test {
 protected:
@@ -43,3 +42,5 @@ TEST_F(SelectTest, clone) {
     EXPECT_EQ(&*select_->trueValue(), &*cloned->trueValue());
     EXPECT_EQ(&*select_->falseValue(), &*cloned->falseValue());
 }
+
+} // namespace mini_llvm::ir

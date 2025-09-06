@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/FPTrunc.h"
 #include "mini-llvm/ir/Type/Float.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FPTruncTest : public ::testing::Test {
 protected:
@@ -39,3 +38,5 @@ TEST_F(FPTruncTest, clone) {
     EXPECT_EQ(&*fptrunc_->value(), &*cloned->value());
     EXPECT_EQ(*fptrunc_->type(), *cloned->type());
 }
+
+} // namespace mini_llvm::ir

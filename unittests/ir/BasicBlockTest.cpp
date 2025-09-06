@@ -10,7 +10,7 @@
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Type/I32.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 TEST(BasicBlockTest, IsWellFormedEmpty) {
     BasicBlock B;
@@ -32,3 +32,5 @@ TEST(BasicBlockTest, IsWellFormedUnexpectedTerminator) {
 
     EXPECT_FALSE(B.isWellFormed());
 }
+
+} // namespace mini_llvm::ir

@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/ZExt.h"
 #include "mini-llvm/ir/Type/I64.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class ZExtTest : public ::testing::Test {
 protected:
@@ -38,3 +37,5 @@ TEST_F(ZExtTest, clone) {
     EXPECT_EQ(&*zext_->value(), &*cloned->value());
     EXPECT_EQ(*zext_->type(), *cloned->type());
 }
+
+} // namespace mini_llvm::ir

@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/FMul.h"
 #include "mini-llvm/ir/Type/Double.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FMulTest : public ::testing::Test {
 protected:
@@ -38,3 +37,5 @@ TEST_F(FMulTest, clone) {
     EXPECT_EQ(&*fmul_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*fmul_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

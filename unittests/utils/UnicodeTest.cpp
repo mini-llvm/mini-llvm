@@ -4,7 +4,7 @@
 
 #include "mini-llvm/utils/Unicode.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 TEST(UnicodeTest, DecodeUtf8OneByte) {
     const char *str = "A"; // U+0041
@@ -248,3 +248,5 @@ TEST(UnicodeTest, DecodeUtf8OutOfRange) {
     char32_t cp = decodeUtf8(ptr);
     EXPECT_EQ(cp, static_cast<char32_t>(-1));
 }
+
+} // namespace mini_llvm

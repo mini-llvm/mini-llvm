@@ -4,7 +4,7 @@
 
 #include "mini-llvm/utils/Ascii.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 TEST(AsciiTest, isAsciiPrintable) {
     EXPECT_TRUE(isAsciiPrintable(' '));
@@ -153,3 +153,5 @@ TEST(AsciiTest, toAsciiUpper) {
     EXPECT_EQ(toAsciiUpper('\x80'), '\x80');
     EXPECT_EQ(toAsciiUpper('\xff'), '\xff');
 }
+
+} // namespace mini_llvm

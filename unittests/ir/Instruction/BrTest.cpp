@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/Br.h"
 #include "mini-llvm/ir/Type/Void.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class BrTest : public ::testing::Test {
 protected:
@@ -38,3 +37,5 @@ TEST_F(BrTest, clone) {
     std::shared_ptr<Br> cloned = cast<Br>(br_->clone());
     EXPECT_EQ(&*br_->dest(), &*cloned->dest());
 }
+
+} // namespace mini_llvm::ir

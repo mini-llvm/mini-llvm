@@ -23,8 +23,7 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 TEST(FunctionTest, IsWellFormedEntryPredecessors) {
     // define void @test() {
@@ -371,3 +370,5 @@ TEST(FunctionTest, IsWellFormedAlloca) {
 
     EXPECT_FALSE(F.isWellFormed());
 }
+
+} // namespace mini_llvm::ir

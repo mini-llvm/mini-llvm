@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/Mul.h"
 #include "mini-llvm/ir/Type/I32.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class MulTest : public ::testing::Test {
 protected:
@@ -37,3 +36,5 @@ TEST_F(MulTest, clone) {
     EXPECT_EQ(&*mul_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*mul_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

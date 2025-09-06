@@ -9,7 +9,7 @@
 #include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/Expected.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 TEST(CommandLineParserTest, NoArgs) {
     std::vector<std::string> args{"program"};
@@ -982,3 +982,5 @@ TEST(CommandLineParserTest, Separator) {
 
     ASSERT_EQ(i, j);
 }
+
+} // namespace mini_llvm

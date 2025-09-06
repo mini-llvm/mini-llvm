@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/SExt.h"
 #include "mini-llvm/ir/Type/I64.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class SExtTest : public ::testing::Test {
 protected:
@@ -38,3 +37,5 @@ TEST_F(SExtTest, clone) {
     EXPECT_EQ(&*sext_->value(), &*cloned->value());
     EXPECT_EQ(*sext_->type(), *cloned->type());
 }
+
+} // namespace mini_llvm::ir

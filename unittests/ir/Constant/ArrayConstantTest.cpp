@@ -16,8 +16,7 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I8.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 TEST(ArrayConstantTest, FormatAsString) {
     std::unique_ptr<ArrayType> type = std::make_unique<ArrayType>(std::make_unique<I8>(), 13);
@@ -54,3 +53,5 @@ TEST(ArrayConstantTest, FormatAsZeroInitializer) {
 
     EXPECT_EQ(C.format(), "zeroinitializer");
 }
+
+} // namespace mini_llvm::ir

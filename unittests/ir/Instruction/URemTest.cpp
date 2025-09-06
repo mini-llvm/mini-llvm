@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/URem.h"
 #include "mini-llvm/ir/Type/I32.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class URemTest : public ::testing::Test {
 protected:
@@ -37,3 +36,5 @@ TEST_F(URemTest, clone) {
     EXPECT_EQ(&*urem_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*urem_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/FAdd.h"
 #include "mini-llvm/ir/Type/Double.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FAddTest : public ::testing::Test {
 protected:
@@ -39,3 +38,5 @@ TEST_F(FAddTest, clone) {
     EXPECT_EQ(&*fadd_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*fadd_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

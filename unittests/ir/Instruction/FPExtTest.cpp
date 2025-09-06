@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/FPExt.h"
 #include "mini-llvm/ir/Type/Double.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FPExtTest : public ::testing::Test {
 protected:
@@ -39,3 +38,5 @@ TEST_F(FPExtTest, clone) {
     EXPECT_EQ(&*fpext_->value(), &*cloned->value());
     EXPECT_EQ(*fpext_->type(), *cloned->type());
 }
+
+} // namespace mini_llvm::ir

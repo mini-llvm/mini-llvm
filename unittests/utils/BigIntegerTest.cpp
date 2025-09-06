@@ -6,7 +6,7 @@
 
 #include "mini-llvm/utils/BigInteger.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 TEST(BigIntegerTest, Add) {
     EXPECT_EQ(BigInteger("200000000000000000000") + BigInteger("300000000000000000000"), BigInteger("500000000000000000000"));
@@ -122,3 +122,5 @@ TEST(BigIntegerTest, DivRem) {
     EXPECT_EQ(q, BigInteger("0"));
     EXPECT_EQ(r, 0);
 }
+
+} // namespace mini_llvm

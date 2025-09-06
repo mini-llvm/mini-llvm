@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Instruction/FCmp.h"
 #include "mini-llvm/ir/Type/I1.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FCmpTest : public ::testing::Test {
 protected:
@@ -41,3 +40,5 @@ TEST_F(FCmpTest, clone) {
     EXPECT_EQ(&*fcmp_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*fcmp_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

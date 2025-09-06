@@ -14,6 +14,8 @@ struct TestCase {
     std::unordered_set<int> expected;
 };
 
+namespace mini_llvm {
+
 TEST(SetOpsTest, Union) {
     TestCase testCases[] = {
         {{}, {}, {}},
@@ -87,3 +89,5 @@ TEST(SetOpsTest, Difference) {
         EXPECT_EQ(actual, expected);
     }
 }
+
+} // namespace mini_llvm

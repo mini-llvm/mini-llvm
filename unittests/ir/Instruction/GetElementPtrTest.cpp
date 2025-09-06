@@ -13,8 +13,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class GetElementPtrTest : public ::testing::Test {
 protected:
@@ -44,3 +43,5 @@ TEST_F(GetElementPtrTest, clone) {
     EXPECT_EQ(cloned->idx_size(), getelememtptr_->idx_size());
     EXPECT_EQ(&*cloned->idx(0), &*getelememtptr_->idx(0));
 }
+
+} // namespace mini_llvm::ir

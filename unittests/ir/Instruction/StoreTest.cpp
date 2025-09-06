@@ -10,8 +10,7 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/Void.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class StoreTest : public ::testing::Test {
 protected:
@@ -37,3 +36,5 @@ TEST_F(StoreTest, clone) {
     EXPECT_EQ(&*store_->value(), &*cloned->value());
     EXPECT_EQ(&*store_->ptr(), &*cloned->ptr());
 }
+
+} // namespace mini_llvm::ir

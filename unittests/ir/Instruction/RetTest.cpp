@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Type/Void.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class RetTest : public ::testing::Test {
 protected:
@@ -33,3 +32,5 @@ TEST_F(RetTest, clone) {
     EXPECT_EQ(&*ret1_->value(), &*cloned1->value());
     EXPECT_EQ(&*ret2_->value(), &*cloned2->value());
 }
+
+} // namespace mini_llvm::ir

@@ -8,8 +8,7 @@
 #include "mini-llvm/ir/Instruction/FDiv.h"
 #include "mini-llvm/ir/Type/Double.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class FDivTest : public ::testing::Test {
 protected:
@@ -38,3 +37,5 @@ TEST_F(FDivTest, clone) {
     EXPECT_EQ(&*fdiv_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*fdiv_->rhs(), &*cloned->rhs());
 }
+
+} // namespace mini_llvm::ir

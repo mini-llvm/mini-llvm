@@ -9,10 +9,9 @@
 #include "mini-llvm/ir_reader/Token.h"
 #include "mini-llvm/utils/BigInteger.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+using enum mini_llvm::ir::Token::Kind;
 
-using enum Token::Kind;
+namespace mini_llvm::ir {
 
 TEST(LexerTest, Empty) {
     const char *input = "";
@@ -408,3 +407,5 @@ TEST(LexerTest, String) {
 
     EXPECT_EQ(lex(input), expected);
 }
+
+} // namespace mini_llvm::ir

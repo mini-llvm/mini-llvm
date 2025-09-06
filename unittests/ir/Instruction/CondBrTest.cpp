@@ -10,8 +10,7 @@
 #include "mini-llvm/ir/Instruction/CondBr.h"
 #include "mini-llvm/ir/Type/Void.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 class CondBrTest : public ::testing::Test {
 protected:
@@ -45,3 +44,5 @@ TEST_F(CondBrTest, clone) {
     EXPECT_EQ(&*br_->trueDest(), &*cloned->trueDest());
     EXPECT_EQ(&*br_->falseDest(), &*cloned->falseDest());
 }
+
+} // namespace mini_llvm::ir
