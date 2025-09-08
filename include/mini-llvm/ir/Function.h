@@ -269,4 +269,6 @@ inline auto attrs(const Function &F) {
     return std::ranges::subrange(F.attr_begin(), F.attr_end());
 }
 
+MINI_LLVM_EXPORT std::string dot(const Function &F);
+
 } // namespace mini_llvm::ir

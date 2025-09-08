@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Argument.h"
@@ -24,6 +25,7 @@
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
+#include "mini-llvm/utils/Dot.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm;
@@ -231,4 +233,21 @@ std::string Function::format() const {
         formatted.add("{}", formattedBody);
     }
     return formatted.toString();
+}
+
+std::string ir::dot(const Function &F) {
+    std::vector<std::pair<std::string, std::string>> edges;
+    for (const BasicBlock &B : F) {
+        for (const BasicBlock *succ : successors(B)) {
+            edges.emplace_back(B.formatAsOperand(), succ->formatAsOperand());
+        }
+    }
+    StringJoiner dot("\n");
+    dot.add("digraph {");
+    dot.add("  node [shape=box];");
+    for (const auto &[from, to] : edges) {
+        dot.add("  {} -> {}", formatDotId(from), formatDotId(to));
+    }
+    dot.add("}");
+    return dot.toString();
 }

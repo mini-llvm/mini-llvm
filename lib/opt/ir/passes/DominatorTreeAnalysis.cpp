@@ -6,16 +6,42 @@
 #include <memory>
 #include <queue>
 #include <ranges>
+#include <string>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/utils/Dot.h"
 #include "mini-llvm/utils/HashMap.h"
+#include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
+
+std::string ir::dot(const DTNode *root) {
+    std::vector<std::pair<std::string, std::string>> edges;
+    std::queue<const DTNode *> Q;
+    Q.push(root);
+    while (!Q.empty()) {
+        const DTNode *node = Q.front();
+        Q.pop();
+        for (const DTNode *child : node->children) {
+            edges.emplace_back(node->block->formatAsOperand(), child->block->formatAsOperand());
+            Q.push(child);
+        }
+    }
+    StringJoiner dot("\n");
+    dot.add("digraph {");
+    dot.add("  node [shape=box];");
+    for (const auto &[from, to] : edges) {
+        dot.add("  {} -> {}", formatDotId(from), formatDotId(to));
+    }
+    dot.add("}");
+    return dot.toString();
+}
 
 // Thomas Lengauer and Robert Endre Tarjan. 1979.
 // A fast algorithm for finding dominators in a flowgraph.

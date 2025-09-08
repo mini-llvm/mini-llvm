@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "mini-llvm/ir/Function.h"
@@ -17,6 +18,8 @@ struct DTNode {
     const DTNode *parent;
     std::vector<const DTNode *> children;
 };
+
+MINI_LLVM_EXPORT std::string dot(const DTNode *root);
 
 class MINI_LLVM_EXPORT DominatorTreeAnalysis final : public FunctionAnalysis {
 public:
