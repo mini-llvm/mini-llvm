@@ -5,16 +5,17 @@
 #include <format>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace mini_llvm {
 
 class StringJoiner {
 public:
-    explicit constexpr StringJoiner(std::string_view delimiter)
-        : delimiter_(delimiter), first_(true) {}
+    explicit constexpr StringJoiner(std::string delimiter)
+        : delimiter_(std::move(delimiter)), first_(true) {}
 
-    constexpr StringJoiner(std::string_view delimiter, std::string_view prefix, std::string_view suffix)
-        : delimiter_(delimiter), prefix_(prefix), suffix_(suffix), first_(true) {}
+    constexpr StringJoiner(std::string delimiter, std::string prefix, std::string suffix)
+        : delimiter_(std::move(delimiter)), prefix_(std::move(prefix)), suffix_(std::move(suffix)), first_(true) {}
 
     constexpr StringJoiner &add(std::string_view element) {
         if (first_) {
@@ -36,7 +37,7 @@ public:
     }
 
 private:
-    std::string_view delimiter_, prefix_, suffix_;
+    std::string delimiter_, prefix_, suffix_;
     std::string out_;
     bool first_;
 };
