@@ -2,6 +2,8 @@
 
 #include "mini-llvm/utils/SystemError.h"
 
+#include "mini-llvm/utils/ErrorCode.h"
+
 #ifdef _WIN32
     #include <cerrno>
 
@@ -168,6 +170,6 @@ SystemError SystemError::fromNative(native_type native) {
 #ifdef _WIN32
     return SystemError(winerror_to_errno(native), native);
 #else
-    return SystemError(native, native);
+    return SystemError(static_cast<ErrorCode>(native), native);
 #endif
 }

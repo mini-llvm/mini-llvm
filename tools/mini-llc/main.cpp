@@ -25,6 +25,7 @@
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 #include "mini-llvm/utils/CommandLineParser.h"
+#include "mini-llvm/utils/ErrorCode.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/IO.h"
 #include "mini-llvm/utils/Path.h"
@@ -196,7 +197,7 @@ int mainImpl(std::vector<std::string> args) {
 
     Expected<std::string, SystemError> source = readAll(*options.inputFile, stdin);
     if (!source) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *options.inputFile, strerror(source.error().code()));
+        std::println(stderr, "{}: error: {}: {}", args[0], *options.inputFile, message(source.error().code()));
         return EXIT_FAILURE;
     }
     normalizeLineEndings(*source);
@@ -238,7 +239,7 @@ int mainImpl(std::vector<std::string> args) {
 
     if (options.irDumpFile) {
         if (Expected<void, SystemError> result = writeAll(*options.irDumpFile, stdout, std::format("{}\n", *IM)); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *options.irDumpFile, strerror(result.error().code()));
+            std::println(stderr, "{}: error: {}: {}", args[0], *options.irDumpFile, message(result.error().code()));
             return EXIT_FAILURE;
         }
     }
@@ -269,13 +270,13 @@ int mainImpl(std::vector<std::string> args) {
 
     if (options.mirDumpFile) {
         if (Expected<void, SystemError> result = writeAll(*options.mirDumpFile, stdout, std::format("{}\n", MM)); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *options.mirDumpFile, strerror(result.error().code()));
+            std::println(stderr, "{}: error: {}: {}", args[0], *options.mirDumpFile, message(result.error().code()));
             return EXIT_FAILURE;
         }
     }
 
     if (Expected<void, SystemError> result = writeAll(*options.outputFile, stdout, std::format("{}\n", MCM)); !result) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *options.outputFile, strerror(result.error().code()));
+        std::println(stderr, "{}: error: {}: {}", args[0], *options.outputFile, message(result.error().code()));
         return EXIT_FAILURE;
     }
 

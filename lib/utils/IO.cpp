@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <string>
 
+#include "mini-llvm/utils/ErrorCode.h"
 #include "mini-llvm/utils/Expected.h"
 #include "mini-llvm/utils/FileHandle.h"
 #include "mini-llvm/utils/Path.h"
@@ -22,7 +23,7 @@ Expected<std::string, SystemError> mini_llvm::readAll(FILE *stream) {
         content.append(chunk.data(), n);
         if (n < chunk.size()) {
             if (ferror(stream)) {
-                return Unexpected(SystemError(errno));
+                return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
             }
             break;
         }
@@ -33,7 +34,7 @@ Expected<std::string, SystemError> mini_llvm::readAll(FILE *stream) {
 Expected<std::string, SystemError> mini_llvm::readAll(const Path &path) {
     FileHandle handle(path, "rb");
     if (!handle) {
-        return Unexpected(SystemError(errno));
+        return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
     }
     return readAll(handle.get());
 }
@@ -47,7 +48,7 @@ Expected<std::string, SystemError> mini_llvm::readAll(const Path &path, FILE *st
 
 Expected<void, SystemError> mini_llvm::writeAll(FILE *stream, const char *data, size_t size) {
     if (fwrite(data, 1, size, stream) != size) {
-        return Unexpected(SystemError(errno));
+        return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
     }
     return {};
 }
@@ -55,7 +56,7 @@ Expected<void, SystemError> mini_llvm::writeAll(FILE *stream, const char *data, 
 Expected<void, SystemError> mini_llvm::writeAll(const Path &path, const char *data, size_t size) {
     FileHandle handle(path, "wb");
     if (!handle) {
-        return Unexpected(SystemError(errno));
+        return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
     }
     return writeAll(handle.get(), data, size);
 }

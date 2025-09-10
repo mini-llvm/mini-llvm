@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "mini-llvm/utils/Compiler.h"
+#include "mini-llvm/utils/ErrorCode.h"
 
 namespace mini_llvm {
 
@@ -16,13 +17,13 @@ public:
     using native_type = int;
 #endif
 
-    explicit SystemError(int code)
+    explicit SystemError(ErrorCode code)
         : code_(code) {}
 
-    SystemError(int code, native_type native)
+    SystemError(ErrorCode code, native_type native)
         : code_(code), native_(native) {}
 
-    int code() const {
+    ErrorCode code() const {
         return code_;
     }
 
@@ -33,7 +34,7 @@ public:
     static SystemError fromNative(native_type native);
 
 private:
-    int code_;
+    ErrorCode code_;
     std::optional<native_type> native_;
 };
 
