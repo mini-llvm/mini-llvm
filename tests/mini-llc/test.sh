@@ -64,7 +64,7 @@ if [[ ! -v emulator ]]; then
 fi
 
 if [[ ! -v result_dir ]]; then
-    result_dir="$(dirname "$0")/result_$(date +%Y%m%d_%H%M%S)"
+    result_dir="$(dirname -- "$0")/result_$(date +%Y%m%d_%H%M%S)"
 fi
 
 if [[ ! -v timeout ]]; then
@@ -81,7 +81,7 @@ done
 for test in "${tests[@]}"; do
     printf "%-*s " "$width" "$test"
 
-    if timeout --foreground -v "$timeout" "$(dirname "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$result_dir"; then
+    if timeout --foreground -v "$timeout" "$(dirname -- "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$result_dir"; then
         echo -e "\033[32mPASSED\033[0m"
     else
         echo -e "\033[31mFAILED\033[0m"

@@ -71,8 +71,8 @@ fi
 
 tests=()
 
-for f in "$(dirname "$0")"/*.ll; do
+for f in "$(dirname -- "$0")"/*.ll; do
     tests+=("$(basename "$f" .ll)")
 done
 
-"$(dirname "$0")/test.sh" "${args[@]}" "${tests[@]}"
+"$(dirname -- "$0")/test.sh" "${args[@]}" "${tests[@]}"
