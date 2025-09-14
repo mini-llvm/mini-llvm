@@ -168,7 +168,7 @@ int winerror_to_errno(unsigned long winerror) {
 
 SystemError SystemError::fromNative(native_type native) {
 #ifdef _WIN32
-    return SystemError(winerror_to_errno(native), native);
+    return SystemError(static_cast<ErrorCode>(winerror_to_errno(native)), native);
 #else
     return SystemError(static_cast<ErrorCode>(native), native);
 #endif
