@@ -9,8 +9,9 @@ driver="$4"
 emulator="$5"
 result_dir="$6"
 
-mkdir -p "$result_dir" 
+mkdir -p "$result_dir"
+source "$(dirname -- "$0")/$test.cfg"
 $mini_llc --target="$target" -o "$result_dir/$test.s" "$(dirname -- "$0")/$test.ll"
-$driver -o "$result_dir/$test" "$result_dir/$test.s" -lm
+$driver -o "$result_dir/$test" "$result_dir/$test.s" $libs
 $emulator "$result_dir/$test" > "$result_dir/$test.out"
 diff "$(dirname -- "$0")/$test.ans" "$result_dir/$test.out" >&2
