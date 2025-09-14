@@ -842,10 +842,10 @@ public:
         for (const mir::GlobalVar &MG : globalVars(*MM_)) {
             if (!MG.isDeclaration()) {
                 std::string section;
-                if (dynamic_cast<const mir::ZeroConstant *>(&MG.initializer())) {
-                    section = ".bss";
-                } else if (MG.isConstant()) {
+                if (MG.isConstant()) {
                     section = ".rodata";
+                } else if (dynamic_cast<const mir::ZeroConstant *>(&MG.initializer())) {
+                    section = ".bss";
                 } else {
                     section = ".data";
                 }
