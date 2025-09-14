@@ -9,6 +9,7 @@
 #include <memory>
 #include <ranges>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "mini-llvm/mir/Function.h"
@@ -149,6 +150,11 @@ inline auto functions(Module &M) {
 inline auto functions(const Module &M) {
     return std::ranges::subrange(M.function_begin(), M.function_end());
 }
+
+MINI_LLVM_EXPORT GlobalVar *getGlobalVarByName(Module &M, std::string_view name);
+MINI_LLVM_EXPORT const GlobalVar *getGlobalVarByName(const Module &M, std::string_view name);
+MINI_LLVM_EXPORT Function *getFunctionByName(Module &M, std::string_view name);
+MINI_LLVM_EXPORT const Function *getFunctionByName(const Module &M, std::string_view name);
 
 } // namespace mini_llvm::mir
 

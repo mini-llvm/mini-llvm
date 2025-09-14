@@ -2,14 +2,17 @@
 
 #include "mini-llvm/mir/Module.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/GlobalVar.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
+using namespace mini_llvm;
 using namespace mini_llvm::mir;
 
 GlobalVar &Module::addGlobalVar(const_global_var_iterator pos, std::unique_ptr<GlobalVar> G) {
@@ -49,4 +52,32 @@ std::string Module::format() const {
         formatted.add("{}", F);
     }
     return formatted.toString();
+}
+
+GlobalVar *mir::getGlobalVarByName(Module &M, std::string_view name) {
+    return const_cast<GlobalVar *>(getGlobalVarByName(std::as_const(M), name));
+}
+
+const GlobalVar *mir::getGlobalVarByName(const Module &M, std::string_view name) {
+    auto i = std::find_if(M.global_var_begin(), M.global_var_end(), [name](const GlobalVar &G) {
+        return G.name() == name;
+    });
+    if (i != M.global_var_end()) {
+        return &*i;
+    }
+    return nullptr;
+}
+
+Function *mir::getFunctionByName(Module &M, std::string_view name) {
+    return const_cast<Function *>(getFunctionByName(std::as_const(M), name));
+}
+
+const Function *mir::getFunctionByName(const Module &M, std::string_view name) {
+    auto i = std::find_if(M.function_begin(), M.function_end(), [name](const Function &F) {
+        return F.name() == name;
+    });
+    if (i != M.function_end()) {
+        return &*i;
+    }
+    return nullptr;
 }
