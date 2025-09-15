@@ -11,10 +11,6 @@ namespace mini_llvm::ir {
 class MINI_LLVM_EXPORT TailCallElimination final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
-
-    const char *name() const override {
-        return "TailCallElimination";
-    }
 };
 
 } // namespace mini_llvm::ir

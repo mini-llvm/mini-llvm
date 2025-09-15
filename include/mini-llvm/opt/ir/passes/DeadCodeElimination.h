@@ -11,10 +11,6 @@ namespace mini_llvm::ir {
 class MINI_LLVM_EXPORT DeadCodeElimination final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
-
-    const char *name() const override {
-        return "DeadCodeElimination";
-    }
 };
 
 } // namespace mini_llvm::ir

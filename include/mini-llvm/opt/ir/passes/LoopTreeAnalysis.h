@@ -32,10 +32,6 @@ public:
     const LTNode *node(const Loop &loop) const;
     const LTNode *rootNode() const;
 
-    const char *name() const override {
-        return "LoopTreeAnalysis";
-    }
-
 private:
     class Impl;
 

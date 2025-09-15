@@ -15,10 +15,6 @@ public:
 
     bool runOnFunction(Function &F) override;
 
-    const char *name() const override {
-        return "RedundantLoadElimination";
-    }
-
 private:
     int pointerSize_;
 };

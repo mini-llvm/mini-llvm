@@ -11,10 +11,6 @@ namespace mini_llvm::ir {
 class MINI_LLVM_EXPORT InstructionCombining final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
-
-    const char *name() const override {
-        return "InstructionCombining";
-    }
 };
 
 } // namespace mini_llvm::ir

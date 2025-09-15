@@ -26,10 +26,6 @@ public:
     AliasResult alias(const Value &ptr1, const Value &ptr2) const;
     AliasResult alias(const Value &ptr1, int size1, const Value &ptr2, int size2) const;
 
-    const char *name() const override {
-        return "AliasAnalysis";
-    }
-
 private:
     class Impl;
 
