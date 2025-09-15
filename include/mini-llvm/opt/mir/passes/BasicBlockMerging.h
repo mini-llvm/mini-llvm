@@ -11,10 +11,6 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT BasicBlockMerging final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
-
-    const char *name() const override {
-        return "BasicBlockMerging";
-    }
 };
 
 } // namespace mini_llvm::mir

@@ -16,10 +16,6 @@ public:
 
     bool runOnFunction(Function &F) override;
 
-    const char *name() const override {
-        return "TailDuplication";
-    }
-
 private:
     size_t threshold_;
 };

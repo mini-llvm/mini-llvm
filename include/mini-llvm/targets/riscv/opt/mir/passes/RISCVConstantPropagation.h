@@ -11,10 +11,6 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT RISCVConstantPropagation final : public BasicBlockTransform {
 public:
     bool runOnBasicBlock(BasicBlock &B) override;
-
-    const char *name() const override {
-        return "RISCVConstantPropagation";
-    }
 };
 
 } // namespace mini_llvm::mir

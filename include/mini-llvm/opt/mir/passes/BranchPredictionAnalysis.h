@@ -18,10 +18,6 @@ public:
     void runOnFunction(const Function &F) override;
     bool predict(const BasicBlock &B, const BasicBlock &succ) const;
 
-    const char *name() const override {
-        return "BranchPredictionAnalysis";
-    }
-
 private:
     class Impl;
 

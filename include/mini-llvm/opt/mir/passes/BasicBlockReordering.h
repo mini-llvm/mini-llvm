@@ -11,10 +11,6 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT BasicBlockReordering final : public FunctionTransform {
 public:
     bool runOnFunction(Function &F) override;
-
-    const char *name() const override {
-        return "BasicBlockReordering";
-    }
 };
 
 } // namespace mini_llvm::mir
