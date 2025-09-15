@@ -11,10 +11,6 @@ namespace mini_llvm::mc {
 class MINI_LLVM_EXPORT RISCVFallthrough final : public GlobalValueTransform {
 public:
     bool runOnGlobalValue(GlobalValue &G) override;
-
-    const char *name() const override {
-        return "RISCVFallthrough";
-    }
 };
 
 } // namespace mini_llvm::mc
