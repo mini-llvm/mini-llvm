@@ -182,7 +182,7 @@ namespace {
 
 void flatten(const ir::Constant &C, std::vector<const ir::Constant *> &flattened) {
     if (dynamic_cast<const ir::ArrayConstant *>(&C)) {
-        for (const ir::Use<ir::Constant> &element : ir::elements(*static_cast<const ir::ArrayConstant *>(&C))) {
+        for (const ir::Use<ir::Constant> &element : elements(*static_cast<const ir::ArrayConstant *>(&C))) {
             flatten(*element, flattened);
         }
     } else {
