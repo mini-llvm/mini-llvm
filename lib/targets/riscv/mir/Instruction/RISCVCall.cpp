@@ -10,7 +10,6 @@
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mir;
-using namespace mini_llvm::mir::riscv;
 
 std::unordered_set<PhysicalRegister *> RISCVCall::implicitDsts() const {
     return riscvCallImplicitDsts();

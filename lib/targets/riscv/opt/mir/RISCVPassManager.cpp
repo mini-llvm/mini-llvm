@@ -18,9 +18,10 @@
 #include "mini-llvm/targets/riscv/opt/mir/passes/RISCVConstantPropagation.h"
 
 using namespace mini_llvm::mir;
-using namespace mini_llvm::mir::riscv;
 
 void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
+    RISCVRegister *x0 = RISCVRegister::get("x0");
+
     bool changed;
     do {
         changed = false;
@@ -29,7 +30,7 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
         changed |= RISCVConstantPropagation().runOnModule(M);
         changed |= CopyPropagation().runOnModule(M);
         changed |= RegisterReuse().runOnModule(M);
-        changed |= ZeroRegisterReplacement(x0()).runOnModule(M);
+        changed |= ZeroRegisterReplacement(x0).runOnModule(M);
         changed |= DeadCodeElimination().runOnModule(M);
         changed |= JumpThreading().runOnModule(M);
         changed |= BasicBlockMerging().runOnModule(M);
@@ -39,6 +40,8 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
 }
 
 void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
+    RISCVRegister *x0 = RISCVRegister::get("x0");
+
     StackOffsetEvaluation().runOnModule(M);
 
     bool changed;
@@ -49,7 +52,7 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
         changed |= RISCVConstantPropagation().runOnModule(M);
         changed |= CopyPropagation().runOnModule(M);
         changed |= RegisterReuse().runOnModule(M);
-        changed |= ZeroRegisterReplacement(x0()).runOnModule(M);
+        changed |= ZeroRegisterReplacement(x0).runOnModule(M);
         changed |= DeadCodeElimination().runOnModule(M);
         changed |= JumpThreading().runOnModule(M);
         changed |= BasicBlockMerging().runOnModule(M);

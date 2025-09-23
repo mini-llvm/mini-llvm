@@ -3,6 +3,7 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -39,6 +40,7 @@ public:
     }
 
     static RISCVRegister *get(int idx);
+    static RISCVRegister *get(std::string_view name);
 
 private:
     int idx_;
@@ -51,16 +53,6 @@ private:
     RISCVRegister(int idx, const char *name, RegisterClass Class, int width, bool isPreserved, bool isAllocatable)
         : idx_(idx), name_(name), class_(Class), width_(width), isPreserved_(isPreserved), isAllocatable_(isAllocatable) {}
 };
-
-namespace riscv {
-
-#define REGS
-#define X(idx, name, class, width, isPreserved, isAllocatable) RISCVRegister *name();
-#include "mini-llvm/targets/riscv/target.def"
-#undef X
-#undef REGS
-
-} // namespace riscv
 
 MINI_LLVM_EXPORT const std::unordered_set<RISCVRegister *> &riscvRegs();
 MINI_LLVM_EXPORT const std::vector<RISCVRegister *> &riscvIntegerResultRegs();

@@ -52,16 +52,19 @@ public:
         : allocator_(allocator) {}
 
     void run(const ir::Module &IM, mir::Module &MM, mc::Module &MCM) {
+        mir::RISCVRegister *sp = mir::RISCVRegister::get("sp"),
+                           *fp = mir::RISCVRegister::get("fp"),
+                           *t6 = mir::RISCVRegister::get("t6");
+
         RISCVMIRGen(&IM, &MM).emit();
 
         {
             using namespace mir;
-            using namespace mir::riscv;
 
             for (Function &F : functions(MM)) {
                 for (BasicBlock &B : F) {
                     if (&B != &F.entry() && !dynamic_cast<const RISCVRet *>(&B.back())) {
-                        B.add(std::prev(B.end()), std::make_unique<Live>(fp()));
+                        B.add(std::prev(B.end()), std::make_unique<Live>(fp));
                     }
                 }
             }
@@ -72,7 +75,6 @@ public:
 
         {
             using namespace mir;
-            using namespace mir::riscv;
 
             for (Function &F : functions(MM)) {
                 if (!F.isDeclaration()) {
@@ -96,9 +98,9 @@ public:
                                 physRegs.insert(physReg);
                             }
                         }
-                        physRegs.erase(sp());
-                        physRegs.erase(fp());
-                        physRegs.erase(t6());
+                        physRegs.erase(sp);
+                        physRegs.erase(fp);
+                        physRegs.erase(t6);
 
                         StackSlot *endSlot = &F.stackFrame().back();
 
@@ -106,27 +108,27 @@ public:
 
                         switch (Class) {
                             case RegisterClass::kGPR:
-                                load = [endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                                load = [fp, t6, endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
                                     int width = slot->size();
                                     std::shared_ptr<Register> dst = share(*reg);
                                     ExtensionMode extMode = width == 8 ? ExtensionMode::kNo : ExtensionMode::kSign;
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
-                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
-                                    builder.add(std::make_unique<Load>(width, std::move(dst), MemoryOperand(share(*t6())), extMode));
+                                    builder.add(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6), share(*t6), share(*fp)));
+                                    builder.add(std::make_unique<Load>(width, std::move(dst), MemoryOperand(share(*t6)), extMode));
                                 };
 
-                                store = [endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                                store = [fp, t6, endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
                                     int width = slot->size();
                                     std::shared_ptr<Register> src = share(*reg);
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
-                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
-                                    builder.add(std::make_unique<Store>(width, MemoryOperand(share(*t6())), std::move(src)));
+                                    builder.add(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6), share(*t6), share(*fp)));
+                                    builder.add(std::make_unique<Store>(width, MemoryOperand(share(*t6)), std::move(src)));
                                 };
 
                                 break;
 
                             case RegisterClass::kFPR:
-                                load = [endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                                load = [fp, t6, endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
                                     Precision precision;
                                     switch (slot->size()) {
                                         case 4: precision = Precision::kSingle; break;
@@ -134,12 +136,12 @@ public:
                                         default: abort();
                                     }
                                     std::shared_ptr<Register> dst = share(*reg);
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
-                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
-                                    builder.add(std::make_unique<FLoad>(precision, std::move(dst), MemoryOperand(share(*t6()))));
+                                    builder.add(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6), share(*t6), share(*fp)));
+                                    builder.add(std::make_unique<FLoad>(precision, std::move(dst), MemoryOperand(share(*t6))));
                                 };
 
-                                store = [endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                                store = [fp, t6, endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
                                     Precision precision;
                                     switch (slot->size()) {
                                         case 4: precision = Precision::kSingle; break;
@@ -147,9 +149,9 @@ public:
                                         default: abort();
                                     }
                                     std::shared_ptr<Register> src = share(*reg);
-                                    builder.add(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
-                                    builder.add(std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*fp())));
-                                    builder.add(std::make_unique<FStore>(precision, MemoryOperand(share(*t6())), std::move(src)));
+                                    builder.add(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(endSlot, slot)));
+                                    builder.add(std::make_unique<Add>(8, share(*t6), share(*t6), share(*fp)));
+                                    builder.add(std::make_unique<FStore>(precision, MemoryOperand(share(*t6)), std::move(src)));
                                 };
 
                                 break;
@@ -171,8 +173,8 @@ public:
                             }
                         }
                     }
-                    save.erase(sp());
-                    save.erase(fp());
+                    save.erase(sp);
+                    save.erase(fp);
 
                     BasicBlock *prologueBlock = &F.entry(),
                                *epilogueBlock = nullptr;
@@ -207,20 +209,20 @@ public:
                         std::shared_ptr<Register> reg = share(*physReg);
                         switch (physReg->Class()) {
                         case RegisterClass::kGPR:
-                            prologueBlock->add(savePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                            prologueBlock->add(savePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                            prologueBlock->add(savePos, std::make_unique<Store>(8, MemoryOperand(share(*t6())), reg));
-                            epilogueBlock->add(restorePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                            epilogueBlock->add(restorePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                            epilogueBlock->add(restorePos, std::make_unique<Load>(8, reg, MemoryOperand(share(*t6()))));
+                            prologueBlock->add(savePos, std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                            prologueBlock->add(savePos, std::make_unique<Add>(8, share(*t6), share(*t6), share(*sp)));
+                            prologueBlock->add(savePos, std::make_unique<Store>(8, MemoryOperand(share(*t6)), reg));
+                            epilogueBlock->add(restorePos, std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                            epilogueBlock->add(restorePos, std::make_unique<Add>(8, share(*t6), share(*t6), share(*sp)));
+                            epilogueBlock->add(restorePos, std::make_unique<Load>(8, reg, MemoryOperand(share(*t6))));
                             break;
                         case RegisterClass::kFPR:
-                            prologueBlock->add(savePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                            prologueBlock->add(savePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                            prologueBlock->add(savePos, std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6())), reg));
-                            epilogueBlock->add(restorePos, std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
-                            epilogueBlock->add(restorePos, std::make_unique<Add>(8, share(*t6()), share(*t6()), share(*sp())));
-                            epilogueBlock->add(restorePos, std::make_unique<FLoad>(Precision::kDouble, reg, MemoryOperand(share(*t6()))));
+                            prologueBlock->add(savePos, std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                            prologueBlock->add(savePos, std::make_unique<Add>(8, share(*t6), share(*t6), share(*sp)));
+                            prologueBlock->add(savePos, std::make_unique<FStore>(Precision::kDouble, MemoryOperand(share(*t6)), reg));
+                            epilogueBlock->add(restorePos, std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(startSlot, slot)));
+                            epilogueBlock->add(restorePos, std::make_unique<Add>(8, share(*t6), share(*t6), share(*sp)));
+                            epilogueBlock->add(restorePos, std::make_unique<FLoad>(Precision::kDouble, reg, MemoryOperand(share(*t6))));
                             break;
                         default:
                             abort();

@@ -176,7 +176,6 @@
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
-using namespace mini_llvm::mir::riscv;
 
 namespace {
 
@@ -778,12 +777,13 @@ public:
     }
 
     void visitAlloca(const ir::Alloca &I) override {
+        RISCVRegister *fp = RISCVRegister::get("fp");
         std::shared_ptr<Register> dst = valueMap_[&I];
         StackSlot *endSlot = &function_.stackFrame().back(),
                   *slot = memoryMap_[&I];
         std::unique_ptr<Immediate> offset = std::make_unique<StackOffsetImmediate>(endSlot, slot);
         builder_.add(std::make_unique<LI>(8, dst, std::move(offset)));
-        builder_.add(std::make_unique<Add>(8, dst, share(*fp()), dst));
+        builder_.add(std::make_unique<Add>(8, dst, share(*fp), dst));
     }
 
     void visitLoad(const ir::Load &I) override {
@@ -1093,6 +1093,8 @@ private:
 
     template <typename IInstr>
     void visitCallOrIndirectCall(const IInstr &I) {
+        RISCVRegister *sp = RISCVRegister::get("sp");
+
         size_t numIntegerArgs = 0,
                numFloatingArgs = 0;
         std::vector<const ir::Value *> stackArgs;
@@ -1141,9 +1143,9 @@ private:
 
         if (!stackArgs.empty()) {
             int n = stackArgs.size();
-            builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>(-(n * 8 + 15) / 16 * 16)));
+            builder_.add(std::make_unique<AddI>(8, share(*sp), share(*sp), std::make_unique<IntegerImmediate>(-(n * 8 + 15) / 16 * 16)));
             for (int i = 0; i < n; ++i) {
-                MemoryOperand dst(share(*sp()), std::make_unique<IntegerImmediate>(i * 8));
+                MemoryOperand dst(share(*sp), std::make_unique<IntegerImmediate>(i * 8));
                 std::shared_ptr<Register> src = getRegister(*stackArgs[i]);
                 if (dynamic_cast<const ir::IntegerOrPointerType *>(&*stackArgs[i]->type())) {
                     builder_.add(std::make_unique<Store>(8, std::move(dst), std::move(src)));
@@ -1167,7 +1169,7 @@ private:
 
         if (!stackArgs.empty()) {
             int n = stackArgs.size();
-            builder_.add(std::make_unique<AddI>(8, share(*sp()), share(*sp()), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
+            builder_.add(std::make_unique<AddI>(8, share(*sp), share(*sp), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
         }
 
         if (dynamic_cast<const ir::IntegerOrPointerType *>(&*I.type())) {
@@ -1273,6 +1275,11 @@ private:
     }
 
     void emitFunction(const ir::Function &IF, Function &MF) {
+        RISCVRegister *ra = RISCVRegister::get("ra"),
+                      *sp = RISCVRegister::get("sp"),
+                      *fp = RISCVRegister::get("fp"),
+                      *t6 = RISCVRegister::get("t6");
+
         BasicBlock &prologueBlock = MF.append();
 
         HashMap<const ir::BasicBlock *, BasicBlock *> blockMap;
@@ -1305,36 +1312,36 @@ private:
 
         StackSlot &endSlot = MF.stackFrame().append(0, 16);
 
-        prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
-        prologueBlock.append(std::make_unique<Sub>(8, share(*sp()), share(*sp()), share(*t6())));
+        prologueBlock.append(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
+        prologueBlock.append(std::make_unique<Sub>(8, share(*sp), share(*sp), share(*t6)));
 
         prologueBlock.append(std::make_unique<Store>(
-            8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra())
+            8, MemoryOperand(share(*sp), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot)), share(*ra)
         ));
 
         prologueBlock.append(std::make_unique<Store>(
-            8, MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp())
+            8, MemoryOperand(share(*sp), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot)), share(*fp)
         ));
 
         prologueBlock.append(std::make_unique<Marker>(kSave));
 
-        prologueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
-        prologueBlock.append(std::make_unique<Add>(8, share(*fp()), share(*sp()), share(*t6())));
+        prologueBlock.append(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
+        prologueBlock.append(std::make_unique<Add>(8, share(*fp), share(*sp), share(*t6)));
 
         prologueBlock.append(std::make_unique<Br>(blockMap[&IF.entry()]));
 
         epilogueBlock.append(std::make_unique<Load>(
-            8, share(*ra()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))
+            8, share(*ra), MemoryOperand(share(*sp), std::make_unique<StackOffsetImmediate>(&startSlot, &raSlot))
         ));
 
         epilogueBlock.append(std::make_unique<Load>(
-            8, share(*fp()), MemoryOperand(share(*sp()), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))
+            8, share(*fp), MemoryOperand(share(*sp), std::make_unique<StackOffsetImmediate>(&startSlot, &fpSlot))
         ));
 
         epilogueBlock.append(std::make_unique<Marker>(kRestore));
 
-        epilogueBlock.append(std::make_unique<LI>(8, share(*t6()), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
-        epilogueBlock.append(std::make_unique<Add>(8, share(*sp()), share(*sp()), share(*t6())));
+        epilogueBlock.append(std::make_unique<LI>(8, share(*t6), std::make_unique<StackOffsetImmediate>(&startSlot, &endSlot)));
+        epilogueBlock.append(std::make_unique<Add>(8, share(*sp), share(*sp), share(*t6)));
 
         int numIntegerResults = 0,
             numFloatingResults = 0;
@@ -1362,7 +1369,7 @@ private:
                     ++numIntegerArgs;
                 } else {
                     std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8);
-                    MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
+                    MemoryOperand src(share(*fp), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                     blockMap[&IF.entry()]->append(std::make_unique<Load>(8, dst, std::move(src)));
                     valueMap.put(&arg, dst);
                     ++numStackArgs;
@@ -1377,7 +1384,7 @@ private:
                     ++numFloatingArgs;
                 } else {
                     std::shared_ptr<Register> dst = std::make_shared<VirtualRegister>(8);
-                    MemoryOperand src(share(*fp()), std::make_unique<IntegerImmediate>(numStackArgs * 8));
+                    MemoryOperand src(share(*fp), std::make_unique<IntegerImmediate>(numStackArgs * 8));
                     blockMap[&IF.entry()]->append(std::make_unique<FLoad>(precision, dst, std::move(src)));
                     valueMap.put(&arg, dst);
                     ++numStackArgs;

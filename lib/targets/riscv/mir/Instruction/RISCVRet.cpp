@@ -10,10 +10,14 @@
 #include "mini-llvm/utils/StringJoiner.h"
 
 using namespace mini_llvm::mir;
-using namespace mini_llvm::mir::riscv;
 
 std::unordered_set<PhysicalRegister *> RISCVRet::implicitSrcs() const {
-    std::unordered_set<PhysicalRegister *> implicitSrcs{ra(), sp(), gp(), tp(), fp()};
+    RISCVRegister *ra = RISCVRegister::get("ra"),
+                  *sp = RISCVRegister::get("sp"),
+                  *gp = RISCVRegister::get("gp"),
+                  *tp = RISCVRegister::get("tp"),
+                  *fp = RISCVRegister::get("fp");
+    std::unordered_set<PhysicalRegister *> implicitSrcs{ra, sp, gp, tp, fp};
     for (PhysicalRegister *physReg : std::views::take(riscvIntegerResultRegs(), numIntegerResults())) {
         implicitSrcs.insert(physReg);
     }

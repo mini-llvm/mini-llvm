@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <memory>
 #include <ranges>
+#include <string_view>
 #include <unordered_set>
 #include <vector>
 
@@ -13,7 +14,6 @@
 
 using namespace mini_llvm;
 using namespace mini_llvm::mir;
-using namespace mini_llvm::mir::riscv;
 
 RISCVRegister *RISCVRegister::get(int idx) {
     static HashMap<int, std::shared_ptr<RISCVRegister>> pool;
@@ -35,18 +35,19 @@ RISCVRegister *RISCVRegister::get(int idx) {
     }
 }
 
+RISCVRegister *RISCVRegister::get(std::string_view Name) {
 #define REGS
-#define X(idx, name, class, width, isPreserved, isAllocatable) RISCVRegister *riscv::name() { return RISCVRegister::get(idx); }
+#define X(idx, name, class, width, isPreserved, isAllocatable) if (Name == #name) return get(idx);
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
+    abort();
+}
 
 const std::unordered_set<RISCVRegister *> &mir::riscvRegs() {
-    using namespace riscv;
-
     static std::unordered_set<RISCVRegister *> regs{
 #define REGS
-#define X(idx, name, class, width, isPreserved, isAllocatable) name(),
+#define X(idx, name, class, width, isPreserved, isAllocatable) RISCVRegister::get(#name),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef REGS
@@ -56,11 +57,9 @@ const std::unordered_set<RISCVRegister *> &mir::riscvRegs() {
 }
 
 const std::vector<RISCVRegister *> &mir::riscvIntegerResultRegs() {
-    using namespace riscv;
-
     static std::vector<RISCVRegister *> regs{
 #define INTEGER_RESULT_REGS
-#define X(name) name(),
+#define X(name) RISCVRegister::get(#name),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef INTEGER_RESULT_REGS
@@ -70,11 +69,9 @@ const std::vector<RISCVRegister *> &mir::riscvIntegerResultRegs() {
 }
 
 const std::vector<RISCVRegister *> &mir::riscvIntegerArgRegs() {
-    using namespace riscv;
-
     static std::vector<RISCVRegister *> regs{
 #define INTEGER_ARG_REGS
-#define X(name) name(),
+#define X(name) RISCVRegister::get(#name),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef INTEGER_ARG_REGS
@@ -84,11 +81,9 @@ const std::vector<RISCVRegister *> &mir::riscvIntegerArgRegs() {
 }
 
 const std::vector<RISCVRegister *> &mir::riscvFloatingResultRegs() {
-    using namespace riscv;
-
     static std::vector<RISCVRegister *> regs{
 #define FLOATING_RESULT_REGS
-#define X(name) name(),
+#define X(name) RISCVRegister::get(#name),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef FLOATING_RESULT_REGS
@@ -98,11 +93,9 @@ const std::vector<RISCVRegister *> &mir::riscvFloatingResultRegs() {
 }
 
 const std::vector<RISCVRegister *> &mir::riscvFloatingArgRegs() {
-    using namespace riscv;
-
     static std::vector<RISCVRegister *> regs{
 #define FLOATING_ARG_REGS
-#define X(name) name(),
+#define X(name) RISCVRegister::get(#name),
 #include "mini-llvm/targets/riscv/target.def"
 #undef X
 #undef FLOATING_ARG_REGS
@@ -122,7 +115,12 @@ std::unordered_set<PhysicalRegister *> mir::riscvCallImplicitDsts() {
 }
 
 std::unordered_set<PhysicalRegister *> mir::riscvCallImplicitSrcs(int numIntegerArgs, int numFloatingArgs) {
-    std::unordered_set<PhysicalRegister *> implicitSrcs{ra(), sp(), gp(), tp(), fp()};
+    RISCVRegister *ra = RISCVRegister::get("ra"),
+                  *sp = RISCVRegister::get("sp"),
+                  *gp = RISCVRegister::get("gp"),
+                  *tp = RISCVRegister::get("tp"),
+                  *fp = RISCVRegister::get("fp");
+    std::unordered_set<PhysicalRegister *> implicitSrcs{ra, sp, gp, tp, fp};
     for (PhysicalRegister *physReg : std::views::take(riscvIntegerArgRegs(), numIntegerArgs)) {
         implicitSrcs.insert(physReg);
     }
