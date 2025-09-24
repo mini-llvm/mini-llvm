@@ -185,8 +185,8 @@ set_target_properties(mini-llvm PROPERTIES
     VISIBILITY_INLINES_HIDDEN ON
 )
 if(BUILD_SHARED_LIBS)
-    target_compile_definitions(mini-llvm PRIVATE MINI_LLVM_SHARED_BUILD)
-    target_compile_definitions(mini-llvm INTERFACE MINI_LLVM_SHARED)
+    target_compile_definitions(mini-llvm PUBLIC MINI_LLVM_SHARED)
+    target_compile_definitions(mini-llvm PRIVATE MINI_LLVM_EXPORTS)
 endif()
 if(MSVC)
     target_compile_options(mini-llvm PUBLIC /utf-8 /EHsc)

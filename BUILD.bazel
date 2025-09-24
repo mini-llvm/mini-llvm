@@ -22,7 +22,8 @@ cc_library(
         ":shared": [
             "-fvisibility=hidden",
             "-fvisibility-inlines-hidden",
-            "-DMINI_LLVM_SHARED_BUILD",
+            "-DMINI_LLVM_SHARED",
+            "-DMINI_LLVM_EXPORTS",
         ],
         "//conditions:default": [],
     }),
