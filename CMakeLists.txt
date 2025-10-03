@@ -2,11 +2,10 @@ cmake_minimum_required(VERSION 3.20...4.1.2)
 
 project(mini-llvm VERSION 0.1.0 LANGUAGES CXX)
 
-option(BUILD_SHARED_LIBS "Build shared libraries." OFF)
-
-option(MINI_LLVM_TESTS "Build tests." OFF)
-option(MINI_LLVM_FUZZ "Build fuzz targets." OFF)
-option(MINI_LLVM_DOCS "Build docs." OFF)
+if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
+    message(WARNING "CMAKE_BUILD_TYPE is not set, defaulting to Release.")
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "" FORCE)
+endif()
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
@@ -14,23 +13,23 @@ if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
     set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_EXTENSIONS OFF)
     set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
-    if(NOT CMAKE_BUILD_TYPE)
-        set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
-    endif()
-
-    if(MSVC)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
         add_compile_options(/W4)
     else()
         add_compile_options(-Wall -Wextra -Wpedantic)
-
-        if(CMAKE_BUILD_TYPE STREQUAL Debug)
-            add_compile_definitions(_GLIBCXX_ASSERTIONS)
-        endif()
+        add_compile_definitions("$<$<CONFIG:Debug>:_GLIBCXX_ASSERTIONS>")
     endif()
 endif()
+
+option(BUILD_SHARED_LIBS "Build shared libraries." OFF)
+
+option(MINI_LLVM_TESTS "Build tests." OFF)
+option(MINI_LLVM_FUZZ "Build fuzz targets." OFF)
+option(MINI_LLVM_DOCS "Build docs." OFF)
 
 add_library(mini-llvm
     lib/codegen/register_allocators/GraphColoringAllocator.cpp
@@ -189,7 +188,7 @@ if(BUILD_SHARED_LIBS)
     target_compile_definitions(mini-llvm PUBLIC MINI_LLVM_SHARED)
     target_compile_definitions(mini-llvm PRIVATE MINI_LLVM_EXPORTS)
 endif()
-if(MSVC)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(mini-llvm PUBLIC /utf-8 /EHsc)
 endif()
 target_include_directories(mini-llvm PUBLIC
