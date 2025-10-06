@@ -235,7 +235,7 @@ std::string Function::format() const {
     return formatted.toString();
 }
 
-std::string ir::dot(const Function &F) {
+std::string ir::toDot(const Function &F) {
     std::vector<std::pair<std::string, std::string>> edges;
     for (const BasicBlock &B : F) {
         for (const BasicBlock *succ : successors(B)) {

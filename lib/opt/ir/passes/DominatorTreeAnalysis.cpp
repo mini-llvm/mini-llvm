@@ -21,7 +21,7 @@
 using namespace mini_llvm;
 using namespace mini_llvm::ir;
 
-std::string ir::dot(const DTNode *root) {
+std::string ir::toDot(const DTNode *root) {
     std::vector<std::pair<std::string, std::string>> edges;
     std::queue<const DTNode *> Q;
     Q.push(root);

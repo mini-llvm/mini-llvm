@@ -19,7 +19,7 @@ struct DTNode {
     std::vector<const DTNode *> children;
 };
 
-MINI_LLVM_EXPORT std::string dot(const DTNode *root);
+MINI_LLVM_EXPORT std::string toDot(const DTNode *root);
 
 class MINI_LLVM_EXPORT DominatorTreeAnalysis final : public FunctionAnalysis {
 public:
