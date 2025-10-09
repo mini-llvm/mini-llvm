@@ -24,7 +24,7 @@ public:
             Def.put(&B, def(B));
         }
         for (const BasicBlock &B : F) {
-            liveIn_.put(&B, Use[&B]);
+            liveIn_.put(&B, {});
             liveOut_.put(&B, {});
         }
 
@@ -36,9 +36,13 @@ public:
                 for (const BasicBlock *successor : successors(B)) {
                     liveOut |= liveIn_[successor];
                 }
+                std::unordered_set<Register *> liveIn = (liveOut - Def[&B]) | Use[&B];
                 if (liveOut != liveOut_[&B]) {
                     liveOut_[&B] = liveOut;
-                    liveIn_[&B] = (liveOut - Def[&B]) | Use[&B];
+                    changed = true;
+                }
+                if (liveIn != liveIn_[&B]) {
+                    liveIn_[&B] = liveIn;
                     changed = true;
                 }
             }
