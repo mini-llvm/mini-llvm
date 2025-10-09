@@ -14,16 +14,16 @@ using namespace mini_llvm::mir;
 
 namespace {
 
-bool canRemove(const Instruction &I, const std::unordered_set<Register *> &liveOut) {
+bool isCritical(const Instruction &I, const std::unordered_set<Register *> &liveOut) {
     if (I.hasSideEffects()) {
-        return false;
+        return true;
     }
     for (Register *reg : def(I)) {
         if (liveOut.contains(reg)) {
-            return false;
+            return true;
         }
     }
-    return true;
+    return false;
 }
 
 } // namespace
@@ -40,7 +40,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
 
         for (BasicBlock &B : F) {
             for (BasicBlock::const_iterator i = B.begin(); i != B.end();) {
-                if (canRemove(*i, liveVars.liveOut(*i))) {
+                if (!isCritical(*i, liveVars.liveOut(*i))) {
                     B.remove(i++);
                     changed2 = true;
                     continue;
