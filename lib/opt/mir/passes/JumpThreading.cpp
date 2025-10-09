@@ -11,7 +11,7 @@ using namespace mini_llvm::mir;
 
 namespace {
 
-BasicBlock *thread(BasicBlock *B) {
+BasicBlock *follow(BasicBlock *B) {
     if (B->size() == 1) {
         if (auto *br = dynamic_cast<const Br *>(&B->back())) {
             if (&*br->dest() != B) {
@@ -30,7 +30,7 @@ bool JumpThreading::runOnFunction(Function &F) {
     for (BasicBlock &B : F) {
         for (BasicBlockOperand *op : static_cast<Terminator *>(&B.back())->blockOps()) {
             BasicBlock *dest = &**op;
-            while (BasicBlock *newDest = thread(dest)) {
+            while (BasicBlock *newDest = follow(dest)) {
                 dest = newDest;
             }
             if (dest != &**op) {
