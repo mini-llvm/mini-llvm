@@ -41,7 +41,7 @@ class FStore;
 class FSub;
 class LA;
 class LI;
-class Live;
+class FakeUse;
 class Load;
 class Marker;
 class Mov;
@@ -111,7 +111,7 @@ public:
     virtual void visitFSub(FSub &I) { visitFSub(std::as_const(I)); }
     virtual void visitLA(LA &I) { visitLA(std::as_const(I)); }
     virtual void visitLI(LI &I) { visitLI(std::as_const(I)); }
-    virtual void visitLive(Live &I) { visitLive(std::as_const(I)); }
+    virtual void visitLive(FakeUse &I) { visitLive(std::as_const(I)); }
     virtual void visitLoad(Load &I) { visitLoad(std::as_const(I)); }
     virtual void visitMarker(Marker &I) { visitMarker(std::as_const(I)); }
     virtual void visitMov(Mov &I) { visitMov(std::as_const(I)); }
@@ -169,7 +169,7 @@ public:
     virtual void visitFSub(const FSub &) { abort(); }
     virtual void visitLA(const LA &) { abort(); }
     virtual void visitLI(const LI &) { abort(); }
-    virtual void visitLive(const Live &) { abort(); }
+    virtual void visitLive(const FakeUse &) { abort(); }
     virtual void visitLoad(const Load &) { abort(); }
     virtual void visitMarker(const Marker &) { abort(); }
     virtual void visitMov(const Mov &) { abort(); }

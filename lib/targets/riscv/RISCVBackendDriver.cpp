@@ -21,10 +21,10 @@
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Add.h"
+#include "mini-llvm/mir/Instruction/FakeUse.h"
 #include "mini-llvm/mir/Instruction/FLoad.h"
 #include "mini-llvm/mir/Instruction/FStore.h"
 #include "mini-llvm/mir/Instruction/LI.h"
-#include "mini-llvm/mir/Instruction/Live.h"
 #include "mini-llvm/mir/Instruction/Load.h"
 #include "mini-llvm/mir/Instruction/Marker.h"
 #include "mini-llvm/mir/Instruction/Store.h"
@@ -64,7 +64,7 @@ public:
             for (Function &F : functions(MM)) {
                 for (BasicBlock &B : F) {
                     if (&B != &F.entry() && !dynamic_cast<const RISCVRet *>(&B.back())) {
-                        B.add(std::prev(B.end()), std::make_unique<Live>(fp));
+                        B.add(std::prev(B.end()), std::make_unique<FakeUse>(fp));
                     }
                 }
             }
@@ -234,7 +234,7 @@ public:
 
                     for (BasicBlock &B : F) {
                         for (BasicBlock::const_iterator i = B.begin(); i != B.end();) {
-                            if (dynamic_cast<const Live *>(&*i)) {
+                            if (dynamic_cast<const FakeUse *>(&*i)) {
                                 B.remove(i++);
                             } else {
                                 ++i;

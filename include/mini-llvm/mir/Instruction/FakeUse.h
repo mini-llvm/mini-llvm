@@ -17,9 +17,9 @@
 
 namespace mini_llvm::mir {
 
-class MINI_LLVM_EXPORT Live : public Instruction {
+class MINI_LLVM_EXPORT FakeUse : public Instruction {
 public:
-    explicit Live(PhysicalRegister *physReg) : physReg_(physReg) {}
+    explicit FakeUse(PhysicalRegister *physReg) : physReg_(physReg) {}
 
     PhysicalRegister *physReg() const {
         return physReg_;
@@ -54,11 +54,11 @@ public:
     }
 
     std::string format() const override {
-        return std::format("LIVE {}", *physReg());
+        return std::format("FAKEUSE {}", *physReg());
     }
 
     std::unique_ptr<Instruction> clone() const override {
-        return std::make_unique<Live>(physReg());
+        return std::make_unique<FakeUse>(physReg());
     }
 
     void accept(InstructionVisitor &visitor) override {
