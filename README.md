@@ -25,7 +25,7 @@
 
 ## Overview
 
-**mini-llvm** is a minimal yet powerful implementation of the LLVM core libraries and tools, designed to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
+**mini-llvm** is a minimal implementation of the LLVM core libraries and tools, supporting a strict subset of LLVM IR constructs. It aims to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
 
 ## Highlights
 
