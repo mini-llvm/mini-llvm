@@ -13,6 +13,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
+- [Components](#components)
 - [Highlights](#highlights)
 - [Design](#design)
 - [Features](#features)
@@ -26,6 +27,11 @@
 ## Overview
 
 **mini-llvm** is a minimal implementation of the LLVM core libraries and tools, supporting a strict subset of LLVM IR constructs. It aims to demonstrate the essential principles of modern compiler design in a clear, concise, and approachable way.
+
+## Components
+
+- The mini-llvm core library (`libmini-llvm`)
+- The `mini-llc` command-line tool
 
 ## Highlights
 
@@ -43,6 +49,8 @@
 ### Supported Targets
 
 - `riscv64`
+
+Although `riscv64` is currently the only supported target, the flexible architecture design of mini-llvm enables adding new targets with minimal effort.
 
 ### Supported IR Constructs
 
