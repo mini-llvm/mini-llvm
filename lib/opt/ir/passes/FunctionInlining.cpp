@@ -58,7 +58,7 @@ bool isRecursive(const Function &F) {
 }
 
 bool shouldInline(const Call &call) {
-    if (call.callee()->empty()) return false;
+    if (call.callee()->isDeclaration()) return false;
     if (call.callee()->attr<NoInline>()) return false;
     if (call.callee()->attr<AlwaysInline>()) return true;
     if (isRecursive(*call.callee())) return false;
