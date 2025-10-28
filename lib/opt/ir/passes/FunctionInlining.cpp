@@ -30,9 +30,6 @@ using namespace mini_llvm::ir;
 
 namespace {
 
-constexpr size_t kCalleeThreshold = 20;
-constexpr size_t kCallerThreshold = 100;
-
 bool hasMoreThanNInstructions(const Function &F, size_t n) {
     size_t count = 0;
     for (const BasicBlock &B : F) {
@@ -57,13 +54,13 @@ bool isRecursive(const Function &F) {
     return false;
 }
 
-bool shouldInline(const Call &call) {
+bool shouldInline(const Call &call, size_t calleeThreshold, size_t callerThreshold) {
     if (call.callee()->isDeclaration()) return false;
     if (call.callee()->attr<NoInline>()) return false;
     if (call.callee()->attr<AlwaysInline>()) return true;
     if (isRecursive(*call.callee())) return false;
-    if (hasMoreThanNInstructions(*call.callee(), kCalleeThreshold)) return false;
-    if (hasMoreThanNInstructions(*call.parent()->parent(), kCallerThreshold)) return false;
+    if (hasMoreThanNInstructions(*call.callee(), calleeThreshold)) return false;
+    if (hasMoreThanNInstructions(*call.parent()->parent(), callerThreshold)) return false;
     return true;
 }
 
@@ -103,7 +100,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
         for (auto j = i->begin(), e = i->end(); j != e; ++j) {
             if (auto *call = dynamic_cast<const Call *>(&*j)) {
                 const Function *callee = &*call->callee();
-                if (shouldInline(*call)) {
+                if (shouldInline(*call, calleeThreshold_, callerThreshold_)) {
                     BasicBlock *B = splitBefore(std::next(j));
 
                     if (*callee->functionType()->returnType() != Void()) {

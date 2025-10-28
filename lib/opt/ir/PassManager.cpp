@@ -52,7 +52,7 @@ void PassManager::run(Module &M) const {
         changed |= GlobalCodeMotion().runOnModule(M);
         changed |= GlobalValueNumbering().runOnModule(M);
         changed |= StrengthReduction(3, 20, 20).runOnModule(M);
-        changed |= FunctionInlining().runOnModule(M);
+        changed |= FunctionInlining(20, 100).runOnModule(M);
         changed |= GlobalDeadCodeElimination().runOnModule(M);
     } while (changed);
 }
