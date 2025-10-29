@@ -20,7 +20,7 @@ struct SDiv {
             return std::nullopt;
         if (sx == std::numeric_limits<std::make_signed_t<T>>::min() && sy == -1)
             return std::nullopt;
-        return std::bit_cast<T>(static_cast<T>(sx / sy));
+        return std::bit_cast<T>(static_cast<std::make_signed_t<T>>(sx / sy));
     }
 
     std::optional<bool> operator()(bool x, bool y) const noexcept {
