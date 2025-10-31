@@ -264,8 +264,8 @@ define i32 @main() {
 </table>
 
 ```sh
-mini-llc --target=riscv64 -o add.s add.ll
-mini-llc --target=riscv64 -o main.s main.ll
+mini-llc --target riscv64 -o add.s add.ll
+mini-llc --target riscv64 -o main.s main.ll
 riscv64-linux-gnu-gcc -c -o add.o add.s
 riscv64-linux-gnu-gcc -c -o main.o main.s
 riscv64-linux-gnu-gcc -o example add.o main.o
@@ -358,17 +358,17 @@ cd <repo-dir>/tests/mini-llc
 
 # CMake
 ./test_all.sh \
-  --mini-llc=../../build/bin/mini-llc \
-  --target=riscv64 \
-  --driver=riscv64-linux-gnu-gcc \
-  --emulator=qemu-riscv64
+  --mini-llc ../../build/bin/mini-llc \
+  --target riscv64 \
+  --driver riscv64-linux-gnu-gcc \
+  --emulator qemu-riscv64
 
 # Bazel
 ./test_all.sh \
-  --mini-llc=../../bazel-bin/tools/mini-llc/mini-llc \
-  --target=riscv64 \
-  --driver=riscv64-linux-gnu-gcc \
-  --emulator=qemu-riscv64
+  --mini-llc ../../bazel-bin/tools/mini-llc/mini-llc \
+  --target riscv64 \
+  --driver riscv64-linux-gnu-gcc \
+  --emulator qemu-riscv64
 ```
 
 ## Installation

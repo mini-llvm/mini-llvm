@@ -10,24 +10,78 @@ while (( $# > 0 )); do
         echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--result-dir=<dir>] [--timeout=<duration>] <tests>..."
         exit 0
         ;;
+    --mini-llc)
+        shift
+        if (( $# == 0 )); then
+            echo "$0: error: missing value for --mini-llc" >&2
+            exit 1
+        fi
+        mini_llc="$1"
+        shift
+        ;;
     --mini-llc=*)
         mini_llc="${1#*=}"
+        shift
+        ;;
+    --target)
+        shift
+        if (( $# == 0 )); then
+            echo "$0: error: missing value for --target" >&2
+            exit 1
+        fi
+        target="$1"
         shift
         ;;
     --target=*)
         target="${1#*=}"
         shift
         ;;
+    --driver)
+        shift
+        if (( $# == 0 )); then
+            echo "$0: error: missing value for --driver" >&2
+            exit 1
+        fi
+        driver="$1"
+        shift
+        ;;
     --driver=*)
         driver="${1#*=}"
+        shift
+        ;;
+    --emulator)
+        shift
+        if (( $# == 0 )); then
+            echo "$0: error: missing value for --emulator" >&2
+            exit 1
+        fi
+        emulator="$1"
         shift
         ;;
     --emulator=*)
         emulator="${1#*=}"
         shift
         ;;
+    --result-dir)
+        shift
+        if (( $# == 0 )); then
+            echo "$0: error: missing value for --result-dir" >&2
+            exit 1
+        fi
+        result_dir="$1"
+        shift
+        ;;
     --result-dir=*)
         result_dir="${1#*=}"
+        shift
+        ;;
+    --timeout)
+        shift
+        if (( $# == 0 )); then
+            echo "$0: error: missing value for --timeout" >&2
+            exit 1
+        fi
+        timeout="$1"
         shift
         ;;
     --timeout=*)

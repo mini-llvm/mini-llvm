@@ -116,10 +116,10 @@ jobs:
 
       - run: |
           ./tests/mini-llc/test_all.sh \
-            --mini-llc=./build/bin/mini-llc \
-            --target=riscv64 \
-            --driver=riscv64-linux-gnu-gcc \
-            --emulator=qemu-riscv64
+            --mini-llc ./build/bin/mini-llc \
+            --target riscv64 \
+            --driver riscv64-linux-gnu-gcc \
+            --emulator qemu-riscv64
 
   build-windows:
     runs-on: windows-2025
