@@ -22,13 +22,13 @@ Expected<std::string, SystemError> mini_llvm::readAll(FILE *stream) {
         size_t n = fread(chunk.data(), 1, chunk.size(), stream);
         content.append(chunk.data(), n);
         if (n < chunk.size()) {
-            if (ferror(stream)) {
+            if (feof(stream)) {
+                return content;
+            } else {
                 return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
             }
-            break;
         }
     }
-    return content;
 }
 
 Expected<std::string, SystemError> mini_llvm::readAll(const Path &path) {
