@@ -5,7 +5,7 @@ set -eu
 while (( $# > 0 )); do
     case "$1" in
     --help)
-        echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--result-dir=<dir>] [--timeout=<duration>]"
+        echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--output-dir=<dir>] [--timeout=<duration>]"
         exit 0
         ;;
     --mini-llc)
@@ -60,17 +60,17 @@ while (( $# > 0 )); do
         emulator="${1#*=}"
         shift
         ;;
-    --result-dir)
+    --output-dir)
         shift
         if (( $# == 0 )); then
-            echo "$0: error: missing value for --result-dir" >&2
+            echo "$0: error: missing value for --output-dir" >&2
             exit 1
         fi
-        result_dir="$1"
+        output_dir="$1"
         shift
         ;;
-    --result-dir=*)
-        result_dir="${1#*=}"
+    --output-dir=*)
+        output_dir="${1#*=}"
         shift
         ;;
     --timeout)
@@ -115,8 +115,8 @@ if [[ -v emulator ]]; then
     args+=(--emulator "$emulator")
 fi
 
-if [[ -v result_dir ]]; then
-    args+=(--result-dir "$result_dir")
+if [[ -v output_dir ]]; then
+    args+=(--output-dir "$output_dir")
 fi
 
 if [[ -v timeout ]]; then

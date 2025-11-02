@@ -7,7 +7,7 @@ tests=()
 while (( $# > 0 )); do
     case "$1" in
     --help)
-        echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--result-dir=<dir>] [--timeout=<duration>] <tests>..."
+        echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--output-dir=<dir>] [--timeout=<duration>] <tests>..."
         exit 0
         ;;
     --mini-llc)
@@ -62,17 +62,17 @@ while (( $# > 0 )); do
         emulator="${1#*=}"
         shift
         ;;
-    --result-dir)
+    --output-dir)
         shift
         if (( $# == 0 )); then
-            echo "$0: error: missing value for --result-dir" >&2
+            echo "$0: error: missing value for --output-dir" >&2
             exit 1
         fi
-        result_dir="$1"
+        output_dir="$1"
         shift
         ;;
-    --result-dir=*)
-        result_dir="${1#*=}"
+    --output-dir=*)
+        output_dir="${1#*=}"
         shift
         ;;
     --timeout)
@@ -117,8 +117,8 @@ if [[ ! -v emulator ]]; then
     emulator="qemu-$target"
 fi
 
-if [[ ! -v result_dir ]]; then
-    result_dir="$(dirname -- "$0")/result_$(date +%Y%m%d_%H%M%S)"
+if [[ ! -v output_dir ]]; then
+    output_dir="$(dirname -- "$0")/results_$(date +%Y%m%d_%H%M%S)"
 fi
 
 if [[ ! -v timeout ]]; then
@@ -135,7 +135,7 @@ done
 for test in "${tests[@]}"; do
     printf "%-*s " "$width" "$test"
 
-    if timeout --foreground -v "$timeout" "$(dirname -- "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$result_dir"; then
+    if timeout --foreground -v "$timeout" "$(dirname -- "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$output_dir"; then
         echo -e "\033[32mPASSED\033[0m"
     else
         echo -e "\033[31mFAILED\033[0m"

@@ -7,11 +7,11 @@ mini_llc="$2"
 target="$3"
 driver="$4"
 emulator="$5"
-result_dir="$6"
+output_dir="$6"
 
-mkdir -p "$result_dir"
+mkdir -p "$output_dir"
 source "$(dirname -- "$0")/$test.cfg"
-$mini_llc --target="$target" -o "$result_dir/$test.s" "$(dirname -- "$0")/$test.ll"
-$driver -o "$result_dir/$test" "$result_dir/$test.s" $libs
-$emulator "$result_dir/$test" > "$result_dir/$test.out"
-diff "$(dirname -- "$0")/$test.ans" "$result_dir/$test.out" >&2
+$mini_llc --target="$target" -o "$output_dir/$test.s" "$(dirname -- "$0")/$test.ll"
+$driver -o "$output_dir/$test" "$output_dir/$test.s" $libs
+$emulator "$output_dir/$test" > "$output_dir/$test.out"
+diff "$(dirname -- "$0")/$test.ans" "$output_dir/$test.out" >&2
