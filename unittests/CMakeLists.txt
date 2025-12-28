@@ -1,0 +1,57 @@
+add_executable(unittests
+    ir/BasicBlockTest.cpp
+    ir/Constant/ArrayConstantTest.cpp
+    ir/FunctionTest.cpp
+    ir/Instruction/AddTest.cpp
+    ir/Instruction/AllocaTest.cpp
+    ir/Instruction/AndTest.cpp
+    ir/Instruction/ASHRTest.cpp
+    ir/Instruction/BrTest.cpp
+    ir/Instruction/CondBrTest.cpp
+    ir/Instruction/FAddTest.cpp
+    ir/Instruction/FCmpTest.cpp
+    ir/Instruction/FDivTest.cpp
+    ir/Instruction/FMulTest.cpp
+    ir/Instruction/FNegTest.cpp
+    ir/Instruction/FPExtTest.cpp
+    ir/Instruction/FPTruncTest.cpp
+    ir/Instruction/FRemTest.cpp
+    ir/Instruction/FSubTest.cpp
+    ir/Instruction/GetElementPtrTest.cpp
+    ir/Instruction/ICmpTest.cpp
+    ir/Instruction/LoadTest.cpp
+    ir/Instruction/LSHRTest.cpp
+    ir/Instruction/MulTest.cpp
+    ir/Instruction/OrTest.cpp
+    ir/Instruction/PhiTest.cpp
+    ir/Instruction/RetTest.cpp
+    ir/Instruction/SDivTest.cpp
+    ir/Instruction/SelectTest.cpp
+    ir/Instruction/SExtTest.cpp
+    ir/Instruction/SHLTest.cpp
+    ir/Instruction/SRemTest.cpp
+    ir/Instruction/StoreTest.cpp
+    ir/Instruction/SubTest.cpp
+    ir/Instruction/TruncTest.cpp
+    ir/Instruction/UDivTest.cpp
+    ir/Instruction/URemTest.cpp
+    ir/Instruction/XorTest.cpp
+    ir/Instruction/ZExtTest.cpp
+    ir_reader/IRReaderTest.cpp
+    ir_reader/LexerTest.cpp
+    ir_reader/ParserTest.cpp
+    main.cpp
+    utils/AsciiTest.cpp
+    utils/BigIntegerTest.cpp
+    utils/CommandLineParserTest.cpp
+    utils/PCG32Test.cpp
+    utils/SequenceOpsTest.cpp
+    utils/SetOpsTest.cpp
+    utils/StringJoinerTest.cpp
+    utils/StringsTest.cpp
+    utils/UnicodeTest.cpp
+)
+target_link_libraries(unittests PRIVATE mini-llvm GTest::gtest)
+
+include(GoogleTest)
+gtest_discover_tests(unittests)

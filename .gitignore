@@ -1,0 +1,29 @@
+# CMake
+CMakeUserPresets.json
+compile_commands.json
+
+# Bazel
+/bazel-*
+
+# Python
+*.pyc
+__pycache__/
+
+# Vim
+.*.sw?
+
+# Visual Studio Code
+/.cache/
+/.vscode/
+/build/
+
+# Visual Studio
+/.vs/
+/out/
+
+# CLion
+/.idea/
+/cmake-build-*/
+
+# macOS
+.DS_Store

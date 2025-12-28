@@ -1,0 +1,153 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        compiler: [g++, clang++]
+        sanitizer: ['', -fsanitize=address, -fsanitize=undefined]
+        shared: ['OFF', 'ON']
+
+      fail-fast: false
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      GCC_VERSION: '15'
+      LLVM_VERSION: '21'
+      DEBIAN_FRONTEND: noninteractive
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+    steps:
+      - run: |
+          apt-get update
+          apt-get upgrade -y
+          apt-get install -y build-essential curl file git procps
+
+      - run: |
+          NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
+
+      - run: |
+          brew install binutils gcc@$GCC_VERSION
+          brew link -f binutils
+
+          for f in /home/linuxbrew/.linuxbrew/opt/gcc@$GCC_VERSION/bin/*-$GCC_VERSION; do
+            name="$(basename "$f")"
+            ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-$GCC_VERSION}"
+          done
+
+      - if: ${{ matrix.compiler == 'clang++' }}
+        run: |
+          brew install llvm@$LLVM_VERSION
+          brew link -f llvm@$LLVM_VERSION
+
+          mkdir -p /home/linuxbrew/.linuxbrew/etc/clang
+
+          cat > /home/linuxbrew/.linuxbrew/etc/clang/clang.cfg <<EOF
+          -isystem /home/linuxbrew/.linuxbrew/include
+          -L/home/linuxbrew/.linuxbrew/lib
+          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
+          -Wl,--enable-new-dtags
+          EOF
+
+          cat > /home/linuxbrew/.linuxbrew/etc/clang/clang++.cfg <<EOF
+          -nostdinc++
+          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION
+          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/x86_64-pc-linux-gnu
+          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/backward
+          -isystem /home/linuxbrew/.linuxbrew/include
+          -L/home/linuxbrew/.linuxbrew/lib/gcc/$GCC_VERSION
+          -L/home/linuxbrew/.linuxbrew/lib
+          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib/gcc/$GCC_VERSION
+          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
+          -Wl,--enable-new-dtags
+          EOF
+
+      - run: brew install cmake ninja
+
+      - uses: actions/checkout@v5
+        with:
+          submodules: 'true'
+
+      - run: chown -R $(whoami):$(whoami) .
+
+      - run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_BUILD_TYPE="${{ matrix.config }}" \
+            -DCMAKE_CXX_COMPILER="${{ matrix.compiler }}" \
+            -DCMAKE_CXX_FLAGS="${{ matrix.sanitizer }}" \
+            -DCMAKE_EXE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DCMAKE_SHARED_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DCMAKE_MODULE_LINKER_FLAGS="${{ matrix.sanitizer }}" \
+            -DBUILD_SHARED_LIBS="${{ matrix.shared }}" \
+            -DMINI_LLVM_TESTS=ON \
+            -G Ninja
+
+      - run: cmake --build build
+
+      - run: ctest --test-dir build --output-on-failure
+
+      - run: |
+          apt-get install -y gcc-riscv64-linux-gnu qemu-user
+          mkdir -p /usr/gnemul
+          ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
+
+      - run: |
+          ./tests/mini-llc/test_all.sh \
+            --mini-llc ./build/bin/mini-llc \
+            --target riscv64 \
+            --driver riscv64-linux-gnu-gcc \
+            --emulator qemu-riscv64
+
+  build-windows:
+    runs-on: windows-2025
+
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        shared: ['ON', 'OFF']
+
+      fail-fast: false
+
+    defaults:
+      run:
+        shell: cmd
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: 'true'
+
+      - run: |
+          cmake ^
+            -S . ^
+            -B build ^
+            -DBUILD_SHARED_LIBS=${{ matrix.shared }} ^
+            -DMINI_LLVM_TESTS=ON ^
+            -G "Visual Studio 17 2022"
+
+      - run: cmake --build build --config ${{ matrix.config }}
+
+      - run: ctest --test-dir build --build-config ${{ matrix.config }} --output-on-failure

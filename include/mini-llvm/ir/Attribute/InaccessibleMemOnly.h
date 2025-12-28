@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include <memory>
+#include <string>
+
+#include "mini-llvm/ir/Attribute.h"
+
+namespace mini_llvm::ir {
+
+class InaccessibleMemOnly final : public Attribute {
+public:
+    std::string format() const override {
+        return "inaccessiblememonly";
+    }
+
+    std::unique_ptr<Attribute> clone() const override {
+        return std::make_unique<InaccessibleMemOnly>();
+    }
+};
+
+} // namespace mini_llvm::ir

@@ -1,0 +1,66 @@
+name: docs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      DEBIAN_FRONTEND: noninteractive
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - run: |
+          apt-get update
+          apt-get upgrade -y
+          apt-get install -y build-essential curl file git procps
+
+      - run: |
+          NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
+
+      - run: brew install cmake doxygen graphviz ninja
+
+      - uses: actions/checkout@v5
+        with:
+          submodules: 'true'
+
+      - run: chown -R $(whoami):$(whoami) .
+
+      - run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DMINI_LLVM_DOCS=ON \
+            -G Ninja
+
+      - run: cmake --build build --target docs
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./build/html
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

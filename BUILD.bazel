@@ -1,0 +1,39 @@
+load("@rules_cc//cc:cc_library.bzl", "cc_library")
+
+config_setting(
+    name = "shared",
+    values = {
+        "define": "shared=true",
+    },
+)
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "mini-llvm",
+    srcs = glob([
+        "lib/**/*.cpp",
+    ]),
+    hdrs = glob([
+        "include/**/*.h",
+        "include/**/*.def",
+    ]),
+    copts = select({
+        ":shared": [
+            "-fvisibility=hidden",
+            "-fvisibility-inlines-hidden",
+            "-DMINI_LLVM_SHARED",
+            "-DMINI_LLVM_EXPORTS",
+        ],
+        "//conditions:default": [],
+    }),
+    defines = select({
+        ":shared": ["MINI_LLVM_SHARED"],
+        "//conditions:default": [],
+    }),
+    includes = ["include"],
+    linkstatic = select({
+        ":shared": False,
+        "//conditions:default": True,
+    }),
+)

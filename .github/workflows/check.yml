@@ -1,0 +1,38 @@
+name: check
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:latest
+
+    env:
+      DEBIAN_FRONTEND: noninteractive
+
+    steps:
+      - run: |
+          apt-get update
+          apt-get upgrade -y
+          apt-get install -y git python3
+
+      - uses: actions/checkout@v5
+
+      - run: chown -R $(whoami):$(whoami) .
+
+      - run: ./contrib/format_all.sh --check
