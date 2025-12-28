@@ -1,0 +1,8 @@
+common --enable_bzlmod --noenable_workspace
+
+build --cxxopt=-std=c++23
+
+build:libfuzzer --@rules_fuzzing//fuzzing:cc_engine=@rules_fuzzing//fuzzing/engines:libfuzzer
+build:libfuzzer --@rules_fuzzing//fuzzing:cc_engine_instrumentation=libfuzzer
+
+test --test_output=all

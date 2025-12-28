@@ -1,0 +1,15 @@
+load("@rules_cc//cc:cc_binary.bzl", "cc_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_binary(
+    name = "mini-llc",
+    srcs = ["main.cpp"],
+    linkstatic = select({
+        "//:shared": False,
+        "//conditions:default": True,
+    }),
+    deps = [
+        "//:mini-llvm",
+    ],
+)
