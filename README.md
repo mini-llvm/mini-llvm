@@ -280,7 +280,9 @@ qemu-riscv64 ./example
 
 | GCC | Clang | MSVC |
 |:-:|:-:|:-:|
-| ≥ 14 | ≥ 18 | ≥ 19.42 (VS 2022 17.12) |
+| ≥ 14 | ≥ 18 (libstdc++ ≥ 14, libc++ ❌*) | ≥ 19.42 (VS 2022 17.12) |
+
+\* libc++ lacks support for certain C++23 features such as `std::move_only_function` and `std::views::enumerate`
 
 | CMake | Bazel |
 |:-:|:-:|
