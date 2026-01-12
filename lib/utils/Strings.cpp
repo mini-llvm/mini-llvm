@@ -30,19 +30,27 @@ std::string toStringImpl(T value, int base) {
 
 } // namespace
 
-std::string mini_llvm::toString(int32_t value, int base) {
+std::string mini_llvm::toString(int value, int base) {
     return toStringImpl(value, base);
 }
 
-std::string mini_llvm::toString(int64_t value, int base) {
+std::string mini_llvm::toString(long value, int base) {
     return toStringImpl(value, base);
 }
 
-std::string mini_llvm::toString(uint32_t value, int base) {
+std::string mini_llvm::toString(long long value, int base) {
     return toStringImpl(value, base);
 }
 
-std::string mini_llvm::toString(uint64_t value, int base) {
+std::string mini_llvm::toString(unsigned int value, int base) {
+    return toStringImpl(value, base);
+}
+
+std::string mini_llvm::toString(unsigned long value, int base) {
+    return toStringImpl(value, base);
+}
+
+std::string mini_llvm::toString(unsigned long long value, int base) {
     return toStringImpl(value, base);
 }
 
