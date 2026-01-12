@@ -274,9 +274,9 @@ qemu-riscv64 ./example
 
 ## Build
 
-| Linux | Windows |
-|:-:|:-:|
-| ✅ | ✅ |
+| Linux | macOS | Windows |
+|:-:|:-:|:-:|
+| ✅ | ✅ | ✅ |
 
 | GCC | Clang | MSVC |
 |:-:|:-:|:-:|
