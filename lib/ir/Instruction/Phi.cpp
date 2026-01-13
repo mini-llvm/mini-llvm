@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
@@ -55,11 +56,12 @@ bool Phi::isWellFormed() const {
     if (!Instruction::isWellFormed()) {
         return false;
     }
-    if (*type() == Void() || *type() == BasicBlockType()) {
+    std::unique_ptr<Type> t = type();
+    if (*t == Void() || *t == BasicBlockType()) {
         return false;
     }
     for (ConstIncoming incoming : incomings(*this)) {
-        if (*incoming.value->type() != *type()) {
+        if (*incoming.value->type() != *t) {
             return false;
         }
     }
