@@ -3,9 +3,11 @@
 #include "mini-llvm/ir/Instruction/Store.h"
 
 #include <format>
+#include <memory>
 #include <string>
 
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/ir/Type/Void.h"
@@ -21,10 +23,12 @@ bool Store::isWellFormed() const {
     if (&*value() == this || &*ptr() == this) {
         return false;
     }
-    if (*value()->type() == Void() || *value()->type() == BasicBlockType()) {
+    std::unique_ptr<Type> valueType = value()->type();
+    if (*valueType == Void() || *valueType == BasicBlockType()) {
         return false;
     }
-    if (*ptr()->type() != Ptr()) {
+    std::unique_ptr<Type> ptrType = ptr()->type();
+    if (*ptrType != Ptr()) {
         return false;
     }
     return true;

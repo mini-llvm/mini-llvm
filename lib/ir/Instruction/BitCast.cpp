@@ -22,6 +22,7 @@
 #include "mini-llvm/ir/Constant/PoisonValue.h"
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Double.h"
 #include "mini-llvm/ir/Type/Float.h"
@@ -165,10 +166,12 @@ bool BitCast::isWellFormed() const {
     if (&*value() == this) {
         return false;
     }
-    if (*value()->type() == Void() || *value()->type() == BasicBlockType()) {
+    std::unique_ptr<Type> valueType = value()->type();
+    if (*valueType == Void() || *valueType == BasicBlockType()) {
         return false;
     }
-    if (*type() == Void() || *type() == BasicBlockType()) {
+    std::unique_ptr<Type> t = type();
+    if (*t == Void() || *t == BasicBlockType()) {
         return false;
     }
     return true;
