@@ -121,6 +121,42 @@ jobs:
             --driver riscv64-linux-gnu-gcc \
             --emulator qemu-riscv64
 
+  build-macos:
+    runs-on: macos-latest
+
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        shared: ['OFF', 'ON']
+
+      fail-fast: false
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      GCC_VERSION: '15'
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: 'true'
+
+      - run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_BUILD_TYPE="${{ matrix.config }}" \
+            -DCMAKE_CXX_COMPILER="/opt/homebrew/opt/gcc@$GCC_VERSION/bin/g++-$GCC_VERSION" \
+            -DBUILD_SHARED_LIBS="${{ matrix.shared }}" \
+            -DMINI_LLVM_TESTS=ON \
+            -G Ninja
+
+      - run: cmake --build build
+
+      - run: ctest --test-dir build --output-on-failure
+
   build-windows:
     runs-on: windows-2025
 
