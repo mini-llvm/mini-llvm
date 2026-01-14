@@ -790,6 +790,12 @@ public:
                         }
                         I = std::make_shared<IntToPtr>(std::move(value));
                     } else if (mnemonic == kBitCast) {
+                        if (*type1 == Ptr() && *type2 != Ptr()) {
+                            throw ParseException("must be ptr", type2Location);
+                        }
+                        if (*type1 != Ptr() && *type2 == Ptr()) {
+                            throw ParseException("must not be ptr", type2Location);
+                        }
                         I = std::make_shared<BitCast>(std::move(value), std::move(type2));
                     } else {
                         abort();

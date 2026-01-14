@@ -558,6 +558,42 @@ define void @test() {
     EXPECT_FALSE(parseModule(input));
 }
 
+TEST(IRReaderTest, BitCastPtrToNonPtr) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = bitcast ptr null to i64
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, BitCastNonPtrToPtr) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = bitcast i64 0 to ptr
+    ret void
+}
+)";
+
+    EXPECT_FALSE(parseModule(input));
+}
+
+TEST(IRReaderTest, BitCastPtrToPtr) {
+    const char *input = R"(
+define void @test() {
+0:
+    %1 = bitcast ptr null to ptr
+    ret void
+}
+)";
+
+    EXPECT_TRUE(parseModule(input));
+}
+
 TEST(IRReaderTest, ZeroInitializerGlobalVar) {
     const char *input = "@test = global i32 zeroinitializer";
 

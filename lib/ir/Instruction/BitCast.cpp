@@ -174,6 +174,9 @@ bool BitCast::isWellFormed() const {
     if (*t == Void() || *t == BasicBlockType()) {
         return false;
     }
+    if ((*valueType == Ptr()) != (*t == Ptr())) {
+        return false;
+    }
     return true;
 }
 
