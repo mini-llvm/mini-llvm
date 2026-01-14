@@ -731,13 +731,11 @@ public:
                         if (!dynamic_cast<const IntegerType *>(&*type1)) {
                             throw ParseException("must be an integer type", type1Location);
                         }
-                    }
-                    if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
+                    } else if (mnemonic == kFPTrunc || mnemonic == kFPExt || mnemonic == kFPToSI || mnemonic == kFPToUI) {
                         if (!dynamic_cast<const FloatingType *>(&*type1)) {
                             throw ParseException("must be a floating point type", type1Location);
                         }
-                    }
-                    if (mnemonic == kPtrToInt) {
+                    } else if (mnemonic == kPtrToInt) {
                         if (*type1 != Ptr()) {
                             throw ParseException("must be ptr", type1Location);
                         }
