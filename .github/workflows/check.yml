@@ -35,4 +35,4 @@ jobs:
 
       - run: chown -R $(whoami):$(whoami) .
 
-      - run: ./contrib/format_all.sh --check
+      - run: ./scripts/format_all.sh --check
