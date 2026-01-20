@@ -340,7 +340,7 @@ CC=gcc-14 CXX=g++-14 bazel build -c opt //...
 ```sh
 # CMake
 cd <repo-dir>/build
-ctest .
+ctest
 
 # Bazel
 cd <repo-dir>
