@@ -3,6 +3,7 @@
 #pragma once
 
 #include <cstddef>
+#include <iterator>
 #include <memory>
 #include <ranges>
 #include <string>

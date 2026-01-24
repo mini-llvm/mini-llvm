@@ -2,6 +2,7 @@
 
 #include "mini-llvm/opt/ir/passes/AlgebraicSimplification.h"
 
+#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <memory>

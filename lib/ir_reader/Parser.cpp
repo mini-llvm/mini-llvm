@@ -2,6 +2,7 @@
 
 #include "mini-llvm/ir_reader/Parser.h"
 
+#include <algorithm>
 #include <bit>
 #include <cstddef>
 #include <cstdint>

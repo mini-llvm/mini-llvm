@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <memory>
 #include <string>
+#include <typeinfo>
 
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/ConstantVisitor.h"

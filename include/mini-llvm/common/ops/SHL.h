@@ -7,6 +7,7 @@
 #include <cmath>
 #include <concepts>
 #include <optional>
+#include <type_traits>
 
 namespace mini_llvm::ops {
 

@@ -6,11 +6,13 @@
 #include <cassert>
 #include <concepts>
 #include <cstddef>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <optional>
 #include <ranges>
 #include <string>
+#include <typeinfo>
 #include <utility>
 #include <vector>
 

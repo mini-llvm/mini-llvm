@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <list>
 
 #include "mini-llvm/mir/BasicBlock.h"

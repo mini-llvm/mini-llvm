@@ -2,7 +2,9 @@
 
 #include "mini-llvm/targets/riscv/mir/Instruction/RISCVCall.h"
 
+#include <format>
 #include <ranges>
+#include <string>
 #include <unordered_set>
 
 #include "mini-llvm/mir/PhysicalRegister.h"

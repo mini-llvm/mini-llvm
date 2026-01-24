@@ -3,6 +3,7 @@
 #pragma once
 
 #include <compare>
+#include <cstddef>
 #include <format>
 #include <functional>
 #include <string>

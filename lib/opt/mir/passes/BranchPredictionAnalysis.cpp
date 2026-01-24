@@ -3,6 +3,7 @@
 #include "mini-llvm/opt/mir/passes/BranchPredictionAnalysis.h"
 
 #include <cstddef>
+#include <memory>
 #include <unordered_set>
 #include <utility>
 

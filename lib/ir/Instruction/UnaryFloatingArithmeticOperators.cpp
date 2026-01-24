@@ -3,6 +3,7 @@
 #include <format>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "mini-llvm/common/ops/FNeg.h"

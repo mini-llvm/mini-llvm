@@ -2,6 +2,7 @@
 
 #include "mini-llvm/utils/Dot.h"
 
+#include <cstdint>
 #include <format>
 #include <string>
 #include <string_view>

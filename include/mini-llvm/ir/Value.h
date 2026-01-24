@@ -5,6 +5,7 @@
 #include <concepts>
 #include <cstddef>
 #include <format>
+#include <iterator>
 #include <memory>
 #include <ranges>
 #include <string>

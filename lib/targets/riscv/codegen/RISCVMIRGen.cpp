@@ -2,6 +2,7 @@
 
 #include "mini-llvm/targets/riscv/codegen/RISCVMIRGen.h"
 
+#include <bit>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>

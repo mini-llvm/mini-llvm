@@ -2,6 +2,7 @@
 
 #include "mini-llvm/mc/Symbol.h"
 
+#include <cstddef>
 #include <string>
 
 #include "mini-llvm/utils/Ascii.h"

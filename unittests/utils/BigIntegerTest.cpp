@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+#include <cstdint>
 #include <tuple>
 
 #include <gtest/gtest.h>
