@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include "mini-llvm/utils/Compiler.h"
 #include <concepts>
 #include <format>
 #include <memory>
 #include <string>
+
+#include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {
 
