@@ -210,11 +210,11 @@ int mainImpl(std::vector<std::string> args) {
         *options.inputFile = "<stdin>";
     }
     for (const Diagnostic &diag : diags) {
-        auto [line, column] = sourceManager.lineColumn(diag.location);
-        std::println(stderr, "{}:{}:{}: {}: {}", *options.inputFile, line + 1, column + 1, name(diag.level), diag.message);
-        if (line < sourceManager.lineCount()) {
-            std::print(stderr, "{}", sourceManager.line(line));
-            std::println(stderr, "{}^", std::string(column, ' '));
+        auto [lineNum, columnNum] = sourceManager.lineColumnNum(diag.location);
+        std::println(stderr, "{}:{}:{}: {}: {}", *options.inputFile, lineNum, columnNum, name(diag.level), diag.message);
+        if (lineNum <= sourceManager.numLines()) {
+            std::print(stderr, "{}", sourceManager.line(lineNum));
+            std::println(stderr, "{}^", std::string(columnNum - 1, ' '));
         }
     }
     if (!IM) {

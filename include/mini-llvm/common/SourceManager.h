@@ -24,20 +24,18 @@ public:
         return std::move(source_);
     }
 
-    size_t lineCount() const {
-        return lines_.size();
+    size_t numLines() const {
+        return lineStarts_.size();
     }
 
-    std::string_view line(size_t i) const {
-        return lines_[i];
-    }
+    std::string_view line(size_t lineNum) const;
 
-    std::pair<size_t, size_t> lineColumn(size_t location) const;
+    std::pair<size_t, size_t> lineColumnNum(size_t location) const;
 
 private:
     std::string source_;
-    std::vector<std::string_view> lines_;
-    std::vector<size_t> sums_;
+    std::vector<size_t> lineStarts_;
+    std::vector<size_t> lineEnds_;
 };
 
 } // namespace mini_llvm

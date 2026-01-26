@@ -11,34 +11,28 @@
 using namespace mini_llvm;
 
 void SourceManager::setSource(std::string source) {
+    if (!source.empty() && source.back() != '\n') {
+        source.push_back('\n');
+    }
     source_ = std::move(source);
-    if (!source_.empty() && source_.back() != '\n') {
-        source_.push_back('\n');
-    }
-    lines_.clear();
-    size_t n = source_.size();
-    size_t i = 0;
-    for (size_t j = 0; j < n; ++j) {
-        if (source_[j] == '\n') {
-            lines_.emplace_back(source_.data() + i, source_.data() + j + 1);
-            i = j + 1;
-        }
-    }
-    sums_.clear();
-    size_t sum = 0;
-    for (std::string_view line : lines_) {
-        sum += line.size();
-        sums_.push_back(sum);
+    lineStarts_.clear();
+    lineEnds_.clear();
+    size_t i = 0, j;
+    while ((j = source_.find('\n', i)) != std::string::npos) {
+        lineStarts_.push_back(i);
+        lineEnds_.push_back(j);
+        i = j + 1;
     }
 }
 
-std::pair<size_t, size_t> SourceManager::lineColumn(size_t location) const {
-    size_t line = std::lower_bound(sums_.begin(), sums_.end(), location + 1) - sums_.begin();
-    size_t column;
-    if (line == 0) {
-        column = location;
-    } else {
-        column = location - sums_[line - 1];
-    }
-    return {line, column};
+std::string_view SourceManager::line(size_t lineNum) const {
+    size_t i = lineStarts_[lineNum - 1];
+    size_t j = lineEnds_[lineNum - 1];
+    return std::string_view(source_).substr(i, j - i + 1);
+}
+
+std::pair<size_t, size_t> SourceManager::lineColumnNum(size_t location) const {
+    size_t lineNum = std::upper_bound(lineStarts_.begin(), lineStarts_.end(), location) - lineStarts_.begin();
+    size_t columnNum = location - lineStarts_[lineNum - 1] + 1;
+    return {lineNum, columnNum};
 }
