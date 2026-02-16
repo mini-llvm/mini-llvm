@@ -43,7 +43,7 @@ constexpr int kDigitValues[] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
 };
 
-uint32_t uabs(int32_t value) {
+uint32_t uabs_(int32_t value) {
     if (value >= 0) {
         return static_cast<uint32_t>(value);
     } else {
@@ -359,7 +359,7 @@ BigInteger mini_llvm::operator*(const BigInteger &lhs, const BigInteger &rhs) {
 
 BigInteger mini_llvm::operator/(const BigInteger &lhs, int32_t rhs) {
     assert(rhs != 0);
-    std::vector<uint32_t> digits = divRemImpl(lhs.digits_, uabs(rhs)).first;
+    std::vector<uint32_t> digits = divRemImpl(lhs.digits_, uabs_(rhs)).first;
     int sign;
     if (digits.empty()) {
         sign = 0;
@@ -373,7 +373,7 @@ BigInteger mini_llvm::operator/(const BigInteger &lhs, int32_t rhs) {
 
 int32_t mini_llvm::operator%(const BigInteger &lhs, int32_t rhs) {
     assert(rhs != 0);
-    uint32_t r = divRemImpl(lhs.digits_, uabs(rhs)).second;
+    uint32_t r = divRemImpl(lhs.digits_, uabs_(rhs)).second;
     if (lhs.sign_ < 0) {
         r = -r;
     }
@@ -387,7 +387,7 @@ std::pair<BigInteger, int32_t> mini_llvm::divRem(const BigInteger &lhs, int32_t 
     }
     std::vector<uint32_t> digits;
     int32_t r;
-    std::tie(digits, r) = divRemImpl(lhs.digits_, uabs(rhs));
+    std::tie(digits, r) = divRemImpl(lhs.digits_, uabs_(rhs));
     int sign = 1;
     if (digits.empty()) {
         sign = 0;
