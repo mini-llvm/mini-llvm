@@ -115,7 +115,7 @@ int mainImpl(std::vector<std::string> args) {
     for (const auto &arg : *parseResult) {
         if (const auto *option = arg.option()) {
             if (option->name() == "--help") {
-                std::println(stdout, "Usage: {} [--target=<target>] [-o <output-file>] <input-file>", args[0]);
+                std::println(stdout, "Usage: {} [--target <target>] [-o <output-file>] <input-file>", args[0]);
                 return EXIT_SUCCESS;
             }
             if (option->name() == "--target") {
