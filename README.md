@@ -213,48 +213,19 @@ Although `riscv64` is currently the only supported target, the flexible architec
 
 <table>
 <tr>
-<td>add.ll</td>
-</tr>
-<tr>
-<td>
-
-```llvm
-define i32 @add(i32 %0, i32 %1) {
-2:
-  %3 = add i32 %0, %1
-  ret i32 %3
-}
-```
-
-</td>
-</tr>
-</table>
-
-<table>
-<tr>
 <td>main.ll</td>
 </tr>
 <tr>
 <td>
 
 ```llvm
-@scan_format = private constant [6 x i8] c"%d %d\00"
-@print_format = private constant [14 x i8] c"%d + %d = %d\0A\00"
+@format = private constant [15 x i8] c"Hello, world!\0A\00"
 
-declare i32 @scanf(ptr, ...)
 declare i32 @printf(ptr, ...)
-
-declare i32 @add(i32, i32)
 
 define i32 @main() {
 0:
-  %1 = alloca i32
-  %2 = alloca i32
-  %3 = call i32 @scanf(ptr @scan_format, ptr %1, ptr %2)
-  %4 = load i32, ptr %1
-  %5 = load i32, ptr %2
-  %6 = call i32 @add(i32 %4, i32 %5)
-  %7 = call i32 @printf(ptr @print_format, i32 %4, i32 %5, i32 %6)
+  %1 = call i32 (ptr, ...) @printf(ptr @format)
   ret i32 0
 }
 ```
@@ -264,12 +235,7 @@ define i32 @main() {
 </table>
 
 ```sh
-mini-llc --target riscv64 -o add.s add.ll
 mini-llc --target riscv64 -o main.s main.ll
-riscv64-linux-gnu-gcc -c -o add.o add.s
-riscv64-linux-gnu-gcc -c -o main.o main.s
-riscv64-linux-gnu-gcc -o example add.o main.o
-qemu-riscv64 ./example
 ```
 
 ## Build
