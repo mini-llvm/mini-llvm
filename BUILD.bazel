@@ -554,7 +554,6 @@ cc_library(
         ":shared": ["MINI_LLVM_SHARED"],
         "//conditions:default": [],
     }),
-    includes = ["include"],
     linkstatic = select({
         ":shared": False,
         "//conditions:default": True,
@@ -563,6 +562,7 @@ cc_library(
         ":shared": ["MINI_LLVM_EXPORTS"],
         "//conditions:default": [],
     }),
+    strip_include_prefix = "include",
     textual_hdrs = [
         "include/mini-llvm/ir_reader/TokenKind.def",
         "include/mini-llvm/mir/Condition.def",
