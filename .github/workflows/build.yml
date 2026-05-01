@@ -115,11 +115,14 @@ jobs:
           ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 
       - run: |
-          ./tests/mini-llc/test_all.sh \
-            --mini-llc ./build/bin/mini-llc \
-            --target riscv64 \
-            --driver riscv64-linux-gnu-gcc \
-            --emulator qemu-riscv64
+          for allocator in graph-coloring linear-scan naive; do
+            echo "Testing register allocator: $allocator"
+            ./tests/mini-llc/test_all.sh \
+              --mini-llc "./build/bin/mini-llc --register-allocator $allocator" \
+              --target riscv64 \
+              --driver riscv64-linux-gnu-gcc \
+              --emulator qemu-riscv64
+          done
 
   build-macos:
     runs-on: macos-latest

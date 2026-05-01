@@ -60,6 +60,12 @@ bool NaiveAllocator::allocate(
         slots.put(virtReg, &F.stackFrame().add(std::prev(F.stackFrame().end()), virtReg->width(), virtReg->width()));
     }
 
+    // Keep virtual registers alive
+    std::vector<std::shared_ptr<Register>> sharedVirtRegs;
+    for (VirtualRegister *virtReg : virtRegs) {
+        sharedVirtRegs.push_back(share(*virtReg));
+    }
+
     LiveVariableAnalysis liveVars;
     liveVars.runOnFunction(F);
 
