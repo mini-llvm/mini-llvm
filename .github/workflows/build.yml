@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: ubuntu:latest
+      image: ubuntu:24.04
 
     strategy:
       matrix:
