@@ -54,4 +54,6 @@ add_executable(unittests
 target_link_libraries(unittests PRIVATE mini-llvm GTest::gtest)
 
 include(GoogleTest)
-gtest_discover_tests(unittests)
+gtest_discover_tests(unittests
+    DISCOVERY_TIMEOUT 60
+)
