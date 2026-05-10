@@ -9,7 +9,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "mini-llvm/utils/OptionalRef.h"
+#include "mini-llvm/utils/OptionalReference.h"
 
 namespace mini_llvm {
 
@@ -92,7 +92,7 @@ public:
     }
 
     template <typename Key2 = Key>
-    OptionalRef<Value> get(const Key2 &key) {
+    OptionalReference<Value> get(const Key2 &key) {
         auto i = find(key);
         if (i != end()) {
             return i->second;
@@ -101,7 +101,7 @@ public:
     }
 
     template <typename Key2 = Key>
-    OptionalRef<const Value> get(const Key2 &key) const {
+    OptionalReference<const Value> get(const Key2 &key) const {
         auto i = find(key);
         if (i != end()) {
             return i->second;

@@ -10,27 +10,27 @@
 namespace mini_llvm {
 
 template <typename T>
-class OptionalRef {
+class OptionalReference {
     static_assert(std::is_object_v<T>);
 
 public:
     using value_type = T;
 
-    constexpr OptionalRef() noexcept : value_(nullptr) {}
+    constexpr OptionalReference() noexcept : value_(nullptr) {}
 
-    constexpr OptionalRef(std::nullopt_t) noexcept : value_(nullptr) {}
-
-    template <typename U>
-        requires std::is_convertible_v<U &, T &>
-    constexpr OptionalRef(U &value) noexcept : value_(&value) {}
-
-    constexpr OptionalRef(const OptionalRef &other) noexcept = default;
+    constexpr OptionalReference(std::nullopt_t) noexcept : value_(nullptr) {}
 
     template <typename U>
         requires std::is_convertible_v<U &, T &>
-    constexpr OptionalRef(const OptionalRef<U> &other) noexcept : value_(other.value_) {}
+    constexpr OptionalReference(U &value) noexcept : value_(&value) {}
 
-    constexpr OptionalRef &operator=(const OptionalRef &other) noexcept = default;
+    constexpr OptionalReference(const OptionalReference &other) noexcept = default;
+
+    template <typename U>
+        requires std::is_convertible_v<U &, T &>
+    constexpr OptionalReference(const OptionalReference<U> &other) noexcept : value_(other.value_) {}
+
+    constexpr OptionalReference &operator=(const OptionalReference &other) noexcept = default;
 
     explicit constexpr operator bool() const noexcept {
         return value_ != nullptr;
@@ -70,21 +70,21 @@ public:
         value_ = nullptr;
     }
 
-    constexpr void swap(OptionalRef &other) noexcept {
+    constexpr void swap(OptionalReference &other) noexcept {
         std::swap(value_, other.value_);
     }
 
 private:
     T *value_;
 
-    template <typename> friend class OptionalRef;
+    template <typename> friend class OptionalReference;
 };
 
 template <typename T>
-OptionalRef(T &) -> OptionalRef<T>;
+OptionalReference(T &) -> OptionalReference<T>;
 
 template <typename T>
-void swap(OptionalRef<T> &lhs, OptionalRef<T> &rhs) noexcept {
+void swap(OptionalReference<T> &lhs, OptionalReference<T> &rhs) noexcept {
     lhs.swap(rhs);
 }
 

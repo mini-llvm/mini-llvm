@@ -530,7 +530,7 @@ cc_library(
         "include/mini-llvm/utils/IndirectIterator.h",
         "include/mini-llvm/utils/Matrix.h",
         "include/mini-llvm/utils/Memory.h",
-        "include/mini-llvm/utils/OptionalRef.h",
+        "include/mini-llvm/utils/OptionalReference.h",
         "include/mini-llvm/utils/PCG32.h",
         "include/mini-llvm/utils/Path.h",
         "include/mini-llvm/utils/ProcessorDetection.h",

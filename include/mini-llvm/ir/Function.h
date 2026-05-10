@@ -25,7 +25,7 @@
 #include "mini-llvm/utils/Compiler.h"
 #include "mini-llvm/utils/IndirectIterator.h"
 #include "mini-llvm/utils/Memory.h"
-#include "mini-llvm/utils/OptionalRef.h"
+#include "mini-llvm/utils/OptionalReference.h"
 
 namespace mini_llvm::ir {
 
@@ -116,7 +116,7 @@ public:
 
     template <typename T>
         requires std::derived_from<T, Attribute>
-    OptionalRef<Attribute> attr() {
+    OptionalReference<Attribute> attr() {
         auto i = std::ranges::find_if(attrs_, [](const std::unique_ptr<Attribute> &attr) {
             return dynamic_cast<const T *>(&*attr);
         });
@@ -127,7 +127,7 @@ public:
     }
 
     template <typename T>
-    OptionalRef<const Attribute> attr() const {
+    OptionalReference<const Attribute> attr() const {
         auto i = std::ranges::find_if(attrs_, [](const std::unique_ptr<Attribute> &attr) {
             return dynamic_cast<const T *>(&*attr);
         });
