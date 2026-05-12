@@ -87,7 +87,7 @@ def main():
         path = Path(path)
         with open(path, mode='r', encoding='utf-8') as f:
             content = f.read()
-        if path.suffix in ('.c', '.cpp', '.h'):
+        if path.suffix in ('.cpp', '.h'):
             reformatted_content = reformat_cpp(content)
         elif path.suffix == '.cmake':
             reformatted_content = reformat_cmake(content)
