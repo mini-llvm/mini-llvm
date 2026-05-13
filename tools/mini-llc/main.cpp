@@ -82,10 +82,12 @@ struct Options {
 int mainImpl(std::vector<std::string> args) {
     CommandLineParser parser;
 
+    parser.addOption("-h");
     parser.addOption("--help");
     parser.addOption("--target:");
     parser.addOption("--register-allocator:");
     parser.addOption("-o:");
+    parser.addOption("--output:");
     parser.addOption("--dump-ir::");
     parser.addOption("--dump-mir::");
 
@@ -113,8 +115,29 @@ int mainImpl(std::vector<std::string> args) {
 
     for (const auto &arg : *parseResult) {
         if (const auto *option = arg.option()) {
-            if (option->name() == "--help") {
-                std::println(stdout, "Usage: {} [--target <target>] [-o <output-file>] <input-file>", args[0]);
+            if (option->name() == "-h" || option->name() == "--help") {
+                std::print(stdout, R"(Usage: {} [options] <input>
+
+Options:
+      --dump-ir[=<file>]
+          Dump the IR after optimization to the specified file or stdout.
+      --dump-mir[=<file>]
+          Dump the MIR after optimization to the specified file or stdout.
+  -h, --help
+          Show the help.
+  -o, --output <output>
+          Specify the output file.
+      --register-allocator <register-allocator>
+          Specify the register allocator. Supported values are
+          'graph-coloring', 'linear-scan', and 'naive'.
+          (default: graph-coloring)
+      --target <target>
+          Specify the target. Supported values are 'riscv64'.
+          (default: native)
+
+Arguments:
+  input  The input file.
+)", args[0]);
                 return EXIT_SUCCESS;
             }
             if (option->name() == "--target") {
@@ -133,7 +156,7 @@ int mainImpl(std::vector<std::string> args) {
                 }
                 continue;
             }
-            if (option->name() == "-o") {
+            if (option->name() == "-o" || option->name() == "--output") {
                 options.outputFile = *option->value();
                 continue;
             }
