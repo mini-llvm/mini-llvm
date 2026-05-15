@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 if ! ./scripts/format_staged.sh --check; then
     echo "pre-commit: aborting commit"

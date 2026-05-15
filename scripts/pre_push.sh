@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
 current_branch="$(git rev-parse --abbrev-ref HEAD)"
 
