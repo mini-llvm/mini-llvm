@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "mini-llvm/utils/Color.h"
+
 namespace mini_llvm {
 
 struct Diagnostic {
@@ -39,6 +41,17 @@ inline constexpr const char *name(Diagnostic::Level level) {
         case kNote: return "note";
         case kWarning: return "warning";
         case kError: return "error";
+        default: abort();
+    }
+}
+
+inline Color color(Diagnostic::Level level) {
+    using enum Diagnostic::Level;
+    using namespace colors;
+    switch (level) {
+        case kNote: return cyan;
+        case kWarning: return magenta;
+        case kError: return red;
         default: abort();
     }
 }

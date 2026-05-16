@@ -151,6 +151,7 @@ cc_library(
         "lib/targets/riscv/opt/mir/RISCVPassManager.cpp",
         "lib/targets/riscv/opt/mir/passes/RISCVConstantPropagation.cpp",
         "lib/utils/BigInteger.cpp",
+        "lib/utils/Color.cpp",
         "lib/utils/CommandLineParser.cpp",
         "lib/utils/Dot.cpp",
         "lib/utils/FileHandle.cpp",
@@ -517,6 +518,7 @@ cc_library(
         "include/mini-llvm/utils/ArrowProxy.h",
         "include/mini-llvm/utils/Ascii.h",
         "include/mini-llvm/utils/BigInteger.h",
+        "include/mini-llvm/utils/Color.h",
         "include/mini-llvm/utils/CommandLineParser.h",
         "include/mini-llvm/utils/Compiler.h",
         "include/mini-llvm/utils/Dot.h",
@@ -567,6 +569,7 @@ cc_library(
         "include/mini-llvm/ir_reader/TokenKind.def",
         "include/mini-llvm/mir/Condition.def",
         "include/mini-llvm/targets/riscv/target.def",
+        "include/mini-llvm/utils/Color.def",
         "include/mini-llvm/utils/ErrorCode.def",
     ],
 )
