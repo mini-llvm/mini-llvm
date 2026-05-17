@@ -23,13 +23,19 @@ jobs:
       image: ubuntu:24.04
 
     env:
+      BUILDFIFIER_VERSION: '8.5.1'
       DEBIAN_FRONTEND: noninteractive
 
     steps:
       - run: |
           apt-get update
           apt-get upgrade -y
-          apt-get install -y git python3
+          apt-get install -y curl git python3
+
+      - run: |
+          curl -fsSL -o /usr/local/bin/buildifier \
+            https://github.com/bazelbuild/buildtools/releases/download/v${BUILDFIFIER_VERSION}/buildifier-linux-amd64
+          chmod +x /usr/local/bin/buildifier
 
       - uses: actions/checkout@v5
 
