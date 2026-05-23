@@ -24,7 +24,7 @@ jobs:
         shell: bash
 
     env:
-      DEBIAN_FRONTEND: noninteractive
+      GCC_VERSION: '15'
 
     environment:
       name: github-pages
@@ -33,20 +33,22 @@ jobs:
     steps:
       - run: |
           apt-get update
-          apt-get upgrade -y
-          apt-get install -y build-essential curl file git procps
-
-      - run: |
-          NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
-
-      - run: brew install cmake doxygen graphviz ninja
+          DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl file git procps
 
       - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
       - run: chown -R $(whoami):$(whoami) .
+
+      - uses: ./.github/actions/setup-toolchain
+        with:
+          install-gcc: 'true'
+          gcc-version: ${{ env.GCC_VERSION }}
+          install-cmake: 'true'
+          install-ninja: 'true'
+
+      - run: brew install doxygen graphviz
 
       - run: |
           cmake \

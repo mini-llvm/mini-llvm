@@ -24,13 +24,11 @@ jobs:
 
     env:
       BUILDIFIER_VERSION: '8.5.1'
-      DEBIAN_FRONTEND: noninteractive
 
     steps:
       - run: |
           apt-get update
-          apt-get upgrade -y
-          apt-get install -y curl git python3
+          DEBIAN_FRONTEND=noninteractive apt-get install -y curl git python3
 
       - run: |
           curl -fsSL -o /usr/local/bin/buildifier \

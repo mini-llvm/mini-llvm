@@ -34,62 +34,36 @@ jobs:
     env:
       GCC_VERSION: '15'
       LLVM_VERSION: '22'
-      DEBIAN_FRONTEND: noninteractive
-      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
     steps:
       - run: |
           apt-get update
-          apt-get upgrade -y
-          apt-get install -y build-essential curl file git procps
-
-      - run: |
-          NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-          echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
-
-      - run: |
-          brew install binutils gcc@$GCC_VERSION
-          brew link -f binutils
-
-          for f in /home/linuxbrew/.linuxbrew/opt/gcc@$GCC_VERSION/bin/*-$GCC_VERSION; do
-            name="$(basename "$f")"
-            ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-$GCC_VERSION}"
-          done
-
-      - if: ${{ matrix.compiler == 'clang++' }}
-        run: |
-          brew install llvm@$LLVM_VERSION
-          brew link -f llvm@$LLVM_VERSION
-
-          mkdir -p /home/linuxbrew/.linuxbrew/etc/clang
-
-          cat > /home/linuxbrew/.linuxbrew/etc/clang/clang.cfg <<EOF
-          -isystem /home/linuxbrew/.linuxbrew/include
-          -L/home/linuxbrew/.linuxbrew/lib
-          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
-          -Wl,--enable-new-dtags
-          EOF
-
-          cat > /home/linuxbrew/.linuxbrew/etc/clang/clang++.cfg <<EOF
-          -nostdinc++
-          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION
-          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/x86_64-pc-linux-gnu
-          -isystem /home/linuxbrew/.linuxbrew/include/c++/$GCC_VERSION/backward
-          -isystem /home/linuxbrew/.linuxbrew/include
-          -L/home/linuxbrew/.linuxbrew/lib/gcc/$GCC_VERSION
-          -L/home/linuxbrew/.linuxbrew/lib
-          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib/gcc/$GCC_VERSION
-          -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
-          -Wl,--enable-new-dtags
-          EOF
-
-      - run: brew install cmake ninja
+          DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl file git procps
 
       - uses: actions/checkout@v6
         with:
           submodules: 'true'
 
       - run: chown -R $(whoami):$(whoami) .
+
+      - if: ${{ matrix.compiler == 'g++' }}
+        uses: ./.github/actions/setup-toolchain
+        with:
+          install-gcc: 'true'
+          gcc-version: ${{ env.GCC_VERSION }}
+          install-cmake: 'true'
+          install-ninja: 'true'
+
+      - if: ${{ matrix.compiler == 'clang++' }}
+        uses: ./.github/actions/setup-toolchain
+        with:
+          install-gcc: 'true'
+          gcc-version: ${{ env.GCC_VERSION }}
+          install-llvm: 'true'
+          llvm-version: ${{ env.LLVM_VERSION }}
+          clang-use-gcc-libstdcxx: 'true'
+          install-cmake: 'true'
+          install-ninja: 'true'
 
       - run: |
           cmake \
@@ -107,14 +81,18 @@ jobs:
 
       - run: cmake --build build
 
-      - run: ctest --test-dir build --output-on-failure
+      - env:
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: ctest --test-dir build --output-on-failure
 
       - run: |
-          apt-get install -y gcc-riscv64-linux-gnu qemu-user
+          DEBIAN_FRONTEND=noninteractive apt-get install -y gcc-riscv64-linux-gnu qemu-user
           mkdir -p /usr/gnemul
           ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
 
-      - run: |
+      - env:
+          UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+        run: |
           for allocator in graph-coloring linear-scan naive; do
             echo "Testing register allocator: $allocator"
             ./tests/mini-llc/test_all.sh \
