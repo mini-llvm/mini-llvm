@@ -297,7 +297,7 @@ CC=gcc-14 CXX=g++-14 bazel build -c opt //...
 
 | Build Option | Default | Description |
 | - | - | - |
-| `shared` | `false` | Build mini-llvm as a shared library (libmini-llvm.so) |
+| `--//:shared` | `false` | Build mini-llvm as a shared library (libmini-llvm.so) |
 
 ## Testing
 
