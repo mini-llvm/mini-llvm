@@ -23,6 +23,7 @@
 #include "mini-llvm/mir/Module.h"
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
+#include "mini-llvm/utils/Color.h"
 #include "mini-llvm/utils/CommandLineParser.h"
 #include "mini-llvm/utils/ErrorCode.h"
 #include "mini-llvm/utils/Expected.h"
@@ -37,6 +38,7 @@
 #endif
 
 using namespace mini_llvm;
+using namespace mini_llvm::colors;
 
 namespace {
 
@@ -80,6 +82,9 @@ struct Options {
 };
 
 int mainImpl(std::vector<std::string> args) {
+    VTModeGuard vtModeGuard(stderr, true);
+    ColorGuard colorGuard(supportsColor(stderr));
+
     CommandLineParser parser;
 
     parser.addOption("-h");
@@ -97,15 +102,15 @@ int mainImpl(std::vector<std::string> args) {
         using enum CommandLineParser::ErrorKind;
         switch (parseResult.error().kind()) {
         case kMissingValue:
-            std::println(stderr, "{}: error: missing value to '{}'", args[0], parseResult.error().optionName());
+            std::println(stderr, "{}{}missing value to '{}'", bold(args[0] + ": "), bold(red("error: ")), parseResult.error().optionName());
             break;
 
         case kUnexpectedValue:
-            std::println(stderr, "{}: error: unexpected value to '{}'", args[0], parseResult.error().optionName());
+            std::println(stderr, "{}{}unexpected value to '{}'", bold(args[0] + ": "), bold(red("error: ")), parseResult.error().optionName());
             break;
 
         case kUnrecognizedOption:
-            std::println(stderr, "{}: error: unrecognized option '{}'", args[0], parseResult.error().optionName());
+            std::println(stderr, "{}{}unrecognized option '{}'", bold(args[0] + ": "), bold(red("error: ")), parseResult.error().optionName());
             break;
         }
         return EXIT_FAILURE;
@@ -143,7 +148,7 @@ Arguments:
             if (option->name() == "--target") {
                 options.target = toTargetOption(*option->value());
                 if (!options.target) {
-                    std::println(stderr, "{}: error: unsupported target '{}'", args[0], *option->value());
+                    std::println(stderr, "{}{}unsupported target '{}'", bold(args[0] + ": "), bold(red("error: ")), *option->value());
                     return EXIT_FAILURE;
                 }
                 continue;
@@ -151,7 +156,7 @@ Arguments:
             if (option->name() == "--register-allocator") {
                 options.registerAllocator = toRegisterAllocatorOption(*option->value());
                 if (!options.registerAllocator) {
-                    std::println(stderr, "{}: error: invalid register allocator '{}'", args[0], *option->value());
+                    std::println(stderr, "{}{}invalid register allocator '{}'", bold(args[0] + ": "), bold(red("error: ")), *option->value());
                     return EXIT_FAILURE;
                 }
                 continue;
@@ -208,7 +213,7 @@ Arguments:
 #endif
         options.target = toTargetOption(targetName);
         if (!options.target) {
-            std::println(stderr, "{}: error: unsupported target '{}'", args[0], targetName);
+            std::println(stderr, "{}{}unsupported target '{}'", bold(args[0] + ": "), bold(red("error: ")), targetName);
             return EXIT_FAILURE;
         }
     }
@@ -219,7 +224,7 @@ Arguments:
 
     Expected<std::string, SystemError> source = readAll(*options.inputFile, stdin);
     if (!source) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *options.inputFile, message(source.error().code()));
+        std::println(stderr, "{}{}{}: {}", bold(args[0] + ": "), bold(red("error: ")), *options.inputFile, message(source.error().code()));
         return EXIT_FAILURE;
     }
     normalizeLineEndings(*source);
@@ -233,10 +238,14 @@ Arguments:
     }
     for (const Diagnostic &diag : diags) {
         auto [lineNum, columnNum] = sourceManager.lineColumnNum(diag.location);
-        std::println(stderr, "{}:{}:{}: {}: {}", *options.inputFile, lineNum, columnNum, name(diag.level), diag.message);
+        std::println(stderr,
+                     "{}{}{}",
+                     bold(std::format("{}:{}:{}: ", *options.inputFile, lineNum, columnNum)),
+                     bold(color(diag.level)(std::format("{}: ", name(diag.level)))),
+                     diag.message);
         if (lineNum <= sourceManager.numLines()) {
             std::print(stderr, "{}", sourceManager.line(lineNum));
-            std::println(stderr, "{}^", std::string(columnNum - 1, ' '));
+            std::println(stderr, "{}{}", std::string(columnNum - 1, ' '), bold(green("^")));
         }
     }
     if (!IM) {
@@ -244,7 +253,7 @@ Arguments:
     }
 
     if (!IM->isWellFormed()) {
-        std::println(stderr, "{}: error: ill-formed module", args[0]);
+        std::println(stderr, "{}{}ill-formed module", bold(args[0] + ": "), bold(red("error: ")));
         return EXIT_FAILURE;
     }
 
@@ -261,7 +270,7 @@ Arguments:
 
     if (options.irDumpFile) {
         if (Expected<void, SystemError> result = writeAll(*options.irDumpFile, stdout, std::format("{}\n", *IM)); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *options.irDumpFile, message(result.error().code()));
+            std::println(stderr, "{}{}{}: {}", bold(args[0] + ": "), bold(red("error: ")), *options.irDumpFile, message(result.error().code()));
             return EXIT_FAILURE;
         }
     }
@@ -292,13 +301,13 @@ Arguments:
 
     if (options.mirDumpFile) {
         if (Expected<void, SystemError> result = writeAll(*options.mirDumpFile, stdout, std::format("{}\n", MM)); !result) {
-            std::println(stderr, "{}: error: {}: {}", args[0], *options.mirDumpFile, message(result.error().code()));
+            std::println(stderr, "{}{}{}: {}", bold(args[0] + ": "), bold(red("error: ")), *options.mirDumpFile, message(result.error().code()));
             return EXIT_FAILURE;
         }
     }
 
     if (Expected<void, SystemError> result = writeAll(*options.outputFile, stdout, std::format("{}\n", MCM)); !result) {
-        std::println(stderr, "{}: error: {}: {}", args[0], *options.outputFile, message(result.error().code()));
+        std::println(stderr, "{}{}{}: {}", bold(args[0] + ": "), bold(red("error: ")), *options.outputFile, message(result.error().code()));
         return EXIT_FAILURE;
     }
 
