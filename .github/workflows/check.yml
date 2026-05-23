@@ -37,7 +37,7 @@ jobs:
             https://github.com/bazelbuild/buildtools/releases/download/v${BUILDIFIER_VERSION}/buildifier-linux-amd64
           chmod +x /usr/local/bin/buildifier
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - run: chown -R $(whoami):$(whoami) .
 
