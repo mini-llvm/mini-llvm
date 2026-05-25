@@ -1,0 +1,146 @@
+# SPDX-License-Identifier: MIT
+
+name: setup-toolchain
+description: Set up C++ toolchain on Ubuntu.
+
+inputs:
+  install-gcc:
+    description: Whether to install GCC.
+    required: false
+    default: 'false'
+  gcc-version:
+    description: GCC version to install.
+    required: false
+    default: ''
+  install-llvm:
+    description: Whether to install LLVM.
+    required: false
+    default: 'false'
+  llvm-version:
+    description: LLVM version to install.
+    required: false
+    default: ''
+  clang-use-gcc-libstdcxx:
+    description: Whether to configure Clang to use libstdc++ from GCC.
+    required: false
+    default: 'false'
+  install-cmake:
+    description: Whether to install CMake.
+    required: false
+    default: 'false'
+  install-ninja:
+    description: Whether to install Ninja.
+    required: false
+    default: 'false'
+  install-bazel:
+    description: Whether to install Bazel.
+    required: false
+    default: 'false'
+  bazel-version:
+    description: Bazel version to install.
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        if [[ "${{ inputs.install-gcc }}" == "true" && -z "${{ inputs.gcc-version }}" ]]; then
+          echo "error: gcc-version must be specified when install-gcc is true" >&2
+          exit 1
+        fi
+        if [[ "${{ inputs.install-llvm }}" == "true" && -z "${{ inputs.llvm-version }}" ]]; then
+          echo "error: llvm-version must be specified when install-llvm is true" >&2
+          exit 1
+        fi
+        if [[ "${{ inputs.clang-use-gcc-libstdcxx }}" == "true" ]]; then
+          if [[ "${{ inputs.install-gcc }}" != "true" ]]; then
+            echo "error: install-gcc must be true when clang-use-gcc-libstdcxx is true" >&2
+            exit 1
+          fi
+          if [[ "${{ inputs.install-llvm }}" != "true" ]]; then
+            echo "error: install-llvm must be true when clang-use-gcc-libstdcxx is true" >&2
+            exit 1
+          fi
+        fi
+        if [[ "${{ inputs.install-bazel }}" == "true" && -z "${{ inputs.bazel-version }}" ]]; then
+          echo "error: bazel-version must be specified when install-bazel is true" >&2
+          exit 1
+        fi
+
+    - shell: bash
+      run: |
+        missing=()
+        for pkg in build-essential curl file git procps; do
+          if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
+            missing+=("$pkg")
+          fi
+        done
+        if (( ${#missing[@]} > 0 )); then
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
+        fi
+
+    - shell: bash
+      run: |
+        NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
+
+    - if: ${{ inputs.install-gcc == 'true' }}
+      shell: bash
+      run: |
+        brew install binutils gcc@${{ inputs.gcc-version }}
+        brew link -f binutils
+
+        for f in /home/linuxbrew/.linuxbrew/opt/gcc@${{ inputs.gcc-version }}/bin/*-${{ inputs.gcc-version }}; do
+          name="$(basename "$f")"
+          ln -sf "$f" "/home/linuxbrew/.linuxbrew/bin/${name%-${{ inputs.gcc-version }}}"
+        done
+
+    - if: ${{ inputs.install-llvm == 'true' }}
+      shell: bash
+      run: |
+        brew install llvm@${{ inputs.llvm-version }}
+        brew link -f llvm@${{ inputs.llvm-version }}
+
+    - if: ${{ inputs.clang-use-gcc-libstdcxx == 'true' }}
+      shell: bash
+      run: |
+        mkdir -p /home/linuxbrew/.linuxbrew/etc/clang
+
+        cat > /home/linuxbrew/.linuxbrew/etc/clang/clang.cfg <<EOF
+        -isystem /home/linuxbrew/.linuxbrew/include
+        -L/home/linuxbrew/.linuxbrew/lib
+        -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
+        -Wl,--enable-new-dtags
+        EOF
+
+        cat > /home/linuxbrew/.linuxbrew/etc/clang/clang++.cfg <<EOF
+        -nostdinc++
+        -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ inputs.gcc-version }}
+        -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ inputs.gcc-version }}/x86_64-pc-linux-gnu
+        -isystem /home/linuxbrew/.linuxbrew/include/c++/${{ inputs.gcc-version }}/backward
+        -isystem /home/linuxbrew/.linuxbrew/include
+        -L/home/linuxbrew/.linuxbrew/lib/gcc/${{ inputs.gcc-version }}
+        -L/home/linuxbrew/.linuxbrew/lib
+        -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib/gcc/${{ inputs.gcc-version }}
+        -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
+        -Wl,--enable-new-dtags
+        EOF
+
+    - shell: bash
+      run: |
+        formulae=()
+        if [[ "${{ inputs.install-cmake }}" == "true" ]]; then
+          formulae+=(cmake)
+        fi
+        if [[ "${{ inputs.install-ninja }}" == "true" ]]; then
+          formulae+=(ninja)
+        fi
+        if [[ "${{ inputs.install-bazel }}" == "true" ]]; then
+          formulae+=("bazel@${{ inputs.bazel-version }}")
+        fi
+        if (( ${#formulae[@]} > 0 )); then
+          brew install "${formulae[@]}"
+        fi
