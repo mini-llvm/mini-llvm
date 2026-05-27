@@ -71,21 +71,10 @@ runs:
 
     - shell: bash
       run: |
-        missing=()
-        for pkg in build-essential curl file git procps; do
-          if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
-            missing+=("$pkg")
-          fi
-        done
-        if (( ${#missing[@]} > 0 )); then
-          apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
+        if ! command -v brew >/dev/null 2>&1; then
+          echo "error: Homebrew is not available; run setup-homebrew first" >&2
+          exit 1
         fi
-
-    - shell: bash
-      run: |
-        NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"
 
     - if: ${{ inputs.install-gcc == 'true' }}
       shell: bash

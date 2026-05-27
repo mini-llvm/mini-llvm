@@ -47,6 +47,8 @@ jobs:
 
       - run: chown -R $(whoami):$(whoami) .
 
+      - uses: ./.github/actions/setup-homebrew
+
       - if: ${{ matrix.compiler == 'g++' }}
         uses: ./.github/actions/setup-toolchain
         with:

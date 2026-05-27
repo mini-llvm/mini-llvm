@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: MIT
+
+name: setup-homebrew
+description: Set up Homebrew on Ubuntu.
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        missing=()
+        for pkg in build-essential curl file git procps; do
+          if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "install ok installed"; then
+            missing+=("$pkg")
+          fi
+        done
+        if (( ${#missing[@]} > 0 )); then
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y "${missing[@]}"
+        fi
+
+    - shell: bash
+      run: |
+        NONINTERACTIVE=1 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        echo /home/linuxbrew/.linuxbrew/sbin >> "$GITHUB_PATH"
+        echo /home/linuxbrew/.linuxbrew/bin >> "$GITHUB_PATH"

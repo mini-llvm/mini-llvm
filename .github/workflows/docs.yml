@@ -41,6 +41,8 @@ jobs:
 
       - run: chown -R $(whoami):$(whoami) .
 
+      - uses: ./.github/actions/setup-homebrew
+
       - uses: ./.github/actions/setup-toolchain
         with:
           install-gcc: 'true'
