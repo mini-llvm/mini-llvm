@@ -34,6 +34,7 @@ jobs:
     env:
       GCC_VERSION: '15'
       LLVM_VERSION: '22'
+      BOOTLIN_TOOLCHAIN_VERSION: 'stable-2025.08-1'
 
     steps:
       - run: |
@@ -85,20 +86,23 @@ jobs:
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
         run: ctest --test-dir build --output-on-failure
 
-      - run: |
-          DEBIAN_FRONTEND=noninteractive apt-get install -y gcc-riscv64-linux-gnu qemu-user
-          mkdir -p /usr/gnemul
-          ln -s /usr/riscv64-linux-gnu /usr/gnemul/qemu-riscv64
+      - run: brew install qemu
+
+      - id: install-riscv64-toolchain
+        uses: ./.github/actions/setup-bootlin-toolchain
+        with:
+          toolchain: riscv64-lp64d--glibc--${{ env.BOOTLIN_TOOLCHAIN_VERSION }}
 
       - env:
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
         run: |
           for allocator in graph-coloring linear-scan naive; do
             echo "Testing register allocator: $allocator"
-            ./tests/mini-llc/test_all.sh \
+            QEMU_LD_PREFIX="${{ steps.install-riscv64-toolchain.outputs.dest }}/riscv64-buildroot-linux-gnu/sysroot" \
+              ./tests/mini-llc/test_all.sh \
               --mini-llc "./build/bin/mini-llc --register-allocator $allocator" \
               --target riscv64 \
-              --driver riscv64-linux-gnu-gcc \
+              --driver "${{ steps.install-riscv64-toolchain.outputs.dest }}/bin/riscv64-buildroot-linux-gnu-gcc" \
               --emulator qemu-riscv64
           done
 

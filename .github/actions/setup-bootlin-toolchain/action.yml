@@ -1,0 +1,42 @@
+# SPDX-License-Identifier: MIT
+
+name: setup-bootlin-toolchain
+description: Set up Bootlin cross-compilation toolchain.
+
+inputs:
+  toolchain:
+    description: Toolchain (e.g., aarch64--glibc--stable-2025.08-1).
+    required: true
+  dest:
+    description: Installation directory. Defaults to /opt/<toolchain>.
+    required: false
+    default: ''
+
+outputs:
+  dest:
+    description: Installation directory.
+    value: ${{ steps.install.outputs.dest }}
+
+runs:
+  using: composite
+  steps:
+    - id: install
+      shell: bash
+      run: |
+        toolchain="${{ inputs.toolchain }}"
+
+        dest="${{ inputs.dest }}"
+        dest="${dest:-/opt/$toolchain}"
+
+        base="https://toolchains.bootlin.com/downloads/releases/toolchains/${toolchain%%--*}/tarballs"
+        curl -fsSL -o "/tmp/$toolchain.tar.xz" "$base/$toolchain.tar.xz"
+        curl -fsSL -o "/tmp/$toolchain.sha256" "$base/$toolchain.sha256"
+
+        (cd /tmp && sha256sum -c "$toolchain.sha256")
+
+        mkdir -p "$dest"
+        tar xJf "/tmp/$toolchain.tar.xz" -C "$dest" --strip-components=1
+
+        "$dest/relocate-sdk.sh"
+
+        echo "dest=$dest" >> "$GITHUB_OUTPUT"
