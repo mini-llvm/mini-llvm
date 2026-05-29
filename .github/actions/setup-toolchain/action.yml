@@ -118,18 +118,16 @@ runs:
         -Wl,--enable-new-dtags
         EOF
 
-    - shell: bash
+    - if: ${{ inputs.install-cmake == 'true' }}
+      shell: bash
+      run: brew install cmake
+
+    - if: ${{ inputs.install-ninja == 'true' }}
+      shell: bash
+      run: brew install ninja
+
+    - if: ${{ inputs.install-bazel == 'true' }}
+      shell: bash
       run: |
-        formulae=()
-        if [[ "${{ inputs.install-cmake }}" == "true" ]]; then
-          formulae+=(cmake)
-        fi
-        if [[ "${{ inputs.install-ninja }}" == "true" ]]; then
-          formulae+=(ninja)
-        fi
-        if [[ "${{ inputs.install-bazel }}" == "true" ]]; then
-          formulae+=("bazel@${{ inputs.bazel-version }}")
-        fi
-        if (( ${#formulae[@]} > 0 )); then
-          brew install "${formulae[@]}"
-        fi
+        brew install bazel@${{ inputs.bazel-version }}
+        brew link -f bazel@${{ inputs.bazel-version }}
