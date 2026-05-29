@@ -6,7 +6,7 @@ cc_fuzz_test(
     name = "fuzz",
     srcs = ["fuzz.cpp"],
     linkstatic = select({
-        "//:shared": False,
+        "//:is_shared": False,
         "//conditions:default": True,
     }),
     deps = [

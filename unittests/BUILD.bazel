@@ -59,7 +59,7 @@ cc_test(
         "utils/UnicodeTest.cpp",
     ],
     linkstatic = select({
-        "//:shared": False,
+        "//:is_shared": False,
         "//conditions:default": True,
     }),
     deps = [

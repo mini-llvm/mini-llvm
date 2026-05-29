@@ -1,9 +1,15 @@
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
 load("@rules_cc//cc:cc_library.bzl", "cc_library")
 
-config_setting(
+bool_flag(
     name = "shared",
-    values = {
-        "define": "shared=true",
+    build_setting_default = False,
+)
+
+config_setting(
+    name = "is_shared",
+    flag_values = {
+        ":shared": "true",
     },
 )
 
@@ -546,22 +552,22 @@ cc_library(
         "include/mini-llvm/utils/Windows.h",
     ],
     copts = select({
-        ":shared": [
+        ":is_shared": [
             "-fvisibility=hidden",
             "-fvisibility-inlines-hidden",
         ],
         "//conditions:default": [],
     }),
     defines = select({
-        ":shared": ["MINI_LLVM_SHARED"],
+        ":is_shared": ["MINI_LLVM_SHARED"],
         "//conditions:default": [],
     }),
     linkstatic = select({
-        ":shared": False,
+        ":is_shared": False,
         "//conditions:default": True,
     }),
     local_defines = select({
-        ":shared": ["MINI_LLVM_EXPORTS"],
+        ":is_shared": ["MINI_LLVM_EXPORTS"],
         "//conditions:default": [],
     }),
     strip_include_prefix = "include",

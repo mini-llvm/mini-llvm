@@ -6,7 +6,7 @@ cc_binary(
     name = "mini-llc",
     srcs = ["main.cpp"],
     linkstatic = select({
-        "//:shared": False,
+        "//:is_shared": False,
         "//conditions:default": True,
     }),
     deps = [
