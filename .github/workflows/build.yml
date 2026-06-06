@@ -108,6 +108,63 @@ jobs:
               --emulator qemu-riscv64
           done
 
+  build-linux-bazel:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ubuntu:24.04
+
+    strategy:
+      matrix:
+        compilation_mode: ['fastbuild', 'dbg', 'opt']
+        shared: ['false', 'true']
+
+      fail-fast: false
+
+    defaults:
+      run:
+        shell: bash
+
+    env:
+      GCC_VERSION: '15'
+      BAZEL_VERSION: '9'
+
+    steps:
+      - run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl file git procps
+
+      - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
+
+      - run: chown -R $(whoami):$(whoami) .
+
+      - uses: ./.github/actions/setup-homebrew
+
+      - uses: ./.github/actions/setup-toolchain
+        with:
+          install-gcc: 'true'
+          gcc-version: ${{ env.GCC_VERSION }}
+          install-bazel: 'true'
+          bazel-version: ${{ env.BAZEL_VERSION }}
+
+      - run: |
+          CC=gcc CXX=g++ bazel build \
+            --action_env=PATH=/home/linuxbrew/.linuxbrew/bin:/bin:/usr/bin:/usr/local/bin \
+            --compilation_mode=${{ matrix.compilation_mode }} \
+            --//:shared=${{ matrix.shared }} \
+            //:mini-llvm \
+            //tools/mini-llc:mini-llc \
+            //unittests:unittests
+
+      - run: |
+          CC=gcc CXX=g++ bazel test \
+            --action_env=PATH=/home/linuxbrew/.linuxbrew/bin:/bin:/usr/bin:/usr/local/bin \
+            --compilation_mode=${{ matrix.compilation_mode }} \
+            --//:shared=${{ matrix.shared }} \
+            //unittests:unittests
+
   build-macos:
     runs-on: macos-latest
 
