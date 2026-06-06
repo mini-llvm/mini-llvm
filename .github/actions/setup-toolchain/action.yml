@@ -24,22 +24,6 @@ inputs:
     description: Whether to configure Clang to use libstdc++ from GCC.
     required: false
     default: 'false'
-  install-cmake:
-    description: Whether to install CMake.
-    required: false
-    default: 'false'
-  install-ninja:
-    description: Whether to install Ninja.
-    required: false
-    default: 'false'
-  install-bazel:
-    description: Whether to install Bazel.
-    required: false
-    default: 'false'
-  bazel-version:
-    description: Bazel version to install.
-    required: false
-    default: ''
 
 runs:
   using: composite
@@ -63,10 +47,6 @@ runs:
             echo "error: install-llvm must be true when clang-use-gcc-libstdcxx is true" >&2
             exit 1
           fi
-        fi
-        if [[ "${{ inputs.install-bazel }}" == "true" && -z "${{ inputs.bazel-version }}" ]]; then
-          echo "error: bazel-version must be specified when install-bazel is true" >&2
-          exit 1
         fi
 
     - shell: bash
@@ -117,17 +97,3 @@ runs:
         -Wl,-rpath,/home/linuxbrew/.linuxbrew/lib
         -Wl,--enable-new-dtags
         EOF
-
-    - if: ${{ inputs.install-cmake == 'true' }}
-      shell: bash
-      run: brew install cmake
-
-    - if: ${{ inputs.install-ninja == 'true' }}
-      shell: bash
-      run: brew install ninja
-
-    - if: ${{ inputs.install-bazel == 'true' }}
-      shell: bash
-      run: |
-        brew install bazel@${{ inputs.bazel-version }}
-        brew link -f bazel@${{ inputs.bazel-version }}

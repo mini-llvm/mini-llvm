@@ -54,8 +54,6 @@ jobs:
         with:
           install-gcc: 'true'
           gcc-version: ${{ env.GCC_VERSION }}
-          install-cmake: 'true'
-          install-ninja: 'true'
 
       - if: ${{ matrix.compiler == 'clang++' }}
         uses: ./.github/actions/setup-toolchain
@@ -65,8 +63,8 @@ jobs:
           install-llvm: 'true'
           llvm-version: ${{ env.LLVM_VERSION }}
           clang-use-gcc-libstdcxx: 'true'
-          install-cmake: 'true'
-          install-ninja: 'true'
+
+      - run: brew install cmake ninja
 
       - run: |
           cmake \
@@ -146,8 +144,10 @@ jobs:
         with:
           install-gcc: 'true'
           gcc-version: ${{ env.GCC_VERSION }}
-          install-bazel: 'true'
-          bazel-version: ${{ env.BAZEL_VERSION }}
+
+      - run: |
+          brew install bazel@${{ env.BAZEL_VERSION }}
+          brew link -f bazel@${{ env.BAZEL_VERSION }}
 
       - run: |
           CC=gcc CXX=g++ bazel build \

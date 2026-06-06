@@ -47,10 +47,8 @@ jobs:
         with:
           install-gcc: 'true'
           gcc-version: ${{ env.GCC_VERSION }}
-          install-cmake: 'true'
-          install-ninja: 'true'
 
-      - run: brew install doxygen graphviz
+      - run: brew install cmake doxygen graphviz ninja
 
       - run: |
           cmake \
