@@ -34,10 +34,10 @@ public:
     BigInteger operator-() const &;
     BigInteger operator-() &&;
 
-    BigInteger &operator+=(const BigInteger &lhs);
-    BigInteger &operator-=(const BigInteger &lhs);
-    BigInteger &operator*=(const BigInteger &lhs);
-    BigInteger &operator/=(int32_t lhs);
+    BigInteger &operator+=(const BigInteger &rhs);
+    BigInteger &operator-=(const BigInteger &rhs);
+    BigInteger &operator*=(const BigInteger &rhs);
+    BigInteger &operator/=(int32_t rhs);
 
     BigInteger &operator++();
     BigInteger operator++(int);
