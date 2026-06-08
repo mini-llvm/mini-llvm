@@ -7,7 +7,7 @@
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool IntegerCastingOperator::isFoldable() const {
     return dynamic_cast<const Constant *>(&*value());
@@ -25,3 +25,5 @@ bool IntegerCastingOperator::isWellFormed() const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

@@ -17,7 +17,7 @@
 #include "mini-llvm/ir/Module.h"
 #include "mini-llvm/ir/Use.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -99,3 +99,5 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
     assert(M.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

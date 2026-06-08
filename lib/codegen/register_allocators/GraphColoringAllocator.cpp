@@ -22,8 +22,9 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
 using namespace mini_llvm::mir;
+
+namespace mini_llvm {
 
 namespace {
 
@@ -325,3 +326,5 @@ bool GraphColoringAllocator::allocate(
         }
     }
 }
+
+} // namespace mini_llvm

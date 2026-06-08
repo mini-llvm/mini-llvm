@@ -6,7 +6,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type/IntegerOrPointerType.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool BinaryIntegerOperator::isFoldable() const {
     return dynamic_cast<const Constant *>(&*lhs()) && dynamic_cast<const Constant *>(&*rhs());
@@ -27,3 +27,5 @@ bool BinaryIntegerOperator::isWellFormed() const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

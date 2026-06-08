@@ -16,8 +16,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Unicode.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 using enum Token::Kind;
 
@@ -336,7 +335,7 @@ Token Lexer::nextToken() {
     return impl_->nextToken();
 }
 
-std::vector<Token> ir::lex(const char *source) {
+std::vector<Token> lex(const char *source) {
     Lexer lexer(source);
     std::vector<Token> output;
     do {
@@ -344,3 +343,5 @@ std::vector<Token> ir::lex(const char *source) {
     } while (output.back().kind != kEOF);
     return output;
 }
+
+} // namespace mini_llvm::ir

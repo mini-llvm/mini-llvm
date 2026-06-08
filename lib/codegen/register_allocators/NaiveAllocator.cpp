@@ -24,9 +24,10 @@
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/SetOps.h"
 
-using namespace mini_llvm;
 using namespace mini_llvm::mir;
 using namespace mini_llvm::set_ops;
+
+namespace mini_llvm {
 
 namespace {
 
@@ -162,3 +163,5 @@ bool NaiveAllocator::allocate(
 
     return true;
 }
+
+} // namespace mini_llvm

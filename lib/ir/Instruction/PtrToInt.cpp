@@ -10,8 +10,7 @@
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool PtrToInt::isWellFormed() const {
     if (!Instruction::isWellFormed()) {
@@ -33,3 +32,5 @@ std::string PtrToInt::format() const {
 std::unique_ptr<Value> PtrToInt::clone() const {
     return std::make_unique<PtrToInt>(share(*value()), cast<IntegerType>(type()));
 }
+
+} // namespace mini_llvm::ir

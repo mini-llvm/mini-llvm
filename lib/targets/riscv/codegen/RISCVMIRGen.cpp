@@ -175,8 +175,9 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
 using namespace mini_llvm::mir;
+
+namespace mini_llvm {
 
 namespace {
 
@@ -1425,3 +1426,5 @@ RISCVMIRGen &RISCVMIRGen::operator=(RISCVMIRGen &&) noexcept = default;
 void RISCVMIRGen::emit() {
     impl_->emit();
 }
+
+} // namespace mini_llvm

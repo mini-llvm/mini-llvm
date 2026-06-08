@@ -7,7 +7,7 @@
 
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string PtrArrayConstant::format() const {
     StringJoiner formattedElements("\n", "[\n", "\n]");
@@ -25,3 +25,5 @@ std::string PtrArrayConstant::format() const {
     }
     return std::format("ptr({}) {}", ptrSize(), formattedElements);
 }
+
+} // namespace mini_llvm::mir

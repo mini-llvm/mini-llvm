@@ -8,7 +8,7 @@
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 std::string RISCVInstruction::format() const {
     StringJoiner formatted(" ");
@@ -22,3 +22,5 @@ std::string RISCVInstruction::format() const {
     }
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mc

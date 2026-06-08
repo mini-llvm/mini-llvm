@@ -44,7 +44,7 @@
 #include "mini-llvm/targets/riscv/opt/mir/RISCVPassManager.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 class RISCVBackendDriver::Impl {
 public:
@@ -269,3 +269,5 @@ RISCVBackendDriver &RISCVBackendDriver::operator=(RISCVBackendDriver &&) noexcep
 void RISCVBackendDriver::run(const ir::Module &IM, mir::Module &MM, mc::Module &MCM) {
     impl_->run(IM, MM, MCM);
 }
+
+} // namespace mini_llvm

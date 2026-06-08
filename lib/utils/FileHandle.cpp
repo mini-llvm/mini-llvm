@@ -7,7 +7,7 @@
 #include "mini-llvm/utils/Path.h"
 #include "mini-llvm/utils/SystemString.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 FileHandle::FileHandle(const Path &path, const SystemString &mode) {
     open(path, mode);
@@ -36,3 +36,5 @@ FILE *FileHandle::release() {
     handle_ = nullptr;
     return handle;
 }
+
+} // namespace mini_llvm

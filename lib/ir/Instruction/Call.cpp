@@ -18,7 +18,7 @@
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 Call::Call(std::weak_ptr<Function> callee, std::vector<std::shared_ptr<Value>> args)
         : callee_(this, std::move(callee)) {
@@ -89,3 +89,5 @@ std::unique_ptr<Value> Call::clone() const {
     }
     return std::make_unique<Call>(share(*callee()), std::move(clonedArgs));
 }
+
+} // namespace mini_llvm::ir

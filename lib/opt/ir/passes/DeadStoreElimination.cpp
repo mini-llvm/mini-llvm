@@ -22,7 +22,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/AliasAnalysis.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool DeadStoreElimination::runOnFunction(Function &F) {
     AliasAnalysis aa;
@@ -111,3 +111,5 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

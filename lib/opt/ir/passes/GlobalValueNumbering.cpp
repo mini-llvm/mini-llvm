@@ -39,14 +39,13 @@
 #include "mini-llvm/utils/HashCombine.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
-
 // Cliff Click. 1995. Global code motion/global value numbering.
 // In Proceedings of the ACM SIGPLAN 1995 conference on
 // Programming language design and implementation (PLDI '95).
 // Association for Computing Machinery, New York, NY, USA, 246-257.
 // https://doi.org/10.1145/207110.207154
+
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -176,6 +175,8 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
 
 } // namespace
 
+} // namespace mini_llvm::ir
+
 template <>
 struct std::hash<std::type_info> {
     size_t operator()(const std::type_info &type) const noexcept {
@@ -184,16 +185,19 @@ struct std::hash<std::type_info> {
 };
 
 template <>
-struct std::hash<Type> {
-    size_t operator()(const Type &type) const noexcept {
+struct std::hash<mini_llvm::ir::Type> {
+    size_t operator()(const mini_llvm::ir::Type &type) const noexcept {
+        using namespace mini_llvm::ir;
         assert(dynamic_cast<const IntegerType *>(&type) || dynamic_cast<const FloatingType *>(&type) || type == Ptr());
         return typeid(type).hash_code();
     }
 };
 
 template <>
-struct std::hash<ValueNumber> {
-    size_t operator()(const ValueNumber &number) const noexcept {
+struct std::hash<mini_llvm::ir::ValueNumber> {
+    size_t operator()(const mini_llvm::ir::ValueNumber &number) const noexcept {
+        using namespace mini_llvm;
+        using namespace mini_llvm::ir;
         if (auto *value = dynamic_cast<const IntegerConstant *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
@@ -315,6 +319,8 @@ struct std::hash<ValueNumber> {
     }
 };
 
+namespace mini_llvm::ir {
+
 namespace {
 
 void dfs(const DTNode *node, std::unordered_set<ValueNumber> &valueNumbers, bool &changed) {
@@ -358,3 +364,5 @@ bool GlobalValueNumbering::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

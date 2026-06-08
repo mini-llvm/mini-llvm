@@ -31,7 +31,7 @@
 #include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -117,3 +117,5 @@ std::string ICmp::format() const {
 std::unique_ptr<Value> ICmp::clone() const {
     return std::make_unique<ICmp>(cond(), share(*lhs()), share(*rhs()));
 }
+
+} // namespace mini_llvm::ir

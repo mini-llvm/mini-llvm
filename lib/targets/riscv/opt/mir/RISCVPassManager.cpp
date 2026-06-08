@@ -17,7 +17,7 @@
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/targets/riscv/opt/mir/passes/RISCVConstantPropagation.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
     RISCVRegister *x0 = RISCVRegister::get("x0");
@@ -62,3 +62,5 @@ void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
 
     BasicBlockReordering().runOnModule(M);
 }
+
+} // namespace mini_llvm::mir

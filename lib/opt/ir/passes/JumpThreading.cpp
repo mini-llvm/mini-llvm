@@ -11,7 +11,7 @@
 #include "mini-llvm/ir/Instruction/Phi.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool JumpThreading::runOnFunction(Function &F) {
     bool changed = false;
@@ -52,3 +52,5 @@ bool JumpThreading::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

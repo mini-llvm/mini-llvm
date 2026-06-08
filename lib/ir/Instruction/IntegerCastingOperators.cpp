@@ -32,8 +32,7 @@
 #include "mini-llvm/ir/TypeVisitor.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -201,3 +200,5 @@ bool ZExt::isWellFormed() const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

@@ -29,7 +29,7 @@
 #include "mini-llvm/ir/Instruction/UnaryFloatingOperator.h"
 #include "mini-llvm/ir/Use.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -102,3 +102,5 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

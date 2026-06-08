@@ -23,7 +23,7 @@
 #include "mini-llvm/ir/Instruction/FCmp.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -88,3 +88,5 @@ std::string FCmp::format() const {
 std::unique_ptr<Value> FCmp::clone() const {
     return std::make_unique<FCmp>(cond(), share(*lhs()), share(*rhs()));
 }
+
+} // namespace mini_llvm::ir

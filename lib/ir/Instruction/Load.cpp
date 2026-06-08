@@ -10,7 +10,7 @@
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool Load::isWellFormed() const {
     if (!Instruction::isWellFormed()) {
@@ -32,3 +32,5 @@ std::string Load::format() const {
 std::unique_ptr<Value> Load::clone() const {
     return std::make_unique<Load>(type(), share(*ptr()));
 }
+
+} // namespace mini_llvm::ir

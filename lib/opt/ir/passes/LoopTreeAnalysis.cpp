@@ -15,7 +15,7 @@
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 #include "mini-llvm/utils/HashMap.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -136,3 +136,5 @@ const LTNode *LoopTreeAnalysis::node(const Loop &loop) const {
 const LTNode *LoopTreeAnalysis::rootNode() const {
     return impl_->rootNode();
 }
+
+} // namespace mini_llvm::ir

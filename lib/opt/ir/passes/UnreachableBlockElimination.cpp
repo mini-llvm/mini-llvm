@@ -11,7 +11,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool UnreachableBlockElimination::runOnFunction(Function &F) {
     std::unordered_set<const BasicBlock *> visited;
@@ -55,3 +55,5 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

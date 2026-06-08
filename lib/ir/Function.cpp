@@ -28,8 +28,7 @@
 #include "mini-llvm/utils/Dot.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 Function::Function(std::unique_ptr<FunctionType> functionType, Linkage linkage)
         : functionType_(std::move(functionType)), linkage_(linkage) {
@@ -235,7 +234,7 @@ std::string Function::format() const {
     return formatted.toString();
 }
 
-std::string ir::toDot(const Function &F) {
+std::string toDot(const Function &F) {
     std::vector<std::pair<std::string, std::string>> edges;
     for (const BasicBlock &B : F) {
         for (const BasicBlock *succ : successors(B)) {
@@ -251,3 +250,5 @@ std::string ir::toDot(const Function &F) {
     dot.add("}");
     return dot.toString();
 }
+
+} // namespace mini_llvm::ir

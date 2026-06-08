@@ -24,8 +24,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 // Ron Cytron, Jeanne Ferrante, Barry K. Rosen, Mark N. Wegman, and F. Kenneth Zadeck. 1991.
 // Efficiently computing static single assignment form and the control dependence graph.
@@ -216,3 +215,5 @@ bool Mem2Reg::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return true;
 }
+
+} // namespace mini_llvm::ir

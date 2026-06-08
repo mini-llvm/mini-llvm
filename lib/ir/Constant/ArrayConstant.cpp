@@ -23,8 +23,7 @@
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -133,3 +132,5 @@ bool ArrayConstant::equals(const Constant &other) const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

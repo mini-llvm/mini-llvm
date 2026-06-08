@@ -11,7 +11,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 GlobalValue &Module::add(const_iterator pos, GlobalValue G) {
     return *globalValues_.insert(pos, std::move(G));
@@ -46,3 +46,5 @@ std::string Module::format() const {
     }
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mc

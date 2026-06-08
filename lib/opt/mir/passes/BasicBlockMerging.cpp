@@ -7,8 +7,7 @@
 #include "mini-llvm/mir/Instruction/Br.h"
 #include "mini-llvm/utils/HashMap.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 namespace {
 
@@ -62,3 +61,5 @@ bool BasicBlockMerging::runOnFunction(Function &F) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

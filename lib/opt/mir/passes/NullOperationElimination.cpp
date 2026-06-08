@@ -15,7 +15,7 @@
 #include "mini-llvm/mir/IntegerImmediate.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
@@ -133,3 +133,5 @@ bool NullOperationElimination::runOnBasicBlock(BasicBlock &B) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

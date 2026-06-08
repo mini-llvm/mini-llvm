@@ -13,8 +13,7 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool Store::isWellFormed() const {
     if (!Instruction::isWellFormed()) {
@@ -41,3 +40,5 @@ std::string Store::format() const {
 std::unique_ptr<Value> Store::clone() const {
     return std::make_unique<Store>(share(*value()), share(*ptr()));
 }
+
+} // namespace mini_llvm::ir

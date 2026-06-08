@@ -24,7 +24,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -119,3 +119,5 @@ bool TailCallElimination::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return true;
 }
+
+} // namespace mini_llvm::ir

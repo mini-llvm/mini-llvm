@@ -39,9 +39,9 @@
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/SequenceOps.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
 using namespace mini_llvm::sequence_ops;
+
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -441,3 +441,5 @@ bool StrengthReduction::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

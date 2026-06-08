@@ -7,7 +7,7 @@
 #include "mini-llvm/mir/FormatExtensionMode.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string BinaryOperatorI::format() const {
     StringJoiner formatted(", ");
@@ -17,3 +17,5 @@ std::string BinaryOperatorI::format() const {
     }
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mir

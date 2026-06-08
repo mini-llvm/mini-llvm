@@ -11,7 +11,7 @@
 #include "mini-llvm/mc/Label.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 Statement &GlobalValue::add(const_iterator pos, std::unique_ptr<Statement> stmt) {
     return **stmts_.insert(pos.base(), std::move(stmt));
@@ -47,3 +47,5 @@ std::string GlobalValue::format() const {
     }
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mc

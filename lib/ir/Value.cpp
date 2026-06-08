@@ -13,8 +13,7 @@
 #include "mini-llvm/utils/Ascii.h"
 #include "mini-llvm/utils/Strings.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -45,7 +44,7 @@ std::string quote(std::string_view str) {
 
 } // namespace
 
-std::string ir::Value::formatName() const {
+std::string Value::formatName() const {
     if (name_.empty()) {
         return "_" + toString(reinterpret_cast<uintptr_t>(this), 62);
     }
@@ -55,7 +54,7 @@ std::string ir::Value::formatName() const {
     return name_;
 }
 
-bool ir::replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue) {
+bool replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue) {
     assert(*newValue->type() == *value.type());
 
     bool changed = false;
@@ -68,7 +67,7 @@ bool ir::replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue)
     return changed;
 }
 
-bool ir::replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue) {
+bool replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue) {
     assert(!newValue.expired() && *newValue.lock()->type() == *value.type());
 
     bool changed = false;
@@ -80,3 +79,5 @@ bool ir::replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue) {
 
     return changed;
 }
+
+} // namespace mini_llvm::ir

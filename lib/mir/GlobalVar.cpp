@@ -7,7 +7,7 @@
 
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string GlobalVar::format() const {
     if (isDeclaration()) {
@@ -31,3 +31,5 @@ std::string GlobalVar::format() const {
     formatted.add("{:o} = {}", *this, initializer());
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mir

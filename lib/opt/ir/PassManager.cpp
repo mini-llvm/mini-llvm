@@ -25,7 +25,7 @@
 #include "mini-llvm/opt/ir/passes/TailDuplication.h"
 #include "mini-llvm/opt/ir/passes/UnreachableBlockElimination.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 void PassManager::run(Module &M) const {
     Mem2Reg().runOnModule(M);
@@ -56,3 +56,5 @@ void PassManager::run(Module &M) const {
         changed |= GlobalDeadCodeElimination().runOnModule(M);
     } while (changed);
 }
+
+} // namespace mini_llvm::ir

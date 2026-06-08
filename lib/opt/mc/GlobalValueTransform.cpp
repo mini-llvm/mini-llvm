@@ -5,7 +5,7 @@
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/Module.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 bool GlobalValueTransform::runOnModule(Module &M) {
     bool changed = false;
@@ -14,3 +14,5 @@ bool GlobalValueTransform::runOnModule(Module &M) {
     }
     return changed;
 }
+
+} // namespace mini_llvm::mc

@@ -17,9 +17,9 @@
     #include <unistd.h>
 #endif
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
-bool mini_llvm::supportsColor(FILE *stream) {
+bool supportsColor(FILE *stream) {
     // force-color.org
     if (const char *forceColor = getenv("FORCE_COLOR"); forceColor && *forceColor != '\0') {
         return true;
@@ -132,3 +132,5 @@ ColoredStringView::operator std::string() const {
 #undef X
     return std::format("{}{}\033[0m", joiner, str);
 }
+
+} // namespace mini_llvm

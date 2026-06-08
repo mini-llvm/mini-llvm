@@ -18,7 +18,7 @@
 
 #include "mini-llvm/utils/HashCombine.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 namespace {
 
@@ -298,11 +298,11 @@ std::optional<BigInteger> BigInteger::parse(std::string_view str, int base) {
     return value;
 }
 
-bool mini_llvm::operator==(const BigInteger &lhs, const BigInteger &rhs) noexcept {
+bool operator==(const BigInteger &lhs, const BigInteger &rhs) noexcept {
     return lhs.sign_ == rhs.sign_ && lhs.digits_ == rhs.digits_;
 }
 
-std::strong_ordering mini_llvm::operator<=>(const BigInteger &lhs, const BigInteger &rhs) noexcept {
+std::strong_ordering operator<=>(const BigInteger &lhs, const BigInteger &rhs) noexcept {
     if (lhs.sign_ != rhs.sign_) {
         return lhs.sign_ <=> rhs.sign_;
     }
@@ -313,7 +313,7 @@ std::strong_ordering mini_llvm::operator<=>(const BigInteger &lhs, const BigInte
     return result;
 }
 
-BigInteger mini_llvm::operator+(const BigInteger &lhs, const BigInteger &rhs) {
+BigInteger operator+(const BigInteger &lhs, const BigInteger &rhs) {
     if (lhs.sign_ == 0) {
         return rhs;
     }
@@ -333,7 +333,7 @@ BigInteger mini_llvm::operator+(const BigInteger &lhs, const BigInteger &rhs) {
     return BigInteger(lhs.sign_, addImpl(lhs.digits_, rhs.digits_));
 }
 
-BigInteger mini_llvm::operator-(const BigInteger &lhs, const BigInteger &rhs) {
+BigInteger operator-(const BigInteger &lhs, const BigInteger &rhs) {
     if (lhs.sign_ == 0) {
         return -rhs;
     }
@@ -353,11 +353,11 @@ BigInteger mini_llvm::operator-(const BigInteger &lhs, const BigInteger &rhs) {
     return BigInteger(lhs.sign_, subImpl(lhs.digits_, rhs.digits_));
 }
 
-BigInteger mini_llvm::operator*(const BigInteger &lhs, const BigInteger &rhs) {
+BigInteger operator*(const BigInteger &lhs, const BigInteger &rhs) {
     return BigInteger(lhs.sign_ * rhs.sign_, mulImpl(lhs.digits_, rhs.digits_));
 }
 
-BigInteger mini_llvm::operator/(const BigInteger &lhs, int32_t rhs) {
+BigInteger operator/(const BigInteger &lhs, int32_t rhs) {
     assert(rhs != 0);
     std::vector<uint32_t> digits = divRemImpl(lhs.digits_, uabs_(rhs)).first;
     int sign;
@@ -371,7 +371,7 @@ BigInteger mini_llvm::operator/(const BigInteger &lhs, int32_t rhs) {
     return BigInteger(sign, std::move(digits));
 }
 
-int32_t mini_llvm::operator%(const BigInteger &lhs, int32_t rhs) {
+int32_t operator%(const BigInteger &lhs, int32_t rhs) {
     assert(rhs != 0);
     uint32_t r = divRemImpl(lhs.digits_, uabs_(rhs)).second;
     if (lhs.sign_ < 0) {
@@ -380,7 +380,7 @@ int32_t mini_llvm::operator%(const BigInteger &lhs, int32_t rhs) {
     return static_cast<int32_t>(r);
 }
 
-std::pair<BigInteger, int32_t> mini_llvm::divRem(const BigInteger &lhs, int32_t rhs) {
+std::pair<BigInteger, int32_t> divRem(const BigInteger &lhs, int32_t rhs) {
     assert(rhs != 0);
     if (lhs.sign_ == 0) {
         return {BigInteger(), 0};
@@ -402,10 +402,12 @@ std::pair<BigInteger, int32_t> mini_llvm::divRem(const BigInteger &lhs, int32_t 
     return {BigInteger(sign, std::move(digits)), r};
 }
 
-BigInteger mini_llvm::abs(const BigInteger &value) {
+BigInteger abs(const BigInteger &value) {
     return BigInteger(std::abs(value.sign_), value.digits_);
 }
 
-BigInteger mini_llvm::abs(BigInteger &&value) {
+BigInteger abs(BigInteger &&value) {
     return BigInteger(std::abs(value.sign_), std::move(value.digits_));
 }
+
+} // namespace mini_llvm

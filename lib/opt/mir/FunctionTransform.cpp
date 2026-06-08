@@ -5,7 +5,7 @@
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Module.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 bool FunctionTransform::runOnModule(Module &M) {
     bool changed = false;
@@ -16,3 +16,5 @@ bool FunctionTransform::runOnModule(Module &M) {
     }
     return changed;
 }
+
+} // namespace mini_llvm::mir

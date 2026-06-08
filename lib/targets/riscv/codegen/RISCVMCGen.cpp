@@ -116,8 +116,9 @@
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/utils/Strings.h"
 
-using namespace mini_llvm;
 using namespace mini_llvm::mc;
+
+namespace mini_llvm {
 
 namespace {
 
@@ -918,3 +919,5 @@ RISCVMCGen &RISCVMCGen::operator=(RISCVMCGen &&) noexcept = default;
 void RISCVMCGen::emit() {
     impl_->emit();
 }
+
+} // namespace mini_llvm
