@@ -123,7 +123,7 @@ public:
         requires std::same_as<T &&, ColoredString &&>
     ColoredString operator()(T &&str) const {
         str.codes |= codes_;
-        return str;
+        return std::move(str);
     }
 
     template <typename T>
