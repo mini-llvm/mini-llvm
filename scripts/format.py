@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import argparse
+from itertools import groupby
 import os
 from pathlib import Path
 import re
@@ -10,196 +11,216 @@ import shutil
 import subprocess
 import sys
 
-_BUILDIFIER = os.getenv('BUILDIFIER', 'buildifier')
+_INCLUDE_PATTERN = re.compile(r'^\s*#\s*include\s*[<"]\s*([^\s>"]+)\s*[>"]')
+_COMMAND_PATTERN = re.compile(
+    r"\badd_(?:library|executable)\s*\(\s*[^\s)]+(?:\s+[A-Z_]+)*((?:\s+[^)\s]+)*)\s*\)"
+)
+_SOURCE_PATTERN = re.compile(r"[^\s)]+")
 
-_INCLUDE_PATTERN = re.compile(r'#\s*include\s*[<"]\s*([^\s>"]+)\s*[>"]')
-_COMMAND_PATTERN = re.compile(r'\badd_(?:library|executable)\s*\(\s*[^\s)]+(?:\s+[A-Z]+)*((?:\s+[^)\s]+)*)\s*\)')
-_SOURCE_PATTERN = re.compile(r'[^\s)]+')
-
-
-def expand_tabs(content):
-    return content.replace('\t', '    ')
+_BUILDIFIER = os.getenv("BUILDIFIER", "buildifier")
 
 
-def trim_trailing_whitespaces(content):
-    return ''.join([line.rstrip(' ') + '\n' for line in content.splitlines()])
+class _FormatError(Exception):
+    pass
 
 
-def trim_final_newlines(content):
+def _expand_tabs(content, tab_width=4):
+    return content.replace("\t", " " * tab_width)
+
+
+def _trim_trailing_whitespace(content):
+    return "".join([line.rstrip() + "\n" for line in content.splitlines()])
+
+
+def _trim_final_newlines(content):
     lines = content.splitlines()
-    while lines and lines[-1] == '':
+    while lines and lines[-1] == "":
         lines.pop()
-    return ''.join([line + '\n' for line in lines])
+    return "".join([line + "\n" for line in lines])
 
 
-def sort_includes(content):
+def _sort_includes(content):
     lines = content.splitlines()
-    n = len(lines)
-    i = 0
-    while i < n:
-        if _INCLUDE_PATTERN.search(lines[i]):
-            j = i
-            while j + 1 < n and _INCLUDE_PATTERN.search(lines[j + 1]):
-                j += 1
-            lines[i : j + 1] = sorted(lines[i : j + 1], key=lambda line: _INCLUDE_PATTERN.search(line).group(1).lower())
-            i = j + 1
+    result_lines = []
+    for is_include, group in groupby(
+        lines,
+        key=lambda line: bool(_INCLUDE_PATTERN.search(line)),
+    ):
+        if is_include:
+            result_lines.extend(
+                sorted(
+                    group,
+                    key=lambda line: _INCLUDE_PATTERN.search(line).group(1).lower(),
+                )
+            )
         else:
-            i += 1
-    return ''.join([line + '\n' for line in lines])
+            result_lines.extend(group)
+    return "".join([line + "\n" for line in result_lines])
 
 
-def sort_sources(content):
-    replacements = []
-    for command in _COMMAND_PATTERN.finditer(content):
-        if command.group(1):
-            sources = []
-            for source in _SOURCE_PATTERN.finditer(command.group(1)):
-                sources.append((command.start(1) + source.start(0), command.start(1) + source.end(0), source.group(0)))
-            sources = list(zip(*sources))
-            sources[2] = sorted(sources[2], key=str.lower)
-            sources = list(zip(*sources))
-            replacements.extend(sources)
-    for replacement in reversed(replacements):
-        content = content[: replacement[0]] + replacement[2] + content[replacement[1] :]
+def _sort_sources(content):
+    def replace(command):
+        if not command.group(1):
+            return command.group(0)
+        sources = list(_SOURCE_PATTERN.finditer(command.group(1)))
+        new_sources = sorted(sources, key=lambda source: source.group(0).lower())
+        replaced = []
+        i = 0
+        for source, new_source in zip(sources, new_sources):
+            replaced.append(command.group(1)[i : source.start()])
+            replaced.append(new_source.group(0))
+            i = source.end()
+        replaced.append(command.group(1)[i:])
+        start = command.start(1) - command.start()
+        end = command.end(1) - command.start()
+        return command.group(0)[:start] + "".join(replaced) + command.group(0)[end:]
+
+    return _COMMAND_PATTERN.sub(replace, content)
+
+
+def _reformat_cpp_content(content):
+    content = _expand_tabs(content)
+    content = _trim_trailing_whitespace(content)
+    content = _trim_final_newlines(content)
+    content = _sort_includes(content)
     return content
 
 
-def is_cpp(path):
-    return path.suffix in ('.cpp', '.h')
-
-
-def is_cmake(path):
-    if path.suffix == '.cmake':
-        return True
-    if path.name == 'CMakeLists.txt':
-        return True
-    return False
-
-
-def is_bazel(path):
-    if path.suffix == '.bzl':
-        return True
-    if path.name in ('BUILD', 'BUILD.bazel', 'WORKSPACE', 'WORKSPACE.bazel', 'MODULE.bazel'):
-        return True
-    return False
-
-
-def reformat_cpp_content(content):
-    content = expand_tabs(content)
-    content = trim_trailing_whitespaces(content)
-    content = trim_final_newlines(content)
-    content = sort_includes(content)
+def _reformat_cmake_content(content):
+    content = _expand_tabs(content)
+    content = _trim_trailing_whitespace(content)
+    content = _trim_final_newlines(content)
+    content = _sort_sources(content)
     return content
 
 
-def reformat_cmake_content(content):
-    content = expand_tabs(content)
-    content = trim_trailing_whitespaces(content)
-    content = trim_final_newlines(content)
-    content = sort_sources(content)
-    return content
+def _ensure_buildifier():
+    if shutil.which(_BUILDIFIER) is None:
+        raise _FormatError(
+            "could not find buildifier; install it with `brew install buildifier`"
+        )
 
 
-def reformat_cpp(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+def _reformat_cpp(path):
+    with open(path, mode="r", encoding="utf-8") as f:
         content = f.read()
-    reformatted_content = reformat_cpp_content(content)
+    reformatted_content = _reformat_cpp_content(content)
     if reformatted_content == content:
         return False
-    with open(path, mode='w', encoding='utf-8') as f:
+    with open(path, mode="w", encoding="utf-8") as f:
         f.write(reformatted_content)
     return True
 
 
-def reformat_cmake(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+def _reformat_cmake(path):
+    with open(path, mode="r", encoding="utf-8") as f:
         content = f.read()
-    reformatted_content = reformat_cmake_content(content)
+    reformatted_content = _reformat_cmake_content(content)
     if reformatted_content == content:
         return False
-    with open(path, mode='w', encoding='utf-8') as f:
+    with open(path, mode="w", encoding="utf-8") as f:
         f.write(reformatted_content)
     return True
 
 
-def reformat_bazel(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+def _reformat_bazel(path):
+    _ensure_buildifier()
+    with open(path, mode="r", encoding="utf-8") as f:
         content = f.read()
-    subprocess.run([_BUILDIFIER, str(path)], check=True)
-    with open(path, mode='r', encoding='utf-8') as f:
+    result = subprocess.run([_BUILDIFIER, str(path)])
+    if result.returncode != 0:
+        raise _FormatError(f"buildifier exited with code {result.returncode}")
+    with open(path, mode="r", encoding="utf-8") as f:
         reformatted_content = f.read()
     return reformatted_content != content
 
 
-def check_cpp(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+def _check_cpp(path):
+    with open(path, mode="r", encoding="utf-8") as f:
         content = f.read()
-    return content == reformat_cpp_content(content)
+    return content == _reformat_cpp_content(content)
 
 
-def check_cmake(path):
-    with open(path, mode='r', encoding='utf-8') as f:
+def _check_cmake(path):
+    with open(path, mode="r", encoding="utf-8") as f:
         content = f.read()
-    return content == reformat_cmake_content(content)
+    return content == _reformat_cmake_content(content)
 
 
-def check_bazel(path):
-    result = subprocess.run([_BUILDIFIER, '-mode=check', str(path)])
+def _check_bazel(path):
+    _ensure_buildifier()
+    result = subprocess.run([_BUILDIFIER, "-mode=check", str(path)])
     if result.returncode == 0:
         return True
     if result.returncode == 4:
         return False
-    raise subprocess.CalledProcessError(result.returncode, result.args)
+    raise _FormatError(f"buildifier exited with code {result.returncode}")
+
+
+def _raise_unsupported(path):
+    raise _FormatError(f"{path}: unsupported language")
+
+
+def _get_language(path):
+    if path.suffix in (".cpp", ".h"):
+        return "cpp"
+    if path.suffix == ".cmake":
+        return "cmake"
+    if path.name == "CMakeLists.txt":
+        return "cmake"
+    if path.suffix == ".bzl":
+        return "bazel"
+    if path.name in (
+        "BUILD",
+        "BUILD.bazel",
+        "WORKSPACE",
+        "WORKSPACE.bazel",
+        "MODULE.bazel",
+    ):
+        return "bazel"
+    return "unsupported"
+
+
+_REFORMAT = {
+    "cpp": _reformat_cpp,
+    "cmake": _reformat_cmake,
+    "bazel": _reformat_bazel,
+    "unsupported": _raise_unsupported,
+}
+
+_CHECK = {
+    "cpp": _check_cpp,
+    "cmake": _check_cmake,
+    "bazel": _check_bazel,
+    "unsupported": _raise_unsupported,
+}
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('input', nargs='*')
-    parser.add_argument('--check', action='store_true')
+    parser.add_argument("input", nargs="+")
+    parser.add_argument("--check", action="store_true")
 
     args = parser.parse_args()
 
-    paths = [Path(path) for path in args.input]
-
-    if any(is_bazel(path) for path in paths) and shutil.which(_BUILDIFIER) is None:
-        print(
-            'error: could not find buildifier\n'
-            'buildifier is required to format Bazel files. Install it with:\n'
-            '  brew: brew install buildifier\n'
-            '    go: go install github.com/bazelbuild/buildtools/buildifier@latest',
-            file=sys.stderr,
-        )
-        return 1
-
     exit_code = 0
 
-    for path in paths:
-        if args.check:
-            if is_cpp(path):
-                ok = check_cpp(path)
-            elif is_cmake(path):
-                ok = check_cmake(path)
-            elif is_bazel(path):
-                ok = check_bazel(path)
+    try:
+        for path in args.input:
+            path = Path(path)
+            if args.check:
+                if not _CHECK[_get_language(path)](path):
+                    print(f"{path}: not properly formatted", file=sys.stderr)
+                    exit_code = 1
             else:
-                ok = True
-            if not ok:
-                print(f'{path}: not properly formatted', file=sys.stderr)
-                exit_code = 1
-        else:
-            if is_cpp(path):
-                reformatted = reformat_cpp(path)
-            elif is_cmake(path):
-                reformatted = reformat_cmake(path)
-            elif is_bazel(path):
-                reformatted = reformat_bazel(path)
-            else:
-                reformatted = False
-            if reformatted:
-                print(f'{path}: reformatted')
+                if _REFORMAT[_get_language(path)](path):
+                    print(f"{path}: reformatted")
+    except _FormatError as e:
+        print(f"error: {e}", file=sys.stderr)
+        exit_code = 1
 
     return exit_code
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())
