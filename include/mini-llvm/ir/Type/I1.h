@@ -3,7 +3,7 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <memory>
 #include <string>
 #include <typeinfo>

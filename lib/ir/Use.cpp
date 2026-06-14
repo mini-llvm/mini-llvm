@@ -35,8 +35,8 @@ UseBase::~UseBase() {
     (*this)->uses_.erase(this);
 }
 
-Value &UseBase::operator*() const {
-    if (auto *value = std::get_if<std::weak_ptr<Value>>(&value_)) {
+Value &UseBase::operator*() const noexcept {
+    if (const auto *value = std::get_if<std::weak_ptr<Value>>(&value_)) {
         return *value->lock();
     } else {
         return *std::get<std::shared_ptr<Value>>(value_);
@@ -60,8 +60,8 @@ void UseBase::set(std::weak_ptr<Value> value) {
     (*this)->uses_.insert(this);
 }
 
-bool UseBase::expired() const {
-    if (auto *value = std::get_if<std::weak_ptr<Value>>(&value_)) {
+bool UseBase::expired() const noexcept {
+    if (const auto *value = std::get_if<std::weak_ptr<Value>>(&value_)) {
         return value->expired();
     } else {
         return false;

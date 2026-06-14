@@ -11,9 +11,13 @@ class StackFrame;
 class MINI_LLVM_EXPORT StackSlot {
 public:
     StackSlot(int size, int alignment) : size_(size), alignment_(alignment) {}
+
+    ~StackSlot() = default;
+
     StackSlot(const StackSlot &) = delete;
-    StackSlot(StackSlot &&) = delete;
     StackSlot &operator=(const StackSlot &) = delete;
+
+    StackSlot(StackSlot &&) = delete;
     StackSlot &operator=(StackSlot &&) = delete;
 
     int size() const {

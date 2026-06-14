@@ -24,7 +24,15 @@ MINI_LLVM_EXPORT std::string toDot(const DTNode *root);
 class MINI_LLVM_EXPORT DominatorTreeAnalysis final : public FunctionAnalysis {
 public:
     DominatorTreeAnalysis();
+
     ~DominatorTreeAnalysis() override;
+
+    DominatorTreeAnalysis(const DominatorTreeAnalysis &) = delete;
+    DominatorTreeAnalysis &operator=(const DominatorTreeAnalysis &) = delete;
+
+    DominatorTreeAnalysis(DominatorTreeAnalysis &&) = delete;
+    DominatorTreeAnalysis &operator=(DominatorTreeAnalysis &&) = delete;
+
     void runOnFunction(const Function &F) override;
     const DTNode *node(const BasicBlock &v) const;
     bool dominates(const BasicBlock &u, const BasicBlock &v) const;

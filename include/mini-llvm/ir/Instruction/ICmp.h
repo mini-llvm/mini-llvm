@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <memory>
 #include <string>
 #include <utility>
@@ -58,7 +58,7 @@ private:
     Condition cond_;
 };
 
-inline constexpr const char *specifier(ICmp::Condition cond) {
+constexpr const char *specifier(ICmp::Condition cond) {
     using enum ICmp::Condition;
     switch (cond) {
         case kEQ: return "eq";

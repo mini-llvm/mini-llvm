@@ -36,6 +36,7 @@ public:
 
 template <typename GlobalValueT>
     requires std::derived_from<GlobalValueT, mini_llvm::mir::GlobalValue>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<GlobalValueT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         if (*ctx.begin() == 'o') {

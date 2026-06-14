@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include "mini-llvm/mir/StackSlot.h"
+
 namespace mini_llvm::mir {
 
 StackSlot &StackFrame::add(StackFrame::const_iterator pos, std::unique_ptr<StackSlot> slot) {

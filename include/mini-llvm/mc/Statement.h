@@ -29,6 +29,7 @@ public:
 
 template <typename StatementT>
     requires std::derived_from<StatementT, mini_llvm::mc::Statement>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<StatementT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

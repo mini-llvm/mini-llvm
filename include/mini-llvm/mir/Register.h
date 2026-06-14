@@ -31,6 +31,7 @@ public:
 
 template <typename RegisterT>
     requires std::derived_from<RegisterT, mini_llvm::mir::Register>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<RegisterT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
@@ -20,7 +21,7 @@ bool StackOffsetEvaluation::runOnFunction(Function &F) {
     for (BasicBlock &B : F) {
         for (Instruction &I : B) {
             for (ImmediateOperand *op : I.immOps()) {
-                if (auto *imm = dynamic_cast<const StackOffsetImmediate *>(&**op)) {
+                if (const auto *imm = dynamic_cast<const StackOffsetImmediate *>(&**op)) {
                     op->set(std::make_unique<IntegerImmediate>(imm->value()));
                 }
             }

@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 #include "mini-llvm/common/Precision.h"
 
 namespace mini_llvm::mir {
 
-inline constexpr const char *specifier(Precision precision) {
+constexpr const char *specifier(Precision precision) {
     using enum Precision;
     switch (precision) {
         case kSingle: return "single";

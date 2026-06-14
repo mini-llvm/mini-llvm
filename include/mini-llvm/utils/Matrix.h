@@ -21,12 +21,6 @@ public:
     constexpr Matrix(size_t rows, size_t cols, const T &value)
         : rows_(rows), cols_(cols), data_(rows * cols, value) {}
 
-    constexpr Matrix(const Matrix &) = default;
-    constexpr Matrix(Matrix &&) noexcept = default;
-
-    constexpr Matrix &operator=(const Matrix &) = default;
-    constexpr Matrix &operator=(Matrix &&) noexcept = default;
-
     constexpr size_t rows() const noexcept {
         return rows_;
     }

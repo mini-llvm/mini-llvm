@@ -20,10 +20,10 @@ bool RISCVFallthrough::runOnGlobalValue(GlobalValue &G) {
     bool changed = false;
 
     for (GlobalValue::const_iterator i = G.begin(); std::next(i) != G.end();) {
-        if (auto *I = dynamic_cast<const RISCVInstruction *>(&*i)) {
+        if (const auto *I = dynamic_cast<const RISCVInstruction *>(&*i)) {
             if (I->opcode() == RISCV_J) {
-                if (auto *addrOp = dynamic_cast<const RISCVAddressOperand *>(&*I->operand_begin())) {
-                    if (auto *label = dynamic_cast<const Label *>(&*std::next(i))) {
+                if (const auto *addrOp = dynamic_cast<const RISCVAddressOperand *>(&*I->operand_begin())) {
+                    if (const auto *label = dynamic_cast<const Label *>(&*std::next(i))) {
                         if (addrOp->addr().baseSymbol() == label->symbol()) {
                             G.remove(i++);
                             changed = true;

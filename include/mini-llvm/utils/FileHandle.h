@@ -11,6 +11,7 @@
 
 namespace mini_llvm {
 
+// NOLINTNEXTLINE(cppcoreguidelines-special-member-functions)
 class MINI_LLVM_EXPORT FileHandle {
 public:
     FileHandle() = default;

@@ -34,7 +34,7 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
         std::unordered_set<const Store *> oldStores;
 
         for (const Instruction &I : B) {
-            if (auto *store = dynamic_cast<const Store *>(&I)) {
+            if (const auto *store = dynamic_cast<const Store *>(&I)) {
                 const Value *ptr = &*store->ptr();
                 int size = store->value()->type()->size(pointerSize_);
                 for (auto i = oldStores.begin(); i != oldStores.end();) {
@@ -55,7 +55,7 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
                 oldStores.insert(store);
                 continue;
             }
-            if (auto *load = dynamic_cast<const Load *>(&I)) {
+            if (const auto *load = dynamic_cast<const Load *>(&I)) {
                 const Value *ptr = &*load->ptr();
                 int size = load->type()->size(pointerSize_);
                 for (auto i = oldStores.begin(); i != oldStores.end();) {
@@ -71,7 +71,7 @@ bool DeadStoreElimination::runOnFunction(Function &F) {
                 }
                 continue;
             }
-            if (auto *call = dynamic_cast<const Call *>(&I)) {
+            if (const auto *call = dynamic_cast<const Call *>(&I)) {
                 const Function &callee = *call->callee();
                 if (callee.attr<ReadNone>() || callee.attr<ReadOnly>() || callee.attr<InaccessibleMemOnly>()) {
                     continue;

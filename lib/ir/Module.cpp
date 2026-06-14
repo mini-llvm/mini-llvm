@@ -8,10 +8,10 @@
 #include <string_view>
 #include <utility>
 
-#include "mini-llvm/ir/BasicBlock.h"
+#include "mini-llvm/ir/BasicBlock.h" // IWYU pragma: keep
 #include "mini-llvm/ir/Function.h"
 #include "mini-llvm/ir/GlobalVar.h"
-#include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Instruction.h" // IWYU pragma: keep
 #include "mini-llvm/utils/StringJoiner.h"
 
 namespace mini_llvm::ir {

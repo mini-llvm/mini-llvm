@@ -47,6 +47,8 @@ public:
     Path(std::string_view str)
         : Path(SystemString(str)) {}
 
+    ~Path() = default;
+
     Path(const Path &other) = default;
     Path(Path &&other) noexcept = default;
 
@@ -71,15 +73,18 @@ public:
     }
 
     Path &operator=(const char *str) {
-        return operator=(SystemString(str));
+        *this = SystemString(str);
+        return *this;
     }
 
     Path &operator=(const std::string &str) {
-        return operator=(SystemString(str));
+        *this = SystemString(str);
+        return *this;
     }
 
     Path &operator=(std::string_view str) {
-        return operator=(SystemString(str));
+        *this = SystemString(str);
+        return *this;
     }
 
     Path &operator=(const Path &other) = default;
@@ -299,6 +304,7 @@ struct std::hash<mini_llvm::Path> {
 
 template <>
 struct std::formatter<mini_llvm::Path> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

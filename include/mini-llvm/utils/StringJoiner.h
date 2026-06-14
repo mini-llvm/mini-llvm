@@ -46,6 +46,7 @@ private:
 
 template <>
 struct std::formatter<mini_llvm::StringJoiner> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

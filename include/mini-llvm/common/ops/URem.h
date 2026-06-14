@@ -21,7 +21,7 @@ struct URem {
                     std::bit_cast<std::make_unsigned_t<T>>(x) % std::bit_cast<std::make_unsigned_t<T>>(y)));
     }
 
-    std::optional<bool> operator()(bool, bool y) const noexcept {
+    std::optional<bool> operator()(bool /*x*/, bool y) const noexcept {
         if (y == false)
             return std::nullopt;
         return false;

@@ -7,8 +7,11 @@
 #include "mini-llvm/ir/Constant/DoubleConstant.h"
 #include "mini-llvm/ir/Instruction/FDiv.h"
 #include "mini-llvm/ir/Type/Double.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class FDivTest : public ::testing::Test {
 protected:
@@ -37,5 +40,7 @@ TEST_F(FDivTest, clone) {
     EXPECT_EQ(&*fdiv_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*fdiv_->rhs(), &*cloned->rhs());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

@@ -26,7 +26,15 @@ struct LTNode {
 class MINI_LLVM_EXPORT LoopTreeAnalysis final : public FunctionAnalysis {
 public:
     LoopTreeAnalysis();
+
     ~LoopTreeAnalysis() override;
+
+    LoopTreeAnalysis(const LoopTreeAnalysis &) = delete;
+    LoopTreeAnalysis &operator=(const LoopTreeAnalysis &) = delete;
+
+    LoopTreeAnalysis(LoopTreeAnalysis &&) = delete;
+    LoopTreeAnalysis &operator=(LoopTreeAnalysis &&) = delete;
+
     void runOnFunction(const Function &F) override;
     const std::vector<Loop> &loops() const;
     const LTNode *node(const Loop &loop) const;

@@ -12,6 +12,8 @@
 
 namespace mini_llvm::ir {
 
+namespace {
+
 TEST(BasicBlockTest, IsWellFormedEmpty) {
     BasicBlock B;
 
@@ -32,5 +34,7 @@ TEST(BasicBlockTest, IsWellFormedUnexpectedTerminator) {
 
     EXPECT_FALSE(B.isWellFormed());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

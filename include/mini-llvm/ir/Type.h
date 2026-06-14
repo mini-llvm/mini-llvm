@@ -29,8 +29,8 @@ public:
 
     virtual int size() const = 0;
     virtual int alignment() const = 0;
-    virtual int size(int) const { return size(); }
-    virtual int alignment(int) const { return alignment(); }
+    virtual int size(int /*pointerSize*/) const { return size(); }
+    virtual int alignment(int /*pointerAlignment*/) const { return alignment(); }
 
     virtual int bitSize() const {
         return size() * 8;
@@ -71,6 +71,7 @@ inline bool operator==(const Type &lhs, const Type &rhs) {
 
 template <typename TypeT>
     requires std::derived_from<TypeT, mini_llvm::ir::Type>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<TypeT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

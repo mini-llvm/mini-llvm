@@ -23,9 +23,13 @@ public:
     using const_reverse_iterator = GlobalValueList::const_reverse_iterator;
 
     Module() = default;
+
+    ~Module() = default;
+
     Module(const Module &) = delete;
-    Module(Module &&) = default;
     Module &operator=(const Module &) = delete;
+
+    Module(Module &&) = default;
     Module &operator=(Module &&) = default;
 
     iterator begin() {
@@ -92,6 +96,7 @@ private:
 
 template <>
 struct std::formatter<mini_llvm::mc::Module> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

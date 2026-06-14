@@ -5,6 +5,8 @@
 #include <format>
 #include <string>
 
+#include "mini-llvm/mc/Instruction.h"
+#include "mini-llvm/mc/Operand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 #include "mini-llvm/utils/StringJoiner.h"
 

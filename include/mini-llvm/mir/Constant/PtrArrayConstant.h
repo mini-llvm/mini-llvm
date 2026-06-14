@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "mini-llvm/mir/Constant.h"
+#include "mini-llvm/mir/ConstantVisitor.h"
 #include "mini-llvm/mir/GlobalValue.h"
 #include "mini-llvm/utils/Compiler.h"
 

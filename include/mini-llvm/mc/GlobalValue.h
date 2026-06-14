@@ -33,9 +33,12 @@ public:
     GlobalValue(Symbol symbol, std::string section, bool isGlobal)
         : symbol_(std::move(symbol)), section_(std::move(section)), isGlobal_(isGlobal), alignment_(0) {}
 
+    ~GlobalValue() = default;
+
     GlobalValue(const GlobalValue &) = delete;
-    GlobalValue(GlobalValue &&) = default;
     GlobalValue &operator=(const GlobalValue &) = delete;
+
+    GlobalValue(GlobalValue &&) = default;
     GlobalValue &operator=(GlobalValue &&) = default;
 
     const Symbol &symbol() const {
@@ -166,6 +169,7 @@ private:
 
 template <typename GlobalValueT>
     requires std::derived_from<GlobalValueT, mini_llvm::mc::GlobalValue>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<GlobalValueT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

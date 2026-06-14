@@ -27,8 +27,8 @@ namespace {
 
 void dfs(const DTNode *node, HashMap<const Value *, const Value *> &objects) {
     for (const Instruction &I : *node->block) {
-        if (objects.find(&I) == objects.end()) {
-            if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
+        if (!objects.contains(&I)) {
+            if (const auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
                 const Value *ptr = &*gep->ptr();
                 if (dynamic_cast<const GlobalValue *>(ptr) ||
                         dynamic_cast<const Argument *>(ptr) ||
@@ -42,7 +42,7 @@ void dfs(const DTNode *node, HashMap<const Value *, const Value *> &objects) {
                 }
                 continue;
             }
-            if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+            if (const auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (*phi->type() == Ptr() && phi->incoming_size() == 1) {
                     const Value *ptr = &*phi->incoming_begin()->value;
                     if (dynamic_cast<const GlobalValue *>(ptr) ||

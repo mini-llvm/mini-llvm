@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <cstdint>
 #include <string>
 #include <type_traits>
 
@@ -23,7 +22,7 @@ std::string toStringImpl(T value, int base) {
         value /= base;
     } while (value > 0);
 
-    std::reverse(result.begin(), result.end());
+    std::ranges::reverse(result);
 
     return result;
 }

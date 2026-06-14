@@ -13,6 +13,7 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/DoubleConstant.h"
 #include "mini-llvm/ir/Constant/FloatConstant.h"
+#include "mini-llvm/ir/Constant/FloatingConstant.h"
 #include "mini-llvm/ir/Constant/I16Constant.h"
 #include "mini-llvm/ir/Constant/I1Constant.h"
 #include "mini-llvm/ir/Constant/I32Constant.h"
@@ -26,6 +27,7 @@
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Double.h"
 #include "mini-llvm/ir/Type/Float.h"
+#include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/ir/Type/I16.h"
 #include "mini-llvm/ir/Type/I32.h"
@@ -75,7 +77,7 @@ public:
         visit(value);
     }
 
-    void visitNullPtrConstant(const NullPtrConstant &) override {
+    void visitNullPtrConstant(const NullPtrConstant &/*value*/) override {
         result_.emplace(ToTy().zeroValue());
     }
 
@@ -96,31 +98,31 @@ public:
         return *std::move(result_);
     }
 
-    void visitI1(const I1 &) override {
+    void visitI1(const I1 &/*type*/) override {
         visit<bool, I1Constant, I1>();
     }
 
-    void visitI8(const I8 &) override {
+    void visitI8(const I8 &/*type*/) override {
         visit<int8_t, I8Constant, I8>();
     }
 
-    void visitI16(const I16 &) override {
+    void visitI16(const I16 &/*type*/) override {
         visit<int16_t, I16Constant, I16>();
     }
 
-    void visitI32(const I32 &) override {
+    void visitI32(const I32 &/*type*/) override {
         visit<int32_t, I32Constant, I32>();
     }
 
-    void visitI64(const I64 &) override {
+    void visitI64(const I64 &/*type*/) override {
         visit<int64_t, I64Constant, I64>();
     }
 
-    void visitFloat(const Float &) override {
+    void visitFloat(const Float &/*type*/) override {
         visit<float, FloatConstant, Float>();
     }
 
-    void visitDouble(const Double &) override {
+    void visitDouble(const Double &/*type*/) override {
         visit<double, DoubleConstant, Double>();
     }
 

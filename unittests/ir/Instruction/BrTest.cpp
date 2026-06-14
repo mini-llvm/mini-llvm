@@ -8,8 +8,11 @@
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Instruction/Br.h"
 #include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class BrTest : public ::testing::Test {
 protected:
@@ -37,5 +40,7 @@ TEST_F(BrTest, clone) {
     std::shared_ptr<Br> cloned = cast<Br>(br_->clone());
     EXPECT_EQ(&*br_->dest(), &*cloned->dest());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

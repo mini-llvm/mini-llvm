@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <utility>
 
 #include "mini-llvm/utils/Compiler.h"
@@ -113,51 +113,51 @@ public:
     virtual void visitXor(Xor &I) { visitXor(std::as_const(I)); }
     virtual void visitZExt(ZExt &I) { visitZExt(std::as_const(I)); }
 
-    virtual void visitAdd(const Add &) { abort(); }
-    virtual void visitAlloca(const Alloca &) { abort(); }
-    virtual void visitAnd(const And &) { abort(); }
-    virtual void visitASHR(const ASHR &) { abort(); }
-    virtual void visitBitCast(const BitCast &) { abort(); }
-    virtual void visitBr(const Br &) { abort(); }
-    virtual void visitCall(const Call &) { abort(); }
-    virtual void visitCondBr(const CondBr &) { abort(); }
-    virtual void visitFAdd(const FAdd &) { abort(); }
-    virtual void visitFCmp(const FCmp &) { abort(); }
-    virtual void visitFDiv(const FDiv &) { abort(); }
-    virtual void visitFMul(const FMul &) { abort(); }
-    virtual void visitFNeg(const FNeg &) { abort(); }
-    virtual void visitFPExt(const FPExt &) { abort(); }
-    virtual void visitFPToSI(const FPToSI &) { abort(); }
-    virtual void visitFPToUI(const FPToUI &) { abort(); }
-    virtual void visitFPTrunc(const FPTrunc &) { abort(); }
-    virtual void visitFRem(const FRem &) { abort(); }
-    virtual void visitFSub(const FSub &) { abort(); }
-    virtual void visitGetElementPtr(const GetElementPtr &) { abort(); }
-    virtual void visitICmp(const ICmp &) { abort(); }
-    virtual void visitIndirectCall(const IndirectCall &) { abort(); }
-    virtual void visitIntToPtr(const IntToPtr &) { abort(); }
-    virtual void visitLoad(const Load &) { abort(); }
-    virtual void visitLSHR(const LSHR &) { abort(); }
-    virtual void visitMul(const Mul &) { abort(); }
-    virtual void visitOr(const Or &) { abort(); }
-    virtual void visitPhi(const Phi &) { abort(); }
-    virtual void visitPtrToInt(const PtrToInt &) { abort(); }
-    virtual void visitRet(const Ret &) { abort(); }
-    virtual void visitSDiv(const SDiv &) { abort(); }
-    virtual void visitSelect(const Select &) { abort(); }
-    virtual void visitSExt(const SExt &) { abort(); }
-    virtual void visitSHL(const SHL &) { abort(); }
-    virtual void visitSIToFP(const SIToFP &) { abort(); }
-    virtual void visitSRem(const SRem &) { abort(); }
-    virtual void visitStore(const Store &) { abort(); }
-    virtual void visitSub(const Sub &) { abort(); }
-    virtual void visitTerminator(const Terminator &) { abort(); }
-    virtual void visitTrunc(const Trunc &) { abort(); }
-    virtual void visitUDiv(const UDiv &) { abort(); }
-    virtual void visitUIToFP(const UIToFP &) { abort(); }
-    virtual void visitURem(const URem &) { abort(); }
-    virtual void visitXor(const Xor &) { abort(); }
-    virtual void visitZExt(const ZExt &) { abort(); }
+    virtual void visitAdd(const Add &/*I*/) { abort(); }
+    virtual void visitAlloca(const Alloca &/*I*/) { abort(); }
+    virtual void visitAnd(const And &/*I*/) { abort(); }
+    virtual void visitASHR(const ASHR &/*I*/) { abort(); }
+    virtual void visitBitCast(const BitCast &/*I*/) { abort(); }
+    virtual void visitBr(const Br &/*I*/) { abort(); }
+    virtual void visitCall(const Call &/*I*/) { abort(); }
+    virtual void visitCondBr(const CondBr &/*I*/) { abort(); }
+    virtual void visitFAdd(const FAdd &/*I*/) { abort(); }
+    virtual void visitFCmp(const FCmp &/*I*/) { abort(); }
+    virtual void visitFDiv(const FDiv &/*I*/) { abort(); }
+    virtual void visitFMul(const FMul &/*I*/) { abort(); }
+    virtual void visitFNeg(const FNeg &/*I*/) { abort(); }
+    virtual void visitFPExt(const FPExt &/*I*/) { abort(); }
+    virtual void visitFPToSI(const FPToSI &/*I*/) { abort(); }
+    virtual void visitFPToUI(const FPToUI &/*I*/) { abort(); }
+    virtual void visitFPTrunc(const FPTrunc &/*I*/) { abort(); }
+    virtual void visitFRem(const FRem &/*I*/) { abort(); }
+    virtual void visitFSub(const FSub &/*I*/) { abort(); }
+    virtual void visitGetElementPtr(const GetElementPtr &/*I*/) { abort(); }
+    virtual void visitICmp(const ICmp &/*I*/) { abort(); }
+    virtual void visitIndirectCall(const IndirectCall &/*I*/) { abort(); }
+    virtual void visitIntToPtr(const IntToPtr &/*I*/) { abort(); }
+    virtual void visitLoad(const Load &/*I*/) { abort(); }
+    virtual void visitLSHR(const LSHR &/*I*/) { abort(); }
+    virtual void visitMul(const Mul &/*I*/) { abort(); }
+    virtual void visitOr(const Or &/*I*/) { abort(); }
+    virtual void visitPhi(const Phi &/*I*/) { abort(); }
+    virtual void visitPtrToInt(const PtrToInt &/*I*/) { abort(); }
+    virtual void visitRet(const Ret &/*I*/) { abort(); }
+    virtual void visitSDiv(const SDiv &/*I*/) { abort(); }
+    virtual void visitSelect(const Select &/*I*/) { abort(); }
+    virtual void visitSExt(const SExt &/*I*/) { abort(); }
+    virtual void visitSHL(const SHL &/*I*/) { abort(); }
+    virtual void visitSIToFP(const SIToFP &/*I*/) { abort(); }
+    virtual void visitSRem(const SRem &/*I*/) { abort(); }
+    virtual void visitStore(const Store &/*I*/) { abort(); }
+    virtual void visitSub(const Sub &/*I*/) { abort(); }
+    virtual void visitTerminator(const Terminator &/*I*/) { abort(); }
+    virtual void visitTrunc(const Trunc &/*I*/) { abort(); }
+    virtual void visitUDiv(const UDiv &/*I*/) { abort(); }
+    virtual void visitUIToFP(const UIToFP &/*I*/) { abort(); }
+    virtual void visitURem(const URem &/*I*/) { abort(); }
+    virtual void visitXor(const Xor &/*I*/) { abort(); }
+    virtual void visitZExt(const ZExt &/*I*/) { abort(); }
 };
 
 } // namespace mini_llvm::ir

@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 
 #include <cstdint>
-#include <initializer_list>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -18,12 +17,15 @@
 
 namespace mini_llvm::ir {
 
+namespace {
+
 TEST(ArrayConstantTest, FormatAsString) {
     std::unique_ptr<ArrayType> type = std::make_unique<ArrayType>(std::make_unique<I8>(), 13);
 
+    constexpr int8_t kValues[] = {32, 126, 65, 90, 97, 122, 92, 48, 57, 0, 31, 127, -1};
     std::vector<std::shared_ptr<Constant>> elements;
-    for (int8_t element : {32, 126, 65, 90, 97, 122, 92, 48, 57, 0, 31, 127, -1}) {
-        elements.push_back(std::make_shared<I8Constant>(element));
+    for (int8_t value : kValues) {
+        elements.push_back(std::make_shared<I8Constant>(value));
     }
 
     ArrayConstant C(std::move(type), std::move(elements));
@@ -34,9 +36,10 @@ TEST(ArrayConstantTest, FormatAsString) {
 TEST(ArrayConstantTest, FormatAsArray) {
     std::unique_ptr<ArrayType> type = std::make_unique<ArrayType>(std::make_unique<I32>(), 6);
 
+    constexpr int32_t kValues[] = {5, 2, 4, 6, 1, 3};
     std::vector<std::shared_ptr<Constant>> elements;
-    for (int32_t element : {5, 2, 4, 6, 1, 3}) {
-        elements.push_back(std::make_shared<I32Constant>(element));
+    for (int32_t value : kValues) {
+        elements.push_back(std::make_shared<I32Constant>(value));
     }
 
     ArrayConstant C(std::move(type), std::move(elements));
@@ -53,5 +56,7 @@ TEST(ArrayConstantTest, FormatAsZeroInitializer) {
 
     EXPECT_EQ(C.format(), "zeroinitializer");
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

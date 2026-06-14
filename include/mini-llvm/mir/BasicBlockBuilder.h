@@ -38,7 +38,7 @@ public:
 
 private:
     BasicBlock *block_{};
-    BasicBlock::const_iterator pos_{};
+    BasicBlock::const_iterator pos_;
 };
 
 } // namespace mini_llvm::mir

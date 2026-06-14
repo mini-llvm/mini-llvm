@@ -46,6 +46,9 @@ public:
 
     ~Lexer();
 
+    Lexer(const Lexer &) = delete;
+    Lexer &operator=(const Lexer &) = delete;
+
     Lexer(Lexer &&) noexcept;
     Lexer &operator=(Lexer &&) noexcept;
 

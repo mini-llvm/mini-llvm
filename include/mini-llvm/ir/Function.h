@@ -20,6 +20,7 @@
 #include "mini-llvm/ir/Argument.h"
 #include "mini-llvm/ir/Attribute.h"
 #include "mini-llvm/ir/Constant.h"
+#include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/utils/Compiler.h"

@@ -243,6 +243,7 @@ int64_t BigInteger::toInt64() const noexcept {
 
 std::string BigInteger::toString(int base) const {
     BigInteger q = abs(*this);
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     int32_t r;
     std::string str;
     while (q > 0) {
@@ -255,7 +256,7 @@ std::string BigInteger::toString(int base) const {
     if (*this < 0) {
         str.push_back('-');
     }
-    std::reverse(str.begin(), str.end());
+    std::ranges::reverse(str);
     return str;
 }
 
@@ -360,6 +361,7 @@ BigInteger operator*(const BigInteger &lhs, const BigInteger &rhs) {
 BigInteger operator/(const BigInteger &lhs, int32_t rhs) {
     assert(rhs != 0);
     std::vector<uint32_t> digits = divRemImpl(lhs.digits_, uabs_(rhs)).first;
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     int sign;
     if (digits.empty()) {
         sign = 0;
@@ -386,6 +388,7 @@ std::pair<BigInteger, int32_t> divRem(const BigInteger &lhs, int32_t rhs) {
         return {BigInteger(), 0};
     }
     std::vector<uint32_t> digits;
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     int32_t r;
     std::tie(digits, r) = divRemImpl(lhs.digits_, uabs_(rhs));
     int sign = 1;
@@ -407,7 +410,8 @@ BigInteger abs(const BigInteger &value) {
 }
 
 BigInteger abs(BigInteger &&value) {
-    return BigInteger(std::abs(value.sign_), std::move(value.digits_));
+    value.sign_ = std::abs(value.sign_);
+    return std::move(value);
 }
 
 } // namespace mini_llvm

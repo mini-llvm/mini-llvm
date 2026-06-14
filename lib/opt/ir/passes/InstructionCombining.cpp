@@ -28,7 +28,7 @@ namespace mini_llvm::ir {
 namespace {
 
 bool isCombinableGEP(const Value &value) {
-    if (auto *gep = dynamic_cast<const GetElementPtr *>(&value)) {
+    if (const auto *gep = dynamic_cast<const GetElementPtr *>(&value)) {
         if (gep->idx_size() == 1 && dynamic_cast<const Constant *>(&**gep->idx_begin())) {
             return true;
         }
@@ -124,7 +124,7 @@ bool InstructionCombining::runOnFunction(Function &F) {
                     changed = true;
                 }
             }
-            if (auto *sub = dynamic_cast<const Sub *>(&I)) {
+            if (const auto *sub = dynamic_cast<const Sub *>(&I)) {
                 if (dynamic_cast<const Constant *>(&*sub->rhs())) {
                     std::shared_ptr<Instruction> add = std::make_shared<Add>(
                         share(*sub->lhs()), Sub(sub->rhs()->type()->constant(0), share(*sub->rhs())).fold()

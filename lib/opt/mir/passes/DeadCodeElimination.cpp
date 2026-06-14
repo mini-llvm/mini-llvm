@@ -31,7 +31,7 @@ bool isCritical(const Instruction &I, const std::unordered_set<Register *> &live
 bool DeadCodeElimination::runOnFunction(Function &F) {
     bool changed = false;
 
-    bool changed2;
+    bool changed2 = false;
     do {
         changed2 = false;
 

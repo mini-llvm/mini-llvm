@@ -3,7 +3,7 @@
 #pragma once
 
 #include <concepts>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 namespace mini_llvm::ops {
 
@@ -12,7 +12,7 @@ template <typename To>
 struct FPTrunc {
     template <typename From>
         requires std::floating_point<From>
-    To operator()(From) const noexcept {
+    To operator()(From /*from*/) const noexcept {
         abort();
     }
 

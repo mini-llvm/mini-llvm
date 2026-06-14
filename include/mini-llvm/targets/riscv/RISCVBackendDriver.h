@@ -18,6 +18,9 @@ public:
 
     ~RISCVBackendDriver();
 
+    RISCVBackendDriver(const RISCVBackendDriver &) = delete;
+    RISCVBackendDriver &operator=(const RISCVBackendDriver &) = delete;
+
     RISCVBackendDriver(RISCVBackendDriver &&) noexcept;
     RISCVBackendDriver &operator=(RISCVBackendDriver &&) noexcept;
 

@@ -32,11 +32,11 @@ bool isEliminable(const BasicBlock &B) {
     if (B.size() < 2) {
         return false;
     }
-    auto *ret = dynamic_cast<const Ret *>(&*std::prev(B.end(), 1));
+    const auto *ret = dynamic_cast<const Ret *>(&*std::prev(B.end(), 1));
     if (!ret) {
         return false;
     }
-    auto *call = dynamic_cast<const Call *>(&*std::prev(B.end(), 2));
+    const auto *call = dynamic_cast<const Call *>(&*std::prev(B.end(), 2));
     if (!call) {
         return false;
     }

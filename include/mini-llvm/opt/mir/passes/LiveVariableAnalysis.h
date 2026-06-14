@@ -17,7 +17,15 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT LiveVariableAnalysis final : public FunctionAnalysis {
 public:
     LiveVariableAnalysis();
+
     ~LiveVariableAnalysis() override;
+
+    LiveVariableAnalysis(const LiveVariableAnalysis &) = delete;
+    LiveVariableAnalysis &operator=(const LiveVariableAnalysis &) = delete;
+
+    LiveVariableAnalysis(LiveVariableAnalysis &&) = delete;
+    LiveVariableAnalysis &operator=(LiveVariableAnalysis &&) = delete;
+
     void runOnFunction(const Function &F) override;
     std::unordered_set<Register *> liveIn(const BasicBlock &B) const;
     std::unordered_set<Register *> liveOut(const BasicBlock &B) const;

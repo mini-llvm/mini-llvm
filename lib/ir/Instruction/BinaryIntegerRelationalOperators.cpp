@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 #include <cassert>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <format>
 #include <memory>
 #include <optional>
@@ -64,7 +64,7 @@ public:
         visit<I64Constant>(rhs);
     }
 
-    void visitNullPtrConstant(const NullPtrConstant &) override {
+    void visitNullPtrConstant(const NullPtrConstant &/*rhs*/) override {
         assert(dynamic_cast<const NullPtrConstant *>(&lhs_));
         result_.emplace(std::make_shared<I1Constant>(Op()(0, 0)));
     }
