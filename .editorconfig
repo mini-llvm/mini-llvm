@@ -8,11 +8,15 @@ end_of_line = lf
 indent_style = space
 indent_size = 4
 
+[*.ll]
+indent_style = space
+indent_size = 2
+
 [*.py]
 indent_style = space
 indent_size = 4
 
-[*.ll]
+[*.sh]
 indent_style = space
 indent_size = 2
 
