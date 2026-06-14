@@ -7,8 +7,11 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Instruction/Ret.h"
 #include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class RetTest : public ::testing::Test {
 protected:
@@ -32,5 +35,7 @@ TEST_F(RetTest, clone) {
     EXPECT_EQ(&*ret1_->value(), &*cloned1->value());
     EXPECT_EQ(&*ret2_->value(), &*cloned2->value());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

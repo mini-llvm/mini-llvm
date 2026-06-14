@@ -8,6 +8,7 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Constant/ArrayConstant.h"
 #include "mini-llvm/ir/Constant/I32Constant.h"
+#include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/ArrayType.h"
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir_reader/Parser.h"
@@ -16,6 +17,8 @@
 using enum mini_llvm::ir::Token::Kind;
 
 namespace mini_llvm::ir {
+
+namespace {
 
 TEST(ParserTest, Empty) {
     std::vector<Token> input{
@@ -125,5 +128,7 @@ TEST(ParserTest, ArrayConstant) {
 
     EXPECT_EQ(*Parser(input.begin()).parseConstant(*expected->type()), *expected);
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

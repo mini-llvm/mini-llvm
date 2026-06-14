@@ -89,25 +89,26 @@ inline auto uses(const Value &value) {
     return std::ranges::subrange(value.use_begin(), value.use_end());
 }
 
-MINI_LLVM_EXPORT bool replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue);
-MINI_LLVM_EXPORT bool replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue);
+MINI_LLVM_EXPORT bool replaceAllUsesWith(const Value &value, const std::shared_ptr<Value> &newValue);
+MINI_LLVM_EXPORT bool replaceAllUsesWith(const Value &value, const std::weak_ptr<Value> &newValue);
 
 template <typename ValueT>
     requires std::derived_from<ValueT, Value>
-bool replaceAllUsesWith(const Value &value, std::shared_ptr<ValueT> newValue) {
-    return replaceAllUsesWith(value, cast<Value>(std::move(newValue)));
+bool replaceAllUsesWith(const Value &value, const std::shared_ptr<ValueT> &newValue) {
+    return replaceAllUsesWith(value, cast<Value>(newValue));
 }
 
 template <typename ValueT>
     requires std::derived_from<ValueT, Value>
-bool replaceAllUsesWith(const Value &value, std::weak_ptr<ValueT> newValue) {
-    return replaceAllUsesWith(value, cast<Value>(std::move(newValue)));
+bool replaceAllUsesWith(const Value &value, const std::weak_ptr<ValueT> &newValue) {
+    return replaceAllUsesWith(value, cast<Value>(newValue));
 }
 
 } // namespace mini_llvm::ir
 
 template <typename ValueT>
     requires std::derived_from<ValueT, mini_llvm::ir::Value>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<ValueT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         if (*ctx.begin() == 'o') {

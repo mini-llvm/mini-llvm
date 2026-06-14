@@ -19,10 +19,11 @@
 
 namespace mini_llvm::mir {
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
     RISCVRegister *x0 = RISCVRegister::get("x0");
 
-    bool changed;
+    bool changed = false;
     do {
         changed = false;
 
@@ -39,12 +40,13 @@ void RISCVPassManager::runBeforeRegisterAllocation(Module &M) const {
     } while (changed);
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void RISCVPassManager::runAfterRegisterAllocation(Module &M) const {
     RISCVRegister *x0 = RISCVRegister::get("x0");
 
     StackOffsetEvaluation().runOnModule(M);
 
-    bool changed;
+    bool changed = false;
     do {
         changed = false;
 

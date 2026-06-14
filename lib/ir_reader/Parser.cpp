@@ -165,6 +165,7 @@ public:
 
         while (current_->kind != kEOF) {
             if (current_->kind == kAt) {
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 bool isDeclaration;
                 std::shared_ptr<GlobalVar> G = parseGlobalVarHeader(isDeclaration);
                 M.appendGlobalVar(G);
@@ -204,6 +205,7 @@ public:
                     } while (count > 0);
                 }
             } else if (current_->kind == kDefine || current_->kind == kDeclare) {
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 bool isDeclaration;
                 std::shared_ptr<Function> F = parseFunctionHeader(isDeclaration);
                 M.appendFunction(F);
@@ -270,6 +272,7 @@ public:
             ++current_;
         }
 
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         bool isConstant;
         if (current_->kind == kGlobal) {
             isConstant = false;
@@ -489,7 +492,7 @@ public:
         ++current_;
 
         for (const auto &[symbol, value] : symbolTable_) {
-            if (auto *undefined = dynamic_cast<const Undefined *>(&*value)) {
+            if (const auto *undefined = dynamic_cast<const Undefined *>(&*value)) {
                 throw ParseException("undefined local identifier", undefined->location());
             }
         }
@@ -642,6 +645,7 @@ public:
                 case kICmp: {
                     ++current_;
 
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     ICmp::Condition cond;
                     switch (current_->kind) {
                         case kEQ: cond = ICmp::Condition::kEQ; break;
@@ -677,6 +681,7 @@ public:
                 case kFCmp: {
                     ++current_;
 
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     FCmp::Condition cond;
                     switch (current_->kind) {
                         case kOEQ: cond = FCmp::Condition::kOEQ; break;
@@ -1082,7 +1087,7 @@ public:
                     const Instruction *u = Q.front();
                     Q.pop();
                     for (const UseBase &use : uses(*u)) {
-                        if (auto *v = dynamic_cast<const Instruction *>(use.user())) {
+                        if (const auto *v = dynamic_cast<const Instruction *>(use.user())) {
                             if (!dynamic_cast<const Phi *>(v)) {
                                 if (v == &*I) {
                                     throw ParseException("circular reference", symbolLocation);
@@ -1368,7 +1373,7 @@ public:
                 case kNumber: {
                     int32_t value = static_cast<int32_t>(std::get<BigInteger>(current_->value).toInt64() & 0xffffffff);
                     ++current_;
-                    return std::make_unique<I32Constant>(static_cast<int32_t>(value));
+                    return std::make_unique<I32Constant>(value);
                 }
                 case kPoison: {
                     ++current_;
@@ -1445,7 +1450,7 @@ public:
                 }
             }
         }
-        if (auto *arrayType = dynamic_cast<const ArrayType *>(&type)) {
+        if (const auto *arrayType = dynamic_cast<const ArrayType *>(&type)) {
             if (current_->kind == kPoison) {
                 ++current_;
                 return std::make_unique<PoisonValue>(arrayType->clone());

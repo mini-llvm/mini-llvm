@@ -48,7 +48,7 @@ bool isPoison(const Instruction &I) {
         });
     }
 
-    if (auto *select = dynamic_cast<const Select *>(&I)) {
+    if (const auto *select = dynamic_cast<const Select *>(&I)) {
         return dynamic_cast<const PoisonValue *>(&*select->cond());
     }
 

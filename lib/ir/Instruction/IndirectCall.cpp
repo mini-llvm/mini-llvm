@@ -15,6 +15,7 @@
 #include "mini-llvm/ir/Type/Void.h"
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 namespace mini_llvm::ir {

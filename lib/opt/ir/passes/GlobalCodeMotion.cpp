@@ -20,6 +20,7 @@
 #include "mini-llvm/ir/Instruction/Store.h"
 #include "mini-llvm/ir/Instruction/Terminator.h"
 #include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 #include "mini-llvm/opt/ir/passes/LoopTreeAnalysis.h"
 #include "mini-llvm/utils/HashMap.h"
@@ -74,7 +75,7 @@ const BasicBlock *findLCA(
 }
 
 bool isCriticalCall(const Instruction &I) {
-    if (auto *call = dynamic_cast<const Call *>(&I)) {
+    if (const auto *call = dynamic_cast<const Call *>(&I)) {
         const Function &callee = *call->callee();
         if (!callee.attr<ReadNone>()) {
             return true;
@@ -102,7 +103,7 @@ void scheduleEarly(
         if (!isPinned(I)) {
             blocks.put(&I, &I.parent()->parent()->entry());
             for (const UseBase *op : I.operands()) {
-                if (auto *II = dynamic_cast<const Instruction *>(&**op)) {
+                if (const auto *II = dynamic_cast<const Instruction *>(&**op)) {
                     if (domTreeDepths[blocks[II]] > domTreeDepths[blocks[&I]]) {
                         blocks[&I] = blocks[II];
                     }
@@ -129,8 +130,8 @@ void scheduleLate(
         if (!isPinned(I)) {
             const BasicBlock *lca = nullptr;
             for (const UseBase &use : uses(I)) {
-                if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
-                    if (auto *phi = dynamic_cast<const Phi *>(II)) {
+                if (const auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                    if (const auto *phi = dynamic_cast<const Phi *>(II)) {
                         for (Phi::ConstIncoming incoming : incomings(*phi)) {
                             if (&*incoming.value == &I) {
                                 lca = findLCA(lca, &*incoming.block, domTreeDepths, domTreeParents);

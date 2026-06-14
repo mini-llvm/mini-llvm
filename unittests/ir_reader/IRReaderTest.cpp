@@ -6,6 +6,8 @@
 
 namespace mini_llvm::ir {
 
+namespace {
+
 TEST(IRReaderTest, Function) {
     const char *input = R"(
 define void @test() {
@@ -617,5 +619,7 @@ TEST(IRReaderTest, NegativeNumElements) {
 
     EXPECT_FALSE(parseModule(input));
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

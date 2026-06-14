@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <utility>
 
 #include "mini-llvm/utils/Compiler.h"
@@ -49,19 +49,19 @@ public:
     virtual void visitPoisonValue(PoisonValue &C) { visitPoisonValue(std::as_const(C)); }
     virtual void visitVoidValue(VoidValue &C) { visitVoidValue(std::as_const(C)); }
 
-    virtual void visitArrayConstant(const ArrayConstant &) { abort(); }
-    virtual void visitDoubleConstant(const DoubleConstant &) { abort(); }
-    virtual void visitFloatConstant(const FloatConstant &) { abort(); }
-    virtual void visitFunction(const Function &) { abort(); }
-    virtual void visitGlobalVar(const GlobalVar &) { abort(); }
-    virtual void visitI16Constant(const I16Constant &) { abort(); }
-    virtual void visitI1Constant(const I1Constant &) { abort(); }
-    virtual void visitI32Constant(const I32Constant &) { abort(); }
-    virtual void visitI64Constant(const I64Constant &) { abort(); }
-    virtual void visitI8Constant(const I8Constant &) { abort(); }
-    virtual void visitNullPtrConstant(const NullPtrConstant &) { abort(); }
-    virtual void visitPoisonValue(const PoisonValue &) { abort(); }
-    virtual void visitVoidValue(const VoidValue &) { abort(); }
+    virtual void visitArrayConstant(const ArrayConstant &/*C*/) { abort(); }
+    virtual void visitDoubleConstant(const DoubleConstant &/*C*/) { abort(); }
+    virtual void visitFloatConstant(const FloatConstant &/*C*/) { abort(); }
+    virtual void visitFunction(const Function &/*C*/) { abort(); }
+    virtual void visitGlobalVar(const GlobalVar &/*C*/) { abort(); }
+    virtual void visitI16Constant(const I16Constant &/*C*/) { abort(); }
+    virtual void visitI1Constant(const I1Constant &/*C*/) { abort(); }
+    virtual void visitI32Constant(const I32Constant &/*C*/) { abort(); }
+    virtual void visitI64Constant(const I64Constant &/*C*/) { abort(); }
+    virtual void visitI8Constant(const I8Constant &/*C*/) { abort(); }
+    virtual void visitNullPtrConstant(const NullPtrConstant &/*C*/) { abort(); }
+    virtual void visitPoisonValue(const PoisonValue &/*C*/) { abort(); }
+    virtual void visitVoidValue(const VoidValue &/*C*/) { abort(); }
 };
 
 } // namespace mini_llvm::ir

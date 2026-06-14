@@ -196,10 +196,10 @@ std::pair<GlobalValue *, int64_t> emitPtrConstantValue(
     const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
     const HashMap<const ir::Function *, Function *> &functionMap
 ) {
-    if (auto *G = dynamic_cast<const ir::GlobalVar *>(&C)) {
+    if (const auto *G = dynamic_cast<const ir::GlobalVar *>(&C)) {
         return {globalVarMap[G], 0};
     }
-    if (auto *F = dynamic_cast<const ir::Function *>(&C)) {
+    if (const auto *F = dynamic_cast<const ir::Function *>(&C)) {
         return {functionMap[F], 0};
     }
     if (dynamic_cast<const ir::NullPtrConstant *>(&C)) {
@@ -213,34 +213,34 @@ std::unique_ptr<Constant> emitConstant(
     const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
     const HashMap<const ir::Function *, Function *> &functionMap
 ) {
-    if (auto *pointerConstant = dynamic_cast<const ir::PointerConstant *>(&C)) {
+    if (const auto *pointerConstant = dynamic_cast<const ir::PointerConstant *>(&C)) {
         return std::make_unique<PtrConstant>(8, emitPtrConstantValue(*pointerConstant, globalVarMap, functionMap));
     }
     if (C == *C.type()->zeroValue()) {
         return std::make_unique<ZeroConstant>(C.type()->size(8));
     }
-    if (auto *i1Constant = dynamic_cast<const ir::I1Constant *>(&C)) {
+    if (const auto *i1Constant = dynamic_cast<const ir::I1Constant *>(&C)) {
         return std::make_unique<I8Constant>(static_cast<int8_t>(i1Constant->value()));
     }
-    if (auto *i8Constant = dynamic_cast<const ir::I8Constant *>(&C)) {
+    if (const auto *i8Constant = dynamic_cast<const ir::I8Constant *>(&C)) {
         return std::make_unique<I8Constant>(i8Constant->value());
     }
-    if (auto *i16Constant = dynamic_cast<const ir::I16Constant *>(&C)) {
+    if (const auto *i16Constant = dynamic_cast<const ir::I16Constant *>(&C)) {
         return std::make_unique<I16Constant>(i16Constant->value());
     }
-    if (auto *i32Constant = dynamic_cast<const ir::I32Constant *>(&C)) {
+    if (const auto *i32Constant = dynamic_cast<const ir::I32Constant *>(&C)) {
         return std::make_unique<I32Constant>(i32Constant->value());
     }
-    if (auto *i64Constant = dynamic_cast<const ir::I64Constant *>(&C)) {
+    if (const auto *i64Constant = dynamic_cast<const ir::I64Constant *>(&C)) {
         return std::make_unique<I64Constant>(i64Constant->value());
     }
-    if (auto *floatConstant = dynamic_cast<const ir::FloatConstant *>(&C)) {
+    if (const auto *floatConstant = dynamic_cast<const ir::FloatConstant *>(&C)) {
         return std::make_unique<I32Constant>(std::bit_cast<int32_t>(floatConstant->value()));
     }
-    if (auto *doubleConstant = dynamic_cast<const ir::DoubleConstant *>(&C)) {
+    if (const auto *doubleConstant = dynamic_cast<const ir::DoubleConstant *>(&C)) {
         return std::make_unique<I64Constant>(std::bit_cast<int64_t>(doubleConstant->value()));
     }
-    if (auto *arrayConstant = dynamic_cast<const ir::ArrayConstant *>(&C)) {
+    if (const auto *arrayConstant = dynamic_cast<const ir::ArrayConstant *>(&C)) {
         std::vector<const ir::Constant *> flattened;
         flatten(*arrayConstant, flattened);
 
@@ -251,6 +251,7 @@ std::unique_ptr<Constant> emitConstant(
 
         if (*type == ir::I1()) {
             std::vector<int8_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(static_cast<int8_t>(static_cast<const ir::I1Constant *>(element)->value()));
             }
@@ -258,6 +259,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::I8()) {
             std::vector<int8_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(static_cast<const ir::I8Constant *>(element)->value());
             }
@@ -265,6 +267,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::I16()) {
             std::vector<int16_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(static_cast<const ir::I16Constant *>(element)->value());
             }
@@ -272,6 +275,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::I32()) {
             std::vector<int32_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(static_cast<const ir::I32Constant *>(element)->value());
             }
@@ -279,6 +283,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::I64()) {
             std::vector<int64_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(static_cast<const ir::I64Constant *>(element)->value());
             }
@@ -286,6 +291,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::Float()) {
             std::vector<int32_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(std::bit_cast<int32_t>(static_cast<const ir::FloatConstant *>(element)->value()));
             }
@@ -293,6 +299,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::Double()) {
             std::vector<int64_t> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(std::bit_cast<int64_t>(static_cast<const ir::DoubleConstant *>(element)->value()));
             }
@@ -300,6 +307,7 @@ std::unique_ptr<Constant> emitConstant(
         }
         if (*type == ir::Ptr()) {
             std::vector<std::pair<GlobalValue *, int64_t>> elements;
+            elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
                 elements.push_back(emitPtrConstantValue(*static_cast<const ir::PointerConstant *>(element), globalVarMap, functionMap));
             }
@@ -405,7 +413,7 @@ public:
     }
 
     void visitSExt(const ir::SExt &I) override {
-        if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
+        if (const auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
             std::shared_ptr<Register> dst = valueMap_[&I],
                                       src1 = getRegister(*icmp->lhs()),
                                       src2 = getRegister(*icmp->rhs());
@@ -414,6 +422,7 @@ public:
                 case ir::ICmp::Condition::kNE: {
                     builder_.add(std::make_unique<Xor>(8, dst, src1, src2));
 
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     Condition cond;
                     switch (icmp->cond()) {
                         case ir::ICmp::Condition::kEQ: cond = Condition::kEQZ; break;
@@ -434,7 +443,9 @@ public:
                 case ir::ICmp::Condition::kUGT:
                 case ir::ICmp::Condition::kULE:
                 case ir::ICmp::Condition::kUGE: {
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     Condition cond;
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     bool negate;
                     switch (icmp->cond()) {
                         case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; negate = false; break;
@@ -481,7 +492,7 @@ public:
     }
 
     void visitZExt(const ir::ZExt &I) override {
-        if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
+        if (const auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.value())) {
             std::shared_ptr<Register> dst = valueMap_[&I],
                                       src1 = getRegister(*icmp->lhs()),
                                       src2 = getRegister(*icmp->rhs());
@@ -490,6 +501,7 @@ public:
                 case ir::ICmp::Condition::kNE: {
                     builder_.add(std::make_unique<Xor>(8, dst, src1, src2));
 
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     Condition cond;
                     switch (icmp->cond()) {
                         case ir::ICmp::Condition::kEQ: cond = Condition::kEQZ; break;
@@ -509,7 +521,9 @@ public:
                 case ir::ICmp::Condition::kUGT:
                 case ir::ICmp::Condition::kULE:
                 case ir::ICmp::Condition::kUGE: {
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     Condition cond;
+                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                     bool negate;
                     switch (icmp->cond()) {
                         case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; negate = false; break;
@@ -564,6 +578,7 @@ public:
             case ir::ICmp::Condition::kNE: {
                 builder_.add(std::make_unique<Xor>(8, dst, src1, src2));
 
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 Condition cond;
                 switch (I.cond()) {
                     case ir::ICmp::Condition::kEQ: cond = Condition::kEQZ; break;
@@ -584,7 +599,9 @@ public:
             case ir::ICmp::Condition::kUGT:
             case ir::ICmp::Condition::kULE:
             case ir::ICmp::Condition::kUGE: {
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 Condition cond;
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 bool negate;
                 switch (I.cond()) {
                     case ir::ICmp::Condition::kSLT: cond = Condition::kSLT; negate = false; break;
@@ -682,7 +699,9 @@ public:
 
     void visitFCmp(const ir::FCmp &I) override {
         Precision precision = static_cast<const ir::FloatingType *>(&*I.lhs()->type())->precision();
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         Condition cond;
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         bool negate;
         switch (I.cond()) {
             case ir::FCmp::Condition::kOEQ: cond = Condition::kOEQ; negate = false; break;
@@ -825,7 +844,7 @@ public:
 
         builder_.add(std::make_unique<Mov>(8, dst, src));
 
-        auto add = [this](std::shared_ptr<Register> dst, const ir::Value &idx, int size) {
+        auto add = [this](const std::shared_ptr<Register> &dst, const ir::Value &idx, int size) {
             std::shared_ptr<Register> idxReg = getRegister(idx);
             if (size == 1) {
                 builder_.add(std::make_unique<Add>(8, dst, dst, idxReg));
@@ -861,7 +880,7 @@ public:
         BasicBlock *dest = blockMap_[&*I.dest()];
         std::vector<const ir::Phi *> phis;
         for (const ir::Instruction &II : *I.dest()) {
-            if (auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
+            if (const auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
                 phis.push_back(phi);
             }
         }
@@ -910,7 +929,7 @@ public:
         {
             std::vector<const ir::Phi *> phis;
             for (const ir::Instruction &II : *I.trueDest()) {
-                if (auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
+                if (const auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
                     phis.push_back(phi);
                 }
             }
@@ -954,7 +973,7 @@ public:
         {
             std::vector<const ir::Phi *> phis;
             for (const ir::Instruction &II : *I.falseDest()) {
-                if (auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
+                if (const auto *phi = dynamic_cast<const ir::Phi *>(&II)) {
                     phis.push_back(phi);
                 }
             }
@@ -995,10 +1014,11 @@ public:
                 falseDest = &middle;
             }
         }
-        if (auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.cond())) {
+        if (const auto *icmp = dynamic_cast<const ir::ICmp *>(&*I.cond())) {
             int width = icmp->lhs()->type()->size(8);
             std::shared_ptr<Register> src1 = getRegister(*icmp->lhs()),
                                       src2 = getRegister(*icmp->rhs());
+            // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
             Condition cond;
             switch (icmp->cond()) {
                 case ir::ICmp::Condition::kEQ: cond = Condition::kEQ; break;
@@ -1036,7 +1056,7 @@ public:
         builder_.add(std::make_unique<Br>(epilogueBlock_));
     }
 
-    void visitPhi(const ir::Phi &) override {}
+    void visitPhi(const ir::Phi &/*I*/) override {}
 
 private:
     Function &function_;
@@ -1144,7 +1164,7 @@ private:
         }
 
         if (!stackArgs.empty()) {
-            int n = stackArgs.size();
+            int n = static_cast<int>(stackArgs.size());
             builder_.add(std::make_unique<AddI>(8, share(*sp), share(*sp), std::make_unique<IntegerImmediate>(-(n * 8 + 15) / 16 * 16)));
             for (int i = 0; i < n; ++i) {
                 MemoryOperand dst(share(*sp), std::make_unique<IntegerImmediate>(i * 8));
@@ -1170,7 +1190,7 @@ private:
         }
 
         if (!stackArgs.empty()) {
-            int n = stackArgs.size();
+            int n = static_cast<int>(stackArgs.size());
             builder_.add(std::make_unique<AddI>(8, share(*sp), share(*sp), std::make_unique<IntegerImmediate>((n * 8 + 15) / 16 * 16)));
         }
 
@@ -1192,25 +1212,25 @@ private:
         if (dynamic_cast<const ir::Argument *>(&value) || dynamic_cast<const ir::Instruction *>(&value)) {
             return valueMap_[&value];
         }
-        if (auto *G = dynamic_cast<const ir::GlobalVar *>(&value)) {
+        if (const auto *G = dynamic_cast<const ir::GlobalVar *>(&value)) {
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             GlobalVar *ptr = globalVarMap_[G];
             builder_.add(std::make_unique<LA>(8, reg, ptr));
             return reg;
         }
-        if (auto *F = dynamic_cast<const ir::Function *>(&value)) {
+        if (const auto *F = dynamic_cast<const ir::Function *>(&value)) {
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             Function *ptr = functionMap_[F];
             builder_.add(std::make_unique<LA>(8, reg, ptr));
             return reg;
         }
-        if (auto *C = dynamic_cast<const ir::IntegerConstant *>(&value)) {
+        if (const auto *C = dynamic_cast<const ir::IntegerConstant *>(&value)) {
             std::shared_ptr<Register> reg = std::make_shared<VirtualRegister>(8);
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(C->signExtendedValue());
             builder_.add(std::make_unique<LI>(8, reg, std::move(imm)));
             return reg;
         }
-        if (auto *C = dynamic_cast<const ir::FloatingConstant *>(&value)) {
+        if (const auto *C = dynamic_cast<const ir::FloatingConstant *>(&value)) {
             std::shared_ptr<Register> gpr = std::make_shared<VirtualRegister>(8),
                                       fpr = std::make_shared<VirtualRegister>(8);
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(C->bitPattern());
@@ -1304,7 +1324,7 @@ private:
         HashMap<const ir::Alloca *, StackSlot *> memoryMap;
         for (const ir::BasicBlock &IB : IF) {
             for (const ir::Instruction &II : IB) {
-                if (auto *alloca = dynamic_cast<const ir::Alloca *>(&II)) {
+                if (const auto *alloca = dynamic_cast<const ir::Alloca *>(&II)) {
                     int size = alloca->allocatedType()->size(8);
                     int alignment = alloca->allocatedType()->alignment(8);
                     memoryMap.put(alloca, &MF.stackFrame().append(size, alignment));

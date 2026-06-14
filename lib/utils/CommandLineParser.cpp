@@ -51,7 +51,7 @@ Expected<CommandLineParser::Result, CommandLineParser::Error> CommandLineParser:
                     if (i == n) {
                         return Unexpected(Error(ErrorKind::kMissingValue, arg));
                     }
-                    std::string value = args[i++];
+                    const std::string &value = args[i++];
                     result.emplace_back(OptionArgument(arg, value));
                     continue;
                 }
@@ -81,7 +81,7 @@ Expected<CommandLineParser::Result, CommandLineParser::Error> CommandLineParser:
                         if (i == n) {
                             return Unexpected(Error(ErrorKind::kMissingValue, arg));
                         }
-                        std::string value = args[i++];
+                        const std::string &value = args[i++];
                         result.emplace_back(OptionArgument(arg, value));
                         break;
                     }

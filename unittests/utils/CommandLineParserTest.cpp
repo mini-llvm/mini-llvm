@@ -11,6 +11,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(CommandLineParserTest, NoArgs) {
     std::vector<std::string> args{"program"};
 
@@ -982,5 +984,7 @@ TEST(CommandLineParserTest, Separator) {
 
     ASSERT_EQ(i, j);
 }
+
+} // namespace
 
 } // namespace mini_llvm

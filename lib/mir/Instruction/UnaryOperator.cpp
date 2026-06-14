@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "mini-llvm/common/ExtensionMode.h"
 #include "mini-llvm/mir/FormatExtensionMode.h"
 #include "mini-llvm/utils/StringJoiner.h"
 

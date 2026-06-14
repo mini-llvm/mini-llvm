@@ -2,13 +2,13 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 #include "mini-llvm/common/ExtensionMode.h"
 
 namespace mini_llvm::mir {
 
-inline constexpr const char *specifier(ExtensionMode mode) {
+constexpr const char *specifier(ExtensionMode mode) {
     using enum ExtensionMode;
     switch (mode) {
         case kNo: return "";

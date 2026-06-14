@@ -17,7 +17,7 @@ namespace mini_llvm::mir {
 bool TailDuplication::runOnFunction(Function &F) {
     bool changed = false;
 
-    bool changed2;
+    bool changed2 = false;
     do {
         changed2 = false;
 

@@ -23,12 +23,6 @@ public:
     BigInteger(int64_t value);
     explicit BigInteger(std::string_view str, int base = 10);
 
-    BigInteger(const BigInteger &other) = default;
-    BigInteger &operator=(const BigInteger &other) = default;
-
-    BigInteger(BigInteger &&other) noexcept = default;
-    BigInteger &operator=(BigInteger &&other) noexcept = default;
-
     BigInteger operator+() const &;
     BigInteger operator+() &&;
     BigInteger operator-() const &;
@@ -95,6 +89,7 @@ struct std::hash<mini_llvm::BigInteger> {
 
 template <>
 struct std::formatter<mini_llvm::BigInteger> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

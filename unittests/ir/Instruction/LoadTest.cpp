@@ -7,8 +7,11 @@
 #include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Instruction/Load.h"
 #include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class LoadTest : public ::testing::Test {
 protected:
@@ -35,5 +38,7 @@ TEST_F(LoadTest, clone) {
     EXPECT_EQ(*load_->type(), *cloned->type());
     EXPECT_EQ(&*load_->ptr(), &*cloned->ptr());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

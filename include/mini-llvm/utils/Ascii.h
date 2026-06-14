@@ -115,39 +115,39 @@ inline constexpr char kAsciiUpper[] = {
 
 } // namespace detail
 
-inline constexpr bool isAsciiPrintable(char ch) noexcept {
+constexpr bool isAsciiPrintable(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x01;
 }
 
-inline constexpr bool isAsciiUpper(char ch) noexcept {
+constexpr bool isAsciiUpper(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x02;
 }
 
-inline constexpr bool isAsciiLower(char ch) noexcept {
+constexpr bool isAsciiLower(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x04;
 }
 
-inline constexpr bool isAsciiLetter(char ch) noexcept {
+constexpr bool isAsciiLetter(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x06;
 }
 
-inline constexpr bool isAsciiDigit(char ch) noexcept {
+constexpr bool isAsciiDigit(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x08;
 }
 
-inline constexpr bool isAsciiLetterOrDigit(char ch) noexcept {
+constexpr bool isAsciiLetterOrDigit(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x0e;
 }
 
-inline constexpr bool isAsciiHexDigit(char ch) noexcept {
+constexpr bool isAsciiHexDigit(char ch) noexcept {
     return detail::kAsciiMasks[static_cast<uint8_t>(ch)] & 0x10;
 }
 
-inline constexpr char toAsciiLower(char ch) noexcept{
+constexpr char toAsciiLower(char ch) noexcept{
     return detail::kAsciiLower[static_cast<uint8_t>(ch)];
 }
 
-inline constexpr char toAsciiUpper(char ch) noexcept {
+constexpr char toAsciiUpper(char ch) noexcept {
     return detail::kAsciiUpper[static_cast<uint8_t>(ch)];
 }
 

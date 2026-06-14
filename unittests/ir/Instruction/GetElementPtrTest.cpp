@@ -15,6 +15,8 @@
 
 namespace mini_llvm::ir {
 
+namespace {
+
 class GetElementPtrTest : public ::testing::Test {
 protected:
     std::shared_ptr<GetElementPtr> getelememtptr_;
@@ -43,5 +45,7 @@ TEST_F(GetElementPtrTest, clone) {
     EXPECT_EQ(cloned->idx_size(), getelememtptr_->idx_size());
     EXPECT_EQ(&*cloned->idx(0), &*getelememtptr_->idx(0));
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

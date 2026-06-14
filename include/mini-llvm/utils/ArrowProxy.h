@@ -13,7 +13,7 @@ public:
         : value_(std::move(value)) {}
 
     template <typename... Args>
-    explicit constexpr ArrowProxy(std::in_place_t, Args &&...args)
+    explicit constexpr ArrowProxy(std::in_place_t /*in_place*/, Args &&...args)
         : value_(std::forward<Args>(args)...) {}
 
     constexpr T *operator->() {

@@ -11,6 +11,7 @@
 #include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/GlobalValue.h"
+#include "mini-llvm/ir/Type.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 namespace mini_llvm::ir {
@@ -41,7 +42,7 @@ Constant &GlobalVar::initializer() {
 }
 
 const Constant &GlobalVar::initializer() const {
-    if (auto *initializer = std::get_if<std::weak_ptr<Constant>>(&initializer_)) {
+    if (const auto *initializer = std::get_if<std::weak_ptr<Constant>>(&initializer_)) {
         return *initializer->lock();
     } else {
         return *std::get<std::shared_ptr<Constant>>(initializer_);

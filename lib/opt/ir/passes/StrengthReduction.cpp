@@ -77,7 +77,7 @@ std::vector<std::shared_ptr<Instruction>> replaceMulGeneral(Value &lhs, uint64_t
     }
     for (size_t i = 1; i < naf.size(); ++i) {
         if (naf[i] != 0) {
-            std::shared_ptr<Instruction> x = std::make_shared<SHL>(share(lhs), lhs.type()->constant(i));
+            std::shared_ptr<Instruction> x = std::make_shared<SHL>(share(lhs), lhs.type()->constant(static_cast<int64_t>(i)));
             replaced += x;
             terms.emplace_back(x, naf[i]);
         }
@@ -130,7 +130,7 @@ std::vector<std::shared_ptr<Instruction>> replaceMul(const Mul &I) {
 // Association for Computing Machinery, New York, NY, USA, 61-72. https://doi.org/10.1145/178243.178249
 
 std::vector<std::shared_ptr<Instruction>> replaceUDivLarge(Value &n, uint64_t d) {
-    std::shared_ptr<Instruction> x1 = std::make_shared<ICmp>(ICmp::Condition::kUGE, share(n), n.type()->constant(d));
+    std::shared_ptr<Instruction> x1 = std::make_shared<ICmp>(ICmp::Condition::kUGE, share(n), n.type()->constant(static_cast<int64_t>(d)));
     std::shared_ptr<Instruction> x2 = std::make_shared<ZExt>(x1, cast<IntegerType>(n.type()));
 
     return std::vector<std::shared_ptr<Instruction>>() + x1 + x2;
@@ -287,7 +287,7 @@ std::vector<std::shared_ptr<Instruction>> replaceSDiv(const SDiv &I) {
 
 std::vector<std::shared_ptr<Instruction>> replaceURemPow2(Value &n, uint64_t d) {
     return std::vector<std::shared_ptr<Instruction>>() +
-           std::make_shared<And>(share(n), n.type()->constant(d - 1));
+           std::make_shared<And>(share(n), n.type()->constant(static_cast<int64_t>(d - 1)));
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceURemGeneral(Value &n, uint64_t d) {
@@ -295,7 +295,7 @@ std::vector<std::shared_ptr<Instruction>> replaceURemGeneral(Value &n, uint64_t 
 
     if (!replaced.empty()) {
         std::shared_ptr<Instruction> x = replaced.back();
-        std::shared_ptr<Instruction> x1 = std::make_shared<Mul>(x, n.type()->constant(d));
+        std::shared_ptr<Instruction> x1 = std::make_shared<Mul>(x, n.type()->constant(static_cast<int64_t>(d)));
         std::shared_ptr<Instruction> x2 = std::make_shared<Sub>(share(n), x1);
 
         replaced += x1, x2;
@@ -356,31 +356,31 @@ void dfs(const DTNode *node, bool &changed, size_t mulThreshold, size_t divThres
 
         std::vector<std::shared_ptr<Instruction>> replaced;
 
-        if (auto *mul = dynamic_cast<const Mul *>(&I)) {
+        if (const auto *mul = dynamic_cast<const Mul *>(&I)) {
             replaced = replaceMul(*mul);
 
             if (replaced.size() > mulThreshold) {
                 replaced = {};
             }
-        } else if (auto *udiv = dynamic_cast<const UDiv *>(&I)) {
+        } else if (const auto *udiv = dynamic_cast<const UDiv *>(&I)) {
             replaced = replaceUDiv(*udiv);
 
             if (replaced.size() > divThreshold) {
                 replaced = {};
             }
-        } else if (auto *sdiv = dynamic_cast<const SDiv *>(&I)) {
+        } else if (const auto *sdiv = dynamic_cast<const SDiv *>(&I)) {
             replaced = replaceSDiv(*sdiv);
 
             if (replaced.size() > divThreshold) {
                 replaced = {};
             }
-        } else if (auto *urem = dynamic_cast<const URem *>(&I)) {
+        } else if (const auto *urem = dynamic_cast<const URem *>(&I)) {
             replaced = replaceURem(*urem);
 
             if (replaced.size() > remThreshold) {
                 replaced = {};
             }
-        } else if (auto *srem = dynamic_cast<const SRem *>(&I)) {
+        } else if (const auto *srem = dynamic_cast<const SRem *>(&I)) {
             replaced = replaceSRem(*srem);
 
             if (replaced.size() > remThreshold) {
@@ -410,7 +410,7 @@ void dfs(const DTNode *node, bool &changed, size_t mulThreshold, size_t divThres
 bool StrengthReduction::runOnFunction(Function &F) {
     bool changed = false;
 
-    bool changed2;
+    bool changed2 = false;
     do {
         changed2 = false;
 

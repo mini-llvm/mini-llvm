@@ -12,6 +12,8 @@
 
 namespace mini_llvm::ir {
 
+namespace {
+
 class SelectTest : public ::testing::Test {
 protected:
     std::shared_ptr<Select> select_;
@@ -42,5 +44,7 @@ TEST_F(SelectTest, clone) {
     EXPECT_EQ(&*select_->trueValue(), &*cloned->trueValue());
     EXPECT_EQ(&*select_->falseValue(), &*cloned->falseValue());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

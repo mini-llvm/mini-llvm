@@ -32,7 +32,7 @@ public:
 
 private:
     GlobalValue *globalValue_{};
-    GlobalValue::const_iterator pos_{};
+    GlobalValue::const_iterator pos_;
 };
 
 } // namespace mini_llvm::mc

@@ -9,6 +9,7 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/Register.h"
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/SetOps.h"
 
@@ -29,7 +30,7 @@ public:
             liveOut_.put(&B, {});
         }
 
-        bool changed;
+        bool changed = false;
         do {
             changed = false;
             for (const BasicBlock &B : F) {

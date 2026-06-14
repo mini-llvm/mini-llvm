@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <utility>
 
 #include "mini-llvm/mir/InstructionVisitor.h"
@@ -20,9 +20,9 @@ public:
     virtual void visitRISCVJALR(RISCVJALR &I) { visitRISCVJALR(std::as_const(I)); }
     virtual void visitRISCVRet(RISCVRet &I) { visitRISCVRet(std::as_const(I)); }
 
-    virtual void visitRISCVCall(const RISCVCall &) { abort(); }
-    virtual void visitRISCVJALR(const RISCVJALR &) { abort(); }
-    virtual void visitRISCVRet(const RISCVRet &) { abort(); }
+    virtual void visitRISCVCall(const RISCVCall &/*I*/) { abort(); }
+    virtual void visitRISCVJALR(const RISCVJALR &/*I*/) { abort(); }
+    virtual void visitRISCVRet(const RISCVRet &/*I*/) { abort(); }
 };
 
 } // namespace mini_llvm::mir

@@ -2,7 +2,6 @@
 
 #include "mini-llvm/mc/Module.h"
 
-#include <cstdlib>
 #include <string>
 #include <utility>
 #include <vector>

@@ -37,6 +37,7 @@ protected:
 
 template <typename ImmediateT>
     requires std::derived_from<ImmediateT, mini_llvm::mir::Immediate>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<ImmediateT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

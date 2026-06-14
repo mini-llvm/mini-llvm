@@ -3,6 +3,7 @@
 #pragma once
 
 #include <memory>
+#include <utility>
 
 namespace mini_llvm {
 
@@ -12,12 +13,17 @@ std::unique_ptr<To> cast(std::unique_ptr<From> from) noexcept {
 }
 
 template <typename To, typename From>
-std::shared_ptr<To> cast(std::shared_ptr<From> from) noexcept {
+std::shared_ptr<To> cast(const std::shared_ptr<From> &from) noexcept {
     return std::static_pointer_cast<To>(from);
 }
 
 template <typename To, typename From>
-std::weak_ptr<To> cast(std::weak_ptr<From> from) noexcept {
+std::shared_ptr<To> cast(std::shared_ptr<From> &&from) noexcept {
+    return std::static_pointer_cast<To>(std::move(from));
+}
+
+template <typename To, typename From>
+std::weak_ptr<To> cast(const std::weak_ptr<From> &from) noexcept {
     return std::static_pointer_cast<To>(from.lock());
 }
 

@@ -8,8 +8,11 @@
 #include "mini-llvm/ir/Constant/I1Constant.h"
 #include "mini-llvm/ir/Instruction/FCmp.h"
 #include "mini-llvm/ir/Type/I1.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class FCmpTest : public ::testing::Test {
 protected:
@@ -40,5 +43,7 @@ TEST_F(FCmpTest, clone) {
     EXPECT_EQ(&*fcmp_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*fcmp_->rhs(), &*cloned->rhs());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

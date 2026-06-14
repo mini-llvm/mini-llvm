@@ -66,6 +66,7 @@ struct std::hash<mini_llvm::mc::RISCVAddress> {
 
 template <>
 struct std::formatter<mini_llvm::mc::RISCVAddress> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

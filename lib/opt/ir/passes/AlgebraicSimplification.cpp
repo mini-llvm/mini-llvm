@@ -4,7 +4,7 @@
 
 #include <cassert>
 #include <cstdint>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <memory>
 #include <utility>
 
@@ -93,7 +93,7 @@ void dfs(const DTNode *node, bool &changed) {
     for (auto i = node->block->begin(); i != node->block->end();) {
         const Instruction &I = *i++;
 
-        if (auto *op = dynamic_cast<const BinaryIntegerArithmeticOperator *>(&I)) {
+        if (const auto *op = dynamic_cast<const BinaryIntegerArithmeticOperator *>(&I)) {
             const Value *lhs = &*op->lhs(),
                         *rhs = &*op->rhs();
 
@@ -162,8 +162,9 @@ void dfs(const DTNode *node, bool &changed) {
             continue;
         }
 
-        if (auto *icmp = dynamic_cast<const ICmp *>(&I)) {
+        if (const auto *icmp = dynamic_cast<const ICmp *>(&I)) {
             if (&*icmp->lhs() == &*icmp->rhs()) {
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 bool result;
                 switch (icmp->cond()) {
                     case ICmp::Condition::kEQ:
@@ -194,7 +195,7 @@ void dfs(const DTNode *node, bool &changed) {
             continue;
         }
 
-        if (auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
+        if (const auto *gep = dynamic_cast<const GetElementPtr *>(&I)) {
             if (isAllZero(*gep)) {
                 replaceAllUsesWith(*gep, share(*const_cast<Value *>(&*gep->ptr())));
                 removeFromParent(*gep);
@@ -205,7 +206,7 @@ void dfs(const DTNode *node, bool &changed) {
             continue;
         }
 
-        if (auto *select = dynamic_cast<const Select *>(&I)) {
+        if (const auto *select = dynamic_cast<const Select *>(&I)) {
             const Value *trueValue = &*select->trueValue(),
                         *falseValue = &*select->falseValue();
 
@@ -219,7 +220,7 @@ void dfs(const DTNode *node, bool &changed) {
             continue;
         }
 
-        if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+        if (const auto *phi = dynamic_cast<const Phi *>(&I)) {
             if (phi->incoming_size() == 1) {
                 replaceAllUsesWith(*phi, share(*phi->incoming_begin()->value));
                 removeFromParent(*phi);

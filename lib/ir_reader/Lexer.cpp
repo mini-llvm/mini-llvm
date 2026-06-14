@@ -40,6 +40,7 @@ private:
 
     Token nextTokenImpl() {
         while (*current_ != '\0') {
+            // NOLINTNEXTLINE(bugprone-switch-missing-default-case)
             switch (*current_) {
             case ' ':
             case '\t':
@@ -162,7 +163,7 @@ private:
                                     throw LexException("invalid character in escape sequence", current_);
                                 }
                             }
-                            element = element * 0x10 + static_cast<int8_t>(isAsciiDigit(ch) ? (ch - '0') : (toAsciiLower(ch) - 'a' + 0xa));
+                            element = static_cast<int8_t>(element * 0x10 + (isAsciiDigit(ch) ? ch - '0' : toAsciiLower(ch) - 'a' + 0xa));
                             ++current_;
                         }
                         elements.push_back(element);

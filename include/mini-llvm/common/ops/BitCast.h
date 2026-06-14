@@ -4,14 +4,14 @@
 
 #include <bit>
 #include <concepts>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 namespace mini_llvm::ops {
 
 template <typename To>
 struct BitCast {
     template <typename From>
-    To operator()(From) const noexcept {
+    To operator()(From /*from*/) const noexcept {
         abort();
     }
 
@@ -25,7 +25,7 @@ struct BitCast {
 template <>
 struct BitCast<bool> {
     template <typename From>
-    bool operator()(From) const noexcept {
+    bool operator()(From /*from*/) const noexcept {
         abort();
     }
 

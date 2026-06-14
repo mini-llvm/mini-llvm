@@ -33,9 +33,12 @@ public:
           alignment_(0),
           initializer_(nullptr) {}
 
-    GlobalVar(const GlobalVar &&) = delete;
+    ~GlobalVar() override = default;
+
+    GlobalVar(const GlobalVar &) = delete;
+    GlobalVar &operator=(const GlobalVar &) = delete;
+
     GlobalVar(GlobalVar &&) = delete;
-    GlobalVar &operator=(const GlobalVar &&) = delete;
     GlobalVar &operator=(GlobalVar &&) = delete;
 
     std::string name() const override {

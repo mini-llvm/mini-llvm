@@ -21,7 +21,15 @@ enum class AliasResult {
 class MINI_LLVM_EXPORT AliasAnalysis final : public FunctionAnalysis {
 public:
     AliasAnalysis();
+
     ~AliasAnalysis() override;
+
+    AliasAnalysis(const AliasAnalysis &) = delete;
+    AliasAnalysis &operator=(const AliasAnalysis &) = delete;
+
+    AliasAnalysis(AliasAnalysis &&) = delete;
+    AliasAnalysis &operator=(AliasAnalysis &&) = delete;
+
     void runOnFunction(const Function &F) override;
     AliasResult alias(const Value &ptr1, const Value &ptr2) const;
     AliasResult alias(const Value &ptr1, int size1, const Value &ptr2, int size2) const;

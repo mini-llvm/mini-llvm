@@ -12,11 +12,15 @@ namespace mini_llvm {
 
 class MINI_LLVM_EXPORT RISCVMIRGen {
 public:
-    enum { kSave, kRestore };
+    // NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
+    enum : int { kSave, kRestore };
 
     RISCVMIRGen(const ir::Module *IM, mir::Module *MM);
 
     ~RISCVMIRGen();
+
+    RISCVMIRGen(const RISCVMIRGen &) = delete;
+    RISCVMIRGen &operator=(const RISCVMIRGen &) = delete;
 
     RISCVMIRGen(RISCVMIRGen &&) noexcept;
     RISCVMIRGen &operator=(RISCVMIRGen &&) noexcept;

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "mini-llvm/ir/Instruction.h"
+#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/Type/Ptr.h"
 #include "mini-llvm/utils/Memory.h"
 

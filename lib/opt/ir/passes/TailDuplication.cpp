@@ -31,7 +31,7 @@ bool isDuplicable(const BasicBlock &B) {
 bool TailDuplication::runOnFunction(Function &F) {
     bool changed = false;
 
-    bool changed2;
+    bool changed2 = false;
     do {
         changed2 = false;
 

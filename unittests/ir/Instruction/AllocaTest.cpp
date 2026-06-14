@@ -7,8 +7,11 @@
 #include "mini-llvm/ir/Instruction/Alloca.h"
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/Ptr.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class AllocaTest : public ::testing::Test {
 protected:
@@ -31,5 +34,7 @@ TEST_F(AllocaTest, clone) {
     std::shared_ptr<Alloca> cloned = cast<Alloca>(alloca_->clone());
     EXPECT_EQ(*alloca_->allocatedType(), *cloned->allocatedType());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

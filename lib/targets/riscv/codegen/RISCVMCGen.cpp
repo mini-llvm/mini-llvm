@@ -4,7 +4,7 @@
 
 #include <cassert>
 #include <cstdint>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,6 +17,7 @@
 #include "mini-llvm/mc/GlobalValue.h"
 #include "mini-llvm/mc/GlobalValueBuilder.h"
 #include "mini-llvm/mc/Label.h"
+#include "mini-llvm/mc/Module.h"
 #include "mini-llvm/mc/Operand.h"
 #include "mini-llvm/mc/StringDirective.h"
 #include "mini-llvm/mc/Symbol.h"
@@ -99,6 +100,7 @@
 #include "mini-llvm/mir/Instruction/Xor.h"
 #include "mini-llvm/mir/Instruction/XorI.h"
 #include "mini-llvm/mir/MemoryOperand.h"
+#include "mini-llvm/mir/Module.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/targets/riscv/mc/RISCVAddressDirective.h"
@@ -125,9 +127,8 @@ namespace {
 Symbol emitSymbol(const mir::GlobalValue &value) {
     if (value.linkage() == Linkage::kPrivate) {
         return Symbol(".L" + value.name());
-    } else {
-        return Symbol(value.name());
     }
+    return Symbol(value.name());
 }
 
 Symbol emitSymbol(const mir::BasicBlock &B) {
@@ -182,7 +183,8 @@ public:
 
     void visitPtrConstant(const mir::PtrConstant &C) override {
         auto [basePtr, offset] = C.value();
-        if (basePtr == nullptr && offset == 0) {
+        if (basePtr == nullptr) {
+            assert(offset == 0);
             builder_.add(std::make_unique<ZeroDirective>(C.ptrSize()));
         } else {
             builder_.add(std::make_unique<RISCVAddressDirective>(emitSymbol(*basePtr), offset));
@@ -191,7 +193,8 @@ public:
 
     void visitPtrArrayConstant(const mir::PtrArrayConstant &C) override {
         for (auto [basePtr, offset] : C.elements()) {
-            if (basePtr == nullptr && offset == 0) {
+            if (basePtr == nullptr) {
+                assert(offset == 0);
                 builder_.add(std::make_unique<ZeroDirective>(8));
             } else {
                 builder_.add(std::make_unique<RISCVAddressDirective>(emitSymbol(*basePtr), offset));
@@ -351,6 +354,7 @@ public:
     }
 
     void visitFCvt(const mir::FCvt &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.dstPrecision() == Precision::kSingle && I.srcPrecision() == Precision::kDouble) {
             opcode = RISCV_FCvtSD;
@@ -366,6 +370,7 @@ public:
     }
 
     void visitFCvtFS(const mir::FCvtFS &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.dstPrecision() == Precision::kSingle && I.srcWidth() == 4) {
             opcode = RISCV_FCvtSW;
@@ -385,6 +390,7 @@ public:
     }
 
     void visitFCvtFU(const mir::FCvtFU &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.dstPrecision() == Precision::kSingle && I.srcWidth() == 4) {
             opcode = RISCV_FCvtSWU;
@@ -404,6 +410,7 @@ public:
     }
 
     void visitFCvtSF(const mir::FCvtSF &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.dstWidth() == 4 && I.srcPrecision() == Precision::kSingle) {
             opcode = RISCV_FCvtWS;
@@ -423,6 +430,7 @@ public:
     }
 
     void visitFCvtUF(const mir::FCvtUF &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.dstWidth() == 4 && I.srcPrecision() == Precision::kSingle) {
             opcode = RISCV_FCvtWUS;
@@ -442,6 +450,7 @@ public:
     }
 
     void visitFMovFI(const mir::FMovFI &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FMvWX; break;
@@ -455,6 +464,7 @@ public:
     }
 
     void visitFMovIF(const mir::FMovIF &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FMvXW; break;
@@ -468,6 +478,7 @@ public:
     }
 
     void visitLoad(const mir::Load &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.extMode() == ExtensionMode::kNo) {
             if (I.width() == 8) {
@@ -499,6 +510,7 @@ public:
     }
 
     void visitStore(const mir::Store &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.width()) {
             case 1: opcode = RISCV_SB; break;
@@ -514,6 +526,7 @@ public:
     }
 
     void visitFLoad(const mir::FLoad &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FLW; break;
@@ -527,6 +540,7 @@ public:
     }
 
     void visitFStore(const mir::FStore &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.precision()) {
             case Precision::kSingle: opcode = RISCV_FSW; break;
@@ -559,6 +573,7 @@ public:
 
     void visitCmpSet(const mir::CmpSet &I) override {
         assert(I.dstWidth() == 8);
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.cond()) {
             case mir::Condition::kSLT: opcode = RISCV_SLT; break;
@@ -576,6 +591,7 @@ public:
 
     void visitCmpZSet(const mir::CmpZSet &I) override {
         assert(I.dstWidth() == 8);
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.cond()) {
             case mir::Condition::kEQZ: opcode = RISCV_SEQZ; break;
@@ -592,6 +608,7 @@ public:
 
     void visitFCmpSet(const mir::FCmpSet &I) override {
         assert(I.dstWidth() == 8);
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         if (I.srcPrecision() == Precision::kSingle) {
             switch (I.cond()) {
@@ -629,6 +646,7 @@ public:
     }
 
     void visitCmpBr(const mir::CmpBr &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode1;
         switch (I.cond()) {
             case mir::Condition::kEQ: opcode1 = RISCV_BNE; break;
@@ -656,6 +674,7 @@ public:
     }
 
     void visitCmpZBr(const mir::CmpZBr &I) override {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode1;
         switch (I.cond()) {
             case mir::Condition::kEQZ: opcode1 = RISCV_BNEZ; break;
@@ -691,7 +710,7 @@ public:
         builder_.add(std::make_unique<RISCVInstruction>(opcode, std::move(operands)));
     }
 
-    void visitRISCVRet(const mir::RISCVRet &) override {
+    void visitRISCVRet(const mir::RISCVRet &/*I*/) override {
         builder_.add(std::make_unique<RISCVInstruction>(RISCV_Ret));
     }
 
@@ -711,6 +730,7 @@ private:
 
     template <int Opcode32, int Opcode64>
     void visitBinaryOperator(const mir::BinaryOperator &I) {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.width()) {
             case 4: opcode = Opcode32; break;
@@ -745,6 +765,7 @@ private:
 
     template <int Opcode32, int Opcode64>
     void visitBinaryOperatorI(const mir::BinaryOperatorI &I) {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.width()) {
             case 4: opcode = Opcode32; break;
@@ -779,6 +800,7 @@ private:
 
     template <int OpcodeS, int OpcodeD>
     void visitFUnaryOperator(const mir::FUnaryOperator &I) {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.precision()) {
             case Precision::kSingle: opcode = OpcodeS; break;
@@ -793,6 +815,7 @@ private:
 
     template <int OpcodeS, int OpcodeD>
     void visitFBinaryOperator(const mir::FBinaryOperator &I) {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         int opcode;
         switch (I.precision()) {
             case Precision::kSingle: opcode = OpcodeS; break;
@@ -880,13 +903,13 @@ private:
     const mir::Module *MM_;
     Module *MCM_;
 
-    void emitGlobalVar(const mir::GlobalVar &MG, GlobalValue &MCG) {
+    static void emitGlobalVar(const mir::GlobalVar &MG, GlobalValue &MCG) {
         ConstantVisitorImpl visitor;
         visitor.builder().setPos(&MCG);
         MG.initializer().accept(visitor);
     }
 
-    void emitFunction(const mir::Function &MF, GlobalValue &MCG) {
+    static void emitFunction(const mir::Function &MF, GlobalValue &MCG) {
         RISCVInstructionVisitorImpl visitor;
         visitor.builder().setPos(&MCG);
 #ifndef NDEBUG
