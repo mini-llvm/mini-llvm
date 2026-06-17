@@ -7,7 +7,7 @@ tests=()
 while (( $# > 0 )); do
   case "$1" in
   --help)
-    echo "Usage: $0 --mini-llc <mini-llc> --target <target> [--driver <driver>] [--emulator <emulator>] [--output-dir <output-dir>] [--timeout <timeout>] <tests>..."
+    echo "Usage: $0 --mini-llc <mini-llc> --target <target> [--driver <driver>] [--emulator <emulator>] [--output-dir <output-dir>] [--timeout <timeout>] [--jobs <jobs>] <tests>..."
     exit 0
     ;;
   --mini-llc)
@@ -88,6 +88,19 @@ while (( $# > 0 )); do
     timeout="${1#*=}"
     shift
     ;;
+  --jobs)
+    shift
+    if (( $# == 0 )); then
+      echo "$0: error: missing value for '--jobs'" >&2
+      exit 1
+    fi
+    jobs="$1"
+    shift
+    ;;
+  --jobs=*)
+    jobs="${1#*=}"
+    shift
+    ;;
   -*)
     echo "$0: error: unrecognized option '$1'" >&2
     exit 1
@@ -125,6 +138,10 @@ if [[ ! -v timeout ]]; then
   timeout=60
 fi
 
+if [[ ! -v jobs ]]; then
+  jobs="$(nproc)"
+fi
+
 width=0
 for test in "${tests[@]}"; do
   if (( ${#test} > width )); then
@@ -133,15 +150,37 @@ for test in "${tests[@]}"; do
 done
 
 exit_code=0
-for test in "${tests[@]}"; do
-  printf "%-*s " "$width" "$test"
+running=0
 
-  if timeout --foreground -v "$timeout" "$(dirname -- "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$output_dir"; then
-    echo -e "\033[32mPASSED\033[0m"
-  else
-    echo -e "\033[31mFAILED\033[0m"
-    exit_code=1
+mkdir -p "$output_dir"
+
+for test in "${tests[@]}"; do
+  if (( running >= jobs )); then
+    wait -n || exit_code=1
+    running=$((running - 1))
   fi
+  (
+    if timeout --foreground -v "$timeout" "$(dirname -- "$0")/test_impl.sh" "$test" "$mini_llc" "$target" "$driver" "$emulator" "$output_dir" > "$output_dir/$test.log" 2>&1; then
+      current_exit_code=0
+    else
+      current_exit_code=1
+    fi
+    exec {lockfd}>"$output_dir/.lock"
+    flock "$lockfd"
+    if (( current_exit_code == 0 )); then
+      printf "%-*s \033[32mPASSED\033[0m\n" "$width" "$test"
+    else
+      printf "%-*s \033[31mFAILED\033[0m\n" "$width" "$test"
+      cat "$output_dir/$test.log"
+    fi
+    exit "$current_exit_code"
+  ) &
+  running=$((running + 1))
+done
+
+while (( running > 0 )); do
+  wait -n || exit_code=1
+  running=$((running - 1))
 done
 
 exit "$exit_code"

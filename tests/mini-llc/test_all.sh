@@ -5,7 +5,7 @@ set -euo pipefail
 while (( $# > 0 )); do
   case "$1" in
   --help)
-    echo "Usage: $0 --mini-llc <mini-llc> --target <target> [--driver <driver>] [--emulator <emulator>] [--output-dir <output-dir>] [--timeout <timeout>]"
+    echo "Usage: $0 --mini-llc <mini-llc> --target <target> [--driver <driver>] [--emulator <emulator>] [--output-dir <output-dir>] [--timeout <timeout>] [--jobs <jobs>]"
     exit 0
     ;;
   --mini-llc)
@@ -86,6 +86,19 @@ while (( $# > 0 )); do
     timeout="${1#*=}"
     shift
     ;;
+  --jobs)
+    shift
+    if (( $# == 0 )); then
+      echo "$0: error: missing value for '--jobs'" >&2
+      exit 1
+    fi
+    jobs="$1"
+    shift
+    ;;
+  --jobs=*)
+    jobs="${1#*=}"
+    shift
+    ;;
   -*)
     echo "$0: error: unrecognized option '$1'" >&2
     exit 1
@@ -105,6 +118,7 @@ args=()
 [[ -v emulator ]] && args+=(--emulator "$emulator")
 [[ -v output_dir ]] && args+=(--output-dir "$output_dir")
 [[ -v timeout ]] && args+=(--timeout "$timeout")
+[[ -v jobs ]] && args+=(--jobs "$jobs")
 
 for f in "$(dirname -- "$0")"/*.ll; do
   args+=("$(basename "$f" .ll)")

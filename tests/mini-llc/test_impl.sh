@@ -9,7 +9,6 @@ driver="$4"
 emulator="$5"
 output_dir="$6"
 
-mkdir -p "$output_dir"
 source "$(dirname -- "$0")/$test.cfg"
 $mini_llc --target "$target" -o "$output_dir/$test.s" "$(dirname -- "$0")/$test.ll"
 $driver -o "$output_dir/$test" "$output_dir/$test.s" $libs
