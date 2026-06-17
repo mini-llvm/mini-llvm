@@ -132,6 +132,7 @@ for test in "${tests[@]}"; do
   fi
 done
 
+exit_code=0
 for test in "${tests[@]}"; do
   printf "%-*s " "$width" "$test"
 
@@ -139,5 +140,8 @@ for test in "${tests[@]}"; do
     echo -e "\033[32mPASSED\033[0m"
   else
     echo -e "\033[31mFAILED\033[0m"
+    exit_code=1
   fi
 done
+
+exit "$exit_code"
