@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 tests=()
 
 while (( $# > 0 )); do
   case "$1" in
   --help)
-    echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--output-dir=<dir>] [--timeout=<duration>] <tests>..."
+    echo "Usage: $0 --mini-llc <mini-llc> --target <target> [--driver <driver>] [--emulator <emulator>] [--output-dir <output-dir>] [--timeout <timeout>] <tests>..."
     exit 0
     ;;
   --mini-llc)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --mini-llc" >&2
+      echo "$0: error: missing value for '--mini-llc'" >&2
       exit 1
     fi
     mini_llc="$1"
@@ -26,7 +26,7 @@ while (( $# > 0 )); do
   --target)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --target" >&2
+      echo "$0: error: missing value for '--target'" >&2
       exit 1
     fi
     target="$1"
@@ -39,7 +39,7 @@ while (( $# > 0 )); do
   --driver)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --driver" >&2
+      echo "$0: error: missing value for '--driver'" >&2
       exit 1
     fi
     driver="$1"
@@ -52,7 +52,7 @@ while (( $# > 0 )); do
   --emulator)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --emulator" >&2
+      echo "$0: error: missing value for '--emulator'" >&2
       exit 1
     fi
     emulator="$1"
@@ -65,7 +65,7 @@ while (( $# > 0 )); do
   --output-dir)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --output-dir" >&2
+      echo "$0: error: missing value for '--output-dir'" >&2
       exit 1
     fi
     output_dir="$1"
@@ -78,7 +78,7 @@ while (( $# > 0 )); do
   --timeout)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --timeout" >&2
+      echo "$0: error: missing value for '--timeout'" >&2
       exit 1
     fi
     timeout="$1"
@@ -89,7 +89,7 @@ while (( $# > 0 )); do
     shift
     ;;
   -*)
-    echo "$0: error: unrecognized option: $1" >&2
+    echo "$0: error: unrecognized option '$1'" >&2
     exit 1
     ;;
   *)
@@ -100,12 +100,12 @@ while (( $# > 0 )); do
 done
 
 if [[ ! -v mini_llc ]]; then
-  echo "$0: error: missing --mini-llc" >&2
+  echo "$0: error: missing '--mini-llc'" >&2
   exit 1
 fi
 
 if [[ ! -v target ]]; then
-  echo "$0: error: missing --target" >&2
+  echo "$0: error: missing '--target'" >&2
   exit 1
 fi
 

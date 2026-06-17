@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
-set -eu
+set -euo pipefail
 
 while (( $# > 0 )); do
   case "$1" in
   --help)
-    echo "Usage: $0 --mini-llc=<command> --target=<target> [--driver=<command>] [--emulator=<command>] [--output-dir=<dir>] [--timeout=<duration>]"
+    echo "Usage: $0 --mini-llc <mini-llc> --target <target> [--driver <driver>] [--emulator <emulator>] [--output-dir <output-dir>] [--timeout <timeout>]"
     exit 0
     ;;
   --mini-llc)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --mini-llc" >&2
+      echo "$0: error: missing value for '--mini-llc'" >&2
       exit 1
     fi
     mini_llc="$1"
@@ -24,7 +24,7 @@ while (( $# > 0 )); do
   --target)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --target" >&2
+      echo "$0: error: missing value for '--target'" >&2
       exit 1
     fi
     target="$1"
@@ -37,7 +37,7 @@ while (( $# > 0 )); do
   --driver)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --driver" >&2
+      echo "$0: error: missing value for '--driver'" >&2
       exit 1
     fi
     driver="$1"
@@ -50,7 +50,7 @@ while (( $# > 0 )); do
   --emulator)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --emulator" >&2
+      echo "$0: error: missing value for '--emulator'" >&2
       exit 1
     fi
     emulator="$1"
@@ -63,7 +63,7 @@ while (( $# > 0 )); do
   --output-dir)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --output-dir" >&2
+      echo "$0: error: missing value for '--output-dir'" >&2
       exit 1
     fi
     output_dir="$1"
@@ -76,7 +76,7 @@ while (( $# > 0 )); do
   --timeout)
     shift
     if (( $# == 0 )); then
-      echo "$0: error: missing value for --timeout" >&2
+      echo "$0: error: missing value for '--timeout'" >&2
       exit 1
     fi
     timeout="$1"
@@ -87,11 +87,11 @@ while (( $# > 0 )); do
     shift
     ;;
   -*)
-    echo "$0: error: unrecognized option: $1" >&2
+    echo "$0: error: unrecognized option '$1'" >&2
     exit 1
     ;;
   *)
-    echo "$0: error: unrecognized argument: $1" >&2
+    echo "$0: error: unrecognized argument '$1'" >&2
     exit 1
     ;;
   esac
@@ -99,34 +99,15 @@ done
 
 args=()
 
-if [[ -v mini_llc ]]; then
-  args+=(--mini-llc "$mini_llc")
-fi
-
-if [[ -v target ]]; then
-  args+=(--target "$target")
-fi
-
-if [[ -v driver ]]; then
-  args+=(--driver "$driver")
-fi
-
-if [[ -v emulator ]]; then
-  args+=(--emulator "$emulator")
-fi
-
-if [[ -v output_dir ]]; then
-  args+=(--output-dir "$output_dir")
-fi
-
-if [[ -v timeout ]]; then
-  args+=(--timeout "$timeout")
-fi
-
-tests=()
+[[ -v mini_llc ]] && args+=(--mini-llc "$mini_llc")
+[[ -v target ]] && args+=(--target "$target")
+[[ -v driver ]] && args+=(--driver "$driver")
+[[ -v emulator ]] && args+=(--emulator "$emulator")
+[[ -v output_dir ]] && args+=(--output-dir "$output_dir")
+[[ -v timeout ]] && args+=(--timeout "$timeout")
 
 for f in "$(dirname -- "$0")"/*.ll; do
-  tests+=("$(basename "$f" .ll)")
+  args+=("$(basename "$f" .ll)")
 done
 
-"$(dirname -- "$0")/test.sh" "${args[@]}" "${tests[@]}"
+"$(dirname -- "$0")/test.sh" "${args[@]}"
