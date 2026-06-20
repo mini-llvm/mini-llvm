@@ -12,8 +12,7 @@
 #include "mini-llvm/utils/HashCombine.h"
 #include "mini-llvm/utils/HashMap.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 namespace {
 
@@ -108,3 +107,5 @@ void BranchPredictionAnalysis::runOnFunction(const Function &F) {
 bool BranchPredictionAnalysis::predict(const BasicBlock &B, const BasicBlock &succ) const {
     return impl_->predict(B, succ);
 }
+
+} // namespace mini_llvm::mir

@@ -8,7 +8,7 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 bool UnreachableBlockElimination::runOnFunction(Function &F) {
     std::unordered_set<const BasicBlock *> visited;
@@ -38,3 +38,5 @@ bool UnreachableBlockElimination::runOnFunction(Function &F) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

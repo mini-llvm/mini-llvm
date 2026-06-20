@@ -16,7 +16,7 @@
 #include "mini-llvm/ir/Instruction/UnaryFloatingArithmeticOperator.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -68,3 +68,5 @@ std::string FNeg::format() const {
 std::unique_ptr<Value> FNeg::clone() const {
     return std::make_unique<FNeg>(share(*value()));
 }
+
+} // namespace mini_llvm::ir

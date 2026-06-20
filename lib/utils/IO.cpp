@@ -13,9 +13,9 @@
 #include "mini-llvm/utils/Path.h"
 #include "mini-llvm/utils/SystemError.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
-Expected<std::string, SystemError> mini_llvm::readAll(FILE *stream) {
+Expected<std::string, SystemError> readAll(FILE *stream) {
     std::string content;
     std::string chunk(4096, '\0');
     for (;;) {
@@ -31,7 +31,7 @@ Expected<std::string, SystemError> mini_llvm::readAll(FILE *stream) {
     }
 }
 
-Expected<std::string, SystemError> mini_llvm::readAll(const Path &path) {
+Expected<std::string, SystemError> readAll(const Path &path) {
     FileHandle handle(path, "rb");
     if (!handle) {
         return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
@@ -39,21 +39,21 @@ Expected<std::string, SystemError> mini_llvm::readAll(const Path &path) {
     return readAll(handle.get());
 }
 
-Expected<std::string, SystemError> mini_llvm::readAll(const Path &path, FILE *stream) {
+Expected<std::string, SystemError> readAll(const Path &path, FILE *stream) {
     if (path == "-") {
         return readAll(stream);
     }
     return readAll(path);
 }
 
-Expected<void, SystemError> mini_llvm::writeAll(FILE *stream, const char *data, size_t size) {
+Expected<void, SystemError> writeAll(FILE *stream, const char *data, size_t size) {
     if (fwrite(data, 1, size, stream) != size) {
         return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
     }
     return {};
 }
 
-Expected<void, SystemError> mini_llvm::writeAll(const Path &path, const char *data, size_t size) {
+Expected<void, SystemError> writeAll(const Path &path, const char *data, size_t size) {
     FileHandle handle(path, "wb");
     if (!handle) {
         return Unexpected(SystemError(static_cast<ErrorCode>(errno)));
@@ -61,9 +61,11 @@ Expected<void, SystemError> mini_llvm::writeAll(const Path &path, const char *da
     return writeAll(handle.get(), data, size);
 }
 
-Expected<void, SystemError> mini_llvm::writeAll(const Path &path, FILE *stream, const char *data, size_t size) {
+Expected<void, SystemError> writeAll(const Path &path, FILE *stream, const char *data, size_t size) {
     if (path == "-") {
         return writeAll(stream, data, size);
     }
     return writeAll(path, data, size);
 }
+
+} // namespace mini_llvm

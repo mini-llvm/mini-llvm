@@ -8,7 +8,7 @@
 
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 std::string Br::format() const {
     return std::format("br {} {:o}", *dest()->type(), *dest());
@@ -17,3 +17,5 @@ std::string Br::format() const {
 std::unique_ptr<Value> Br::clone() const {
     return std::make_unique<Br>(weaken(*dest()));
 }
+
+} // namespace mini_llvm::ir

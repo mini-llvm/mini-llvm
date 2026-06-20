@@ -5,7 +5,7 @@
 #include <memory>
 #include <utility>
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 StackSlot &StackFrame::add(StackFrame::const_iterator pos, std::unique_ptr<StackSlot> slot) {
     offsetsUpToDate_ = false;
@@ -39,3 +39,5 @@ void StackFrame::computeOffsets() {
             ((*i)->offset_ + (*i)->size() + (*j)->alignment() - 1) / (*j)->alignment() * (*j)->alignment();
     offsetsUpToDate_ = true;
 }
+
+} // namespace mini_llvm::mir

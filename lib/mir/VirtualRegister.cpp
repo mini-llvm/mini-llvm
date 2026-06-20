@@ -7,7 +7,7 @@
 
 #include "mini-llvm/utils/Strings.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string VirtualRegister::format() const {
     if (name().empty()) {
@@ -15,3 +15,5 @@ std::string VirtualRegister::format() const {
     }
     return "%" + name();
 }
+
+} // namespace mini_llvm::mir

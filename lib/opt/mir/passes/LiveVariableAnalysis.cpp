@@ -12,8 +12,9 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/SetOps.h"
 
-using namespace mini_llvm::mir;
 using namespace mini_llvm::set_ops;
+
+namespace mini_llvm::mir {
 
 class LiveVariableAnalysis::Impl {
 public:
@@ -102,3 +103,5 @@ std::unordered_set<Register *> LiveVariableAnalysis::liveIn(const Instruction &I
 std::unordered_set<Register *> LiveVariableAnalysis::liveOut(const Instruction &I) const {
     return impl_->liveOut(I);
 }
+
+} // namespace mini_llvm::mir

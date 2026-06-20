@@ -10,7 +10,7 @@
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Void.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool Alloca::isWellFormed() const {
     if (!Instruction::isWellFormed()) {
@@ -29,3 +29,5 @@ std::string Alloca::format() const {
 std::unique_ptr<Value> Alloca::clone() const {
     return std::make_unique<Alloca>(allocatedType());
 }
+
+} // namespace mini_llvm::ir

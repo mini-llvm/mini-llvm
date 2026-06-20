@@ -14,8 +14,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 GlobalVar &Module::addGlobalVar(const_global_var_iterator pos, std::shared_ptr<GlobalVar> G) {
     return **globalVars_.insert(pos.base(), std::move(G));
@@ -66,11 +65,11 @@ std::string Module::format() const {
     return formatted.toString();
 }
 
-GlobalVar *ir::getGlobalVarByName(Module &M, std::string_view name) {
+GlobalVar *getGlobalVarByName(Module &M, std::string_view name) {
     return const_cast<GlobalVar *>(getGlobalVarByName(std::as_const(M), name));
 }
 
-const GlobalVar *ir::getGlobalVarByName(const Module &M, std::string_view name) {
+const GlobalVar *getGlobalVarByName(const Module &M, std::string_view name) {
     auto i = std::find_if(M.global_var_begin(), M.global_var_end(), [name](const GlobalVar &G) {
         return G.name() == name;
     });
@@ -80,11 +79,11 @@ const GlobalVar *ir::getGlobalVarByName(const Module &M, std::string_view name) 
     return nullptr;
 }
 
-Function *ir::getFunctionByName(Module &M, std::string_view name) {
+Function *getFunctionByName(Module &M, std::string_view name) {
     return const_cast<Function *>(getFunctionByName(std::as_const(M), name));
 }
 
-const Function *ir::getFunctionByName(const Module &M, std::string_view name) {
+const Function *getFunctionByName(const Module &M, std::string_view name) {
     auto i = std::find_if(M.function_begin(), M.function_end(), [name](const Function &F) {
         return F.name() == name;
     });
@@ -93,3 +92,5 @@ const Function *ir::getFunctionByName(const Module &M, std::string_view name) {
     }
     return nullptr;
 }
+
+} // namespace mini_llvm::ir

@@ -6,7 +6,7 @@
 #include <format>
 #include <string>
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 std::string RISCVDataDirective::format() const {
     const char *directiveName;
@@ -19,3 +19,5 @@ std::string RISCVDataDirective::format() const {
     }
     return std::format(".{} {}", directiveName, value());
 }
+
+} // namespace mini_llvm::mc

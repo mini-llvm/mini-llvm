@@ -6,10 +6,12 @@
 
 #include "mini-llvm/mir/StackFrame.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 int StackSlot::offset() const {
     assert(frame_ != nullptr);
     frame_->computeOffsets();
     return offset_;
 }
+
+} // namespace mini_llvm::mir

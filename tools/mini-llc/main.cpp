@@ -37,8 +37,7 @@
     #include "mini-llvm/utils/Windows.h"
 #endif
 
-using namespace mini_llvm;
-using namespace mini_llvm::colors;
+namespace mini_llvm {
 
 namespace {
 
@@ -82,6 +81,8 @@ struct Options {
 };
 
 int mainImpl(std::vector<std::string> args) {
+    using namespace mini_llvm::colors;
+
     VTModeGuard vtModeGuard(stderr, true);
     ColorGuard colorGuard(supportsColor(stderr));
 
@@ -316,21 +317,23 @@ Arguments:
 
 } // namespace
 
+} // namespace mini_llvm
+
 #ifdef _WIN32
 
 int wmain(int argc, wchar_t *wargv[]) {
     std::vector<std::string> args;
     args.reserve(argc);
     for (int i = 0; i < argc; ++i) {
-        args.push_back(windows::narrow(wargv[i]));
+        args.push_back(mini_llvm::windows::narrow(wargv[i]));
     }
-    return mainImpl(std::move(args));
+    return mini_llvm::mainImpl(std::move(args));
 }
 
 #else
 
 int main(int argc, char *argv[]) {
-    return mainImpl(std::vector<std::string>(argv, argv + argc));
+    return mini_llvm::mainImpl(std::vector<std::string>(argv, argv + argc));
 }
 
 #endif

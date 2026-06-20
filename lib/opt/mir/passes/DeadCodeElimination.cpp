@@ -10,7 +10,7 @@
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/opt/mir/passes/LiveVariableAnalysis.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 namespace {
 
@@ -54,3 +54,5 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

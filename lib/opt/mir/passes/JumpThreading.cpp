@@ -7,7 +7,7 @@
 #include "mini-llvm/mir/Instruction/Br.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 namespace {
 
@@ -42,3 +42,5 @@ bool JumpThreading::runOnFunction(Function &F) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

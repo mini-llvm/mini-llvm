@@ -11,10 +11,9 @@
 #include "mini-llvm/ir_reader/Parser.h"
 #include "mini-llvm/ir_reader/Token.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
-std::optional<Module> ir::parseModule(const char *source) {
+std::optional<Module> parseModule(const char *source) {
     std::vector<Token> tokens;
     Module M;
     try {
@@ -28,7 +27,7 @@ std::optional<Module> ir::parseModule(const char *source) {
     }
 }
 
-std::optional<Module> ir::parseModule(const char *source, std::vector<Diagnostic> &diags) {
+std::optional<Module> parseModule(const char *source, std::vector<Diagnostic> &diags) {
     std::vector<Token> tokens;
     Module M;
     try {
@@ -43,3 +42,5 @@ std::optional<Module> ir::parseModule(const char *source, std::vector<Diagnostic
         return std::nullopt;
     }
 }
+
+} // namespace mini_llvm::ir

@@ -8,7 +8,7 @@
 
 #include "mini-llvm/utils/Ascii.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 std::string StringDirective::format() const {
     std::string formatted;
@@ -47,3 +47,5 @@ std::string StringDirective::format() const {
     formatted += "\"";
     return formatted;
 }
+
+} // namespace mini_llvm::mc

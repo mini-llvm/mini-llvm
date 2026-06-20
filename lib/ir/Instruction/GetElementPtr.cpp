@@ -22,7 +22,7 @@
 #include "mini-llvm/utils/Memory.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 GetElementPtr::GetElementPtr(std::unique_ptr<Type> sourceType,
                              std::shared_ptr<Value> ptr,
@@ -91,3 +91,5 @@ std::unique_ptr<Value> GetElementPtr::clone() const {
     }
     return std::make_unique<GetElementPtr>(sourceType(), share(*ptr()), std::move(clonedIndices));
 }
+
+} // namespace mini_llvm::ir

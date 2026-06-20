@@ -21,8 +21,7 @@
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 #include "mini-llvm/utils/HashMap.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -145,3 +144,5 @@ AliasResult AliasAnalysis::alias(const Value &ptr1, const Value &ptr2) const {
 AliasResult AliasAnalysis::alias(const Value &ptr1, int size1, const Value &ptr2, int size2) const {
     return impl_->alias(ptr1, size1, ptr2, size2);
 }
+
+} // namespace mini_llvm::ir

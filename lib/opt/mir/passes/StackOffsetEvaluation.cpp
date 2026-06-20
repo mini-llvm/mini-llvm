@@ -10,7 +10,7 @@
 #include "mini-llvm/mir/IntegerImmediate.h"
 #include "mini-llvm/mir/StackOffsetImmediate.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 bool StackOffsetEvaluation::runOnFunction(Function &F) {
     if (F.stackFrame().empty()) {
@@ -31,3 +31,5 @@ bool StackOffsetEvaluation::runOnFunction(Function &F) {
 
     return true;
 }
+
+} // namespace mini_llvm::mir

@@ -12,7 +12,7 @@
     #include "mini-llvm/utils/Windows.h"
 #endif
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 #ifdef _WIN32
 
@@ -173,3 +173,5 @@ SystemError SystemError::fromNative(native_type native) {
     return SystemError(static_cast<ErrorCode>(native), native);
 #endif
 }
+
+} // namespace mini_llvm

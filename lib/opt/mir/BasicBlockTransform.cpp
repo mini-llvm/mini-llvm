@@ -5,7 +5,7 @@
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/Function.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 bool BasicBlockTransform::runOnFunction(Function &F) {
     bool changed = false;
@@ -14,3 +14,5 @@ bool BasicBlockTransform::runOnFunction(Function &F) {
     }
     return changed;
 }
+
+} // namespace mini_llvm::mir

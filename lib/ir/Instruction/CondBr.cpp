@@ -10,7 +10,7 @@
 #include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool CondBr::isWellFormed() const {
     if (!Terminator::isWellFormed()) {
@@ -34,3 +34,5 @@ std::string CondBr::format() const {
 std::unique_ptr<Value> CondBr::clone() const {
     return std::make_unique<CondBr>(share(*cond()), weaken(*trueDest()), weaken(*falseDest()));
 }
+
+} // namespace mini_llvm::ir

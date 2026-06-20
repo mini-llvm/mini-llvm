@@ -24,7 +24,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool ArrayFlattening::runOnFunction(Function &F) {
     bool changed = false;
@@ -83,3 +83,5 @@ bool ArrayFlattening::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

@@ -12,7 +12,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 std::string FunctionType::format() const {
     StringJoiner formatted(" ");
@@ -57,3 +57,5 @@ bool FunctionType::equals(const Type &other) const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

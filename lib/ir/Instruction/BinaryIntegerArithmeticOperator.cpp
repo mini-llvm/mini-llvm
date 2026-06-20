@@ -5,7 +5,7 @@
 #include "mini-llvm/ir/Instruction/BinaryIntegerOperator.h"
 #include "mini-llvm/ir/Type/IntegerType.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool BinaryIntegerArithmeticOperator::isWellFormed() const {
     if (!BinaryIntegerOperator::isWellFormed()) {
@@ -16,3 +16,5 @@ bool BinaryIntegerArithmeticOperator::isWellFormed() const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

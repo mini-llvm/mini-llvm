@@ -11,7 +11,7 @@
 #include "mini-llvm/mc/Symbol.h"
 #include "mini-llvm/targets/riscv/mc/RISCVAddressOperand.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 bool RISCVUnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
     if (G.section() != ".text") {
@@ -45,3 +45,5 @@ bool RISCVUnusedLabelElimination::runOnGlobalValue(GlobalValue &G) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mc

@@ -112,8 +112,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 using enum Token::Kind;
 
@@ -1637,6 +1636,8 @@ Symbol Parser::parseSymbol(std::optional<Symbol::Scope> scope) {
     return impl_->parseSymbol(scope);
 }
 
-Module ir::parseModule(const std::vector<Token> &tokens) {
+Module parseModule(const std::vector<Token> &tokens) {
     return Parser(tokens.begin()).parseModule();
 }
+
+} // namespace mini_llvm::ir

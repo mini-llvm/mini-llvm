@@ -10,7 +10,7 @@
 #include "mini-llvm/targets/riscv/mc/RISCVInstruction.h"
 #include "mini-llvm/targets/riscv/mc/RISCVOperation.h"
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 bool RISCVFallthrough::runOnGlobalValue(GlobalValue &G) {
     if (G.section() != ".text") {
@@ -38,3 +38,5 @@ bool RISCVFallthrough::runOnGlobalValue(GlobalValue &G) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mc

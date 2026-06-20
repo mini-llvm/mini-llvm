@@ -13,7 +13,7 @@
 #include "mini-llvm/ir/Type/I1.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool Select::isFoldable() const {
     return dynamic_cast<const Constant *>(&*cond())
@@ -57,3 +57,5 @@ std::string Select::format() const {
 std::unique_ptr<Value> Select::clone() const {
     return std::make_unique<Select>(share(*cond()), share(*trueValue()), share(*falseValue()));
 }
+
+} // namespace mini_llvm::ir

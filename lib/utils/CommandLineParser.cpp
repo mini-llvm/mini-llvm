@@ -9,7 +9,7 @@
 
 #include "mini-llvm/utils/Expected.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 void CommandLineParser::addOption(std::string name) {
     OptionKind kind = OptionKind::kNoValue;
@@ -108,3 +108,5 @@ Expected<CommandLineParser::Result, CommandLineParser::Error> CommandLineParser:
     }
     return Result(std::move(result));
 }
+
+} // namespace mini_llvm

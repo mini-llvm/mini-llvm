@@ -7,7 +7,7 @@
 
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string PtrConstant::format() const {
     StringJoiner formatted(" ");
@@ -25,3 +25,5 @@ std::string PtrConstant::format() const {
     formatted.add("{}", formattedValue);
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mir

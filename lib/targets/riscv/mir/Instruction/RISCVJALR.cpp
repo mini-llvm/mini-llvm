@@ -11,7 +11,7 @@
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::unordered_set<PhysicalRegister *> RISCVJALR::implicitDsts() const {
     return riscvCallImplicitDsts();
@@ -31,3 +31,5 @@ std::string RISCVJALR::format() const {
     }
     return std::format("JALR {}, {}", *src(), formattedRegs);
 }
+
+} // namespace mini_llvm::mir

@@ -13,7 +13,7 @@
 #include "mini-llvm/opt/ir/PassManager.h"
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 namespace {
 
@@ -33,10 +33,12 @@ void testRISCV(ir::Module &IM) {
 
 } // namespace
 
+} // namespace mini_llvm
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
     std::string source(reinterpret_cast<const char *>(data), size);
 
-    std::optional<ir::Module> IM = ir::parseModule(source);
+    std::optional<mini_llvm::ir::Module> IM = mini_llvm::ir::parseModule(source);
     if (!IM) {
         return 0;
     }
@@ -44,7 +46,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
         return 0;
     }
 
-    testRISCV(*IM);
+    mini_llvm::testRISCV(*IM);
 
     return 0;
 }

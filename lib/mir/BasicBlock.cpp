@@ -17,9 +17,9 @@
 #include "mini-llvm/utils/StringJoiner.h"
 #include "mini-llvm/utils/Strings.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mir;
 using namespace mini_llvm::set_ops;
+
+namespace mini_llvm::mir {
 
 Instruction &BasicBlock::add(BasicBlock::const_iterator pos, std::unique_ptr<Instruction> I) {
     return **insts_.insert(pos.base(), std::move(I));
@@ -57,7 +57,7 @@ std::string BasicBlock::formatAsOperand() const {
     return "#" + name();
 }
 
-std::unordered_set<BasicBlock *> mir::successors(const BasicBlock &B) {
+std::unordered_set<BasicBlock *> successors(const BasicBlock &B) {
     assert(!B.empty() && dynamic_cast<const Terminator *>(&B.back()));
     std::unordered_set<BasicBlock *> successors;
     for (const BasicBlockOperand *op : static_cast<const Terminator &>(B.back()).blockOps()) {
@@ -66,7 +66,7 @@ std::unordered_set<BasicBlock *> mir::successors(const BasicBlock &B) {
     return successors;
 }
 
-std::unordered_set<Register *> mir::use(const BasicBlock &B) {
+std::unordered_set<Register *> use(const BasicBlock &B) {
     std::unordered_set<Register *> Use;
     for (const Instruction &I : std::views::reverse(B)) {
         Use = (Use - def(I)) | use(I);
@@ -74,10 +74,12 @@ std::unordered_set<Register *> mir::use(const BasicBlock &B) {
     return Use;
 }
 
-std::unordered_set<Register *> mir::def(const BasicBlock &B) {
+std::unordered_set<Register *> def(const BasicBlock &B) {
     std::unordered_set<Register *> Def;
     for (const Instruction &I : B) {
         Def |= def(I);
     }
     return Def;
 }
+
+} // namespace mini_llvm::mir

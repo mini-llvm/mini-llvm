@@ -12,8 +12,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Double.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 std::unique_ptr<Constant> Float::zeroValue() const {
     return std::make_unique<FloatConstant>(0.f);
@@ -26,3 +25,5 @@ std::unique_ptr<Constant> Float::constant(int64_t value) const {
 std::unique_ptr<Type> Float::promoted() const {
     return std::make_unique<Double>();
 }
+
+} // namespace mini_llvm::ir

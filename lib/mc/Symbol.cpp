@@ -7,8 +7,7 @@
 
 #include "mini-llvm/utils/Ascii.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 namespace {
 
@@ -58,3 +57,5 @@ std::string Symbol::format() const {
     }
     return name();
 }
+
+} // namespace mini_llvm::mc

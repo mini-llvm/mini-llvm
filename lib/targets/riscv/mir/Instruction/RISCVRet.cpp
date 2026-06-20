@@ -11,7 +11,7 @@
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::unordered_set<PhysicalRegister *> RISCVRet::implicitSrcs() const {
     RISCVRegister *ra = RISCVRegister::get("ra"),
@@ -39,3 +39,5 @@ std::string RISCVRet::format() const {
     }
     return std::format("RET {}", formattedRegs);
 }
+
+} // namespace mini_llvm::mir

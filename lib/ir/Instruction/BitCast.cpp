@@ -36,8 +36,7 @@
 #include "mini-llvm/ir/TypeVisitor.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -187,3 +186,5 @@ std::string BitCast::format() const {
 std::unique_ptr<Value> BitCast::clone() const {
     return std::make_unique<BitCast>(share(*value()), type());
 }
+
+} // namespace mini_llvm::ir

@@ -8,7 +8,7 @@
 #include <string_view>
 #include <utility>
 
-using namespace mini_llvm;
+namespace mini_llvm {
 
 void SourceManager::setSource(std::string source) {
     if (!source.empty() && source.back() != '\n') {
@@ -36,3 +36,5 @@ std::pair<size_t, size_t> SourceManager::lineColumnNum(size_t location) const {
     size_t columnNum = location - lineStarts_[lineNum - 1] + 1;
     return {lineNum, columnNum};
 }
+
+} // namespace mini_llvm

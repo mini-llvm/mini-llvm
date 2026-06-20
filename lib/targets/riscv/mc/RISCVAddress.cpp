@@ -5,7 +5,7 @@
 #include <format>
 #include <string>
 
-using namespace mini_llvm::mc;
+namespace mini_llvm::mc {
 
 std::string RISCVAddress::format() const {
     if (offset() == 0) {
@@ -13,3 +13,5 @@ std::string RISCVAddress::format() const {
     }
     return std::format("{}{:+}", baseSymbol(), offset());
 }
+
+} // namespace mini_llvm::mc

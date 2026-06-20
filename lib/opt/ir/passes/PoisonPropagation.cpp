@@ -26,7 +26,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 namespace {
 
@@ -83,3 +83,5 @@ bool PoisonPropagation::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

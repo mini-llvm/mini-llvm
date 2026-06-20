@@ -25,8 +25,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 // Cliff Click. 1995. Global code motion/global value numbering.
 // In Proceedings of the ACM SIGPLAN 1995 conference on
@@ -232,3 +231,5 @@ bool GlobalCodeMotion::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

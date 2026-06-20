@@ -10,8 +10,7 @@
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::unordered_set<RegisterOperand *> Instruction::regOps() {
     std::unordered_set<RegisterOperand *> regOps;
@@ -53,7 +52,7 @@ std::unordered_set<MemoryOperand *> Instruction::memOps() {
     return memOps;
 }
 
-std::unordered_set<Register *> mir::use(const Instruction &I) {
+std::unordered_set<Register *> use(const Instruction &I) {
     std::unordered_set<Register *> use;
     for (const RegisterOperand *op : I.srcs()) {
         use.insert(&**op);
@@ -64,7 +63,7 @@ std::unordered_set<Register *> mir::use(const Instruction &I) {
     return use;
 }
 
-std::unordered_set<Register *> mir::def(const Instruction &I) {
+std::unordered_set<Register *> def(const Instruction &I) {
     std::unordered_set<Register *> def;
     for (const RegisterOperand *op : I.dsts()) {
         def.insert(&**op);
@@ -74,3 +73,5 @@ std::unordered_set<Register *> mir::def(const Instruction &I) {
     }
     return def;
 }
+
+} // namespace mini_llvm::mir

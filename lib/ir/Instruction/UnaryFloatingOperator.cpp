@@ -6,7 +6,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type/FloatingType.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool UnaryFloatingOperator::isFoldable() const {
     return dynamic_cast<const Constant *>(&*value());
@@ -24,3 +24,5 @@ bool UnaryFloatingOperator::isWellFormed() const {
     }
     return true;
 }
+
+} // namespace mini_llvm::ir

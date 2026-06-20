@@ -24,7 +24,7 @@
 #include "mini-llvm/opt/ir/passes/AliasAnalysis.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool RedundantLoadElimination::runOnFunction(Function &F) {
     AliasAnalysis aa;
@@ -163,3 +163,5 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
     assert(F.isWellFormed());
     return changed;
 }
+
+} // namespace mini_llvm::ir

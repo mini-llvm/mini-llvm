@@ -11,7 +11,7 @@
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/ir/Value.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 UseBase::UseBase(Value *user, std::shared_ptr<Value> value) : user_(user) {
     if (dynamic_cast<Constant *>(&*value) && !dynamic_cast<GlobalValue *>(&*value)) {
@@ -67,3 +67,5 @@ bool UseBase::expired() const {
         return false;
     }
 }
+
+} // namespace mini_llvm::ir

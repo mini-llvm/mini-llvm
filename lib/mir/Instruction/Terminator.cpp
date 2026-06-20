@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <utility>
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::unordered_set<BasicBlockOperand *> Terminator::blockOps() {
     std::unordered_set<BasicBlockOperand *> blockOps;
@@ -14,3 +14,5 @@ std::unordered_set<BasicBlockOperand *> Terminator::blockOps() {
     }
     return blockOps;
 }
+
+} // namespace mini_llvm::mir

@@ -11,8 +11,7 @@
 #include "mini-llvm/utils/HashMap.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
@@ -51,3 +50,5 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

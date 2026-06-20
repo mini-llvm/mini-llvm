@@ -26,8 +26,7 @@
 #include "mini-llvm/utils/Matrix.h"
 #include "mini-llvm/utils/PCG32.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 namespace {
 
@@ -246,3 +245,5 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
 
     return changed;
 }
+
+} // namespace mini_llvm::mir

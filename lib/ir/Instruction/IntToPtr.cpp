@@ -10,8 +10,7 @@
 #include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/utils/Memory.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 bool IntToPtr::isWellFormed() const {
     if (!Instruction::isWellFormed()) {
@@ -33,3 +32,5 @@ std::string IntToPtr::format() const {
 std::unique_ptr<Value> IntToPtr::clone() const {
     return std::make_unique<IntToPtr>(share(*value()));
 }
+
+} // namespace mini_llvm::ir

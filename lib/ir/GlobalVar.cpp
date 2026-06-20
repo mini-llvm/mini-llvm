@@ -13,7 +13,7 @@
 #include "mini-llvm/ir/GlobalValue.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 GlobalVar::GlobalVar(std::unique_ptr<Type> valueType,
                      Linkage linkage,
@@ -92,3 +92,5 @@ std::string GlobalVar::format() const {
     }
     return formatted.toString();
 }
+
+} // namespace mini_llvm::ir

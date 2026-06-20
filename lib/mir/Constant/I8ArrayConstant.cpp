@@ -8,7 +8,7 @@
 
 #include "mini-llvm/utils/Ascii.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string I8ArrayConstant::format() const {
     std::string formatted;
@@ -47,3 +47,5 @@ std::string I8ArrayConstant::format() const {
     formatted += "\"";
     return formatted;
 }
+
+} // namespace mini_llvm::mir

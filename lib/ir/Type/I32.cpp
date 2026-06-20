@@ -12,8 +12,7 @@
 #include "mini-llvm/ir/Type/I16.h"
 #include "mini-llvm/ir/Type/I64.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 std::unique_ptr<Constant> I32::zeroValue() const {
     return std::make_unique<I32Constant>(0);
@@ -30,3 +29,5 @@ std::unique_ptr<Type> I32::promoted() const {
 std::unique_ptr<Type> I32::demoted() const {
     return std::make_unique<I16>();
 }
+
+} // namespace mini_llvm::ir

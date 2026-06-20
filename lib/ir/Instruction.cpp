@@ -9,8 +9,7 @@
 #include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 
-using namespace mini_llvm;
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 std::unordered_set<UseBase *> Instruction::operands() {
     std::unordered_set<UseBase *> operands;
@@ -32,10 +31,12 @@ bool Instruction::isWellFormed() const {
     return true;
 }
 
-Instruction &ir::addToParent(const Instruction &before, std::shared_ptr<Instruction> I) {
+Instruction &addToParent(const Instruction &before, std::shared_ptr<Instruction> I) {
     return before.parent()->add(before.parentIterator(), std::move(I));
 }
 
-void ir::removeFromParent(const Instruction &I) {
+void removeFromParent(const Instruction &I) {
     I.parent()->remove(I.parentIterator());
 }
+
+} // namespace mini_llvm::ir

@@ -17,7 +17,7 @@
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::ir;
+namespace mini_llvm::ir {
 
 IndirectCall::IndirectCall(std::unique_ptr<FunctionType> functionType,
                            std::shared_ptr<Value> callee,
@@ -97,3 +97,5 @@ std::unique_ptr<Value> IndirectCall::clone() const {
     }
     return std::make_unique<IndirectCall>(functionType(), share(*callee()), std::move(clonedArgs));
 }
+
+} // namespace mini_llvm::ir

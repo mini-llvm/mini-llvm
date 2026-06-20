@@ -7,7 +7,7 @@
 
 #include "mini-llvm/utils/StringJoiner.h"
 
-using namespace mini_llvm::mir;
+namespace mini_llvm::mir {
 
 std::string I16ArrayConstant::format() const {
     StringJoiner formatted("\n", "i16 [\n", "\n]");
@@ -16,3 +16,5 @@ std::string I16ArrayConstant::format() const {
     }
     return formatted.toString();
 }
+
+} // namespace mini_llvm::mir
