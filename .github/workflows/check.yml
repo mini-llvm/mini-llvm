@@ -16,27 +16,68 @@ defaults:
     shell: bash
 
 jobs:
-  check:
+  format:
+    runs-on: ubuntu-24.04
+
+    container:
+      image: ubuntu:24.04
+
+    steps:
+      - run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl file git procps
+
+      - uses: actions/checkout@v6
+
+      - run: chown -R $(whoami):$(whoami) .
+
+      - uses: ./.github/actions/setup-homebrew
+
+      - run: brew install buildifier python
+
+      - run: ./scripts/format_all.sh --check
+
+  clang-tidy:
     runs-on: ubuntu-24.04
 
     container:
       image: ubuntu:24.04
 
     env:
-      BUILDIFIER_VERSION: '8.5.1'
+      GCC_VERSION: '15'
+      LLVM_VERSION: '22'
 
     steps:
       - run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y curl git python3
-
-      - run: |
-          curl -fsSL -o /usr/local/bin/buildifier \
-            https://github.com/bazelbuild/buildtools/releases/download/v${BUILDIFIER_VERSION}/buildifier-linux-amd64
-          chmod +x /usr/local/bin/buildifier
+          DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential curl file git procps
 
       - uses: actions/checkout@v6
+        with:
+          submodules: 'true'
 
       - run: chown -R $(whoami):$(whoami) .
 
-      - run: ./scripts/format_all.sh --check
+      - uses: ./.github/actions/setup-homebrew
+
+      - uses: ./.github/actions/setup-toolchain
+        with:
+          install-gcc: 'true'
+          gcc-version: ${{ env.GCC_VERSION }}
+          install-llvm: 'true'
+          llvm-version: ${{ env.LLVM_VERSION }}
+          clang-use-gcc-libstdcxx: 'true'
+
+      - run: brew install cmake ninja python
+
+      - run: |
+          cmake \
+            -S . \
+            -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DMINI_LLVM_TESTS=ON \
+            -G Ninja
+
+      - run: ./scripts/clang_tidy_all.sh -p build --quiet
