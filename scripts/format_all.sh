@@ -2,7 +2,16 @@
 
 set -euo pipefail
 
-git ls-files --cached --others --exclude-standard |
-  { grep -v '^third_party/' || true; } |
-  { grep -E '\.cpp$|\.h$|\.cmake$|(^|/)CMakeLists\.txt$|\.bzl$|(^|/)(BUILD|WORKSPACE|MODULE)(\.bazel)?$' || true; } |
-  xargs -r "$(dirname -- "$0")/format.py" "$@"
+git ls-files --cached --others --exclude-standard \
+    ':(glob)**/*.cpp' \
+    ':(glob)**/*.h' \
+    ':(glob)**/*.cmake' \
+    ':(glob)**/CMakeLists.txt' \
+    ':(glob)**/*.bzl' \
+    ':(glob)**/BUILD' \
+    ':(glob)**/BUILD.bazel' \
+    ':(glob)**/WORKSPACE' \
+    ':(glob)**/WORKSPACE.bazel' \
+    ':(glob)**/MODULE.bazel' \
+    ':(exclude)third_party/' \
+  | xargs -r "$(dirname -- "$0")/format.py" "$@"
