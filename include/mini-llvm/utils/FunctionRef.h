@@ -33,10 +33,6 @@ public:
                 return std::invoke_r<R>(
                     *reinterpret_cast<std::remove_reference_t<F> *>(bound), std::forward<Args>(args)...); }) {}
 
-    FunctionRef(const FunctionRef &) = default;
-
-    constexpr FunctionRef &operator=(const FunctionRef &) noexcept = default;
-
     R operator()(Args... args) const {
         return thunk_(bound_, std::forward<Args>(args)...);
     }

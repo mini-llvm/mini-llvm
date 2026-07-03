@@ -8,7 +8,7 @@ char32_t mini_llvm::decodeUtf8(const char *&ptr) noexcept {
     int n = 0;
 
     if (first < 0x80) {
-        cp = first;
+        cp = static_cast<char32_t>(first);
         n = 1;
     } else if ((first & 0xe0) == 0xc0) {
         cp = first & 0x1f;

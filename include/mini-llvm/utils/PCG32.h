@@ -12,7 +12,9 @@ public:
     using result_type = uint32_t;
 
     explicit PCG32(uint64_t seed, uint64_t seq = UINT64_C(0)) noexcept {
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
         state_ = UINT64_C(0);
+        // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
         inc_ = (seq << 1) | UINT64_C(1);
         (*this)();
         state_ += seed;

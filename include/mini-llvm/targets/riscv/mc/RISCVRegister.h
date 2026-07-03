@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 namespace mini_llvm::mc {
 
-enum RISCVRegister {
+// NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
+enum RISCVRegister : int {
 #define REGS
 #define X(idx, name, class, width, isPreserved, isAllocatable) RISCV_##name = idx,
 #include "mini-llvm/targets/riscv/target.def"
@@ -14,7 +15,7 @@ enum RISCVRegister {
 #undef REGS
 };
 
-inline constexpr const char *name(RISCVRegister reg) {
+constexpr const char *name(RISCVRegister reg) {
     switch (reg) {
 #define REGS
 #define X(idx, name, class, width, isPreserved, isAllocatable) case RISCV_##name: return #name;

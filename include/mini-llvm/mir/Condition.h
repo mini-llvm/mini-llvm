@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 namespace mini_llvm::mir {
 
@@ -12,7 +12,7 @@ enum class Condition {
 #undef X
 };
 
-inline constexpr const char *specifier(Condition cond) {
+constexpr const char *specifier(Condition cond) {
     switch (cond) {
 #define X(name, specifier, inverted) case Condition::k##name: return specifier;
 #include "mini-llvm/mir/Condition.def"
@@ -22,7 +22,7 @@ inline constexpr const char *specifier(Condition cond) {
     }
 }
 
-inline constexpr Condition inverted(Condition cond) {
+constexpr Condition inverted(Condition cond) {
     switch (cond) {
 #define X(name, specifier, inverted) case Condition::k##name: return Condition::k##inverted;
 #include "mini-llvm/mir/Condition.def"

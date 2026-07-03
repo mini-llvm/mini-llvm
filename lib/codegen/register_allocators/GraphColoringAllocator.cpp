@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "mini-llvm/mir/BasicBlock.h"
+#include "mini-llvm/mir/BasicBlockBuilder.h"
 #include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
@@ -44,7 +45,7 @@ void removeEdge(HashMap<Register *, std::unordered_set<Register *>> &g, Register
 
 bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
     if (lhs->isPreserved() != rhs->isPreserved()) {
-        return lhs->isPreserved() < rhs->isPreserved();
+        return !lhs->isPreserved();
     }
     if (lhs->idx() != rhs->idx()) {
         return lhs->idx() < rhs->idx();

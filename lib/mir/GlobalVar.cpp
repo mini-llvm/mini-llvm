@@ -5,6 +5,7 @@
 #include <format>
 #include <string>
 
+#include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 namespace mini_llvm::mir {

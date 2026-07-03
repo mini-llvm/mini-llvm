@@ -12,7 +12,7 @@ namespace mini_llvm {
 // https://www.boost.org/doc/libs/1_86_0/libs/iterator/doc/indirect_iterator.html
 
 template <typename Iterator,
-          typename Value = typename std::pointer_traits<typename std::iterator_traits<Iterator>::value_type>::element_type>
+          typename Value = std::pointer_traits<typename std::iterator_traits<Iterator>::value_type>::element_type>
 class IndirectIterator {
 public:
     using iterator_category = std::iterator_traits<Iterator>::iterator_category;
@@ -22,6 +22,8 @@ public:
     using reference = Value &;
 
     IndirectIterator() = default;
+
+    // NOLINTNEXTLINE(performance-unnecessary-value-param)
     explicit IndirectIterator(Iterator base) : base_(std::move(base)) {}
 
     template <typename Iterator2, typename Value2>

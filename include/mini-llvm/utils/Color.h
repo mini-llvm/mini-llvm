@@ -27,7 +27,8 @@ public:
     VTModeGuard(FILE *stream, bool enableVTMode);
     ~VTModeGuard();
 #else
-    VTModeGuard(FILE *, bool) {}
+    VTModeGuard(FILE */*stream*/, bool /*enableVTMode*/) {}
+    ~VTModeGuard() = default;
 #endif
 
     VTModeGuard(const VTModeGuard &) = delete;
@@ -64,10 +65,10 @@ struct MINI_LLVM_EXPORT ColoredStringView {
     std::string_view str;
     Codes codes;
 
-    ColoredStringView(std::string_view str)
+    constexpr ColoredStringView(std::string_view str) noexcept
         : str(str) {}
 
-    ColoredStringView(std::string_view str, Codes codes)
+    constexpr ColoredStringView(std::string_view str, Codes codes) noexcept
         : str(str), codes(codes) {}
 
     operator std::string() const;
@@ -79,13 +80,13 @@ struct ColoredString {
     std::string str;
     Codes codes;
 
-    ColoredString(std::string str)
+    constexpr ColoredString(std::string str) noexcept
         : str(std::move(str)) {}
 
-    ColoredString(std::string str, Codes codes)
+    constexpr ColoredString(std::string str, Codes codes) noexcept
         : str(std::move(str)), codes(codes) {}
 
-    operator ColoredStringView() const {
+    constexpr operator ColoredStringView() const noexcept {
         return ColoredStringView(str, codes);
     }
 
@@ -98,37 +99,39 @@ class Color {
 public:
     using Codes = std::bitset<128>;
 
-    explicit Color(Codes codes) : codes_(codes) {}
+    constexpr explicit Color(Codes codes) noexcept : codes_(codes) {}
 
-    Color(std::initializer_list<int> il) {
+    constexpr Color(std::initializer_list<int> il) noexcept {
         for (int code : il) {
             codes_.set(code);
         }
     }
 
-    Codes codes() const {
+    constexpr Codes codes() const noexcept {
         return codes_;
     }
 
-    ColoredStringView operator()(ColoredStringView str) const {
+    constexpr ColoredStringView operator()(ColoredStringView str) const noexcept {
         str.codes |= codes_;
         return str;
     }
 
-    ColoredStringView operator()(std::string_view str) const {
+    constexpr ColoredStringView operator()(std::string_view str) const noexcept {
         return (*this)(ColoredStringView(str));
     }
 
     template <typename T>
         requires std::same_as<T &&, ColoredString &&>
-    ColoredString operator()(T &&str) const {
+    constexpr ColoredString operator()(T &&str) const noexcept {
         str.codes |= codes_;
+        // NOLINTNEXTLINE(bugprone-move-forwarding-reference)
         return std::move(str);
     }
 
     template <typename T>
         requires std::same_as<T &&, std::string &&>
-    ColoredString operator()(T &&str) const {
+    constexpr ColoredString operator()(T &&str) const noexcept {
+        // NOLINTNEXTLINE(bugprone-move-forwarding-reference)
         return (*this)(ColoredString(std::move(str)));
     }
 
@@ -136,40 +139,40 @@ private:
     Codes codes_;
 };
 
-inline Color operator~(Color color) {
+constexpr Color operator~(Color color) noexcept {
     return Color(~color.codes());
 }
 
-inline Color operator&(Color lhs, Color rhs) {
+constexpr Color operator&(Color lhs, Color rhs) noexcept {
     return Color(lhs.codes() & rhs.codes());
 }
 
-inline Color operator|(Color lhs, Color rhs) {
+constexpr Color operator|(Color lhs, Color rhs) noexcept {
     return Color(lhs.codes() | rhs.codes());
 }
 
-inline Color operator^(Color lhs, Color rhs) {
+constexpr Color operator^(Color lhs, Color rhs) noexcept {
     return Color(lhs.codes() ^ rhs.codes());
 }
 
-inline Color &operator&=(Color &lhs, Color rhs) {
+constexpr Color &operator&=(Color &lhs, Color rhs) noexcept {
     lhs = lhs & rhs;
     return lhs;
 }
 
-inline Color &operator|=(Color &lhs, Color rhs) {
+constexpr Color &operator|=(Color &lhs, Color rhs) noexcept {
     lhs = lhs | rhs;
     return lhs;
 }
 
-inline Color &operator^=(Color &lhs, Color rhs) {
+constexpr Color &operator^=(Color &lhs, Color rhs) noexcept {
     lhs = lhs ^ rhs;
     return lhs;
 }
 
 namespace colors {
 
-#define X(code, name) inline const Color name{code};
+#define X(code, name) inline constexpr Color name{code};
 #include "mini-llvm/utils/Color.def"
 #undef X
 
@@ -179,6 +182,7 @@ namespace colors {
 
 template <>
 struct std::formatter<mini_llvm::ColoredStringView> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

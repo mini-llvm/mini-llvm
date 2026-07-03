@@ -7,8 +7,11 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Instruction/Or.h"
 #include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class OrTest : public ::testing::Test {
 protected:
@@ -36,5 +39,7 @@ TEST_F(OrTest, clone) {
     EXPECT_EQ(&*or_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*or_->rhs(), &*cloned->rhs());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

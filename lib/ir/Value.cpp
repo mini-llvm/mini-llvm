@@ -54,7 +54,7 @@ std::string Value::formatName() const {
     return name_;
 }
 
-bool replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue) {
+bool replaceAllUsesWith(const Value &value, const std::shared_ptr<Value> &newValue) {
     assert(*newValue->type() == *value.type());
 
     bool changed = false;
@@ -67,7 +67,7 @@ bool replaceAllUsesWith(const Value &value, std::shared_ptr<Value> newValue) {
     return changed;
 }
 
-bool replaceAllUsesWith(const Value &value, std::weak_ptr<Value> newValue) {
+bool replaceAllUsesWith(const Value &value, const std::weak_ptr<Value> &newValue) {
     assert(!newValue.expired() && *newValue.lock()->type() == *value.type());
 
     bool changed = false;

@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/utils/StringJoiner.h"
 

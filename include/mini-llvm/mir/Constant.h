@@ -33,6 +33,7 @@ public:
 
 template <typename ConstantT>
     requires std::derived_from<ConstantT, mini_llvm::mir::Constant>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<ConstantT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

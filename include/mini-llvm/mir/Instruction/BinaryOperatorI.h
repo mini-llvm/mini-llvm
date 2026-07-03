@@ -11,6 +11,7 @@
 #include "mini-llvm/mir/Immediate.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"

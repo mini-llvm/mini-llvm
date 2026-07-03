@@ -20,6 +20,7 @@
 #include "mini-llvm/ir/Instruction/Store.h"
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Ptr.h"
+#include "mini-llvm/ir/Use.h"
 #include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/AliasAnalysis.h"
 #include "mini-llvm/utils/Memory.h"
@@ -38,7 +39,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
 
         for (auto i = B.begin(); i != B.end();) {
             const Instruction &I = *i++;
-            if (auto *store = dynamic_cast<const Store *>(&I)) {
+            if (const auto *store = dynamic_cast<const Store *>(&I)) {
                 const Value *ptr = &*store->ptr();
                 int size = store->value()->type()->size(pointerSize_);
                 for (auto j = oldStores.begin(); j != oldStores.end();) {
@@ -64,7 +65,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                 oldStores.insert(store);
                 continue;
             }
-            if (auto *load = dynamic_cast<const Load *>(&I)) {
+            if (const auto *load = dynamic_cast<const Load *>(&I)) {
                 const Value *ptr = &*load->ptr();
                 std::unique_ptr<Type> type = load->type();
                 int size = type->size(pointerSize_);
@@ -102,7 +103,7 @@ bool RedundantLoadElimination::runOnFunction(Function &F) {
                 oldLoads.insert(load);
                 continue;
             }
-            if (auto *call = dynamic_cast<const Call *>(&I)) {
+            if (const auto *call = dynamic_cast<const Call *>(&I)) {
                 const Function &callee = *call->callee();
                 if (callee.attr<ReadNone>() || callee.attr<ReadOnly>() || callee.attr<InaccessibleMemOnly>()) {
                     continue;

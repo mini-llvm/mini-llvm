@@ -98,7 +98,7 @@ private:
 
 bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
     if (lhs->isPreserved() != rhs->isPreserved()) {
-        return lhs->isPreserved() < rhs->isPreserved();
+        return !lhs->isPreserved();
     }
     if (lhs->idx() != rhs->idx()) {
         return lhs->idx() < rhs->idx();
@@ -187,8 +187,8 @@ bool LinearScanAllocator::allocate(
                 if (!endpoints.contains(virtReg)) {
                     endpoints.put(virtReg, {i, i});
                 } else {
-                    endpoints[virtReg].first = std::min(endpoints[virtReg].first, (size_t)i);
-                    endpoints[virtReg].second = std::max(endpoints[virtReg].second, (size_t)i);
+                    endpoints[virtReg].first = std::min(endpoints[virtReg].first, static_cast<size_t>(i));
+                    endpoints[virtReg].second = std::max(endpoints[virtReg].second, static_cast<size_t>(i));
                 }
             }
         }

@@ -35,10 +35,10 @@ namespace {
 
 bool isPromotable(const Alloca &v) {
     return std::ranges::all_of(uses(v), [&v](const UseBase &use) {
-        if (auto *store = dynamic_cast<const Store *>(use.user())) {
+        if (const auto *store = dynamic_cast<const Store *>(use.user())) {
             return &*store->ptr() == &v && &*store->value() != &v && *store->value()->type() == *v.allocatedType();
         }
-        if (auto *load = dynamic_cast<const Load *>(use.user())) {
+        if (const auto *load = dynamic_cast<const Load *>(use.user())) {
             return &*load->ptr() == &v && *load->type() == *v.allocatedType();
         }
         return false;
@@ -61,28 +61,30 @@ public:
 
 private:
     const DTNode *root_;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
     const std::unordered_set<const Alloca *> &vars_;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
     const HashMap<const Phi *, const Alloca *> &phis_;
     HashMap<const Alloca *, const Value *> defs_;
 
     void dfs(const DTNode *node) {
         HashMap<const Alloca *, const Value *> oldDefs = defs_;
         for (const Instruction &I : *node->block) {
-            if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+            if (const auto *phi = dynamic_cast<const Phi *>(&I)) {
                 if (auto i = phis_.find(phi); i != phis_.end()) {
                     const Alloca *v = i->second;
                     defs_.put(v, phi);
                 }
             }
-            if (auto *store = dynamic_cast<const Store *>(&I)) {
-                if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
+            if (const auto *store = dynamic_cast<const Store *>(&I)) {
+                if (const auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars_.contains(v)) {
                         defs_.put(v, &*store->value());
                     }
                 }
             }
-            if (auto *load = dynamic_cast<const Load *>(&I)) {
-                if (auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
+            if (const auto *load = dynamic_cast<const Load *>(&I)) {
+                if (const auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
                     if (vars_.contains(v)) {
                         const Value *value = defs_[v];
                         if (value != nullptr) {
@@ -124,7 +126,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
     std::unordered_set<const Alloca *> vars;
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
-            if (auto *v = dynamic_cast<const Alloca *>(&I)) {
+            if (const auto *v = dynamic_cast<const Alloca *>(&I)) {
                 if (isPromotable(*v)) {
                     vars.insert(v);
                 }
@@ -146,7 +148,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
     for (const BasicBlock &X : F) {
         for (const BasicBlock *Y : successors(X)) {
             const BasicBlock *Z = &X;
-            while (!(domTree.dominates(*Z, *Y) && Z != Y)) {
+            while (!domTree.dominates(*Z, *Y) || Z == Y) {
                 DF[Z].push_back(Y);
                 Z = domTree.node(*Z)->parent->block;
             }
@@ -159,7 +161,7 @@ bool Mem2Reg::runOnFunction(Function &F) {
         std::unordered_set<const BasicBlock *> visited;
         std::queue<const BasicBlock *> Q;
         for (const UseBase &use : uses(*v)) {
-            if (auto *store = dynamic_cast<const Store *>(use.user())) {
+            if (const auto *store = dynamic_cast<const Store *>(use.user())) {
                 if (&*use == &*store->ptr()) {
                     const BasicBlock *X = store->parent();
                     for (const BasicBlock *Y : DF[X]) {
@@ -190,16 +192,16 @@ bool Mem2Reg::runOnFunction(Function &F) {
     for (const BasicBlock &B : F) {
         for (auto i = B.begin(); i != B.end();) {
             const Instruction &I = *i++;
-            if (auto *store = dynamic_cast<const Store *>(&I)) {
-                if (auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
+            if (const auto *store = dynamic_cast<const Store *>(&I)) {
+                if (const auto *v = dynamic_cast<const Alloca *>(&*store->ptr())) {
                     if (vars.contains(v)) {
                         removeFromParent(*store);
                         continue;
                     }
                 }
             }
-            if (auto *load = dynamic_cast<const Load *>(&I)) {
-                if (auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
+            if (const auto *load = dynamic_cast<const Load *>(&I)) {
+                if (const auto *v = dynamic_cast<const Alloca *>(&*load->ptr())) {
                     if (vars.contains(v)) {
                         removeFromParent(*load);
                         continue;

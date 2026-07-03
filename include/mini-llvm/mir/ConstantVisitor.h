@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <utility>
 
 #include "mini-llvm/utils/Compiler.h"
@@ -45,17 +45,17 @@ public:
     virtual void visitPtrConstant(PtrConstant &C) { visitPtrConstant(std::as_const(C)); }
     virtual void visitZeroConstant(ZeroConstant &C) { visitZeroConstant(std::as_const(C)); }
 
-    virtual void visitI16ArrayConstant(const I16ArrayConstant &) { abort(); }
-    virtual void visitI16Constant(const I16Constant &) { abort(); }
-    virtual void visitI32ArrayConstant(const I32ArrayConstant &) { abort(); }
-    virtual void visitI32Constant(const I32Constant &) { abort(); }
-    virtual void visitI64ArrayConstant(const I64ArrayConstant &) { abort(); }
-    virtual void visitI64Constant(const I64Constant &) { abort(); }
-    virtual void visitI8ArrayConstant(const I8ArrayConstant &) { abort(); }
-    virtual void visitI8Constant(const I8Constant &) { abort(); }
-    virtual void visitPtrArrayConstant(const PtrArrayConstant &) { abort(); }
-    virtual void visitPtrConstant(const PtrConstant &) { abort(); }
-    virtual void visitZeroConstant(const ZeroConstant &) { abort(); }
+    virtual void visitI16ArrayConstant(const I16ArrayConstant &/*C*/) { abort(); }
+    virtual void visitI16Constant(const I16Constant &/*C*/) { abort(); }
+    virtual void visitI32ArrayConstant(const I32ArrayConstant &/*C*/) { abort(); }
+    virtual void visitI32Constant(const I32Constant &/*C*/) { abort(); }
+    virtual void visitI64ArrayConstant(const I64ArrayConstant &/*C*/) { abort(); }
+    virtual void visitI64Constant(const I64Constant &/*C*/) { abort(); }
+    virtual void visitI8ArrayConstant(const I8ArrayConstant &/*C*/) { abort(); }
+    virtual void visitI8Constant(const I8Constant &/*C*/) { abort(); }
+    virtual void visitPtrArrayConstant(const PtrArrayConstant &/*C*/) { abort(); }
+    virtual void visitPtrConstant(const PtrConstant &/*C*/) { abort(); }
+    virtual void visitZeroConstant(const ZeroConstant &/*C*/) { abort(); }
 };
 
 } // namespace mini_llvm::mir

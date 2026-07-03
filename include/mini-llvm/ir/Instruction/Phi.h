@@ -27,14 +27,18 @@ class MINI_LLVM_EXPORT Phi final : public Instruction {
 
 public:
     struct Incoming {
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
         Use<BasicBlock> &block;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
         Use<Value> &value;
 
         Incoming(Use<BasicBlock> &block, Use<Value> &value) : block(block), value(value) {}
     };
 
     struct ConstIncoming {
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
         const Use<BasicBlock> &block;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
         const Use<Value> &value;
 
         ConstIncoming(const Use<BasicBlock> &block, const Use<Value> &value) : block(block), value(value) {}

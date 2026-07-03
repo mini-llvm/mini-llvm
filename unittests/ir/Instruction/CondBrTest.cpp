@@ -9,8 +9,11 @@
 #include "mini-llvm/ir/Constant/I1Constant.h"
 #include "mini-llvm/ir/Instruction/CondBr.h"
 #include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class CondBrTest : public ::testing::Test {
 protected:
@@ -44,5 +47,7 @@ TEST_F(CondBrTest, clone) {
     EXPECT_EQ(&*br_->trueDest(), &*cloned->trueDest());
     EXPECT_EQ(&*br_->falseDest(), &*cloned->falseDest());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

@@ -28,6 +28,7 @@
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Type/I64.h"
 #include "mini-llvm/ir/Type/I8.h"
+#include "mini-llvm/ir/Type/IntegerType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -73,23 +74,23 @@ public:
         return *std::move(result_);
     }
 
-    void visitI1(const I1 &) override {
+    void visitI1(const I1 &/*type*/) override {
         visit<bool, I1Constant, I1>();
     }
 
-    void visitI8(const I8 &) override {
+    void visitI8(const I8 &/*type*/) override {
         visit<int8_t, I8Constant, I8>();
     }
 
-    void visitI16(const I16 &) override {
+    void visitI16(const I16 &/*type*/) override {
         visit<int16_t, I16Constant, I16>();
     }
 
-    void visitI32(const I32 &) override {
+    void visitI32(const I32 &/*type*/) override {
         visit<int32_t, I32Constant, I32>();
     }
 
-    void visitI64(const I64 &) override {
+    void visitI64(const I64 &/*type*/) override {
         visit<int64_t, I64Constant, I64>();
     }
 

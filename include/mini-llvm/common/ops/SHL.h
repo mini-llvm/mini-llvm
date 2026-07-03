@@ -4,7 +4,6 @@
 
 #include <bit>
 #include <climits>
-#include <cmath>
 #include <concepts>
 #include <optional>
 #include <type_traits>

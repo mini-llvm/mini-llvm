@@ -8,8 +8,11 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Instruction/ICmp.h"
 #include "mini-llvm/ir/Type/I1.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class ICmpTest : public ::testing::Test {
 protected:
@@ -40,5 +43,7 @@ TEST_F(ICmpTest, clone) {
     EXPECT_EQ(&*icmp_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*icmp_->rhs(), &*cloned->rhs());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

@@ -29,6 +29,7 @@ public:
 
 template <typename OperandT>
     requires std::derived_from<OperandT, mini_llvm::mc::Operand>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<OperandT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

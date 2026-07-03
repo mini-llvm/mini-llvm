@@ -85,6 +85,7 @@ S operator|(S lhs, const T &rhs) {
 template <typename S, typename T>
     requires detail::Set<S> && detail::Set<T> && std::is_rvalue_reference_v<T &&>
 S operator|(S lhs, T &&rhs) {
+    // NOLINTNEXTLINE(bugprone-move-forwarding-reference)
     return lhs |= std::move(rhs);
 }
 

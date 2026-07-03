@@ -9,6 +9,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Instruction/Br.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
+#include "mini-llvm/ir/Use.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
@@ -16,7 +17,7 @@ namespace mini_llvm::ir {
 bool JumpThreading::runOnFunction(Function &F) {
     bool changed = false;
 
-    bool changed2;
+    bool changed2 = false;
     do {
         changed2 = false;
 

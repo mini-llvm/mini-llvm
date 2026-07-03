@@ -23,7 +23,7 @@ struct SRem {
         return std::bit_cast<T>(static_cast<std::make_signed_t<T>>(sx % sy));
     }
 
-    std::optional<bool> operator()(bool, bool y) const noexcept {
+    std::optional<bool> operator()(bool /*x*/, bool y) const noexcept {
         if (y == false)
             return std::nullopt;
         return false;

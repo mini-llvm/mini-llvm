@@ -10,6 +10,7 @@
 #include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/ConstantVisitor.h"
 #include "mini-llvm/ir/Type.h"
+#include "mini-llvm/ir/Value.h"
 
 namespace mini_llvm::ir {
 

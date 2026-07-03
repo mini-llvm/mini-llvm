@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cerrno>
+#include <cerrno> // IWYU pragma: keep
 
 namespace mini_llvm {
 

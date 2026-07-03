@@ -8,6 +8,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(StringJoinerTest, PrefixSuffix) {
     StringJoiner joiner(", ", "[", "]");
 
@@ -109,5 +111,7 @@ TEST(StringJoinerTest, StdFormat) {
 
     EXPECT_EQ(std::format("{}", joiner), "[element1, element2, element3]");
 }
+
+} // namespace
 
 } // namespace mini_llvm

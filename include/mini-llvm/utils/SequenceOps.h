@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <type_traits>
 #include <utility>
 
 namespace mini_llvm {
@@ -31,9 +32,10 @@ S &operator+=(S &sequence, typename S::value_type value) {
 }
 
 template <typename S>
-    requires detail::Addable<S>
+    requires std::is_rvalue_reference_v<S &&> && detail::Addable<S>
 S operator+=(S &&sequence, typename S::value_type value) {
     detail::add(sequence, std::move(value));
+    // NOLINTNEXTLINE(bugprone-move-forwarding-reference)
     return std::move(sequence);
 }
 
@@ -44,8 +46,9 @@ S &operator,(S &sequence, typename S::value_type value) {
 }
 
 template <typename S>
-    requires detail::Addable<S>
+    requires std::is_rvalue_reference_v<S &&> && detail::Addable<S>
 S operator,(S &&sequence, typename S::value_type value) {
+    // NOLINTNEXTLINE(bugprone-move-forwarding-reference)
     return std::move(sequence) += std::move(value);
 }
 

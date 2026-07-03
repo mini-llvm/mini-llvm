@@ -24,10 +24,10 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
                 changed = true;
             }
         }
-        if (auto *mov = dynamic_cast<const Mov *>(&I); mov && &*mov->dst() == &*mov->src()) {
+        if (const auto *mov = dynamic_cast<const Mov *>(&I); mov && &*mov->dst() == &*mov->src()) {
             continue;
         }
-        if (auto *fmov = dynamic_cast<const FMov *>(&I); fmov && &*fmov->dst() == &*fmov->src()) {
+        if (const auto *fmov = dynamic_cast<const FMov *>(&I); fmov && &*fmov->dst() == &*fmov->src()) {
             continue;
         }
         for (Register *reg : def(I)) {
@@ -40,10 +40,10 @@ bool CopyPropagation::runOnBasicBlock(BasicBlock &B) {
                 }
             }
         }
-        if (auto *mov = dynamic_cast<const Mov *>(&I)) {
+        if (const auto *mov = dynamic_cast<const Mov *>(&I)) {
             copies.put(&*mov->dst(), &*mov->src());
         }
-        if (auto *fmov = dynamic_cast<const FMov *>(&I)) {
+        if (const auto *fmov = dynamic_cast<const FMov *>(&I)) {
             copies.put(&*fmov->dst(), &*fmov->src());
         }
     }

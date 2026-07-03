@@ -39,7 +39,7 @@ namespace mini_llvm::mir {
 namespace {
 
 void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Register *, int64_t> &values, bool &changed) {
-    if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
+    if (const auto *mov = dynamic_cast<const Mov *>(&*i)) {
         if (auto j = values.find(&*mov->src()); j != values.end()) {
             int64_t value = j->second;
             std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(value);
@@ -50,7 +50,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *add = dynamic_cast<const Add *>(&*i)) {
+    if (const auto *add = dynamic_cast<const Add *>(&*i)) {
         if (auto j = values.find(&*add->src1()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -79,7 +79,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *sub = dynamic_cast<const Sub *>(&*i)) {
+    if (const auto *sub = dynamic_cast<const Sub *>(&*i)) {
         if (auto j = values.find(&*sub->src2()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= -value && -value <= 2047) {
@@ -95,7 +95,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *and_ = dynamic_cast<const And *>(&*i)) {
+    if (const auto *and_ = dynamic_cast<const And *>(&*i)) {
         if (auto j = values.find(&*and_->src1()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -124,7 +124,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *or_ = dynamic_cast<const Or *>(&*i)) {
+    if (const auto *or_ = dynamic_cast<const Or *>(&*i)) {
         if (auto j = values.find(&*or_->src1()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -153,7 +153,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *xor_ = dynamic_cast<const Xor *>(&*i)) {
+    if (const auto *xor_ = dynamic_cast<const Xor *>(&*i)) {
         if (auto j = values.find(&*xor_->src1()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -182,7 +182,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *shl = dynamic_cast<const SHL *>(&*i)) {
+    if (const auto *shl = dynamic_cast<const SHL *>(&*i)) {
         if (auto j = values.find(&*shl->src2()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -198,7 +198,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *shrl = dynamic_cast<const SHRL *>(&*i)) {
+    if (const auto *shrl = dynamic_cast<const SHRL *>(&*i)) {
         if (auto j = values.find(&*shrl->src2()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -214,7 +214,7 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *shra = dynamic_cast<const SHRA *>(&*i)) {
+    if (const auto *shra = dynamic_cast<const SHRA *>(&*i)) {
         if (auto j = values.find(&*shra->src2()); j != values.end()) {
             int64_t value = j->second;
             if (-2048 <= value && value <= 2047) {
@@ -230,12 +230,14 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
         }
         return;
     }
-    if (auto *mul = dynamic_cast<const Mul *>(&*i)) {
+    if (const auto *mul = dynamic_cast<const Mul *>(&*i)) {
         if (mul->width() == 8 || mul->width() == 4) {
             if (auto j = values.find(&*mul->src1()); j != values.end()) {
                 int64_t value = j->second;
-                if (std::has_single_bit((uint64_t)value)) {
-                    std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(std::countr_zero((uint64_t)value));
+                if (std::has_single_bit(static_cast<uint64_t>(value))) {
+                    std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(
+                        std::countr_zero(static_cast<uint64_t>(value))
+                    );
                     std::unique_ptr<Instruction> I = std::make_unique<SHLI>(
                         mul->width(), share(*mul->dst()), share(*mul->src2()), std::move(imm), mul->extMode()
                     );
@@ -247,8 +249,10 @@ void propagate(BasicBlock &B, BasicBlock::const_iterator i, const HashMap<Regist
             }
             if (auto j = values.find(&*mul->src2()); j != values.end()) {
                 int64_t value = j->second;
-                if (std::has_single_bit((uint64_t)value)) {
-                    std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(std::countr_zero((uint64_t)value));
+                if (std::has_single_bit(static_cast<uint64_t>(value))) {
+                    std::unique_ptr<Immediate> imm = std::make_unique<IntegerImmediate>(
+                        std::countr_zero(static_cast<uint64_t>(value))
+                    );
                     std::unique_ptr<Instruction> I = std::make_unique<SHLI>(
                         mul->width(), share(*mul->dst()), share(*mul->src1()), std::move(imm), mul->extMode()
                     );
@@ -272,8 +276,8 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
     HashMap<Register *, int64_t> values;
 
     for (BasicBlock::const_iterator i = B.begin(), e = B.end(); i != e; ++i) {
-        if (auto *li = dynamic_cast<const LI *>(&*i)) {
-            if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*li->src())) {
+        if (const auto *li = dynamic_cast<const LI *>(&*i)) {
+            if (const auto *imm = dynamic_cast<const IntegerImmediate *>(&*li->src())) {
                 values.put(&*li->dst(), imm->value());
                 continue;
             }
@@ -289,9 +293,9 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
     HashMap<Register *, std::pair<Register *, int64_t>> sums;
 
     for (Instruction &I : B) {
-        if (auto *addi = dynamic_cast<const AddI *>(&I)) {
+        if (const auto *addi = dynamic_cast<const AddI *>(&I)) {
             if (&*addi->dst() != &*addi->src1()) {
-                if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*addi->src2())) {
+                if (const auto *imm = dynamic_cast<const IntegerImmediate *>(&*addi->src2())) {
                     sums.put(&*addi->dst(), {&*addi->src1(), imm->value()});
                     continue;
                 }
@@ -299,7 +303,7 @@ bool RISCVConstantPropagation::runOnBasicBlock(BasicBlock &B) {
         }
         for (MemoryOperand *op : I.memOps()) {
             if (auto i = sums.find(&*op->baseReg()); i != sums.end()) {
-                if (auto *imm = dynamic_cast<const IntegerImmediate *>(&*op->offset())) {
+                if (const auto *imm = dynamic_cast<const IntegerImmediate *>(&*op->offset())) {
                     auto [newBaseReg, newOffset] = i->second;
                     newOffset += imm->value();
                     if (-2048 <= newOffset && newOffset <= 2047) {

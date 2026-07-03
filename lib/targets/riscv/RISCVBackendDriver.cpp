@@ -3,7 +3,7 @@
 #include "mini-llvm/targets/riscv/RISCVBackendDriver.h"
 
 #include <cassert>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <functional>
 #include <initializer_list>
 #include <iterator>
@@ -33,6 +33,7 @@
 #include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"
+#include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/mir/StackOffsetImmediate.h"
 #include "mini-llvm/mir/StackSlot.h"
 #include "mini-llvm/mir/VirtualRegister.h"
@@ -129,6 +130,7 @@ public:
 
                             case RegisterClass::kFPR:
                                 load = [fp, t6, endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                                     Precision precision;
                                     switch (slot->size()) {
                                         case 4: precision = Precision::kSingle; break;
@@ -142,6 +144,7 @@ public:
                                 };
 
                                 store = [fp, t6, endSlot](Register *reg, StackSlot *slot, const BasicBlockBuilder &builder) {
+                                    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                                     Precision precision;
                                     switch (slot->size()) {
                                         case 4: precision = Precision::kSingle; break;
@@ -193,12 +196,12 @@ public:
                     BasicBlock::const_iterator savePos,
                                                restorePos;
                     for (BasicBlock::const_iterator i = prologueBlock->begin(), e = prologueBlock->end(); i != e; ++i) {
-                        if (auto *marker = dynamic_cast<const Marker *>(&*i); marker && marker->id() == RISCVMIRGen::kSave) {
+                        if (const auto *marker = dynamic_cast<const Marker *>(&*i); marker && marker->id() == RISCVMIRGen::kSave) {
                             savePos = i;
                         }
                     }
                     for (BasicBlock::const_iterator i = epilogueBlock->begin(), e = epilogueBlock->end(); i != e; ++i) {
-                        if (auto *marker = dynamic_cast<const Marker *>(&*i); marker && marker->id() == RISCVMIRGen::kRestore) {
+                        if (const auto *marker = dynamic_cast<const Marker *>(&*i); marker && marker->id() == RISCVMIRGen::kRestore) {
                             restorePos = i;
                         }
                     }

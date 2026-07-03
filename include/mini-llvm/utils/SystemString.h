@@ -70,14 +70,6 @@ public:
         : str_(str) {}
 #endif
 
-    SystemString(const SystemString &other) = default;
-    SystemString(SystemString &&other) noexcept = default;
-
-    SystemString &operator=(SystemString other) noexcept {
-        swap(other);
-        return *this;
-    }
-
     string_type &native() & noexcept {
         return str_;
     }
@@ -141,6 +133,7 @@ struct std::hash<mini_llvm::SystemString> {
 
 template <>
 struct std::formatter<mini_llvm::SystemString> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

@@ -21,7 +21,7 @@ namespace mini_llvm::mir {
 bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {
     bool changed = false;
 
-    bool changed2;
+    bool changed2 = false;
     do {
         changed2 = false;
 
@@ -31,8 +31,8 @@ bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {
             for (Register *reg : def(I)) {
                 zeros.erase(reg);
             }
-            if (auto *li = dynamic_cast<const LI *>(&I)) {
-                if (auto *src = dynamic_cast<const IntegerImmediate *>(&*li->src())) {
+            if (const auto *li = dynamic_cast<const LI *>(&I)) {
+                if (const auto *src = dynamic_cast<const IntegerImmediate *>(&*li->src())) {
                     if (src->value() == 0) {
                         Register *dst = &*li->dst();
                         zeros.insert(dst);
@@ -50,7 +50,7 @@ bool ZeroRegisterReplacement::runOnBasicBlock(BasicBlock &B) {
         }
 
         for (BasicBlock::const_iterator i = B.begin(); i != B.end();) {
-            if (auto *mov = dynamic_cast<const Mov *>(&*i)) {
+            if (const auto *mov = dynamic_cast<const Mov *>(&*i)) {
                 if (&*mov->src() == zeroReg_) {
                     int width = mov->width();
                     std::shared_ptr<Register> dst = share(*mov->dst());

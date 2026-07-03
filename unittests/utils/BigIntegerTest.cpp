@@ -9,6 +9,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(BigIntegerTest, Add) {
     EXPECT_EQ(BigInteger("200000000000000000000") + BigInteger("300000000000000000000"), BigInteger("500000000000000000000"));
     EXPECT_EQ(BigInteger("200000000000000000000") + BigInteger("-300000000000000000000"), BigInteger("-100000000000000000000"));
@@ -97,6 +99,7 @@ TEST(BigIntegerTest, Rem) {
 
 TEST(BigIntegerTest, DivRem) {
     BigInteger q;
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     int32_t r;
 
     std::tie(q, r) = divRem(BigInteger("100000000000000000000"), 300000000);
@@ -123,5 +126,7 @@ TEST(BigIntegerTest, DivRem) {
     EXPECT_EQ(q, BigInteger("0"));
     EXPECT_EQ(r, 0);
 }
+
+} // namespace
 
 } // namespace mini_llvm

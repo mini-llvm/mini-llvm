@@ -9,6 +9,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(StringsTest, ToStringPositive) {
     EXPECT_EQ(toString(INT32_C(12345), 10), "12345");
     EXPECT_EQ(toString(INT32_C(12345), 2), "11000000111001");
@@ -160,5 +162,7 @@ TEST(StringsTest, NormalizeLineEndingsMixedStyles) {
     normalizeLineEndings(str);
     EXPECT_EQ(str, "Line 1\nLine 2\nLine 3\nLine 4\n");
 }
+
+} // namespace
 
 } // namespace mini_llvm

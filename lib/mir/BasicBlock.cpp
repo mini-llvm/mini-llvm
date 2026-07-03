@@ -13,6 +13,7 @@
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
+#include "mini-llvm/mir/Register.h"
 #include "mini-llvm/utils/SetOps.h"
 #include "mini-llvm/utils/StringJoiner.h"
 #include "mini-llvm/utils/Strings.h"
@@ -31,6 +32,7 @@ std::unique_ptr<Instruction> BasicBlock::remove(BasicBlock::const_iterator pos) 
     return I;
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void BasicBlock::replace(BasicBlock::const_iterator pos, std::unique_ptr<Instruction> I) {
     const_cast<std::unique_ptr<Instruction> &>(*pos.base()) = std::move(I);
 }

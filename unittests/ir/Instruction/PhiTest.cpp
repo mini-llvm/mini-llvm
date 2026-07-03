@@ -9,8 +9,11 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Instruction/Phi.h"
 #include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class PhiTest : public ::testing::Test {
 protected:
@@ -48,5 +51,7 @@ TEST_F(PhiTest, clone) {
         EXPECT_EQ(&*getIncomingValue(*phi_, *incoming.block), &*incoming.value);
     }
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

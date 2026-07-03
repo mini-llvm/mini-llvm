@@ -18,19 +18,15 @@ public:
 
     constexpr OptionalReference() noexcept : value_(nullptr) {}
 
-    constexpr OptionalReference(std::nullopt_t) noexcept : value_(nullptr) {}
+    constexpr OptionalReference(std::nullopt_t /*value*/) noexcept : value_(nullptr) {}
 
     template <typename U>
         requires std::is_convertible_v<U &, T &>
     constexpr OptionalReference(U &value) noexcept : value_(&value) {}
 
-    constexpr OptionalReference(const OptionalReference &other) noexcept = default;
-
     template <typename U>
         requires std::is_convertible_v<U &, T &>
     constexpr OptionalReference(const OptionalReference<U> &other) noexcept : value_(other.value_) {}
-
-    constexpr OptionalReference &operator=(const OptionalReference &other) noexcept = default;
 
     explicit constexpr operator bool() const noexcept {
         return value_ != nullptr;

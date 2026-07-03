@@ -53,7 +53,7 @@ struct hash_mix_impl<32> {
     }
 };
 
-inline constexpr size_t hash_mix(size_t v) noexcept {
+constexpr size_t hash_mix(size_t v) noexcept {
     return hash_mix_impl<sizeof(size_t) * CHAR_BIT>::fn(v);
 }
 

@@ -23,7 +23,7 @@ namespace {
 
 void collect(const Constant &C, std::unordered_set<const GlobalValue *> &visited, std::queue<const GlobalValue *> &Q) {
     if (!dynamic_cast<const ArrayConstant *>(&C)) {
-        if (auto *value = dynamic_cast<const GlobalValue *>(&C)) {
+        if (const auto *value = dynamic_cast<const GlobalValue *>(&C)) {
             if (visited.insert(value).second) {
                 Q.push(value);
             }
@@ -55,11 +55,11 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
     while (!Q.empty()) {
         const GlobalValue *value = Q.front();
         Q.pop();
-        if (auto *F = dynamic_cast<const Function *>(value)) {
+        if (const auto *F = dynamic_cast<const Function *>(value)) {
             for (const BasicBlock &B : *F) {
                 for (const Instruction &I : B) {
                     for (const UseBase *op : I.operands()) {
-                        if (auto *value2 = dynamic_cast<const GlobalValue *>(&**op)) {
+                        if (const auto *value2 = dynamic_cast<const GlobalValue *>(&**op)) {
                             if (visited.insert(value2).second) {
                                 Q.push(value2);
                             }
@@ -69,7 +69,7 @@ bool GlobalDeadCodeElimination::runOnModule(Module &M) {
             }
             continue;
         }
-        if (auto *G = dynamic_cast<const GlobalVar *>(value)) {
+        if (const auto *G = dynamic_cast<const GlobalVar *>(value)) {
             if (!G->isDeclaration()) {
                 collect(G->initializer(), visited, Q);
             }

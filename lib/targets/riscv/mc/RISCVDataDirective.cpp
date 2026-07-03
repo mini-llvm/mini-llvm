@@ -2,13 +2,14 @@
 
 #include "mini-llvm/targets/riscv/mc/RISCVDataDirective.h"
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <format>
 #include <string>
 
 namespace mini_llvm::mc {
 
 std::string RISCVDataDirective::format() const {
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     const char *directiveName;
     switch (width()) {
         case 1: directiveName = "byte"; break;

@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "mini-llvm/ir/Constant.h"
 #include "mini-llvm/ir/Instruction/BinaryIntegerArithmeticOperator.h"
 #include "mini-llvm/ir/InstructionVisitor.h"
 #include "mini-llvm/ir/Value.h"

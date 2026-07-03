@@ -8,8 +8,11 @@
 #include "mini-llvm/ir/Constant/FloatConstant.h"
 #include "mini-llvm/ir/Instruction/FPExt.h"
 #include "mini-llvm/ir/Type/Double.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class FPExtTest : public ::testing::Test {
 protected:
@@ -38,5 +41,7 @@ TEST_F(FPExtTest, clone) {
     EXPECT_EQ(&*fpext_->value(), &*cloned->value());
     EXPECT_EQ(*fpext_->type(), *cloned->type());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

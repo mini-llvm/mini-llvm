@@ -14,7 +14,15 @@ namespace mini_llvm::mir {
 class MINI_LLVM_EXPORT BranchPredictionAnalysis final : public FunctionAnalysis {
 public:
     BranchPredictionAnalysis();
+
     ~BranchPredictionAnalysis() override;
+
+    BranchPredictionAnalysis(const BranchPredictionAnalysis &) = delete;
+    BranchPredictionAnalysis &operator=(const BranchPredictionAnalysis &) = delete;
+
+    BranchPredictionAnalysis(BranchPredictionAnalysis &&) = delete;
+    BranchPredictionAnalysis &operator=(BranchPredictionAnalysis &&) = delete;
+
     void runOnFunction(const Function &F) override;
     bool predict(const BasicBlock &B, const BasicBlock &succ) const;
 

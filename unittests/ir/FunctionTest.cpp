@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 
+#include "mini-llvm/common/Linkage.h"
 #include "mini-llvm/ir/Argument.h"
 #include "mini-llvm/ir/BasicBlock.h"
 #include "mini-llvm/ir/Constant/I32Constant.h"
@@ -24,6 +25,8 @@
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 TEST(FunctionTest, IsWellFormedEntryPredecessors) {
     // define void @test() {
@@ -370,5 +373,7 @@ TEST(FunctionTest, IsWellFormedAlloca) {
 
     EXPECT_FALSE(F.isWellFormed());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

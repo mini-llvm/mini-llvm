@@ -13,6 +13,8 @@ using enum mini_llvm::ir::Token::Kind;
 
 namespace mini_llvm::ir {
 
+namespace {
+
 TEST(LexerTest, Empty) {
     const char *input = "";
 
@@ -407,5 +409,7 @@ TEST(LexerTest, String) {
 
     EXPECT_EQ(lex(input), expected);
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

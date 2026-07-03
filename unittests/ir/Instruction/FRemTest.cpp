@@ -8,8 +8,11 @@
 #include "mini-llvm/ir/Constant/DoubleConstant.h"
 #include "mini-llvm/ir/Instruction/FRem.h"
 #include "mini-llvm/ir/Type/Double.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class FRemTest : public ::testing::Test {
 protected:
@@ -38,5 +41,7 @@ TEST_F(FRemTest, clone) {
     EXPECT_EQ(&*frem_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*frem_->rhs(), &*cloned->rhs());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

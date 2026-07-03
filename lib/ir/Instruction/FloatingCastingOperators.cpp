@@ -19,6 +19,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/Double.h"
 #include "mini-llvm/ir/Type/Float.h"
+#include "mini-llvm/ir/Type/FloatingType.h"
 #include "mini-llvm/ir/TypeVisitor.h"
 #include "mini-llvm/utils/Memory.h"
 
@@ -59,11 +60,11 @@ public:
         return *std::move(result_);
     }
 
-    void visitFloat(const Float &) override {
+    void visitFloat(const Float &/*type*/) override {
         visit<float, FloatConstant, Float>();
     }
 
-    void visitDouble(const Double &) override {
+    void visitDouble(const Double &/*type*/) override {
         visit<double, DoubleConstant, Double>();
     }
 

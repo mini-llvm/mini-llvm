@@ -8,6 +8,7 @@
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/PhysicalRegister.h"
+#include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 
 namespace mini_llvm::mir {

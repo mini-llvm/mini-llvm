@@ -9,6 +9,7 @@
 #include "mini-llvm/mc/Directive.h"
 #include "mini-llvm/mc/Instruction.h"
 #include "mini-llvm/mc/Label.h"
+#include "mini-llvm/mc/Statement.h"
 #include "mini-llvm/utils/StringJoiner.h"
 
 namespace mini_llvm::mc {
