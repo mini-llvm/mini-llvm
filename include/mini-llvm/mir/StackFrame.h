@@ -24,9 +24,13 @@ public:
     using const_reverse_iterator = IndirectIterator<StackSlotList::const_reverse_iterator, const StackSlot>;
 
     StackFrame() = default;
+
+    ~StackFrame() = default;
+
     StackFrame(const StackFrame &) = delete;
-    StackFrame(StackFrame &&) = delete;
     StackFrame &operator=(const StackFrame &) = delete;
+
+    StackFrame(StackFrame &&) = delete;
     StackFrame &operator=(StackFrame &&) = delete;
 
     iterator begin() {

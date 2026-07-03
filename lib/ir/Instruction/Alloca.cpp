@@ -9,6 +9,7 @@
 #include "mini-llvm/ir/Instruction.h"
 #include "mini-llvm/ir/Type/BasicBlockType.h"
 #include "mini-llvm/ir/Type/Void.h"
+#include "mini-llvm/ir/Value.h"
 
 namespace mini_llvm::ir {
 

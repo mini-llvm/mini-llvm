@@ -55,6 +55,9 @@ public:
 
     ~Parser();
 
+    Parser(const Parser &) = delete;
+    Parser &operator=(const Parser &) = delete;
+
     Parser(Parser &&) noexcept;
     Parser &operator=(Parser &&) noexcept;
 

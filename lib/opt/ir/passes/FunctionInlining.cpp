@@ -43,7 +43,7 @@ bool hasMoreThanNInstructions(const Function &F, size_t n) {
 bool isRecursive(const Function &F) {
     for (const BasicBlock &B : F) {
         for (const Instruction &I : B) {
-            if (auto *call = dynamic_cast<const Call *>(&I)) {
+            if (const auto *call = dynamic_cast<const Call *>(&I)) {
                 if (&*call->callee() == &F) {
                     return true;
                 }
@@ -97,7 +97,7 @@ bool FunctionInlining::runOnFunction(Function &F) {
 
     for (auto i = F.begin(); i != F.end(); ++i) {
         for (auto j = i->begin(), e = i->end(); j != e; ++j) {
-            if (auto *call = dynamic_cast<const Call *>(&*j)) {
+            if (const auto *call = dynamic_cast<const Call *>(&*j)) {
                 const Function *callee = &*call->callee();
                 if (shouldInline(*call, calleeThreshold_, callerThreshold_)) {
                     BasicBlock *B = splitBefore(std::next(j));

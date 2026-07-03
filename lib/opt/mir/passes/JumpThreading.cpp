@@ -4,6 +4,7 @@
 
 #include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
+#include "mini-llvm/mir/Function.h"
 #include "mini-llvm/mir/Instruction/Br.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 
@@ -13,7 +14,7 @@ namespace {
 
 BasicBlock *follow(BasicBlock *B) {
     if (B->size() == 1) {
-        if (auto *br = dynamic_cast<const Br *>(&B->back())) {
+        if (const auto *br = dynamic_cast<const Br *>(&B->back())) {
             if (&*br->dest() != B) {
                 return &*br->dest();
             }

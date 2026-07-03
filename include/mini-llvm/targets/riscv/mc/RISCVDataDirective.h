@@ -3,7 +3,6 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdlib>
 #include <string>
 
 #include "mini-llvm/mc/Directive.h"

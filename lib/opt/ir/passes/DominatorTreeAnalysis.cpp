@@ -85,7 +85,9 @@ public:
     }
 
 private:
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
     const Function &F_;
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
     HashMap<const BasicBlock *, const BasicBlock *> &idom_;
     HashMap<const BasicBlock *, const BasicBlock *> parent_, ancestor_, label_;
     HashMap<const BasicBlock *, size_t> semi_;

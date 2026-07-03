@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <format>
 #include <memory>
 #include <optional>

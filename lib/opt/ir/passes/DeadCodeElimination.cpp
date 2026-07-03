@@ -34,7 +34,7 @@ namespace mini_llvm::ir {
 namespace {
 
 bool isNonCriticalCall(const Instruction &I) {
-    if (auto *call = dynamic_cast<const Call *>(&I)) {
+    if (const auto *call = dynamic_cast<const Call *>(&I)) {
         const Function &callee = *call->callee();
         if (callee.attr<ReadNone>() || callee.attr<ReadOnly>()) {
             return true;
@@ -79,7 +79,7 @@ bool DeadCodeElimination::runOnFunction(Function &F) {
         const Instruction *I = Q.front();
         Q.pop();
         for (const UseBase *op : I->operands()) {
-            if (auto *II = dynamic_cast<const Instruction *>(&**op)) {
+            if (const auto *II = dynamic_cast<const Instruction *>(&**op)) {
                 if (visited.insert(II).second) {
                     Q.push(II);
                 }

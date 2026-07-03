@@ -59,6 +59,7 @@ MINI_LLVM_EXPORT std::unordered_set<Register *> def(const Instruction &I);
 
 template <typename InstructionT>
     requires std::derived_from<InstructionT, mini_llvm::mir::Instruction>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::formatter<InstructionT> {
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();

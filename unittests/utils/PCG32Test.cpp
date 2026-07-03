@@ -6,6 +6,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(PCG32Test, Determinism) {
     PCG32 gen1(42);
     PCG32 gen2(42);
@@ -14,5 +16,7 @@ TEST(PCG32Test, Determinism) {
         EXPECT_EQ(gen1(), gen2());
     }
 }
+
+} // namespace
 
 } // namespace mini_llvm

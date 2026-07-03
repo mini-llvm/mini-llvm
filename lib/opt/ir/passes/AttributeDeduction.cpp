@@ -50,6 +50,7 @@ void dfs(
         }
     }
     if (low[u] == dfn[u]) {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         const Function *v;
         do {
             v = S.top();
@@ -70,7 +71,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
     for (const Function &F : functions(M)) {
         for (const BasicBlock &B : F) {
             for (const Instruction &I : B) {
-                if (auto *call = dynamic_cast<const Call *>(&I)) {
+                if (const auto *call = dynamic_cast<const Call *>(&I)) {
                     callGraph[&F].insert(&*call->callee());
                 }
             }
@@ -79,7 +80,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
 
     HashMap<const Function *, int> dfn, low;
     HashMap<const Function *, int> scc;
-    for (auto v : std::views::keys(callGraph)) {
+    for (const auto *v : std::views::keys(callGraph)) {
         dfn.put(v, -1);
         low.put(v, -1);
         scc.put(v, -1);
@@ -87,7 +88,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
     int timer = 0;
     int sccCount = 0;
     std::stack<const Function *> S;
-    for (auto u : std::views::keys(callGraph)) {
+    for (const auto *u : std::views::keys(callGraph)) {
         if (dfn[u] == -1) {
             dfs(u, callGraph, dfn, low, scc, timer, sccCount, S);
         }
@@ -100,11 +101,11 @@ bool AttributeDeduction::runOnModule(Module &M) {
                 bool readNone = true;
                 for (const BasicBlock &B : F) {
                     for (const Instruction &I : B) {
-                        if (auto *load = dynamic_cast<const Load *>(&I); load && !dynamic_cast<const Alloca *>(&*load->ptr())) {
+                        if (const auto *load = dynamic_cast<const Load *>(&I); load && !dynamic_cast<const Alloca *>(&*load->ptr())) {
                             readNone = false;
                             break;
                         }
-                        if (auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
+                        if (const auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
                             readNone = false;
                             break;
                         }
@@ -126,7 +127,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
                 bool readOnly = true;
                 for (const BasicBlock &B : F) {
                     for (const Instruction &I : B) {
-                        if (auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
+                        if (const auto *store = dynamic_cast<const Store *>(&I); store && !dynamic_cast<const Alloca *>(&*store->ptr())) {
                             readOnly = false;
                             break;
                         }
@@ -150,7 +151,7 @@ bool AttributeDeduction::runOnModule(Module &M) {
         sccGraph.put(C, {});
     }
     for (const auto &[u, N] : callGraph) {
-        for (auto v : N) {
+        for (const auto *v : N) {
             if (scc[u] != scc[v]) {
                 sccGraph[scc[u]].insert(scc[v]);
             }

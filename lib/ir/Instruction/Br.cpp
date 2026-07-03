@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "mini-llvm/ir/Value.h"
 #include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {

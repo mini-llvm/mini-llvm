@@ -35,7 +35,7 @@ struct Diagnostic {
     }
 };
 
-inline constexpr const char *name(Diagnostic::Level level) {
+constexpr const char *name(Diagnostic::Level level) {
     using enum Diagnostic::Level;
     switch (level) {
         case kNote: return "note";

@@ -31,9 +31,13 @@ public:
     using const_function_iterator = IndirectIterator<FunctionList::const_iterator>;
 
     Module() = default;
+
+    ~Module() = default;
+
     Module(const Module &) = delete;
-    Module(Module &&) = default;
     Module &operator=(const Module &) = delete;
+
+    Module(Module &&) = default;
     Module &operator=(Module &&) = default;
 
     global_var_iterator global_var_begin() {
@@ -160,6 +164,7 @@ MINI_LLVM_EXPORT const Function *getFunctionByName(const Module &M, std::string_
 
 template <>
 struct std::formatter<mini_llvm::mir::Module> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

@@ -29,9 +29,12 @@ public:
 
     explicit Function(std::string name, Linkage linkage) : name_(std::move(name)), linkage_(linkage) {}
 
+    ~Function() override = default;
+
     Function(const Function &) = delete;
+    Function &operator=(const Function &) = delete;
+
     Function(Function &&) = delete;
-    Function &operator=(const Function &&) = delete;
     Function &operator=(Function &&) = delete;
 
     std::string name() const override {

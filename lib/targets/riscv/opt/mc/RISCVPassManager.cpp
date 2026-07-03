@@ -8,6 +8,7 @@
 
 namespace mini_llvm::mc {
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 void RISCVPassManager::run(Module &M) const {
     RISCVFallthrough().runOnModule(M);
     RISCVUnusedLabelElimination().runOnModule(M);

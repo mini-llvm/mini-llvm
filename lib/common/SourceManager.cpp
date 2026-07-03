@@ -17,6 +17,7 @@ void SourceManager::setSource(std::string source) {
     source_ = std::move(source);
     lineStarts_.clear();
     lineEnds_.clear();
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     size_t i = 0, j;
     while ((j = source_.find('\n', i)) != std::string::npos) {
         lineStarts_.push_back(i);
@@ -32,7 +33,7 @@ std::string_view SourceManager::line(size_t lineNum) const {
 }
 
 std::pair<size_t, size_t> SourceManager::lineColumnNum(size_t location) const {
-    size_t lineNum = std::upper_bound(lineStarts_.begin(), lineStarts_.end(), location) - lineStarts_.begin();
+    size_t lineNum = std::ranges::upper_bound(lineStarts_, location) - lineStarts_.begin();
     size_t columnNum = location - lineStarts_[lineNum - 1] + 1;
     return {lineNum, columnNum};
 }

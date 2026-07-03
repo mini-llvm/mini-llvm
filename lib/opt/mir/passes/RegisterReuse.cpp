@@ -26,10 +26,10 @@ namespace {
 
 struct ImmediateHash {
     size_t operator()(const Immediate *imm) const noexcept {
-        if (auto *integerImm = dynamic_cast<const IntegerImmediate *>(&*imm)) {
+        if (const auto *integerImm = dynamic_cast<const IntegerImmediate *>(&*imm)) {
             return std::hash<int64_t>()(integerImm->value());
         }
-        if (auto *stackOffsetImm = dynamic_cast<const StackOffsetImmediate *>(&*imm)) {
+        if (const auto *stackOffsetImm = dynamic_cast<const StackOffsetImmediate *>(&*imm)) {
             size_t seed = 0;
 
             hash_combine(seed, stackOffsetImm->baseSlot());
@@ -44,13 +44,13 @@ struct ImmediateHash {
 
 struct ImmediateEqual {
     bool operator()(const Immediate *lhs, const Immediate *rhs) const noexcept {
-        if (auto *lhsInteger = dynamic_cast<const IntegerImmediate *>(&*lhs)) {
-            if (auto *rhsInteger = dynamic_cast<const IntegerImmediate *>(&*rhs)) {
+        if (const auto *lhsInteger = dynamic_cast<const IntegerImmediate *>(&*lhs)) {
+            if (const auto *rhsInteger = dynamic_cast<const IntegerImmediate *>(&*rhs)) {
                 return lhsInteger->value() == rhsInteger->value();
             }
         }
-        if (auto *lhsStackOffset = dynamic_cast<const StackOffsetImmediate *>(&*lhs)) {
-            if (auto *rhsStackOffset = dynamic_cast<const StackOffsetImmediate *>(&*rhs)) {
+        if (const auto *lhsStackOffset = dynamic_cast<const StackOffsetImmediate *>(&*lhs)) {
+            if (const auto *rhsStackOffset = dynamic_cast<const StackOffsetImmediate *>(&*rhs)) {
                 return lhsStackOffset->baseSlot() == rhsStackOffset->baseSlot()
                     && lhsStackOffset->slot() == rhsStackOffset->slot()
                     && lhsStackOffset->displacement() == rhsStackOffset->displacement();
@@ -76,7 +76,7 @@ bool RegisterReuse::runOnBasicBlock(BasicBlock &B) {
                 regs[imm].erase(std::ranges::find(regs[imm], reg));
             }
         }
-        if (auto *li = dynamic_cast<const LI *>(&I)) {
+        if (const auto *li = dynamic_cast<const LI *>(&I)) {
             imms.put(&*li->dst(), &*li->src());
             if (!regs.contains(&*li->src())) {
                 regs.put(&*li->src(), {});

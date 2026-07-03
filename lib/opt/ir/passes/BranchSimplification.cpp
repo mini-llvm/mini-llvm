@@ -20,8 +20,9 @@ bool BranchSimplification::runOnFunction(Function &F) {
     bool changed = false;
 
     for (const BasicBlock &B : F) {
-        if (auto *condBr = dynamic_cast<const CondBr *>(&B.back())) {
-            if (auto *cond = dynamic_cast<const I1Constant *>(&*condBr->cond())) {
+        if (const auto *condBr = dynamic_cast<const CondBr *>(&B.back())) {
+            if (const auto *cond = dynamic_cast<const I1Constant *>(&*condBr->cond())) {
+                // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
                 BasicBlock *dest, *notDest;
                 if (cond->value() == true) {
                     dest = &*condBr->trueDest();

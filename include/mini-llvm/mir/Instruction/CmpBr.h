@@ -20,6 +20,7 @@
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Compiler.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::mir {
 

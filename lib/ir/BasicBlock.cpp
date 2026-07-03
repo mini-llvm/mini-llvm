@@ -105,7 +105,7 @@ bool hasNPredecessorsOrMore(const BasicBlock &B, size_t n) {
 std::unordered_set<BasicBlock *> predecessors(const BasicBlock &B) {
     std::unordered_set<BasicBlock *> predecessors;
     for (const UseBase &use : uses(B)) {
-        if (auto *terminator = dynamic_cast<const Terminator *>(use.user())) {
+        if (const auto *terminator = dynamic_cast<const Terminator *>(use.user())) {
             predecessors.insert(terminator->parent());
         }
     }

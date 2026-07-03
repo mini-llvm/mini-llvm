@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-#include <cstdio>
+#include <cstdio> // IWYU pragma: keep
 #include <cstdlib>
 #include <format>
 #include <memory>
@@ -192,6 +192,7 @@ Arguments:
     }
 
     if (!options.target) {
+        // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
         const char *targetName;
 #if defined(MINI_LLVM_X86_64)
         targetName = "x86_64";
@@ -258,6 +259,7 @@ Arguments:
         return EXIT_FAILURE;
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-init-variables)
     int pointerSize;
 
     switch (*options.target) {

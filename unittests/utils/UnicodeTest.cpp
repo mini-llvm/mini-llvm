@@ -6,6 +6,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(UnicodeTest, DecodeUtf8OneByte) {
     const char *str = "A"; // U+0041
     const char *ptr = str;
@@ -248,5 +250,7 @@ TEST(UnicodeTest, DecodeUtf8OutOfRange) {
     char32_t cp = decodeUtf8(ptr);
     EXPECT_EQ(cp, static_cast<char32_t>(-1));
 }
+
+} // namespace
 
 } // namespace mini_llvm

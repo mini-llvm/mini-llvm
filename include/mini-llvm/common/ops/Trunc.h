@@ -4,7 +4,7 @@
 
 #include <bit>
 #include <concepts>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <type_traits>
 
 namespace mini_llvm::ops {
@@ -14,7 +14,7 @@ template <typename To>
 struct Trunc {
     template <typename From>
         requires std::integral<From>
-    To operator()(From) const noexcept {
+    To operator()(From /*from*/) const noexcept {
         abort();
     }
 

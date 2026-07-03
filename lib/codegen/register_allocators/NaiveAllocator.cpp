@@ -33,7 +33,7 @@ namespace {
 
 bool isBetter(PhysicalRegister *lhs, PhysicalRegister *rhs) {
     if (lhs->isPreserved() != rhs->isPreserved()) {
-        return lhs->isPreserved() < rhs->isPreserved();
+        return !lhs->isPreserved();
     }
     if (lhs->idx() != rhs->idx()) {
         return lhs->idx() < rhs->idx();
@@ -63,6 +63,7 @@ bool NaiveAllocator::allocate(
 
     // Keep virtual registers alive
     std::vector<std::shared_ptr<Register>> sharedVirtRegs;
+    sharedVirtRegs.reserve(virtRegs.size());
     for (VirtualRegister *virtReg : virtRegs) {
         sharedVirtRegs.push_back(share(*virtReg));
     }

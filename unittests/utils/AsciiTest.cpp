@@ -6,6 +6,8 @@
 
 namespace mini_llvm {
 
+namespace {
+
 TEST(AsciiTest, isAsciiPrintable) {
     EXPECT_TRUE(isAsciiPrintable(' '));
     EXPECT_TRUE(isAsciiPrintable('~'));
@@ -153,5 +155,7 @@ TEST(AsciiTest, toAsciiUpper) {
     EXPECT_EQ(toAsciiUpper('\x80'), '\x80');
     EXPECT_EQ(toAsciiUpper('\xff'), '\xff');
 }
+
+} // namespace
 
 } // namespace mini_llvm

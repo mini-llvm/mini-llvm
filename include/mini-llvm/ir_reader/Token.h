@@ -3,7 +3,7 @@
 #pragma once
 
 #include <cstdint>
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <string>
 #include <variant>
 #include <vector>
@@ -28,7 +28,7 @@ inline bool operator==(const Token &lhs, const Token &rhs) {
     return lhs.kind == rhs.kind && lhs.value == rhs.value && lhs.location == rhs.location;
 }
 
-inline constexpr const char *name(Token::Kind kind) {
+constexpr const char *name(Token::Kind kind) {
     switch (kind) {
 #define X(name) case Token::Kind::k##name: return #name;
 #include "mini-llvm/ir_reader/TokenKind.def"

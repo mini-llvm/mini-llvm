@@ -16,6 +16,9 @@ public:
 
     ~RISCVMCGen();
 
+    RISCVMCGen(const RISCVMCGen &) = delete;
+    RISCVMCGen &operator=(const RISCVMCGen &) = delete;
+
     RISCVMCGen(RISCVMCGen &&) noexcept;
     RISCVMCGen &operator=(RISCVMCGen &&) noexcept;
 

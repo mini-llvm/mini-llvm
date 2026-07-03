@@ -24,6 +24,7 @@
 #include "mini-llvm/ir/Type.h"
 #include "mini-llvm/ir/Type/FunctionType.h"
 #include "mini-llvm/ir/Use.h"
+#include "mini-llvm/ir/Value.h"
 #include "mini-llvm/opt/ir/passes/DominatorTreeAnalysis.h"
 #include "mini-llvm/utils/Dot.h"
 #include "mini-llvm/utils/StringJoiner.h"
@@ -98,7 +99,7 @@ bool Function::isWellFormed() const {
     }
     for (const BasicBlock &B : *this) {
         for (const Instruction &I : B) {
-            if (auto *ret = dynamic_cast<const Ret *>(&I)) {
+            if (const auto *ret = dynamic_cast<const Ret *>(&I)) {
                 if (*ret->value()->type() != *functionType()->returnType()) {
                     return false;
                 }
@@ -110,7 +111,7 @@ bool Function::isWellFormed() const {
     }
     for (const BasicBlock &B : *this) {
         for (const Instruction &I : B) {
-            if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+            if (const auto *phi = dynamic_cast<const Phi *>(&I)) {
                 std::unordered_set<BasicBlock *> incomingBlocks;
                 for (Phi::ConstIncoming incoming : incomings(*phi)) {
                     if (!incomingBlocks.insert(&*incoming.block).second) {
@@ -141,7 +142,7 @@ bool Function::isWellFormed() const {
     for (const BasicBlock *B : visited) {
         for (const Instruction &I : *B) {
             for (const UseBase &use : uses(I)) {
-                if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                if (const auto *II = dynamic_cast<const Instruction *>(use.user())) {
                     if (!dynamic_cast<const Phi *>(II) && visited.contains(II->parent()) && !domTree.dominates(I, *II)) {
                         return false;
                     }
@@ -153,7 +154,7 @@ bool Function::isWellFormed() const {
         if (!visited.contains(&B)) {
             for (const Instruction &I : B) {
                 for (const UseBase &use : uses(I)) {
-                    if (auto *II = dynamic_cast<const Instruction *>(use.user())) {
+                    if (const auto *II = dynamic_cast<const Instruction *>(use.user())) {
                         if (!dynamic_cast<const Phi *>(II) && visited.contains(II->parent())) {
                             return false;
                         }
@@ -164,10 +165,10 @@ bool Function::isWellFormed() const {
     }
     for (const BasicBlock *B : visited) {
         for (const Instruction &I : *B) {
-            if (auto *phi = dynamic_cast<const Phi *>(&I)) {
+            if (const auto *phi = dynamic_cast<const Phi *>(&I)) {
                 for (Phi::ConstIncoming incoming : incomings(*phi)) {
                     if (visited.contains(&*incoming.block)) {
-                        if (auto *II = dynamic_cast<const Instruction *>(&*incoming.value)) {
+                        if (const auto *II = dynamic_cast<const Instruction *>(&*incoming.value)) {
                             if (!visited.contains(II->parent())) {
                                 return false;
                             }

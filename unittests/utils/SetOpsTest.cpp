@@ -8,13 +8,15 @@
 
 using namespace mini_llvm::set_ops;
 
+namespace mini_llvm {
+
+namespace {
+
 struct TestCase {
     std::unordered_set<int> lhs;
     std::unordered_set<int> rhs;
     std::unordered_set<int> expected;
 };
-
-namespace mini_llvm {
 
 TEST(SetOpsTest, Union) {
     TestCase testCases[] = {
@@ -89,5 +91,7 @@ TEST(SetOpsTest, Difference) {
         EXPECT_EQ(actual, expected);
     }
 }
+
+} // namespace
 
 } // namespace mini_llvm

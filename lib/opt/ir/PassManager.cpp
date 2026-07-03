@@ -30,7 +30,7 @@ namespace mini_llvm::ir {
 void PassManager::run(Module &M) const {
     Mem2Reg().runOnModule(M);
 
-    bool changed;
+    bool changed = false;
     do {
         changed = false;
 

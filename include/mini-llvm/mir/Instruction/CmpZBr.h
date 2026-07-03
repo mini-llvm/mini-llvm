@@ -12,6 +12,7 @@
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/Condition.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
+#include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
 #include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"

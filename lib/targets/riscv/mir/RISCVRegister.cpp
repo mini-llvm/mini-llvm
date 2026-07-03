@@ -2,13 +2,14 @@
 
 #include "mini-llvm/targets/riscv/mir/RISCVRegister.h"
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <memory>
 #include <ranges>
 #include <string_view>
 #include <unordered_set>
 #include <vector>
 
+#include "mini-llvm/mir/PhysicalRegister.h"
 #include "mini-llvm/mir/RegisterClass.h"
 #include "mini-llvm/utils/HashMap.h"
 

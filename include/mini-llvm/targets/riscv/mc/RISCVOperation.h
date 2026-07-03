@@ -2,11 +2,12 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 
 namespace mini_llvm::mc {
 
-enum RISCVOperation {
+// NOLINTNEXTLINE(cppcoreguidelines-use-enum-class)
+enum RISCVOperation : int {
 #define OPS
 #define X(mnemonic, name) RISCV_##name,
 #include "mini-llvm/targets/riscv/target.def"
@@ -14,7 +15,7 @@ enum RISCVOperation {
 #undef OPS
 };
 
-inline constexpr const char *mnemonic(RISCVOperation op) {
+constexpr const char *mnemonic(RISCVOperation op) {
     switch (op) {
 #define OPS
 #define X(mnemonic, name) case RISCV_##name: return mnemonic;

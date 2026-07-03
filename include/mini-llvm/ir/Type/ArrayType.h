@@ -48,7 +48,7 @@ public:
 
     std::unique_ptr<Constant> zeroValue() const override;
 
-    std::unique_ptr<Constant> constant(int64_t) const override {
+    std::unique_ptr<Constant> constant(int64_t /*value*/) const override {
         abort();
     }
 

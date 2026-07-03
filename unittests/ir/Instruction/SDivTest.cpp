@@ -7,8 +7,11 @@
 #include "mini-llvm/ir/Constant/I32Constant.h"
 #include "mini-llvm/ir/Instruction/SDiv.h"
 #include "mini-llvm/ir/Type/I32.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class SDivTest : public ::testing::Test {
 protected:
@@ -36,5 +39,7 @@ TEST_F(SDivTest, clone) {
     EXPECT_EQ(&*sdiv_->lhs(), &*cloned->lhs());
     EXPECT_EQ(&*sdiv_->rhs(), &*cloned->rhs());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

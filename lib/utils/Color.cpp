@@ -21,10 +21,12 @@ namespace mini_llvm {
 
 bool supportsColor(FILE *stream) {
     // force-color.org
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     if (const char *forceColor = getenv("FORCE_COLOR"); forceColor && *forceColor != '\0') {
         return true;
     }
     // no-color.org
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     if (const char *noColor = getenv("NO_COLOR"); noColor && *noColor != '\0') {
         return false;
     }
@@ -47,6 +49,7 @@ bool supportsColor(FILE *stream) {
     if (fd < 0 || !isatty(fd)) {
         return false;
     }
+    // NOLINTNEXTLINE(concurrency-mt-unsafe)
     const char *term = getenv("TERM");
     if (!term) {
         return false;
@@ -108,6 +111,7 @@ thread_local bool g_colorEnabled = false;
 } // namespace
 
 ColorGuard::ColorGuard(bool enableColor) {
+    // NOLINTNEXTLINE(cppcoreguidelines-prefer-member-initializer)
     oldColorEnabled_ = g_colorEnabled;
     g_colorEnabled = enableColor;
 }

@@ -12,6 +12,7 @@
 #include "mini-llvm/mir/FormatPrecision.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
 #include "mini-llvm/mir/Instruction.h"
+#include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
 #include "mini-llvm/mir/Register.h"
 #include "mini-llvm/mir/RegisterClass.h"

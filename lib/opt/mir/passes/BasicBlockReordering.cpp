@@ -93,7 +93,7 @@ std::vector<size_t> dp(size_t n, const Matrix<double> &D, size_t s) {
         path.push_back(t);
     }
     path.push_back(s);
-    std::reverse(path.begin(), path.end());
+    std::ranges::reverse(path);
     return path;
 }
 
@@ -126,6 +126,7 @@ std::vector<size_t> aco(
             path.push_back(s);
             for (size_t j = 1; j < n; ++j) {
                 std::vector<double> weights;
+                weights.reserve(n);
                 for (size_t k = 0; k < n; ++k) {
                     weights.push_back(pow(tau[path[j - 1], k], alpha) * pow(1. / (D[path[j - 1], k] + 1e-10), beta));
                 }
@@ -188,6 +189,7 @@ bool BasicBlockReordering::runOnFunction(Function &F) {
     }
 
     std::vector<size_t> initialPath;
+    initialPath.reserve(n);
     for (size_t i = 0; i < n; ++i) {
         initialPath.push_back(i);
     }

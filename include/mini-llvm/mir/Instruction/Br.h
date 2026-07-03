@@ -7,10 +7,14 @@
 #include <string>
 #include <unordered_set>
 
+#include "mini-llvm/mir/BasicBlock.h"
 #include "mini-llvm/mir/BasicBlockOperand.h"
 #include "mini-llvm/mir/ImmediateOperand.h"
+#include "mini-llvm/mir/Instruction.h"
 #include "mini-llvm/mir/Instruction/Terminator.h"
+#include "mini-llvm/mir/InstructionVisitor.h"
 #include "mini-llvm/mir/MemoryOperand.h"
+#include "mini-llvm/mir/RegisterOperand.h"
 #include "mini-llvm/utils/Compiler.h"
 
 namespace mini_llvm::mir {

@@ -50,6 +50,7 @@ struct std::hash<mini_llvm::mc::Symbol> {
 
 template <>
 struct std::formatter<mini_llvm::mc::Symbol> {
+    // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
     constexpr auto parse(std::format_parse_context &ctx) {
         return ctx.begin();
     }

@@ -178,6 +178,7 @@ bool operator==(const ValueNumber &lhs, const ValueNumber &rhs) {
 } // namespace mini_llvm::ir
 
 template <>
+// NOLINTNEXTLINE(bugprone-std-namespace-modification)
 struct std::hash<std::type_info> {
     size_t operator()(const std::type_info &type) const noexcept {
         return type.hash_code();
@@ -198,26 +199,26 @@ struct std::hash<mini_llvm::ir::ValueNumber> {
     size_t operator()(const mini_llvm::ir::ValueNumber &number) const noexcept {
         using namespace mini_llvm;
         using namespace mini_llvm::ir;
-        if (auto *value = dynamic_cast<const IntegerConstant *>(number.value)) {
+        if (const auto *value = dynamic_cast<const IntegerConstant *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, value->signExtendedValue());
             return seed;
         }
-        if (auto *value = dynamic_cast<const FloatingConstant *>(number.value)) {
+        if (const auto *value = dynamic_cast<const FloatingConstant *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, value->bitPattern());
             return seed;
         }
-        if (auto *value = dynamic_cast<const BinaryIntegerArithmeticOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const BinaryIntegerArithmeticOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->lhs()});
             hash_combine(seed, ValueNumber{&*value->rhs()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const ICmp *>(number.value)) {
+        if (const auto *value = dynamic_cast<const ICmp *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, value->cond());
@@ -225,20 +226,20 @@ struct std::hash<mini_llvm::ir::ValueNumber> {
             hash_combine(seed, ValueNumber{&*value->rhs()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const BinaryFloatingArithmeticOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const BinaryFloatingArithmeticOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->lhs()});
             hash_combine(seed, ValueNumber{&*value->rhs()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const UnaryFloatingOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const UnaryFloatingOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const FCmp *>(number.value)) {
+        if (const auto *value = dynamic_cast<const FCmp *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, value->cond());
@@ -246,56 +247,56 @@ struct std::hash<mini_llvm::ir::ValueNumber> {
             hash_combine(seed, ValueNumber{&*value->rhs()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const IntegerCastingOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const IntegerCastingOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const FloatingCastingOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const FloatingCastingOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const IntegerToFloatingCastingOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const IntegerToFloatingCastingOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const FloatingToIntegerCastingOperator *>(number.value)) {
+        if (const auto *value = dynamic_cast<const FloatingToIntegerCastingOperator *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const PtrToInt *>(number.value)) {
+        if (const auto *value = dynamic_cast<const PtrToInt *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const IntToPtr *>(number.value)) {
+        if (const auto *value = dynamic_cast<const IntToPtr *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const BitCast *>(number.value)) {
+        if (const auto *value = dynamic_cast<const BitCast *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->value()});
             hash_combine(seed, *value->type());
             return seed;
         }
-        if (auto *value = dynamic_cast<const Select *>(number.value)) {
+        if (const auto *value = dynamic_cast<const Select *>(number.value)) {
             size_t seed = 0;
             hash_combine(seed, typeid(*value));
             hash_combine(seed, ValueNumber{&*value->cond()});
@@ -303,7 +304,7 @@ struct std::hash<mini_llvm::ir::ValueNumber> {
             hash_combine(seed, ValueNumber{&*value->falseValue()});
             return seed;
         }
-        if (auto *value = dynamic_cast<const Call *>(number.value)) {
+        if (const auto *value = dynamic_cast<const Call *>(number.value)) {
             const Function *callee = &*value->callee();
             if (!callee->attr<ReadNone>()) {
                 return reinterpret_cast<size_t>(value);

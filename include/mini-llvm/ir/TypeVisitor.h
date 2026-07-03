@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <cstdlib>
+#include <cstdlib> // IWYU pragma: keep
 #include <utility>
 
 #include "mini-llvm/utils/Compiler.h"
@@ -47,18 +47,18 @@ public:
     virtual void visitPtr(Ptr &type) { visitPtr(std::as_const(type)); }
     virtual void visitVoid(Void &type) { visitVoid(std::as_const(type)); }
 
-    virtual void visitArrayType(const ArrayType &) { abort(); }
-    virtual void visitBasicBlockType(const BasicBlockType &) { abort(); }
-    virtual void visitDouble(const Double &) { abort(); }
-    virtual void visitFloat(const Float &) { abort(); }
-    virtual void visitFunctionType(const FunctionType &) { abort(); }
-    virtual void visitI1(const I1 &) { abort(); }
-    virtual void visitI16(const I16 &) { abort(); }
-    virtual void visitI32(const I32 &) { abort(); }
-    virtual void visitI64(const I64 &) { abort(); }
-    virtual void visitI8(const I8 &) { abort(); }
-    virtual void visitPtr(const Ptr &) { abort(); }
-    virtual void visitVoid(const Void &) { abort(); }
+    virtual void visitArrayType(const ArrayType &/*type*/) { abort(); }
+    virtual void visitBasicBlockType(const BasicBlockType &/*type*/) { abort(); }
+    virtual void visitDouble(const Double &/*type*/) { abort(); }
+    virtual void visitFloat(const Float &/*type*/) { abort(); }
+    virtual void visitFunctionType(const FunctionType &/*type*/) { abort(); }
+    virtual void visitI1(const I1 &/*type*/) { abort(); }
+    virtual void visitI16(const I16 &/*type*/) { abort(); }
+    virtual void visitI32(const I32 &/*type*/) { abort(); }
+    virtual void visitI64(const I64 &/*type*/) { abort(); }
+    virtual void visitI8(const I8 &/*type*/) { abort(); }
+    virtual void visitPtr(const Ptr &/*type*/) { abort(); }
+    virtual void visitVoid(const Void &/*type*/) { abort(); }
 };
 
 } // namespace mini_llvm::ir

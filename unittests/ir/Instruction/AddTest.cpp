@@ -9,8 +9,11 @@
 #include "mini-llvm/ir/Instruction/Add.h"
 #include "mini-llvm/ir/Type/I32.h"
 #include "mini-llvm/ir/Value.h"
+#include "mini-llvm/utils/Memory.h"
 
 namespace mini_llvm::ir {
+
+namespace {
 
 class AddTest : public ::testing::Test {
 protected:
@@ -54,5 +57,7 @@ TEST_F(AddTest, isWellFormed) {
     replaceAllUsesWith(*value, add_);
     EXPECT_FALSE(add_->isWellFormed());
 }
+
+} // namespace
 
 } // namespace mini_llvm::ir

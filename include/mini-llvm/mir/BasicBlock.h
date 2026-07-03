@@ -31,9 +31,13 @@ public:
     using const_reverse_iterator = IndirectIterator<InstructionList::const_reverse_iterator, const Instruction>;
 
     BasicBlock() = default;
+
+    ~BasicBlock() = default;
+
     BasicBlock(const BasicBlock &) = delete;
-    BasicBlock(BasicBlock &&) = delete;
     BasicBlock &operator=(const BasicBlock &) = delete;
+
+    BasicBlock(BasicBlock &&) = delete;
     BasicBlock &operator=(BasicBlock &&) = delete;
 
     const std::string &name() const & {
@@ -158,7 +162,7 @@ public:
     template <typename R>
         requires std::ranges::range<R>
     void assign_range(R &&range) {
-        assign(range.begin(), range.end());
+        assign(std::ranges::begin(range), std::ranges::end(range));
     }
 
     std::string format() const;
