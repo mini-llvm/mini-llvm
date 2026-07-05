@@ -34,6 +34,14 @@ public:
         return 1;
     }
 
+    int bitSize(int /*pointerSize*/) const override {
+        return 1;
+    }
+
+    int bitAlignment(int /*pointerAlignment*/) const override {
+        return 1;
+    }
+
     std::unique_ptr<Constant> zeroValue() const override;
     std::unique_ptr<Constant> constant(int64_t value) const override;
 
