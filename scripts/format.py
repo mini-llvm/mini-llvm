@@ -165,6 +165,16 @@ class _BazelFormatter(_Formatter):
         raise _FormatError(f"buildifier exited with code {result.returncode}")
 
 
+class _NullFormatter(_Formatter):
+    def reformat(self, path):
+        del path
+        return False
+
+    def check(self, path):
+        del path
+        return True
+
+
 def _create_formatter(path):
     if path.suffix in (".cpp", ".h"):
         return _CXXFormatter()
@@ -178,7 +188,17 @@ def _create_formatter(path):
         "MODULE.bazel",
     ):
         return _BazelFormatter()
-    raise _FormatError(f"{path}: unsupported language")
+    return _NullFormatter()
+
+
+def _expand_dir(path):
+    path = Path(path)
+    if path.is_dir():
+        for child_path in sorted(path.rglob("*")):
+            if child_path.is_file():
+                yield child_path
+    else:
+        yield path
 
 
 def main():
@@ -191,16 +211,16 @@ def main():
     exit_code = 0
 
     try:
-        for path in args.input:
-            path = Path(path)
-            formatter = _create_formatter(path)
-            if args.check:
-                if not formatter.check(path):
-                    print(f"{path}: not properly formatted", file=sys.stderr)
-                    exit_code = 1
-            else:
-                if formatter.reformat(path):
-                    print(f"{path}: reformatted")
+        for arg in args.input:
+            for path in _expand_dir(arg):
+                formatter = _create_formatter(path)
+                if args.check:
+                    if not formatter.check(path):
+                        print(f"{path}: not properly formatted", file=sys.stderr)
+                        exit_code = 1
+                else:
+                    if formatter.reformat(path):
+                        print(f"{path}: reformatted")
     except _FormatError as e:
         print(f"error: {e}", file=sys.stderr)
         exit_code = 1
