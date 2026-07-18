@@ -272,7 +272,11 @@ std::vector<std::shared_ptr<Instruction>> replaceSDiv(Value &n, int64_t d) {
         return replaceSDivPow2(n, d);
     }
 
-    return replaceSDivGeneral(n, d);
+    if (!dynamic_cast<const I64 *>(&*n.type())) {
+        return replaceSDivGeneral(n, d);
+    }
+
+    return {};
 }
 
 std::vector<std::shared_ptr<Instruction>> replaceSDiv(const SDiv &I) {
