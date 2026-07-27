@@ -136,7 +136,7 @@ Although `riscv64` is currently the only supported target, the flexible architec
   - `alloca`
   - `load`
   - `store`
-  - `getelemenetptr`
+  - `getelementptr`
 - Other
   - `select`
   - `call`
