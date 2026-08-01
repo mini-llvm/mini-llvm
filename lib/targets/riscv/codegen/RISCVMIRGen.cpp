@@ -1071,15 +1071,14 @@ private:
     template <typename IInstr, typename MInstr>
     void visitBinaryIntegerArithmeticOperator(const IInstr &I) {
         int bitWidth = I.type()->bitSize(8);
-        ExtensionMode extMode = bitWidth == 64 ? ExtensionMode::kNo : ExtensionMode::kSign;
         std::shared_ptr<Register> dst = valueMap_[&I],
                                   src1 = getRegister(*I.lhs()),
                                   src2 = getRegister(*I.rhs());
 
         if (bitWidth == 32) {
-            builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, extMode));
+            builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, ExtensionMode::kSign));
         } else {
-            builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, extMode));
+            builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, ExtensionMode::kNo));
             if (bitWidth < 64) {
                 builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
                 builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
