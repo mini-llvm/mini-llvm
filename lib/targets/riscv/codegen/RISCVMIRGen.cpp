@@ -360,7 +360,7 @@ public:
     }
 
     void visitUDiv(const ir::UDiv &I) override {
-        visitBinaryIntegerArithmeticOperator<ir::UDiv, UDiv>(I);
+        visitUnsignedBinaryIntegerArithmeticOperator<ir::UDiv, UDiv>(I);
     }
 
     void visitSRem(const ir::SRem &I) override {
@@ -368,7 +368,7 @@ public:
     }
 
     void visitURem(const ir::URem &I) override {
-        visitBinaryIntegerArithmeticOperator<ir::URem, URem>(I);
+        visitUnsignedBinaryIntegerArithmeticOperator<ir::URem, URem>(I);
     }
 
     void visitAnd(const ir::And &I) override {
@@ -388,7 +388,7 @@ public:
     }
 
     void visitLSHR(const ir::LSHR &I) override {
-        visitBinaryIntegerArithmeticOperator<ir::LSHR, SHRL>(I);
+        visitUnsignedBinaryIntegerArithmeticOperator<ir::LSHR, SHRL>(I);
     }
 
     void visitASHR(const ir::ASHR &I) override {
@@ -1083,6 +1083,38 @@ private:
                 builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
                 builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
             }
+        }
+    }
+
+    template <typename IInstr, typename MInstr>
+    void visitUnsignedBinaryIntegerArithmeticOperator(const IInstr &I) {
+        int bitWidth = I.type()->bitSize(8);
+        std::shared_ptr<Register> dst = valueMap_[&I],
+                                  src1 = getRegister(*I.lhs()),
+                                  src2 = getRegister(*I.rhs());
+
+        if (bitWidth == 32) {
+            builder_.add(std::make_unique<MInstr>(4, dst, src1, src2, ExtensionMode::kSign));
+        } else if (bitWidth == 64) {
+            builder_.add(std::make_unique<MInstr>(8, dst, src1, src2, ExtensionMode::kNo));
+        } else {
+            std::shared_ptr<Register> src1ZExt = std::make_shared<VirtualRegister>(8),
+                                      src2ZExt = std::make_shared<VirtualRegister>(8);
+
+            if (bitWidth == 8) {
+                builder_.add(std::make_unique<AndI>(8, src1ZExt, src1, std::make_unique<IntegerImmediate>(0xff)));
+                builder_.add(std::make_unique<AndI>(8, src2ZExt, src2, std::make_unique<IntegerImmediate>(0xff)));
+            } else {
+                builder_.add(std::make_unique<SHLI>(8, src1ZExt, src1, std::make_unique<IntegerImmediate>(64 - bitWidth)));
+                builder_.add(std::make_unique<SHRLI>(8, src1ZExt, src1ZExt, std::make_unique<IntegerImmediate>(64 - bitWidth)));
+                builder_.add(std::make_unique<SHLI>(8, src2ZExt, src2, std::make_unique<IntegerImmediate>(64 - bitWidth)));
+                builder_.add(std::make_unique<SHRLI>(8, src2ZExt, src2ZExt, std::make_unique<IntegerImmediate>(64 - bitWidth)));
+            }
+
+            builder_.add(std::make_unique<MInstr>(8, dst, src1ZExt, src2ZExt, ExtensionMode::kNo));
+
+            builder_.add(std::make_unique<SHLI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
+            builder_.add(std::make_unique<SHRAI>(8, dst, dst, std::make_unique<IntegerImmediate>(64 - bitWidth)));
         }
     }
 
