@@ -186,6 +186,14 @@ void flatten(const ir::Constant &C, std::vector<const ir::Constant *> &flattened
         for (const ir::Use<ir::Constant> &element : elements(*static_cast<const ir::ArrayConstant *>(&C))) {
             flatten(*element, flattened);
         }
+    } else if (dynamic_cast<const ir::PoisonValue *>(&C)) {
+        std::unique_ptr<ir::Type> type = C.type();
+        size_t numElements = 1;
+        while (const auto *arrayType = dynamic_cast<const ir::ArrayType *>(&*type)) {
+            numElements *= arrayType->numElements();
+            type = arrayType->elementType();
+        }
+        flattened.insert(flattened.end(), numElements, nullptr);
     } else {
         flattened.push_back(&C);
     }
@@ -213,8 +221,8 @@ std::unique_ptr<Constant> emitConstant(
     const HashMap<const ir::GlobalVar *, GlobalVar *> &globalVarMap,
     const HashMap<const ir::Function *, Function *> &functionMap
 ) {
-    if (const auto *pointerConstant = dynamic_cast<const ir::PointerConstant *>(&C)) {
-        return std::make_unique<PtrConstant>(8, emitPtrConstantValue(*pointerConstant, globalVarMap, functionMap));
+    if (dynamic_cast<const ir::PoisonValue *>(&C)) {
+        return std::make_unique<ZeroConstant>(C.type()->size(8));
     }
     if (C == *C.type()->zeroValue()) {
         return std::make_unique<ZeroConstant>(C.type()->size(8));
@@ -240,6 +248,9 @@ std::unique_ptr<Constant> emitConstant(
     if (const auto *doubleConstant = dynamic_cast<const ir::DoubleConstant *>(&C)) {
         return std::make_unique<I64Constant>(std::bit_cast<int64_t>(doubleConstant->value()));
     }
+    if (const auto *pointerConstant = dynamic_cast<const ir::PointerConstant *>(&C)) {
+        return std::make_unique<PtrConstant>(8, emitPtrConstantValue(*pointerConstant, globalVarMap, functionMap));
+    }
     if (const auto *arrayConstant = dynamic_cast<const ir::ArrayConstant *>(&C)) {
         std::vector<const ir::Constant *> flattened;
         flatten(*arrayConstant, flattened);
@@ -253,7 +264,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int8_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(static_cast<int8_t>(static_cast<const ir::I1Constant *>(element)->value()));
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(static_cast<int8_t>(static_cast<const ir::I1Constant *>(element)->value()));
+                }
             }
             return std::make_unique<I8ArrayConstant>(std::move(elements));
         }
@@ -261,7 +276,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int8_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(static_cast<const ir::I8Constant *>(element)->value());
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(static_cast<const ir::I8Constant *>(element)->value());
+                }
             }
             return std::make_unique<I8ArrayConstant>(std::move(elements));
         }
@@ -269,7 +288,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int16_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(static_cast<const ir::I16Constant *>(element)->value());
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(static_cast<const ir::I16Constant *>(element)->value());
+                }
             }
             return std::make_unique<I16ArrayConstant>(std::move(elements));
         }
@@ -277,7 +300,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int32_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(static_cast<const ir::I32Constant *>(element)->value());
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(static_cast<const ir::I32Constant *>(element)->value());
+                }
             }
             return std::make_unique<I32ArrayConstant>(std::move(elements));
         }
@@ -285,7 +312,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int64_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(static_cast<const ir::I64Constant *>(element)->value());
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(static_cast<const ir::I64Constant *>(element)->value());
+                }
             }
             return std::make_unique<I64ArrayConstant>(std::move(elements));
         }
@@ -293,7 +324,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int32_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(std::bit_cast<int32_t>(static_cast<const ir::FloatConstant *>(element)->value()));
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(std::bit_cast<int32_t>(static_cast<const ir::FloatConstant *>(element)->value()));
+                }
             }
             return std::make_unique<I32ArrayConstant>(std::move(elements));
         }
@@ -301,7 +336,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<int64_t> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(std::bit_cast<int64_t>(static_cast<const ir::DoubleConstant *>(element)->value()));
+                if (element == nullptr) {
+                    elements.push_back(0);
+                } else {
+                    elements.push_back(std::bit_cast<int64_t>(static_cast<const ir::DoubleConstant *>(element)->value()));
+                }
             }
             return std::make_unique<I64ArrayConstant>(std::move(elements));
         }
@@ -309,7 +348,11 @@ std::unique_ptr<Constant> emitConstant(
             std::vector<std::pair<GlobalValue *, int64_t>> elements;
             elements.reserve(flattened.size());
             for (const ir::Constant *element : flattened) {
-                elements.push_back(emitPtrConstantValue(*static_cast<const ir::PointerConstant *>(element), globalVarMap, functionMap));
+                if (element == nullptr) {
+                    elements.emplace_back(nullptr, 0);
+                } else {
+                    elements.push_back(emitPtrConstantValue(*static_cast<const ir::PointerConstant *>(element), globalVarMap, functionMap));
+                }
             }
             return std::make_unique<PtrArrayConstant>(8, std::move(elements));
         }
